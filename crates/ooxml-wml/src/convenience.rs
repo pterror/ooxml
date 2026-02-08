@@ -78,8 +78,11 @@ impl types::Paragraph {
         let bookmark = types::Bookmark {
             id,
             name: name.to_string(),
+            #[cfg(feature = "wml-settings")]
             displaced_by_custom_xml: None,
+            #[cfg(feature = "wml-tables")]
             col_first: None,
+            #[cfg(feature = "wml-tables")]
             col_last: None,
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
@@ -92,6 +95,7 @@ impl types::Paragraph {
     pub fn add_bookmark_end(&mut self, id: i64) {
         let range = types::CTMarkupRange {
             id,
+            #[cfg(feature = "wml-settings")]
             displaced_by_custom_xml: None,
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
@@ -104,6 +108,7 @@ impl types::Paragraph {
     pub fn add_comment_range_start(&mut self, id: u32) {
         let range = types::CTMarkupRange {
             id: id as i64,
+            #[cfg(feature = "wml-settings")]
             displaced_by_custom_xml: None,
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
@@ -116,6 +121,7 @@ impl types::Paragraph {
     pub fn add_comment_range_end(&mut self, id: u32) {
         let range = types::CTMarkupRange {
             id: id as i64,
+            #[cfg(feature = "wml-settings")]
             displaced_by_custom_xml: None,
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
@@ -136,7 +142,7 @@ impl types::Paragraph {
         let ppr = self
             .p_pr
             .get_or_insert_with(|| Box::new(types::ParagraphProperties::default()));
-        ppr.num_pr = Some(Box::new(types::CTNumPr {
+        ppr.num_pr = Some(Box::new(types::NumberingProperties {
             ilvl: Some(Box::new(types::CTDecimalNumber {
                 value: ilvl as i64,
                 #[cfg(feature = "extra-attrs")]
@@ -345,6 +351,7 @@ impl types::Run {
         self.run_content
             .push(types::RunContent::FootnoteReference(Box::new(
                 types::FootnoteEndnoteRef {
+                    #[cfg(feature = "wml-comments")]
                     custom_mark_follows: None,
                     id,
                     #[cfg(feature = "extra-attrs")]
@@ -358,6 +365,7 @@ impl types::Run {
         self.run_content
             .push(types::RunContent::EndnoteReference(Box::new(
                 types::FootnoteEndnoteRef {
+                    #[cfg(feature = "wml-comments")]
                     custom_mark_follows: None,
                     id,
                     #[cfg(feature = "extra-attrs")]

@@ -643,15 +643,36 @@ impl HyperlinkExt for types::Hyperlink {
     }
 
     fn anchor_str(&self) -> Option<&str> {
-        self.anchor.as_deref()
+        #[cfg(feature = "wml-hyperlinks")]
+        {
+            self.anchor.as_deref()
+        }
+        #[cfg(not(feature = "wml-hyperlinks"))]
+        {
+            None
+        }
     }
 
     fn rel_id(&self) -> Option<&str> {
-        self.id.as_deref()
+        #[cfg(feature = "wml-hyperlinks")]
+        {
+            self.id.as_deref()
+        }
+        #[cfg(not(feature = "wml-hyperlinks"))]
+        {
+            None
+        }
     }
 
     fn is_external(&self) -> bool {
-        self.id.is_some()
+        #[cfg(feature = "wml-hyperlinks")]
+        {
+            self.id.is_some()
+        }
+        #[cfg(not(feature = "wml-hyperlinks"))]
+        {
+            false
+        }
     }
 }
 

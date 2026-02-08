@@ -536,6 +536,7 @@ struct BuilderCell {
 
 /// Column width definition for writing.
 #[derive(Debug, Clone)]
+#[allow(dead_code)] // Fields read only with sml-styling feature
 struct ColumnWidth {
     min: u32,
     max: u32,
@@ -544,6 +545,7 @@ struct ColumnWidth {
 
 /// Row height definition for writing.
 #[derive(Debug, Clone)]
+#[allow(dead_code)] // Fields read only with sml-styling feature
 struct RowHeight {
     row: u32,
     height: f64,
@@ -1277,6 +1279,7 @@ struct CellFormatKey {
 }
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)] // Fields read only with sml-styling feature
 struct CellFormatRecord {
     font_id: usize,
     fill_id: usize,
@@ -1738,13 +1741,16 @@ impl WorkbookBuilder {
         let comment_list: Vec<types::Comment> = sheet
             .comments
             .iter()
-            .map(|c| {
-                let author = c.author.clone().unwrap_or_default();
-                let author_id = *author_index.get(&author).unwrap_or(&0);
+            .map(|_c| {
+                #[cfg(feature = "sml-comments")]
+                let author_id = {
+                    let author = _c.author.clone().unwrap_or_default();
+                    *author_index.get(&author).unwrap_or(&0)
+                };
 
                 types::Comment {
                     #[cfg(feature = "sml-comments")]
-                    reference: c.reference.clone(),
+                    reference: _c.reference.clone(),
                     #[cfg(feature = "sml-comments")]
                     author_id,
                     #[cfg(feature = "sml-comments")]
@@ -1756,7 +1762,7 @@ impl WorkbookBuilder {
                         cell_type: None,
                         reference: vec![types::RichTextElement {
                             r_pr: None,
-                            cell_type: c.text.clone(),
+                            cell_type: _c.text.clone(),
                             #[cfg(feature = "extra-children")]
                             extra_children: Vec::new(),
                         }],
@@ -2063,6 +2069,7 @@ impl WorkbookBuilder {
         }
 
         // Build row height lookup
+        #[cfg(feature = "sml-styling")]
         let row_height_map: HashMap<u32, f64> = sheet
             .row_heights
             .iter()
@@ -3119,6 +3126,7 @@ fn convert_vertical_alignment(align: VerticalAlignment) -> types::VerticalAlignm
 }
 
 /// Convert a 6-character RGB hex color string (e.g., "FF0000") to ARGB bytes with 0xFF alpha.
+#[cfg(feature = "sml-styling")]
 fn hex_color_to_bytes(color: &str) -> Vec<u8> {
     // Parse as 24-bit RGB integer, then extract bytes
     let rgb = u32::from_str_radix(color, 16).unwrap_or(0);

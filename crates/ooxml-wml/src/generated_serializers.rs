@@ -86,6 +86,7 @@ impl ToXml for CTCharset {
                 start.push_attribute(("w:val", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.character_set {
             start.push_attribute(("w:characterSet", val.as_str()));
         }
@@ -381,18 +382,21 @@ impl ToXml for CTColor {
                 start.push_attribute(("w:val", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.theme_color {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:themeColor", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.theme_tint {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:themeTint", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.theme_shade {
             {
                 let hex = encode_hex(val);
@@ -460,24 +464,28 @@ impl ToXml for CTUnderline {
                 start.push_attribute(("w:val", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.color {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:color", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.theme_color {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:themeColor", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.theme_tint {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:themeTint", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.theme_shade {
             {
                 let hex = encode_hex(val);
@@ -530,48 +538,56 @@ impl ToXml for CTBorder {
                 start.push_attribute(("w:val", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.color {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:color", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.theme_color {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:themeColor", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.theme_tint {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:themeTint", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.theme_shade {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:themeShade", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.size {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:sz", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.space {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:space", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.shadow {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:shadow", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.frame {
             {
                 let s = val.to_string();
@@ -601,48 +617,56 @@ impl ToXml for CTShd {
                 start.push_attribute(("w:val", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.color {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:color", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.theme_color {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:themeColor", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.theme_tint {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:themeTint", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.theme_shade {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:themeShade", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.fill {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:fill", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.theme_fill {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:themeFill", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.theme_fill_tint {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:themeFillTint", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.theme_fill_shade {
             {
                 let hex = encode_hex(val);
@@ -688,6 +712,7 @@ impl ToXml for CTFitText {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-styling")]
         {
             let val = &self.value;
             {
@@ -695,6 +720,7 @@ impl ToXml for CTFitText {
                 start.push_attribute(("w:val", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.id {
             {
                 let s = val.to_string();
@@ -740,12 +766,15 @@ impl ToXml for CTLanguage {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.value {
             start.push_attribute(("w:val", val.as_str()));
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.east_asia {
             start.push_attribute(("w:eastAsia", val.as_str()));
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.bidi {
             start.push_attribute(("w:bidi", val.as_str()));
         }
@@ -765,30 +794,35 @@ impl ToXml for CTEastAsianLayout {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.id {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:id", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.combine {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:combine", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.combine_brackets {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:combineBrackets", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.vert {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:vert", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.vert_compress {
             {
                 let s = val.to_string();
@@ -811,90 +845,105 @@ impl ToXml for CTFramePr {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.drop_cap {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:dropCap", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.lines {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:lines", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.width {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:w", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.height {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:h", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.v_space {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:vSpace", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.h_space {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:hSpace", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.wrap {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:wrap", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.h_anchor {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:hAnchor", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.v_anchor {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:vAnchor", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.x {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:x", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.x_align {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:xAlign", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.y {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:y", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.y_align {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:yAlign", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.h_rule {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:hRule", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.anchor_lock {
             {
                 let s = val.to_string();
@@ -924,6 +973,7 @@ impl ToXml for CTTabStop {
                 start.push_attribute(("w:val", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.leader {
             {
                 let s = val.to_string();
@@ -953,48 +1003,56 @@ impl ToXml for CTSpacing {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.before {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:before", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.before_lines {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:beforeLines", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.before_autospacing {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:beforeAutospacing", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.after {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:after", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.after_lines {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:afterLines", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.after_autospacing {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:afterAutospacing", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.line {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:line", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.line_rule {
             {
                 let s = val.to_string();
@@ -1017,72 +1075,84 @@ impl ToXml for CTInd {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.start {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:start", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.start_chars {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:startChars", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.end {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:end", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.end_chars {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:endChars", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.left {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:left", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.left_chars {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:leftChars", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.right {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:right", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.right_chars {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:rightChars", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.hanging {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:hanging", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.hanging_chars {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:hangingChars", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.first_line {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:firstLine", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.first_line_chars {
             {
                 let s = val.to_string();
@@ -1174,6 +1244,7 @@ impl ToXml for CTZoom {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.value {
             {
                 let s = val.to_string();
@@ -1203,24 +1274,29 @@ impl ToXml for CTWritingStyle {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.lang;
             start.push_attribute(("w:lang", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.vendor_i_d;
             start.push_attribute(("w:vendorID", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.dll_version;
             start.push_attribute(("w:dllVersion", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.nl_check {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:nlCheck", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.check_style;
             {
@@ -1228,6 +1304,7 @@ impl ToXml for CTWritingStyle {
                 start.push_attribute(("w:checkStyle", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.app_name;
             start.push_attribute(("w:appName", val.as_str()));
@@ -1248,12 +1325,14 @@ impl ToXml for CTProof {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.spelling {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:spelling", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.grammar {
             {
                 let s = val.to_string();
@@ -1412,102 +1491,121 @@ impl ToXml for CTDocProtect {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.edit {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:edit", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.formatting {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:formatting", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.enforcement {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:enforcement", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.algorithm_name {
             start.push_attribute(("w:algorithmName", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.hash_value {
             {
                 let b64 = encode_base64(val);
                 start.push_attribute(("w:hashValue", b64.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.salt_value {
             {
                 let b64 = encode_base64(val);
                 start.push_attribute(("w:saltValue", b64.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.spin_count {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:spinCount", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.crypt_provider_type {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:cryptProviderType", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.crypt_algorithm_class {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:cryptAlgorithmClass", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.crypt_algorithm_type {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:cryptAlgorithmType", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.crypt_algorithm_sid {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:cryptAlgorithmSid", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.crypt_spin_count {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:cryptSpinCount", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.crypt_provider {
             start.push_attribute(("w:cryptProvider", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.alg_id_ext {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:algIdExt", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.alg_id_ext_source {
             start.push_attribute(("w:algIdExtSource", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.crypt_provider_type_ext {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:cryptProviderTypeExt", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.crypt_provider_type_ext_source {
             start.push_attribute(("w:cryptProviderTypeExtSource", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.hash {
             {
                 let b64 = encode_base64(val);
                 start.push_attribute(("w:hash", b64.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.salt {
             {
                 let b64 = encode_base64(val);
@@ -1619,30 +1717,35 @@ impl ToXml for CTTrackChangesView {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.markup {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:markup", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.comments {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:comments", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.ins_del {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:insDel", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.formatting {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:formatting", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.ink_annotations {
             {
                 let s = val.to_string();
@@ -1665,10 +1768,12 @@ impl ToXml for CTKinsoku {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-styling")]
         {
             let val = &self.lang;
             start.push_attribute(("w:lang", val.as_str()));
         }
+        #[cfg(feature = "wml-styling")]
         {
             let val = &self.value;
             start.push_attribute(("w:val", val.as_str()));
@@ -1769,6 +1874,7 @@ impl ToXml for CTTrackChange {
             let val = &self.author;
             start.push_attribute(("w:author", val.as_str()));
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.date {
             start.push_attribute(("w:date", val.as_str()));
         }
@@ -1802,12 +1908,14 @@ impl ToXml for CTCellMergeTrackChange {
         if let Some(ref val) = self.date {
             start.push_attribute(("w:date", val.as_str()));
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.vertical_merge {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:vMerge", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.v_merge_orig {
             {
                 let s = val.to_string();
@@ -1844,6 +1952,7 @@ impl ToXml for CTTrackChangeRange {
         if let Some(ref val) = self.date {
             start.push_attribute(("w:date", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.displaced_by_custom_xml {
             {
                 let s = val.to_string();
@@ -1873,6 +1982,7 @@ impl ToXml for CTMarkupRange {
                 start.push_attribute(("w:id", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.displaced_by_custom_xml {
             {
                 let s = val.to_string();
@@ -1908,12 +2018,14 @@ impl ToXml for CTBookmarkRange {
                 start.push_attribute(("w:displacedByCustomXml", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.col_first {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:colFirst", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.col_last {
             {
                 let s = val.to_string();
@@ -1943,18 +2055,21 @@ impl ToXml for Bookmark {
                 start.push_attribute(("w:id", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.displaced_by_custom_xml {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:displacedByCustomXml", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.col_first {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:colFirst", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.col_last {
             {
                 let s = val.to_string();
@@ -2010,10 +2125,12 @@ impl ToXml for CTMoveBookmark {
             let val = &self.name;
             start.push_attribute(("w:name", val.as_str()));
         }
+        #[cfg(feature = "wml-track-changes")]
         {
             let val = &self.author;
             start.push_attribute(("w:author", val.as_str()));
         }
+        #[cfg(feature = "wml-track-changes")]
         {
             let val = &self.date;
             start.push_attribute(("w:date", val.as_str()));
@@ -2045,9 +2162,11 @@ impl ToXml for Comment {
             let val = &self.author;
             start.push_attribute(("w:author", val.as_str()));
         }
+        #[cfg(feature = "wml-comments")]
         if let Some(ref val) = self.date {
             start.push_attribute(("w:date", val.as_str()));
         }
+        #[cfg(feature = "wml-comments")]
         if let Some(ref val) = self.initials {
             start.push_attribute(("w:initials", val.as_str()));
         }
@@ -2116,6 +2235,7 @@ impl ToXml for CTTrackChangeNumbering {
         if let Some(ref val) = self.date {
             start.push_attribute(("w:date", val.as_str()));
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.original {
             start.push_attribute(("w:original", val.as_str()));
         }
@@ -2170,6 +2290,7 @@ impl ToXml for CTTblPrExChange {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         {
             let val = &self.tbl_pr_ex;
             val.write_element("w:tblPrEx", writer)?;
@@ -2186,7 +2307,13 @@ impl ToXml for CTTblPrExChange {
     }
 
     fn is_empty_element(&self) -> bool {
-        false
+        #[cfg(feature = "wml-track-changes")]
+        return false;
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -2229,6 +2356,7 @@ impl ToXml for CTTcPrChange {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         {
             let val = &self.cell_properties;
             val.write_element("w:tcPr", writer)?;
@@ -2245,7 +2373,13 @@ impl ToXml for CTTcPrChange {
     }
 
     fn is_empty_element(&self) -> bool {
-        false
+        #[cfg(feature = "wml-track-changes")]
+        return false;
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -2288,6 +2422,7 @@ impl ToXml for CTTrPrChange {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         {
             let val = &self.row_properties;
             val.write_element("w:trPr", writer)?;
@@ -2304,7 +2439,13 @@ impl ToXml for CTTrPrChange {
     }
 
     fn is_empty_element(&self) -> bool {
-        false
+        #[cfg(feature = "wml-track-changes")]
+        return false;
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -2340,6 +2481,7 @@ impl ToXml for CTTblGridChange {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         {
             let val = &self.tbl_grid;
             val.write_element("w:tblGrid", writer)?;
@@ -2356,7 +2498,13 @@ impl ToXml for CTTblGridChange {
     }
 
     fn is_empty_element(&self) -> bool {
-        false
+        #[cfg(feature = "wml-track-changes")]
+        return false;
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -2399,6 +2547,7 @@ impl ToXml for CTTblPrChange {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         {
             let val = &self.table_properties;
             val.write_element("w:tblPr", writer)?;
@@ -2415,7 +2564,13 @@ impl ToXml for CTTblPrChange {
     }
 
     fn is_empty_element(&self) -> bool {
-        false
+        #[cfg(feature = "wml-track-changes")]
+        return false;
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -2458,6 +2613,7 @@ impl ToXml for CTSectPrChange {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.sect_pr {
             val.write_element("w:sectPr", writer)?;
         }
@@ -2473,6 +2629,7 @@ impl ToXml for CTSectPrChange {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-track-changes")]
         if self.sect_pr.is_some() {
             return false;
         }
@@ -2523,6 +2680,7 @@ impl ToXml for CTPPrChange {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         {
             let val = &self.p_pr;
             val.write_element("w:pPr", writer)?;
@@ -2539,7 +2697,13 @@ impl ToXml for CTPPrChange {
     }
 
     fn is_empty_element(&self) -> bool {
-        false
+        #[cfg(feature = "wml-track-changes")]
+        return false;
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -2582,6 +2746,7 @@ impl ToXml for CTRPrChange {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         {
             let val = &self.r_pr;
             val.write_element("w:rPr", writer)?;
@@ -2598,7 +2763,13 @@ impl ToXml for CTRPrChange {
     }
 
     fn is_empty_element(&self) -> bool {
-        false
+        #[cfg(feature = "wml-track-changes")]
+        return false;
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -2641,6 +2812,7 @@ impl ToXml for CTParaRPrChange {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         {
             let val = &self.r_pr;
             val.write_element("w:rPr", writer)?;
@@ -2657,7 +2829,13 @@ impl ToXml for CTParaRPrChange {
     }
 
     fn is_empty_element(&self) -> bool {
-        false
+        #[cfg(feature = "wml-track-changes")]
+        return false;
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -2665,6 +2843,7 @@ impl ToXml for CTRunTrackChange {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-track-changes")]
         {
             let val = &self.id;
             {
@@ -2672,10 +2851,12 @@ impl ToXml for CTRunTrackChange {
                 start.push_attribute(("w:id", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-track-changes")]
         {
             let val = &self.author;
             start.push_attribute(("w:author", val.as_str()));
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.date {
             start.push_attribute(("w:date", val.as_str()));
         }
@@ -2691,6 +2872,7 @@ impl ToXml for CTRunTrackChange {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
+        #[cfg(feature = "wml-track-changes")]
         for item in &self.run_content {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -2715,6 +2897,7 @@ impl ToXml for CTRunTrackChange {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-track-changes")]
         if !self.run_content.is_empty() {
             return false;
         }
@@ -2917,7 +3100,7 @@ impl ToXml for RangeMarkup {
     }
 }
 
-impl ToXml for CTNumPr {
+impl ToXml for NumberingProperties {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         #[cfg(feature = "extra-children")]
         let mut extra_iter = self.extra_children.iter().peekable();
@@ -2932,6 +3115,7 @@ impl ToXml for CTNumPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.ilvl {
             val.write_element("w:ilvl", writer)?;
         }
@@ -2948,6 +3132,7 @@ impl ToXml for CTNumPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.num_id {
             val.write_element("w:numId", writer)?;
         }
@@ -2964,6 +3149,7 @@ impl ToXml for CTNumPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.numbering_change {
             val.write_element("w:numberingChange", writer)?;
         }
@@ -2980,6 +3166,7 @@ impl ToXml for CTNumPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.ins {
             val.write_element("w:ins", writer)?;
         }
@@ -2995,15 +3182,19 @@ impl ToXml for CTNumPr {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-numbering")]
         if self.ilvl.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-numbering")]
         if self.num_id.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-track-changes")]
         if self.numbering_change.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-track-changes")]
         if self.ins.is_some() {
             return false;
         }
@@ -3030,6 +3221,7 @@ impl ToXml for CTPBdr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.top {
             val.write_element("w:top", writer)?;
         }
@@ -3046,6 +3238,7 @@ impl ToXml for CTPBdr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.left {
             val.write_element("w:left", writer)?;
         }
@@ -3062,6 +3255,7 @@ impl ToXml for CTPBdr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.bottom {
             val.write_element("w:bottom", writer)?;
         }
@@ -3078,6 +3272,7 @@ impl ToXml for CTPBdr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.right {
             val.write_element("w:right", writer)?;
         }
@@ -3094,6 +3289,7 @@ impl ToXml for CTPBdr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.between {
             val.write_element("w:between", writer)?;
         }
@@ -3110,6 +3306,7 @@ impl ToXml for CTPBdr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.bar {
             val.write_element("w:bar", writer)?;
         }
@@ -3125,21 +3322,27 @@ impl ToXml for CTPBdr {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-styling")]
         if self.top.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.left.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.bottom.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.right.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.between.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.bar.is_some() {
             return false;
         }
@@ -4022,6 +4225,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.keep_next {
             val.write_element("w:keepNext", writer)?;
         }
@@ -4038,6 +4242,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.keep_lines {
             val.write_element("w:keepLines", writer)?;
         }
@@ -4054,6 +4259,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.page_break_before {
             val.write_element("w:pageBreakBefore", writer)?;
         }
@@ -4070,6 +4276,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.frame_pr {
             val.write_element("w:framePr", writer)?;
         }
@@ -4086,6 +4293,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.widow_control {
             val.write_element("w:widowControl", writer)?;
         }
@@ -4102,6 +4310,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.num_pr {
             val.write_element("w:numPr", writer)?;
         }
@@ -4118,6 +4327,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.suppress_line_numbers {
             val.write_element("w:suppressLineNumbers", writer)?;
         }
@@ -4134,6 +4344,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.paragraph_border {
             val.write_element("w:pBdr", writer)?;
         }
@@ -4150,6 +4361,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.shading {
             val.write_element("w:shd", writer)?;
         }
@@ -4166,6 +4378,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.tabs {
             val.write_element("w:tabs", writer)?;
         }
@@ -4182,6 +4395,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.suppress_auto_hyphens {
             val.write_element("w:suppressAutoHyphens", writer)?;
         }
@@ -4198,6 +4412,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.kinsoku {
             val.write_element("w:kinsoku", writer)?;
         }
@@ -4214,6 +4429,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.word_wrap {
             val.write_element("w:wordWrap", writer)?;
         }
@@ -4230,6 +4446,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.overflow_punct {
             val.write_element("w:overflowPunct", writer)?;
         }
@@ -4246,6 +4463,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.top_line_punct {
             val.write_element("w:topLinePunct", writer)?;
         }
@@ -4262,6 +4480,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.auto_space_d_e {
             val.write_element("w:autoSpaceDE", writer)?;
         }
@@ -4278,6 +4497,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.auto_space_d_n {
             val.write_element("w:autoSpaceDN", writer)?;
         }
@@ -4294,6 +4514,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.bidi {
             val.write_element("w:bidi", writer)?;
         }
@@ -4310,6 +4531,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.adjust_right_ind {
             val.write_element("w:adjustRightInd", writer)?;
         }
@@ -4326,6 +4548,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.snap_to_grid {
             val.write_element("w:snapToGrid", writer)?;
         }
@@ -4342,6 +4565,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.spacing {
             val.write_element("w:spacing", writer)?;
         }
@@ -4358,6 +4582,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.indentation {
             val.write_element("w:ind", writer)?;
         }
@@ -4374,6 +4599,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.contextual_spacing {
             val.write_element("w:contextualSpacing", writer)?;
         }
@@ -4390,6 +4616,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.mirror_indents {
             val.write_element("w:mirrorIndents", writer)?;
         }
@@ -4406,6 +4633,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.suppress_overlap {
             val.write_element("w:suppressOverlap", writer)?;
         }
@@ -4422,6 +4650,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.justification {
             val.write_element("w:jc", writer)?;
         }
@@ -4438,6 +4667,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.text_direction {
             val.write_element("w:textDirection", writer)?;
         }
@@ -4454,6 +4684,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.text_alignment {
             val.write_element("w:textAlignment", writer)?;
         }
@@ -4470,6 +4701,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.textbox_tight_wrap {
             val.write_element("w:textboxTightWrap", writer)?;
         }
@@ -4486,6 +4718,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.outline_lvl {
             val.write_element("w:outlineLvl", writer)?;
         }
@@ -4502,6 +4735,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.div_id {
             val.write_element("w:divId", writer)?;
         }
@@ -4518,6 +4752,7 @@ impl ToXml for CTPPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.cnf_style {
             val.write_element("w:cnfStyle", writer)?;
         }
@@ -4536,99 +4771,131 @@ impl ToXml for CTPPrBase {
         if self.paragraph_style.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.keep_next.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.keep_lines.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.page_break_before.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.frame_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.widow_control.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-numbering")]
         if self.num_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.suppress_line_numbers.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.paragraph_border.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.shading.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.tabs.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.suppress_auto_hyphens.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.kinsoku.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.word_wrap.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.overflow_punct.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.top_line_punct.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.auto_space_d_e.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.auto_space_d_n.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.bidi.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.adjust_right_ind.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.snap_to_grid.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.spacing.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.indentation.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.contextual_spacing.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.mirror_indents.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.suppress_overlap.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.justification.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.text_direction.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.text_alignment.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.textbox_tight_wrap.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.outline_lvl.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.div_id.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.cnf_style.is_some() {
             return false;
         }
@@ -5183,6 +5450,7 @@ impl ToXml for CTPPrGeneral {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.p_pr_change {
             val.write_element("w:pPrChange", writer)?;
         }
@@ -5297,6 +5565,7 @@ impl ToXml for CTPPrGeneral {
         if self.cnf_style.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-track-changes")]
         if self.p_pr_change.is_some() {
             return false;
         }
@@ -5312,12 +5581,15 @@ impl ToXml for CTControl {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.name {
             start.push_attribute(("w:name", val.as_str()));
         }
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.shapeid {
             start.push_attribute(("w:shapeid", val.as_str()));
         }
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.id {
             start.push_attribute(("r:id", val.as_str()));
         }
@@ -5337,24 +5609,28 @@ impl ToXml for CTBackground {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.color {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:color", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.theme_color {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:themeColor", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.theme_tint {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:themeTint", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.theme_shade {
             {
                 let hex = encode_hex(val);
@@ -5382,6 +5658,7 @@ impl ToXml for CTBackground {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.drawing {
             val.write_element("w:drawing", writer)?;
         }
@@ -5397,6 +5674,7 @@ impl ToXml for CTBackground {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-drawings")]
         if self.drawing.is_some() {
             return false;
         }
@@ -5432,12 +5710,14 @@ impl ToXml for CTObject {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.dxa_orig {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:dxaOrig", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.dya_orig {
             {
                 let s = val.to_string();
@@ -5465,6 +5745,7 @@ impl ToXml for CTObject {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.drawing {
             val.write_element("w:drawing", writer)?;
         }
@@ -5481,6 +5762,7 @@ impl ToXml for CTObject {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.control {
             val.write_element("w:control", writer)?;
         }
@@ -5497,6 +5779,7 @@ impl ToXml for CTObject {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.object_link {
             val.write_element("w:objectLink", writer)?;
         }
@@ -5513,6 +5796,7 @@ impl ToXml for CTObject {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.object_embed {
             val.write_element("w:objectEmbed", writer)?;
         }
@@ -5529,6 +5813,7 @@ impl ToXml for CTObject {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.movie {
             val.write_element("w:movie", writer)?;
         }
@@ -5544,18 +5829,23 @@ impl ToXml for CTObject {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-drawings")]
         if self.drawing.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-drawings")]
         if self.control.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-drawings")]
         if self.object_link.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-drawings")]
         if self.object_embed.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-drawings")]
         if self.movie.is_some() {
             return false;
         }
@@ -5582,6 +5872,7 @@ impl ToXml for CTPicture {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.movie {
             val.write_element("w:movie", writer)?;
         }
@@ -5598,6 +5889,7 @@ impl ToXml for CTPicture {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.control {
             val.write_element("w:control", writer)?;
         }
@@ -5613,9 +5905,11 @@ impl ToXml for CTPicture {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-drawings")]
         if self.movie.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-drawings")]
         if self.control.is_some() {
             return false;
         }
@@ -5631,22 +5925,27 @@ impl ToXml for CTObjectEmbed {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.draw_aspect {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:drawAspect", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-drawings")]
         {
             let val = &self.id;
             start.push_attribute(("r:id", val.as_str()));
         }
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.prog_id {
             start.push_attribute(("w:progId", val.as_str()));
         }
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.shape_id {
             start.push_attribute(("w:shapeId", val.as_str()));
         }
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.field_codes {
             start.push_attribute(("w:fieldCodes", val.as_str()));
         }
@@ -5666,25 +5965,31 @@ impl ToXml for CTObjectLink {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.draw_aspect {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:drawAspect", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-drawings")]
         {
             let val = &self.id;
             start.push_attribute(("r:id", val.as_str()));
         }
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.prog_id {
             start.push_attribute(("w:progId", val.as_str()));
         }
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.shape_id {
             start.push_attribute(("w:shapeId", val.as_str()));
         }
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.field_codes {
             start.push_attribute(("w:fieldCodes", val.as_str()));
         }
+        #[cfg(feature = "wml-drawings")]
         {
             let val = &self.update_mode;
             {
@@ -5692,6 +5997,7 @@ impl ToXml for CTObjectLink {
                 start.push_attribute(("w:updateMode", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.locked_field {
             {
                 let s = val.to_string();
@@ -5736,12 +6042,14 @@ impl ToXml for CTSimpleField {
             let val = &self.instr;
             start.push_attribute(("w:instr", val.as_str()));
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.fld_lock {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:fldLock", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.dirty {
             {
                 let s = val.to_string();
@@ -5769,6 +6077,7 @@ impl ToXml for CTSimpleField {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.fld_data {
             val.write_element("w:fldData", writer)?;
         }
@@ -5800,6 +6109,7 @@ impl ToXml for CTSimpleField {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-fields")]
         if self.fld_data.is_some() {
             return false;
         }
@@ -5867,12 +6177,14 @@ impl ToXml for CTFldChar {
                 start.push_attribute(("w:fldCharType", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.fld_lock {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:fldLock", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.dirty {
             {
                 let s = val.to_string();
@@ -5900,6 +6212,7 @@ impl ToXml for CTFldChar {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.fld_data {
             val.write_element("w:fldData", writer)?;
         }
@@ -5916,6 +6229,7 @@ impl ToXml for CTFldChar {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.ff_data {
             val.write_element("w:ffData", writer)?;
         }
@@ -5932,6 +6246,7 @@ impl ToXml for CTFldChar {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.numbering_change {
             val.write_element("w:numberingChange", writer)?;
         }
@@ -5947,12 +6262,15 @@ impl ToXml for CTFldChar {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-fields")]
         if self.fld_data.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-fields")]
         if self.ff_data.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-track-changes")]
         if self.numbering_change.is_some() {
             return false;
         }
@@ -5968,24 +6286,30 @@ impl ToXml for Hyperlink {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-hyperlinks")]
         if let Some(ref val) = self.tgt_frame {
             start.push_attribute(("w:tgtFrame", val.as_str()));
         }
+        #[cfg(feature = "wml-hyperlinks")]
         if let Some(ref val) = self.tooltip {
             start.push_attribute(("w:tooltip", val.as_str()));
         }
+        #[cfg(feature = "wml-hyperlinks")]
         if let Some(ref val) = self.doc_location {
             start.push_attribute(("w:docLocation", val.as_str()));
         }
+        #[cfg(feature = "wml-hyperlinks")]
         if let Some(ref val) = self.history {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:history", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-hyperlinks")]
         if let Some(ref val) = self.anchor {
             start.push_attribute(("w:anchor", val.as_str()));
         }
+        #[cfg(feature = "wml-hyperlinks")]
         if let Some(ref val) = self.id {
             start.push_attribute(("r:id", val.as_str()));
         }
@@ -6042,6 +6366,7 @@ impl ToXml for CTFFData {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
+        #[cfg(feature = "wml-fields")]
         for item in &self.name {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -6067,6 +6392,7 @@ impl ToXml for CTFFData {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.label {
             val.write_element("w:label", writer)?;
         }
@@ -6083,6 +6409,7 @@ impl ToXml for CTFFData {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.tab_index {
             val.write_element("w:tabIndex", writer)?;
         }
@@ -6090,6 +6417,7 @@ impl ToXml for CTFFData {
         {
             emit_idx += 1;
         }
+        #[cfg(feature = "wml-fields")]
         for item in &self.enabled {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -6106,6 +6434,7 @@ impl ToXml for CTFFData {
                 emit_idx += 1;
             }
         }
+        #[cfg(feature = "wml-fields")]
         for item in &self.calc_on_exit {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -6131,6 +6460,7 @@ impl ToXml for CTFFData {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.entry_macro {
             val.write_element("w:entryMacro", writer)?;
         }
@@ -6147,6 +6477,7 @@ impl ToXml for CTFFData {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.exit_macro {
             val.write_element("w:exitMacro", writer)?;
         }
@@ -6163,6 +6494,7 @@ impl ToXml for CTFFData {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.help_text {
             val.write_element("w:helpText", writer)?;
         }
@@ -6179,6 +6511,7 @@ impl ToXml for CTFFData {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.status_text {
             val.write_element("w:statusText", writer)?;
         }
@@ -6194,30 +6527,39 @@ impl ToXml for CTFFData {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-fields")]
         if !self.name.is_empty() {
             return false;
         }
+        #[cfg(feature = "wml-fields")]
         if self.label.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-fields")]
         if self.tab_index.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-fields")]
         if !self.enabled.is_empty() {
             return false;
         }
+        #[cfg(feature = "wml-fields")]
         if !self.calc_on_exit.is_empty() {
             return false;
         }
+        #[cfg(feature = "wml-fields")]
         if self.entry_macro.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-fields")]
         if self.exit_macro.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-fields")]
         if self.help_text.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-fields")]
         if self.status_text.is_some() {
             return false;
         }
@@ -6294,6 +6636,7 @@ impl ToXml for CTFFCheckBox {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.size {
             val.write_element("w:size", writer)?;
         }
@@ -6310,6 +6653,7 @@ impl ToXml for CTFFCheckBox {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.size_auto {
             val.write_element("w:sizeAuto", writer)?;
         }
@@ -6326,6 +6670,7 @@ impl ToXml for CTFFCheckBox {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.default {
             val.write_element("w:default", writer)?;
         }
@@ -6342,6 +6687,7 @@ impl ToXml for CTFFCheckBox {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.checked {
             val.write_element("w:checked", writer)?;
         }
@@ -6357,15 +6703,19 @@ impl ToXml for CTFFCheckBox {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-fields")]
         if self.size.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-fields")]
         if self.size_auto.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-fields")]
         if self.default.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-fields")]
         if self.checked.is_some() {
             return false;
         }
@@ -6392,6 +6742,7 @@ impl ToXml for CTFFDDList {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.result {
             val.write_element("w:result", writer)?;
         }
@@ -6408,6 +6759,7 @@ impl ToXml for CTFFDDList {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.default {
             val.write_element("w:default", writer)?;
         }
@@ -6415,6 +6767,7 @@ impl ToXml for CTFFDDList {
         {
             emit_idx += 1;
         }
+        #[cfg(feature = "wml-fields")]
         for item in &self.list_entry {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -6439,12 +6792,15 @@ impl ToXml for CTFFDDList {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-fields")]
         if self.result.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-fields")]
         if self.default.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-fields")]
         if !self.list_entry.is_empty() {
             return false;
         }
@@ -6471,6 +6827,7 @@ impl ToXml for CTFFTextInput {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.r#type {
             val.write_element("w:type", writer)?;
         }
@@ -6487,6 +6844,7 @@ impl ToXml for CTFFTextInput {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.default {
             val.write_element("w:default", writer)?;
         }
@@ -6503,6 +6861,7 @@ impl ToXml for CTFFTextInput {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.max_length {
             val.write_element("w:maxLength", writer)?;
         }
@@ -6519,6 +6878,7 @@ impl ToXml for CTFFTextInput {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-fields")]
         if let Some(ref val) = self.format {
             val.write_element("w:format", writer)?;
         }
@@ -6534,15 +6894,19 @@ impl ToXml for CTFFTextInput {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-fields")]
         if self.r#type.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-fields")]
         if self.default.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-fields")]
         if self.max_length.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-fields")]
         if self.format.is_some() {
             return false;
         }
@@ -6580,12 +6944,14 @@ impl ToXml for CTPaperSource {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.first {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:first", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.other {
             {
                 let s = val.to_string();
@@ -6608,24 +6974,28 @@ impl ToXml for PageSize {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.width {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:w", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.height {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:h", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.orient {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:orient", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.code {
             {
                 let s = val.to_string();
@@ -6648,6 +7018,7 @@ impl ToXml for PageMargins {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-layout")]
         {
             let val = &self.top;
             {
@@ -6655,6 +7026,7 @@ impl ToXml for PageMargins {
                 start.push_attribute(("w:top", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         {
             let val = &self.right;
             {
@@ -6662,6 +7034,7 @@ impl ToXml for PageMargins {
                 start.push_attribute(("w:right", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         {
             let val = &self.bottom;
             {
@@ -6669,6 +7042,7 @@ impl ToXml for PageMargins {
                 start.push_attribute(("w:bottom", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         {
             let val = &self.left;
             {
@@ -6676,6 +7050,7 @@ impl ToXml for PageMargins {
                 start.push_attribute(("w:left", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         {
             let val = &self.header;
             {
@@ -6683,6 +7058,7 @@ impl ToXml for PageMargins {
                 start.push_attribute(("w:header", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         {
             let val = &self.footer;
             {
@@ -6690,6 +7066,7 @@ impl ToXml for PageMargins {
                 start.push_attribute(("w:footer", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         {
             let val = &self.gutter;
             {
@@ -6713,18 +7090,21 @@ impl ToXml for CTPageBorders {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.z_order {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:zOrder", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.display {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:display", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.offset_from {
             {
                 let s = val.to_string();
@@ -6752,6 +7132,7 @@ impl ToXml for CTPageBorders {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.top {
             val.write_element("w:top", writer)?;
         }
@@ -6768,6 +7149,7 @@ impl ToXml for CTPageBorders {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.left {
             val.write_element("w:left", writer)?;
         }
@@ -6784,6 +7166,7 @@ impl ToXml for CTPageBorders {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.bottom {
             val.write_element("w:bottom", writer)?;
         }
@@ -6800,6 +7183,7 @@ impl ToXml for CTPageBorders {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.right {
             val.write_element("w:right", writer)?;
         }
@@ -6815,15 +7199,19 @@ impl ToXml for CTPageBorders {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-layout")]
         if self.top.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.left.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.bottom.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.right.is_some() {
             return false;
         }
@@ -6894,6 +7282,7 @@ impl ToXml for CTPageBorder {
                 start.push_attribute(("w:frame", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.id {
             start.push_attribute(("r:id", val.as_str()));
         }
@@ -6971,9 +7360,11 @@ impl ToXml for CTBottomPageBorder {
         if let Some(ref val) = self.id {
             start.push_attribute(("r:id", val.as_str()));
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.bottom_left {
             start.push_attribute(("r:bottomLeft", val.as_str()));
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.bottom_right {
             start.push_attribute(("r:bottomRight", val.as_str()));
         }
@@ -7051,9 +7442,11 @@ impl ToXml for CTTopPageBorder {
         if let Some(ref val) = self.id {
             start.push_attribute(("r:id", val.as_str()));
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.top_left {
             start.push_attribute(("r:topLeft", val.as_str()));
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.top_right {
             start.push_attribute(("r:topRight", val.as_str()));
         }
@@ -7073,24 +7466,28 @@ impl ToXml for CTLineNumber {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.count_by {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:countBy", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.start {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:start", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.distance {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:distance", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.restart {
             {
                 let s = val.to_string();
@@ -7113,24 +7510,28 @@ impl ToXml for CTPageNumber {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.fmt {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:fmt", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.start {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:start", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.chap_style {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:chapStyle", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.chap_sep {
             {
                 let s = val.to_string();
@@ -7153,12 +7554,14 @@ impl ToXml for CTColumn {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.width {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:w", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.space {
             {
                 let s = val.to_string();
@@ -7181,24 +7584,28 @@ impl ToXml for Columns {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.equal_width {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:equalWidth", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.space {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:space", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.num {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:num", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.sep {
             {
                 let s = val.to_string();
@@ -7217,6 +7624,7 @@ impl ToXml for Columns {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
+        #[cfg(feature = "wml-layout")]
         for item in &self.col {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -7241,6 +7649,7 @@ impl ToXml for Columns {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-layout")]
         if !self.col.is_empty() {
             return false;
         }
@@ -7279,18 +7688,21 @@ impl ToXml for DocumentGrid {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.r#type {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:type", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.line_pitch {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:linePitch", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.char_space {
             {
                 let s = val.to_string();
@@ -7818,24 +8230,28 @@ impl ToXml for CTSectPrBase {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.rsid_r_pr {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:rsidRPr", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.rsid_del {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:rsidDel", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.rsid_r {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:rsidR", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.rsid_sect {
             {
                 let hex = encode_hex(val);
@@ -8235,24 +8651,28 @@ impl ToXml for SectionProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.rsid_r_pr {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:rsidRPr", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.rsid_del {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:rsidDel", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.rsid_r {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:rsidR", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.rsid_sect {
             {
                 let hex = encode_hex(val);
@@ -8772,6 +9192,7 @@ impl ToXml for CTPTab {
                 start.push_attribute(("w:relativeTo", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         {
             let val = &self.leader;
             {
@@ -8795,6 +9216,7 @@ impl ToXml for CTSym {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.font {
             start.push_attribute(("w:font", val.as_str()));
         }
@@ -8847,6 +9269,7 @@ impl ToXml for CTPerm {
             let val = &self.id;
             start.push_attribute(("w:id", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.displaced_by_custom_xml {
             {
                 let s = val.to_string();
@@ -8879,21 +9302,25 @@ impl ToXml for CTPermStart {
                 start.push_attribute(("w:displacedByCustomXml", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.ed_grp {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:edGrp", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.ed {
             start.push_attribute(("w:ed", val.as_str()));
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.col_first {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:colFirst", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.col_last {
             {
                 let s = val.to_string();
@@ -8989,18 +9416,21 @@ impl ToXml for Run {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.rsid_r_pr {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:rsidRPr", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.rsid_del {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:rsidDel", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.rsid_r {
             {
                 let hex = encode_hex(val);
@@ -9079,42 +9509,51 @@ impl ToXml for Fonts {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.hint {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:hint", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.ascii {
             start.push_attribute(("w:ascii", val.as_str()));
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.h_ansi {
             start.push_attribute(("w:hAnsi", val.as_str()));
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.east_asia {
             start.push_attribute(("w:eastAsia", val.as_str()));
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.cs {
             start.push_attribute(("w:cs", val.as_str()));
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.ascii_theme {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:asciiTheme", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.h_ansi_theme {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:hAnsiTheme", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.east_asia_theme {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:eastAsiaTheme", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.cstheme {
             {
                 let s = val.to_string();
@@ -11633,6 +12072,7 @@ impl ToXml for CTMathCtrlIns {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.del {
             val.write_element("w:del", writer)?;
         }
@@ -11649,6 +12089,7 @@ impl ToXml for CTMathCtrlIns {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.r_pr {
             val.write_element("w:rPr", writer)?;
         }
@@ -11664,9 +12105,11 @@ impl ToXml for CTMathCtrlIns {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-track-changes")]
         if self.del.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.r_pr.is_some() {
             return false;
         }
@@ -11717,6 +12160,7 @@ impl ToXml for CTMathCtrlDel {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.r_pr {
             val.write_element("w:rPr", writer)?;
         }
@@ -11732,6 +12176,7 @@ impl ToXml for CTMathCtrlDel {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-styling")]
         if self.r_pr.is_some() {
             return false;
         }
@@ -14048,6 +14493,7 @@ impl ToXml for CTParaRPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.r_pr_change {
             val.write_element("w:rPrChange", writer)?;
         }
@@ -14192,6 +14638,7 @@ impl ToXml for CTParaRPr {
         if self.o_math.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-track-changes")]
         if self.r_pr_change.is_some() {
             return false;
         }
@@ -14329,6 +14776,7 @@ impl ToXml for CTAltChunk {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.alt_chunk_pr {
             val.write_element("w:altChunkPr", writer)?;
         }
@@ -14344,6 +14792,7 @@ impl ToXml for CTAltChunk {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.alt_chunk_pr.is_some() {
             return false;
         }
@@ -14370,6 +14819,7 @@ impl ToXml for CTAltChunkPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.match_src {
             val.write_element("w:matchSrc", writer)?;
         }
@@ -14385,6 +14835,7 @@ impl ToXml for CTAltChunkPr {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.match_src.is_some() {
             return false;
         }
@@ -14434,6 +14885,7 @@ impl ToXml for CTRubyPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         {
             let val = &self.ruby_align;
             val.write_element("w:rubyAlign", writer)?;
@@ -14451,6 +14903,7 @@ impl ToXml for CTRubyPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         {
             let val = &self.hps;
             val.write_element("w:hps", writer)?;
@@ -14468,6 +14921,7 @@ impl ToXml for CTRubyPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         {
             let val = &self.hps_raise;
             val.write_element("w:hpsRaise", writer)?;
@@ -14485,6 +14939,7 @@ impl ToXml for CTRubyPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         {
             let val = &self.hps_base_text;
             val.write_element("w:hpsBaseText", writer)?;
@@ -14502,6 +14957,7 @@ impl ToXml for CTRubyPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         {
             let val = &self.lid;
             val.write_element("w:lid", writer)?;
@@ -14519,6 +14975,7 @@ impl ToXml for CTRubyPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.dirty {
             val.write_element("w:dirty", writer)?;
         }
@@ -14534,7 +14991,25 @@ impl ToXml for CTRubyPr {
     }
 
     fn is_empty_element(&self) -> bool {
-        false
+        #[cfg(feature = "wml-styling")]
+        return false;
+        #[cfg(feature = "wml-styling")]
+        return false;
+        #[cfg(feature = "wml-styling")]
+        return false;
+        #[cfg(feature = "wml-styling")]
+        return false;
+        #[cfg(feature = "wml-styling")]
+        return false;
+        #[cfg(feature = "wml-styling")]
+        if self.dirty.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -14648,6 +15123,7 @@ impl ToXml for CTRuby {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         {
             let val = &self.ruby_pr;
             val.write_element("w:rubyPr", writer)?;
@@ -14698,6 +15174,8 @@ impl ToXml for CTRuby {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-styling")]
+        return false;
         false
     }
 }
@@ -14794,6 +15272,7 @@ impl ToXml for CTSdtDate {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.full_date {
             start.push_attribute(("w:fullDate", val.as_str()));
         }
@@ -14818,6 +15297,7 @@ impl ToXml for CTSdtDate {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.date_format {
             val.write_element("w:dateFormat", writer)?;
         }
@@ -14834,6 +15314,7 @@ impl ToXml for CTSdtDate {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.lid {
             val.write_element("w:lid", writer)?;
         }
@@ -14850,6 +15331,7 @@ impl ToXml for CTSdtDate {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.store_mapped_data_as {
             val.write_element("w:storeMappedDataAs", writer)?;
         }
@@ -14866,6 +15348,7 @@ impl ToXml for CTSdtDate {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.calendar {
             val.write_element("w:calendar", writer)?;
         }
@@ -14881,15 +15364,19 @@ impl ToXml for CTSdtDate {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.date_format.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.lid.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.store_mapped_data_as.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.calendar.is_some() {
             return false;
         }
@@ -14905,6 +15392,7 @@ impl ToXml for CTSdtComboBox {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.last_value {
             start.push_attribute(("w:lastValue", val.as_str()));
         }
@@ -14920,6 +15408,7 @@ impl ToXml for CTSdtComboBox {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
+        #[cfg(feature = "wml-settings")]
         for item in &self.list_item {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -14944,6 +15433,7 @@ impl ToXml for CTSdtComboBox {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if !self.list_item.is_empty() {
             return false;
         }
@@ -14970,6 +15460,7 @@ impl ToXml for CTSdtDocPart {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.doc_part_gallery {
             val.write_element("w:docPartGallery", writer)?;
         }
@@ -14986,6 +15477,7 @@ impl ToXml for CTSdtDocPart {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.doc_part_category {
             val.write_element("w:docPartCategory", writer)?;
         }
@@ -15002,6 +15494,7 @@ impl ToXml for CTSdtDocPart {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.doc_part_unique {
             val.write_element("w:docPartUnique", writer)?;
         }
@@ -15017,12 +15510,15 @@ impl ToXml for CTSdtDocPart {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.doc_part_gallery.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.doc_part_category.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.doc_part_unique.is_some() {
             return false;
         }
@@ -15038,6 +15534,7 @@ impl ToXml for CTSdtDropDownList {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.last_value {
             start.push_attribute(("w:lastValue", val.as_str()));
         }
@@ -15053,6 +15550,7 @@ impl ToXml for CTSdtDropDownList {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
+        #[cfg(feature = "wml-settings")]
         for item in &self.list_item {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -15077,6 +15575,7 @@ impl ToXml for CTSdtDropDownList {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if !self.list_item.is_empty() {
             return false;
         }
@@ -15092,6 +15591,7 @@ impl ToXml for CTSdtText {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.multi_line {
             {
                 let s = val.to_string();
@@ -15114,13 +15614,16 @@ impl ToXml for CTDataBinding {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.prefix_mappings {
             start.push_attribute(("w:prefixMappings", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.xpath;
             start.push_attribute(("w:xpath", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.store_item_i_d;
             start.push_attribute(("w:storeItemID", val.as_str()));
@@ -15152,6 +15655,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.r_pr {
             val.write_element("w:rPr", writer)?;
         }
@@ -15168,6 +15672,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.alias {
             val.write_element("w:alias", writer)?;
         }
@@ -15184,6 +15689,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.tag {
             val.write_element("w:tag", writer)?;
         }
@@ -15200,6 +15706,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.id {
             val.write_element("w:id", writer)?;
         }
@@ -15216,6 +15723,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.lock {
             val.write_element("w:lock", writer)?;
         }
@@ -15232,6 +15740,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.placeholder {
             val.write_element("w:placeholder", writer)?;
         }
@@ -15248,6 +15757,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.temporary {
             val.write_element("w:temporary", writer)?;
         }
@@ -15264,6 +15774,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.showing_plc_hdr {
             val.write_element("w:showingPlcHdr", writer)?;
         }
@@ -15280,6 +15791,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.data_binding {
             val.write_element("w:dataBinding", writer)?;
         }
@@ -15296,6 +15808,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.label {
             val.write_element("w:label", writer)?;
         }
@@ -15312,6 +15825,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.tab_index {
             val.write_element("w:tabIndex", writer)?;
         }
@@ -15328,6 +15842,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.equation {
             val.write_element("w:equation", writer)?;
         }
@@ -15344,6 +15859,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.combo_box {
             val.write_element("w:comboBox", writer)?;
         }
@@ -15360,6 +15876,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.date {
             val.write_element("w:date", writer)?;
         }
@@ -15376,6 +15893,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.doc_part_obj {
             val.write_element("w:docPartObj", writer)?;
         }
@@ -15392,6 +15910,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.doc_part_list {
             val.write_element("w:docPartList", writer)?;
         }
@@ -15408,6 +15927,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.drop_down_list {
             val.write_element("w:dropDownList", writer)?;
         }
@@ -15424,6 +15944,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.picture {
             val.write_element("w:picture", writer)?;
         }
@@ -15440,6 +15961,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.rich_text {
             val.write_element("w:richText", writer)?;
         }
@@ -15456,6 +15978,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.text {
             val.write_element("w:text", writer)?;
         }
@@ -15472,6 +15995,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.citation {
             val.write_element("w:citation", writer)?;
         }
@@ -15488,6 +16012,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.group {
             val.write_element("w:group", writer)?;
         }
@@ -15504,6 +16029,7 @@ impl ToXml for CTSdtPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.bibliography {
             val.write_element("w:bibliography", writer)?;
         }
@@ -15519,72 +16045,95 @@ impl ToXml for CTSdtPr {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.r_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.alias.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.tag.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.id.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.lock.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.placeholder.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.temporary.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.showing_plc_hdr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.data_binding.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.label.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.tab_index.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.equation.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.combo_box.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.date.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.doc_part_obj.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.doc_part_list.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.drop_down_list.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.picture.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.rich_text.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.text.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.citation.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.group.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.bibliography.is_some() {
             return false;
         }
@@ -15611,6 +16160,7 @@ impl ToXml for CTSdtEndPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.r_pr {
             val.write_element("w:rPr", writer)?;
         }
@@ -15626,6 +16176,7 @@ impl ToXml for CTSdtEndPr {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-styling")]
         if self.r_pr.is_some() {
             return false;
         }
@@ -16158,6 +16709,7 @@ impl ToXml for CTSdtBlock {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.sdt_pr {
             val.write_element("w:sdtPr", writer)?;
         }
@@ -16174,6 +16726,7 @@ impl ToXml for CTSdtBlock {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.sdt_end_pr {
             val.write_element("w:sdtEndPr", writer)?;
         }
@@ -16205,9 +16758,11 @@ impl ToXml for CTSdtBlock {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.sdt_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.sdt_end_pr.is_some() {
             return false;
         }
@@ -16237,6 +16792,7 @@ impl ToXml for CTSdtRun {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.sdt_pr {
             val.write_element("w:sdtPr", writer)?;
         }
@@ -16253,6 +16809,7 @@ impl ToXml for CTSdtRun {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.sdt_end_pr {
             val.write_element("w:sdtEndPr", writer)?;
         }
@@ -16284,9 +16841,11 @@ impl ToXml for CTSdtRun {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.sdt_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.sdt_end_pr.is_some() {
             return false;
         }
@@ -16316,6 +16875,7 @@ impl ToXml for CTSdtCell {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.sdt_pr {
             val.write_element("w:sdtPr", writer)?;
         }
@@ -16332,6 +16892,7 @@ impl ToXml for CTSdtCell {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.sdt_end_pr {
             val.write_element("w:sdtEndPr", writer)?;
         }
@@ -16363,9 +16924,11 @@ impl ToXml for CTSdtCell {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.sdt_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.sdt_end_pr.is_some() {
             return false;
         }
@@ -16395,6 +16958,7 @@ impl ToXml for CTSdtRow {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.sdt_pr {
             val.write_element("w:sdtPr", writer)?;
         }
@@ -16411,6 +16975,7 @@ impl ToXml for CTSdtRow {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.sdt_end_pr {
             val.write_element("w:sdtEndPr", writer)?;
         }
@@ -16442,9 +17007,11 @@ impl ToXml for CTSdtRow {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.sdt_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.sdt_end_pr.is_some() {
             return false;
         }
@@ -16490,9 +17057,11 @@ impl ToXml for CTCustomXmlRun {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.uri {
             start.push_attribute(("w:uri", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.element;
             start.push_attribute(("w:element", val.as_str()));
@@ -16518,6 +17087,7 @@ impl ToXml for CTCustomXmlRun {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.custom_xml_pr {
             val.write_element("w:customXmlPr", writer)?;
         }
@@ -16549,6 +17119,7 @@ impl ToXml for CTCustomXmlRun {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.custom_xml_pr.is_some() {
             return false;
         }
@@ -16567,9 +17138,11 @@ impl ToXml for CTSmartTagRun {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.uri {
             start.push_attribute(("w:uri", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.element;
             start.push_attribute(("w:element", val.as_str()));
@@ -16595,6 +17168,7 @@ impl ToXml for CTSmartTagRun {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.smart_tag_pr {
             val.write_element("w:smartTagPr", writer)?;
         }
@@ -16626,6 +17200,7 @@ impl ToXml for CTSmartTagRun {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.smart_tag_pr.is_some() {
             return false;
         }
@@ -16644,9 +17219,11 @@ impl ToXml for CTCustomXmlBlock {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.uri {
             start.push_attribute(("w:uri", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.element;
             start.push_attribute(("w:element", val.as_str()));
@@ -16672,6 +17249,7 @@ impl ToXml for CTCustomXmlBlock {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.custom_xml_pr {
             val.write_element("w:customXmlPr", writer)?;
         }
@@ -16703,6 +17281,7 @@ impl ToXml for CTCustomXmlBlock {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.custom_xml_pr.is_some() {
             return false;
         }
@@ -16732,6 +17311,7 @@ impl ToXml for CTCustomXmlPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.placeholder {
             val.write_element("w:placeholder", writer)?;
         }
@@ -16739,6 +17319,7 @@ impl ToXml for CTCustomXmlPr {
         {
             emit_idx += 1;
         }
+        #[cfg(feature = "wml-settings")]
         for item in &self.attr {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -16763,9 +17344,11 @@ impl ToXml for CTCustomXmlPr {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.placeholder.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if !self.attr.is_empty() {
             return false;
         }
@@ -16781,9 +17364,11 @@ impl ToXml for CTCustomXmlRow {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.uri {
             start.push_attribute(("w:uri", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.element;
             start.push_attribute(("w:element", val.as_str()));
@@ -16809,6 +17394,7 @@ impl ToXml for CTCustomXmlRow {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.custom_xml_pr {
             val.write_element("w:customXmlPr", writer)?;
         }
@@ -16840,6 +17426,7 @@ impl ToXml for CTCustomXmlRow {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.custom_xml_pr.is_some() {
             return false;
         }
@@ -16858,9 +17445,11 @@ impl ToXml for CTCustomXmlCell {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.uri {
             start.push_attribute(("w:uri", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.element;
             start.push_attribute(("w:element", val.as_str()));
@@ -16886,6 +17475,7 @@ impl ToXml for CTCustomXmlCell {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.custom_xml_pr {
             val.write_element("w:customXmlPr", writer)?;
         }
@@ -16917,6 +17507,7 @@ impl ToXml for CTCustomXmlCell {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.custom_xml_pr.is_some() {
             return false;
         }
@@ -16937,6 +17528,7 @@ impl ToXml for CTSmartTagPr {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
+        #[cfg(feature = "wml-settings")]
         for item in &self.attr {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -16961,6 +17553,7 @@ impl ToXml for CTSmartTagPr {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if !self.attr.is_empty() {
             return false;
         }
@@ -17038,30 +17631,35 @@ impl ToXml for Paragraph {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.rsid_r_pr {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:rsidRPr", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.rsid_r {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:rsidR", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.rsid_del {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:rsidDel", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.rsid_p {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:rsidP", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.rsid_r_default {
             {
                 let hex = encode_hex(val);
@@ -17146,6 +17744,7 @@ impl ToXml for CTHeight {
                 start.push_attribute(("w:val", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.h_rule {
             {
                 let s = val.to_string();
@@ -17286,6 +17885,7 @@ impl ToXml for TableGrid {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.tbl_grid_change {
             val.write_element("w:tblGridChange", writer)?;
         }
@@ -17304,6 +17904,7 @@ impl ToXml for TableGrid {
         if !self.grid_col.is_empty() {
             return false;
         }
+        #[cfg(feature = "wml-track-changes")]
         if self.tbl_grid_change.is_some() {
             return false;
         }
@@ -17330,6 +17931,7 @@ impl ToXml for CTTcBorders {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.top {
             val.write_element("w:top", writer)?;
         }
@@ -17346,6 +17948,7 @@ impl ToXml for CTTcBorders {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.start {
             val.write_element("w:start", writer)?;
         }
@@ -17362,6 +17965,7 @@ impl ToXml for CTTcBorders {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.left {
             val.write_element("w:left", writer)?;
         }
@@ -17378,6 +17982,7 @@ impl ToXml for CTTcBorders {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.bottom {
             val.write_element("w:bottom", writer)?;
         }
@@ -17394,6 +17999,7 @@ impl ToXml for CTTcBorders {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.end {
             val.write_element("w:end", writer)?;
         }
@@ -17410,6 +18016,7 @@ impl ToXml for CTTcBorders {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.right {
             val.write_element("w:right", writer)?;
         }
@@ -17426,6 +18033,7 @@ impl ToXml for CTTcBorders {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.inside_h {
             val.write_element("w:insideH", writer)?;
         }
@@ -17442,6 +18050,7 @@ impl ToXml for CTTcBorders {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.inside_v {
             val.write_element("w:insideV", writer)?;
         }
@@ -17458,6 +18067,7 @@ impl ToXml for CTTcBorders {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tl2br {
             val.write_element("w:tl2br", writer)?;
         }
@@ -17474,6 +18084,7 @@ impl ToXml for CTTcBorders {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tr2bl {
             val.write_element("w:tr2bl", writer)?;
         }
@@ -17489,33 +18100,43 @@ impl ToXml for CTTcBorders {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-tables")]
         if self.top.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.start.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.left.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.bottom.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.end.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.right.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.inside_h.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.inside_v.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tl2br.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tr2bl.is_some() {
             return false;
         }
@@ -17542,6 +18163,7 @@ impl ToXml for CTTcMar {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.top {
             val.write_element("w:top", writer)?;
         }
@@ -17558,6 +18180,7 @@ impl ToXml for CTTcMar {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.start {
             val.write_element("w:start", writer)?;
         }
@@ -17574,6 +18197,7 @@ impl ToXml for CTTcMar {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.left {
             val.write_element("w:left", writer)?;
         }
@@ -17590,6 +18214,7 @@ impl ToXml for CTTcMar {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.bottom {
             val.write_element("w:bottom", writer)?;
         }
@@ -17606,6 +18231,7 @@ impl ToXml for CTTcMar {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.end {
             val.write_element("w:end", writer)?;
         }
@@ -17622,6 +18248,7 @@ impl ToXml for CTTcMar {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.right {
             val.write_element("w:right", writer)?;
         }
@@ -17637,21 +18264,27 @@ impl ToXml for CTTcMar {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-tables")]
         if self.top.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.start.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.left.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.bottom.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.end.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.right.is_some() {
             return false;
         }
@@ -17722,6 +18355,7 @@ impl ToXml for CTTcPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.cnf_style {
             val.write_element("w:cnfStyle", writer)?;
         }
@@ -17738,6 +18372,7 @@ impl ToXml for CTTcPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tc_w {
             val.write_element("w:tcW", writer)?;
         }
@@ -17754,6 +18389,7 @@ impl ToXml for CTTcPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.grid_span {
             val.write_element("w:gridSpan", writer)?;
         }
@@ -17770,6 +18406,7 @@ impl ToXml for CTTcPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.horizontal_merge {
             val.write_element("w:hMerge", writer)?;
         }
@@ -17786,6 +18423,7 @@ impl ToXml for CTTcPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.vertical_merge {
             val.write_element("w:vMerge", writer)?;
         }
@@ -17802,6 +18440,7 @@ impl ToXml for CTTcPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tc_borders {
             val.write_element("w:tcBorders", writer)?;
         }
@@ -17818,6 +18457,7 @@ impl ToXml for CTTcPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.shading {
             val.write_element("w:shd", writer)?;
         }
@@ -17834,6 +18474,7 @@ impl ToXml for CTTcPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.no_wrap {
             val.write_element("w:noWrap", writer)?;
         }
@@ -17850,6 +18491,7 @@ impl ToXml for CTTcPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tc_mar {
             val.write_element("w:tcMar", writer)?;
         }
@@ -17866,6 +18508,7 @@ impl ToXml for CTTcPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.text_direction {
             val.write_element("w:textDirection", writer)?;
         }
@@ -17882,6 +18525,7 @@ impl ToXml for CTTcPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tc_fit_text {
             val.write_element("w:tcFitText", writer)?;
         }
@@ -17898,6 +18542,7 @@ impl ToXml for CTTcPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.v_align {
             val.write_element("w:vAlign", writer)?;
         }
@@ -17914,6 +18559,7 @@ impl ToXml for CTTcPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.hide_mark {
             val.write_element("w:hideMark", writer)?;
         }
@@ -17930,6 +18576,7 @@ impl ToXml for CTTcPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.headers {
             val.write_element("w:headers", writer)?;
         }
@@ -17945,45 +18592,59 @@ impl ToXml for CTTcPrBase {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-styling")]
         if self.cnf_style.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tc_w.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.grid_span.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.horizontal_merge.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.vertical_merge.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tc_borders.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.shading.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.no_wrap.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tc_mar.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.text_direction.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tc_fit_text.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.v_align.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.hide_mark.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.headers.is_some() {
             return false;
         }
@@ -18264,6 +18925,7 @@ impl ToXml for TableCellProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.tc_pr_change {
             val.write_element("w:tcPrChange", writer)?;
         }
@@ -18338,6 +19000,7 @@ impl ToXml for TableCellProperties {
         if self.cell_markup.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-track-changes")]
         if self.tc_pr_change.is_some() {
             return false;
         }
@@ -18660,6 +19323,7 @@ impl ToXml for TableCell {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.id {
             start.push_attribute(("w:id", val.as_str()));
         }
@@ -18735,75 +19399,88 @@ impl ToXml for CTCnf {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.value {
             start.push_attribute(("w:val", val.as_str()));
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.first_row {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:firstRow", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.last_row {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:lastRow", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.first_column {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:firstColumn", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.last_column {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:lastColumn", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.odd_v_band {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:oddVBand", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.even_v_band {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:evenVBand", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.odd_h_band {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:oddHBand", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.even_h_band {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:evenHBand", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.first_row_first_column {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:firstRowFirstColumn", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.first_row_last_column {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:firstRowLastColumn", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.last_row_first_column {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:lastRowFirstColumn", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.last_row_last_column {
             {
                 let s = val.to_string();
@@ -18878,6 +19555,7 @@ impl ToXml for CTTrPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.cnf_style {
             val.write_element("w:cnfStyle", writer)?;
         }
@@ -18894,6 +19572,7 @@ impl ToXml for CTTrPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.div_id {
             val.write_element("w:divId", writer)?;
         }
@@ -18910,6 +19589,7 @@ impl ToXml for CTTrPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.grid_before {
             val.write_element("w:gridBefore", writer)?;
         }
@@ -18926,6 +19606,7 @@ impl ToXml for CTTrPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.grid_after {
             val.write_element("w:gridAfter", writer)?;
         }
@@ -18942,6 +19623,7 @@ impl ToXml for CTTrPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.w_before {
             val.write_element("w:wBefore", writer)?;
         }
@@ -18958,6 +19640,7 @@ impl ToXml for CTTrPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.w_after {
             val.write_element("w:wAfter", writer)?;
         }
@@ -18974,6 +19657,7 @@ impl ToXml for CTTrPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.cant_split {
             val.write_element("w:cantSplit", writer)?;
         }
@@ -18990,6 +19674,7 @@ impl ToXml for CTTrPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tr_height {
             val.write_element("w:trHeight", writer)?;
         }
@@ -19006,6 +19691,7 @@ impl ToXml for CTTrPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_header {
             val.write_element("w:tblHeader", writer)?;
         }
@@ -19022,6 +19708,7 @@ impl ToXml for CTTrPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_cell_spacing {
             val.write_element("w:tblCellSpacing", writer)?;
         }
@@ -19038,6 +19725,7 @@ impl ToXml for CTTrPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.justification {
             val.write_element("w:jc", writer)?;
         }
@@ -19054,6 +19742,7 @@ impl ToXml for CTTrPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.hidden {
             val.write_element("w:hidden", writer)?;
         }
@@ -19069,39 +19758,51 @@ impl ToXml for CTTrPrBase {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-styling")]
         if self.cnf_style.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.div_id.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.grid_before.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.grid_after.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.w_before.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.w_after.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.cant_split.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tr_height.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_header.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_cell_spacing.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.justification.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.hidden.is_some() {
             return false;
         }
@@ -19128,6 +19829,7 @@ impl ToXml for TableRowProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.cnf_style {
             val.write_element("w:cnfStyle", writer)?;
         }
@@ -19144,6 +19846,7 @@ impl ToXml for TableRowProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.div_id {
             val.write_element("w:divId", writer)?;
         }
@@ -19160,6 +19863,7 @@ impl ToXml for TableRowProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.grid_before {
             val.write_element("w:gridBefore", writer)?;
         }
@@ -19176,6 +19880,7 @@ impl ToXml for TableRowProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.grid_after {
             val.write_element("w:gridAfter", writer)?;
         }
@@ -19192,6 +19897,7 @@ impl ToXml for TableRowProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.w_before {
             val.write_element("w:wBefore", writer)?;
         }
@@ -19208,6 +19914,7 @@ impl ToXml for TableRowProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.w_after {
             val.write_element("w:wAfter", writer)?;
         }
@@ -19224,6 +19931,7 @@ impl ToXml for TableRowProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.cant_split {
             val.write_element("w:cantSplit", writer)?;
         }
@@ -19240,6 +19948,7 @@ impl ToXml for TableRowProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tr_height {
             val.write_element("w:trHeight", writer)?;
         }
@@ -19256,6 +19965,7 @@ impl ToXml for TableRowProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_header {
             val.write_element("w:tblHeader", writer)?;
         }
@@ -19272,6 +19982,7 @@ impl ToXml for TableRowProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_cell_spacing {
             val.write_element("w:tblCellSpacing", writer)?;
         }
@@ -19288,6 +19999,7 @@ impl ToXml for TableRowProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.justification {
             val.write_element("w:jc", writer)?;
         }
@@ -19304,6 +20016,7 @@ impl ToXml for TableRowProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.hidden {
             val.write_element("w:hidden", writer)?;
         }
@@ -19370,39 +20083,51 @@ impl ToXml for TableRowProperties {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-styling")]
         if self.cnf_style.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.div_id.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.grid_before.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.grid_after.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.w_before.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.w_after.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.cant_split.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tr_height.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_header.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_cell_spacing.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.justification.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.hidden.is_some() {
             return false;
         }
@@ -19430,24 +20155,28 @@ impl ToXml for CTRow {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.rsid_r_pr {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:rsidRPr", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.rsid_r {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:rsidR", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.rsid_del {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:rsidDel", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.rsid_tr {
             {
                 let hex = encode_hex(val);
@@ -19592,60 +20321,70 @@ impl ToXml for CTTblPPr {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.left_from_text {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:leftFromText", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.right_from_text {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:rightFromText", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.top_from_text {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:topFromText", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.bottom_from_text {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:bottomFromText", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.vert_anchor {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:vertAnchor", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.horz_anchor {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:horzAnchor", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tblp_x_spec {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:tblpXSpec", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tblp_x {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:tblpX", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tblp_y_spec {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:tblpYSpec", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tblp_y {
             {
                 let s = val.to_string();
@@ -19679,6 +20418,7 @@ impl ToXml for CTTblCellMar {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.top {
             val.write_element("w:top", writer)?;
         }
@@ -19695,6 +20435,7 @@ impl ToXml for CTTblCellMar {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.start {
             val.write_element("w:start", writer)?;
         }
@@ -19711,6 +20452,7 @@ impl ToXml for CTTblCellMar {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.left {
             val.write_element("w:left", writer)?;
         }
@@ -19727,6 +20469,7 @@ impl ToXml for CTTblCellMar {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.bottom {
             val.write_element("w:bottom", writer)?;
         }
@@ -19743,6 +20486,7 @@ impl ToXml for CTTblCellMar {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.end {
             val.write_element("w:end", writer)?;
         }
@@ -19759,6 +20503,7 @@ impl ToXml for CTTblCellMar {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.right {
             val.write_element("w:right", writer)?;
         }
@@ -19774,21 +20519,27 @@ impl ToXml for CTTblCellMar {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-tables")]
         if self.top.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.start.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.left.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.bottom.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.end.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.right.is_some() {
             return false;
         }
@@ -19815,6 +20566,7 @@ impl ToXml for CTTblBorders {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.top {
             val.write_element("w:top", writer)?;
         }
@@ -19831,6 +20583,7 @@ impl ToXml for CTTblBorders {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.start {
             val.write_element("w:start", writer)?;
         }
@@ -19847,6 +20600,7 @@ impl ToXml for CTTblBorders {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.left {
             val.write_element("w:left", writer)?;
         }
@@ -19863,6 +20617,7 @@ impl ToXml for CTTblBorders {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.bottom {
             val.write_element("w:bottom", writer)?;
         }
@@ -19879,6 +20634,7 @@ impl ToXml for CTTblBorders {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.end {
             val.write_element("w:end", writer)?;
         }
@@ -19895,6 +20651,7 @@ impl ToXml for CTTblBorders {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.right {
             val.write_element("w:right", writer)?;
         }
@@ -19911,6 +20668,7 @@ impl ToXml for CTTblBorders {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.inside_h {
             val.write_element("w:insideH", writer)?;
         }
@@ -19927,6 +20685,7 @@ impl ToXml for CTTblBorders {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.inside_v {
             val.write_element("w:insideV", writer)?;
         }
@@ -19942,27 +20701,35 @@ impl ToXml for CTTblBorders {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-tables")]
         if self.top.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.start.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.left.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.bottom.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.end.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.right.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.inside_h.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.inside_v.is_some() {
             return false;
         }
@@ -19989,6 +20756,7 @@ impl ToXml for CTTblPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.tbl_style {
             val.write_element("w:tblStyle", writer)?;
         }
@@ -20005,6 +20773,7 @@ impl ToXml for CTTblPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tblp_pr {
             val.write_element("w:tblpPr", writer)?;
         }
@@ -20021,6 +20790,7 @@ impl ToXml for CTTblPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_overlap {
             val.write_element("w:tblOverlap", writer)?;
         }
@@ -20037,6 +20807,7 @@ impl ToXml for CTTblPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.bidi_visual {
             val.write_element("w:bidiVisual", writer)?;
         }
@@ -20053,6 +20824,7 @@ impl ToXml for CTTblPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.tbl_style_row_band_size {
             val.write_element("w:tblStyleRowBandSize", writer)?;
         }
@@ -20069,6 +20841,7 @@ impl ToXml for CTTblPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.tbl_style_col_band_size {
             val.write_element("w:tblStyleColBandSize", writer)?;
         }
@@ -20085,6 +20858,7 @@ impl ToXml for CTTblPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_w {
             val.write_element("w:tblW", writer)?;
         }
@@ -20101,6 +20875,7 @@ impl ToXml for CTTblPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.justification {
             val.write_element("w:jc", writer)?;
         }
@@ -20117,6 +20892,7 @@ impl ToXml for CTTblPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_cell_spacing {
             val.write_element("w:tblCellSpacing", writer)?;
         }
@@ -20133,6 +20909,7 @@ impl ToXml for CTTblPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_ind {
             val.write_element("w:tblInd", writer)?;
         }
@@ -20149,6 +20926,7 @@ impl ToXml for CTTblPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_borders {
             val.write_element("w:tblBorders", writer)?;
         }
@@ -20165,6 +20943,7 @@ impl ToXml for CTTblPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.shading {
             val.write_element("w:shd", writer)?;
         }
@@ -20181,6 +20960,7 @@ impl ToXml for CTTblPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_layout {
             val.write_element("w:tblLayout", writer)?;
         }
@@ -20197,6 +20977,7 @@ impl ToXml for CTTblPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_cell_mar {
             val.write_element("w:tblCellMar", writer)?;
         }
@@ -20213,6 +20994,7 @@ impl ToXml for CTTblPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_look {
             val.write_element("w:tblLook", writer)?;
         }
@@ -20229,6 +21011,7 @@ impl ToXml for CTTblPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_caption {
             val.write_element("w:tblCaption", writer)?;
         }
@@ -20245,6 +21028,7 @@ impl ToXml for CTTblPrBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_description {
             val.write_element("w:tblDescription", writer)?;
         }
@@ -20260,54 +21044,71 @@ impl ToXml for CTTblPrBase {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-styling")]
         if self.tbl_style.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tblp_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_overlap.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.bidi_visual.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.tbl_style_row_band_size.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.tbl_style_col_band_size.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_w.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.justification.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_cell_spacing.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_ind.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_borders.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.shading.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_layout.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_cell_mar.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_look.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_caption.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_description.is_some() {
             return false;
         }
@@ -20734,6 +21535,7 @@ impl ToXml for CTTblPrExBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_w {
             val.write_element("w:tblW", writer)?;
         }
@@ -20750,6 +21552,7 @@ impl ToXml for CTTblPrExBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.justification {
             val.write_element("w:jc", writer)?;
         }
@@ -20766,6 +21569,7 @@ impl ToXml for CTTblPrExBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_cell_spacing {
             val.write_element("w:tblCellSpacing", writer)?;
         }
@@ -20782,6 +21586,7 @@ impl ToXml for CTTblPrExBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_ind {
             val.write_element("w:tblInd", writer)?;
         }
@@ -20798,6 +21603,7 @@ impl ToXml for CTTblPrExBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_borders {
             val.write_element("w:tblBorders", writer)?;
         }
@@ -20814,6 +21620,7 @@ impl ToXml for CTTblPrExBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.shading {
             val.write_element("w:shd", writer)?;
         }
@@ -20830,6 +21637,7 @@ impl ToXml for CTTblPrExBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_layout {
             val.write_element("w:tblLayout", writer)?;
         }
@@ -20846,6 +21654,7 @@ impl ToXml for CTTblPrExBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_cell_mar {
             val.write_element("w:tblCellMar", writer)?;
         }
@@ -20862,6 +21671,7 @@ impl ToXml for CTTblPrExBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_look {
             val.write_element("w:tblLook", writer)?;
         }
@@ -20877,30 +21687,39 @@ impl ToXml for CTTblPrExBase {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-tables")]
         if self.tbl_w.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.justification.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_cell_spacing.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_ind.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_borders.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.shading.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_layout.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_cell_mar.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_look.is_some() {
             return false;
         }
@@ -21071,6 +21890,7 @@ impl ToXml for CTTblPrEx {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.tbl_pr_ex_change {
             val.write_element("w:tblPrExChange", writer)?;
         }
@@ -21113,6 +21933,7 @@ impl ToXml for CTTblPrEx {
         if self.tbl_look.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-track-changes")]
         if self.tbl_pr_ex_change.is_some() {
             return false;
         }
@@ -21215,42 +22036,49 @@ impl ToXml for CTTblLook {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.first_row {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:firstRow", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.last_row {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:lastRow", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.first_column {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:firstColumn", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.last_column {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:lastColumn", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.no_h_band {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:noHBand", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.no_v_band {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:noVBand", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.value {
             {
                 let hex = encode_hex(val);
@@ -21326,6 +22154,7 @@ impl ToXml for CTNumFmt {
                 start.push_attribute(("w:val", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.format {
             start.push_attribute(("w:format", val.as_str()));
         }
@@ -21368,6 +22197,7 @@ impl ToXml for FootnoteEndnoteRef {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-comments")]
         if let Some(ref val) = self.custom_mark_follows {
             {
                 let s = val.to_string();
@@ -21420,6 +22250,7 @@ impl ToXml for FootnoteEndnote {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-comments")]
         if let Some(ref val) = self.r#type {
             {
                 let s = val.to_string();
@@ -21555,6 +22386,7 @@ impl ToXml for CTFtnProps {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-comments")]
         if let Some(ref val) = self.pos {
             val.write_element("w:pos", writer)?;
         }
@@ -21571,6 +22403,7 @@ impl ToXml for CTFtnProps {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-comments")]
         if let Some(ref val) = self.num_fmt {
             val.write_element("w:numFmt", writer)?;
         }
@@ -21618,9 +22451,11 @@ impl ToXml for CTFtnProps {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-comments")]
         if self.pos.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-comments")]
         if self.num_fmt.is_some() {
             return false;
         }
@@ -21653,6 +22488,7 @@ impl ToXml for CTEdnProps {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-comments")]
         if let Some(ref val) = self.pos {
             val.write_element("w:pos", writer)?;
         }
@@ -21669,6 +22505,7 @@ impl ToXml for CTEdnProps {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-comments")]
         if let Some(ref val) = self.num_fmt {
             val.write_element("w:numFmt", writer)?;
         }
@@ -21716,9 +22553,11 @@ impl ToXml for CTEdnProps {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-comments")]
         if self.pos.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-comments")]
         if self.num_fmt.is_some() {
             return false;
         }
@@ -21806,6 +22645,7 @@ impl ToXml for CTFtnDocProps {
         {
             emit_idx += 1;
         }
+        #[cfg(feature = "wml-comments")]
         for item in &self.footnote {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -21842,6 +22682,7 @@ impl ToXml for CTFtnDocProps {
         if self.num_restart.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-comments")]
         if !self.footnote.is_empty() {
             return false;
         }
@@ -21923,6 +22764,7 @@ impl ToXml for CTEdnDocProps {
         {
             emit_idx += 1;
         }
+        #[cfg(feature = "wml-comments")]
         for item in &self.endnote {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -21959,6 +22801,7 @@ impl ToXml for CTEdnDocProps {
         if self.num_restart.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-comments")]
         if !self.endnote.is_empty() {
             return false;
         }
@@ -21985,6 +22828,7 @@ impl ToXml for CTRecipientData {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.active {
             val.write_element("w:active", writer)?;
         }
@@ -22001,6 +22845,7 @@ impl ToXml for CTRecipientData {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.column;
             val.write_element("w:column", writer)?;
@@ -22018,6 +22863,7 @@ impl ToXml for CTRecipientData {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.unique_tag;
             val.write_element("w:uniqueTag", writer)?;
@@ -22034,10 +22880,19 @@ impl ToXml for CTRecipientData {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.active.is_some() {
             return false;
         }
-        false
+        #[cfg(feature = "wml-settings")]
+        return false;
+        #[cfg(feature = "wml-settings")]
+        return false;
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -22070,6 +22925,7 @@ impl ToXml for CTRecipients {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
+        #[cfg(feature = "wml-settings")]
         for item in &self.recipient_data {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -22094,6 +22950,7 @@ impl ToXml for CTRecipients {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if !self.recipient_data.is_empty() {
             return false;
         }
@@ -22120,6 +22977,7 @@ impl ToXml for CTOdsoFieldMapData {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.r#type {
             val.write_element("w:type", writer)?;
         }
@@ -22136,6 +22994,7 @@ impl ToXml for CTOdsoFieldMapData {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.name {
             val.write_element("w:name", writer)?;
         }
@@ -22152,6 +23011,7 @@ impl ToXml for CTOdsoFieldMapData {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.mapped_name {
             val.write_element("w:mappedName", writer)?;
         }
@@ -22168,6 +23028,7 @@ impl ToXml for CTOdsoFieldMapData {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.column {
             val.write_element("w:column", writer)?;
         }
@@ -22184,6 +23045,7 @@ impl ToXml for CTOdsoFieldMapData {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.lid {
             val.write_element("w:lid", writer)?;
         }
@@ -22200,6 +23062,7 @@ impl ToXml for CTOdsoFieldMapData {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.dynamic_address {
             val.write_element("w:dynamicAddress", writer)?;
         }
@@ -22215,21 +23078,27 @@ impl ToXml for CTOdsoFieldMapData {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.r#type.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.name.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.mapped_name.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.column.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.lid.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.dynamic_address.is_some() {
             return false;
         }
@@ -22279,6 +23148,7 @@ impl ToXml for CTOdso {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.udl {
             val.write_element("w:udl", writer)?;
         }
@@ -22295,6 +23165,7 @@ impl ToXml for CTOdso {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.table {
             val.write_element("w:table", writer)?;
         }
@@ -22311,6 +23182,7 @@ impl ToXml for CTOdso {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.src {
             val.write_element("w:src", writer)?;
         }
@@ -22327,6 +23199,7 @@ impl ToXml for CTOdso {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.col_delim {
             val.write_element("w:colDelim", writer)?;
         }
@@ -22343,6 +23216,7 @@ impl ToXml for CTOdso {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.r#type {
             val.write_element("w:type", writer)?;
         }
@@ -22359,6 +23233,7 @@ impl ToXml for CTOdso {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.f_hdr {
             val.write_element("w:fHdr", writer)?;
         }
@@ -22366,6 +23241,7 @@ impl ToXml for CTOdso {
         {
             emit_idx += 1;
         }
+        #[cfg(feature = "wml-settings")]
         for item in &self.field_map_data {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -22382,6 +23258,7 @@ impl ToXml for CTOdso {
                 emit_idx += 1;
             }
         }
+        #[cfg(feature = "wml-settings")]
         for item in &self.recipient_data {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -22406,27 +23283,35 @@ impl ToXml for CTOdso {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.udl.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.table.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.src.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.col_delim.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.r#type.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.f_hdr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if !self.field_map_data.is_empty() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if !self.recipient_data.is_empty() {
             return false;
         }
@@ -22453,6 +23338,7 @@ impl ToXml for CTMailMerge {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.main_document_type;
             val.write_element("w:mainDocumentType", writer)?;
@@ -22470,6 +23356,7 @@ impl ToXml for CTMailMerge {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.link_to_query {
             val.write_element("w:linkToQuery", writer)?;
         }
@@ -22486,6 +23373,7 @@ impl ToXml for CTMailMerge {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.data_type;
             val.write_element("w:dataType", writer)?;
@@ -22503,6 +23391,7 @@ impl ToXml for CTMailMerge {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.connect_string {
             val.write_element("w:connectString", writer)?;
         }
@@ -22519,6 +23408,7 @@ impl ToXml for CTMailMerge {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.query {
             val.write_element("w:query", writer)?;
         }
@@ -22535,6 +23425,7 @@ impl ToXml for CTMailMerge {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.data_source {
             val.write_element("w:dataSource", writer)?;
         }
@@ -22551,6 +23442,7 @@ impl ToXml for CTMailMerge {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.header_source {
             val.write_element("w:headerSource", writer)?;
         }
@@ -22567,6 +23459,7 @@ impl ToXml for CTMailMerge {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_suppress_blank_lines {
             val.write_element("w:doNotSuppressBlankLines", writer)?;
         }
@@ -22583,6 +23476,7 @@ impl ToXml for CTMailMerge {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.destination {
             val.write_element("w:destination", writer)?;
         }
@@ -22599,6 +23493,7 @@ impl ToXml for CTMailMerge {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.address_field_name {
             val.write_element("w:addressFieldName", writer)?;
         }
@@ -22615,6 +23510,7 @@ impl ToXml for CTMailMerge {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.mail_subject {
             val.write_element("w:mailSubject", writer)?;
         }
@@ -22631,6 +23527,7 @@ impl ToXml for CTMailMerge {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.mail_as_attachment {
             val.write_element("w:mailAsAttachment", writer)?;
         }
@@ -22647,6 +23544,7 @@ impl ToXml for CTMailMerge {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.view_merged_data {
             val.write_element("w:viewMergedData", writer)?;
         }
@@ -22663,6 +23561,7 @@ impl ToXml for CTMailMerge {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.active_record {
             val.write_element("w:activeRecord", writer)?;
         }
@@ -22679,6 +23578,7 @@ impl ToXml for CTMailMerge {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.check_errors {
             val.write_element("w:checkErrors", writer)?;
         }
@@ -22695,6 +23595,7 @@ impl ToXml for CTMailMerge {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.odso {
             val.write_element("w:odso", writer)?;
         }
@@ -22710,7 +23611,71 @@ impl ToXml for CTMailMerge {
     }
 
     fn is_empty_element(&self) -> bool {
-        false
+        #[cfg(feature = "wml-settings")]
+        return false;
+        #[cfg(feature = "wml-settings")]
+        if self.link_to_query.is_some() {
+            return false;
+        }
+        #[cfg(feature = "wml-settings")]
+        return false;
+        #[cfg(feature = "wml-settings")]
+        if self.connect_string.is_some() {
+            return false;
+        }
+        #[cfg(feature = "wml-settings")]
+        if self.query.is_some() {
+            return false;
+        }
+        #[cfg(feature = "wml-settings")]
+        if self.data_source.is_some() {
+            return false;
+        }
+        #[cfg(feature = "wml-settings")]
+        if self.header_source.is_some() {
+            return false;
+        }
+        #[cfg(feature = "wml-settings")]
+        if self.do_not_suppress_blank_lines.is_some() {
+            return false;
+        }
+        #[cfg(feature = "wml-settings")]
+        if self.destination.is_some() {
+            return false;
+        }
+        #[cfg(feature = "wml-settings")]
+        if self.address_field_name.is_some() {
+            return false;
+        }
+        #[cfg(feature = "wml-settings")]
+        if self.mail_subject.is_some() {
+            return false;
+        }
+        #[cfg(feature = "wml-settings")]
+        if self.mail_as_attachment.is_some() {
+            return false;
+        }
+        #[cfg(feature = "wml-settings")]
+        if self.view_merged_data.is_some() {
+            return false;
+        }
+        #[cfg(feature = "wml-settings")]
+        if self.active_record.is_some() {
+            return false;
+        }
+        #[cfg(feature = "wml-settings")]
+        if self.check_errors.is_some() {
+            return false;
+        }
+        #[cfg(feature = "wml-settings")]
+        if self.odso.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -22752,6 +23717,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.use_single_borderfor_contiguous_cells {
             val.write_element("w:useSingleBorderforContiguousCells", writer)?;
         }
@@ -22768,6 +23734,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.wp_justification {
             val.write_element("w:wpJustification", writer)?;
         }
@@ -22784,6 +23751,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.no_tab_hang_ind {
             val.write_element("w:noTabHangInd", writer)?;
         }
@@ -22800,6 +23768,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.no_leading {
             val.write_element("w:noLeading", writer)?;
         }
@@ -22816,6 +23785,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.space_for_u_l {
             val.write_element("w:spaceForUL", writer)?;
         }
@@ -22832,6 +23802,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.no_column_balance {
             val.write_element("w:noColumnBalance", writer)?;
         }
@@ -22848,6 +23819,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.balance_single_byte_double_byte_width {
             val.write_element("w:balanceSingleByteDoubleByteWidth", writer)?;
         }
@@ -22864,6 +23836,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.no_extra_line_spacing {
             val.write_element("w:noExtraLineSpacing", writer)?;
         }
@@ -22880,6 +23853,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_leave_backslash_alone {
             val.write_element("w:doNotLeaveBackslashAlone", writer)?;
         }
@@ -22896,6 +23870,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.ul_trail_space {
             val.write_element("w:ulTrailSpace", writer)?;
         }
@@ -22912,6 +23887,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_expand_shift_return {
             val.write_element("w:doNotExpandShiftReturn", writer)?;
         }
@@ -22928,6 +23904,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.spacing_in_whole_points {
             val.write_element("w:spacingInWholePoints", writer)?;
         }
@@ -22944,6 +23921,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.line_wrap_like_word6 {
             val.write_element("w:lineWrapLikeWord6", writer)?;
         }
@@ -22960,6 +23938,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.print_body_text_before_header {
             val.write_element("w:printBodyTextBeforeHeader", writer)?;
         }
@@ -22976,6 +23955,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.print_col_black {
             val.write_element("w:printColBlack", writer)?;
         }
@@ -22992,6 +23972,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.wp_space_width {
             val.write_element("w:wpSpaceWidth", writer)?;
         }
@@ -23008,6 +23989,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.show_breaks_in_frames {
             val.write_element("w:showBreaksInFrames", writer)?;
         }
@@ -23024,6 +24006,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.sub_font_by_size {
             val.write_element("w:subFontBySize", writer)?;
         }
@@ -23040,6 +24023,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.suppress_bottom_spacing {
             val.write_element("w:suppressBottomSpacing", writer)?;
         }
@@ -23056,6 +24040,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.suppress_top_spacing {
             val.write_element("w:suppressTopSpacing", writer)?;
         }
@@ -23072,6 +24057,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.suppress_spacing_at_top_of_page {
             val.write_element("w:suppressSpacingAtTopOfPage", writer)?;
         }
@@ -23088,6 +24074,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.suppress_top_spacing_w_p {
             val.write_element("w:suppressTopSpacingWP", writer)?;
         }
@@ -23104,6 +24091,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.suppress_sp_bf_after_pg_brk {
             val.write_element("w:suppressSpBfAfterPgBrk", writer)?;
         }
@@ -23120,6 +24108,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.swap_borders_facing_pages {
             val.write_element("w:swapBordersFacingPages", writer)?;
         }
@@ -23136,6 +24125,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.conv_mail_merge_esc {
             val.write_element("w:convMailMergeEsc", writer)?;
         }
@@ -23152,6 +24142,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.truncate_font_heights_like_w_p6 {
             val.write_element("w:truncateFontHeightsLikeWP6", writer)?;
         }
@@ -23168,6 +24159,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.mw_small_caps {
             val.write_element("w:mwSmallCaps", writer)?;
         }
@@ -23184,6 +24176,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.use_printer_metrics {
             val.write_element("w:usePrinterMetrics", writer)?;
         }
@@ -23200,6 +24193,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_suppress_paragraph_borders {
             val.write_element("w:doNotSuppressParagraphBorders", writer)?;
         }
@@ -23216,6 +24210,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.wrap_trail_spaces {
             val.write_element("w:wrapTrailSpaces", writer)?;
         }
@@ -23232,6 +24227,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.footnote_layout_like_w_w8 {
             val.write_element("w:footnoteLayoutLikeWW8", writer)?;
         }
@@ -23248,6 +24244,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.shape_layout_like_w_w8 {
             val.write_element("w:shapeLayoutLikeWW8", writer)?;
         }
@@ -23264,6 +24261,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.align_tables_row_by_row {
             val.write_element("w:alignTablesRowByRow", writer)?;
         }
@@ -23280,6 +24278,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.forget_last_tab_alignment {
             val.write_element("w:forgetLastTabAlignment", writer)?;
         }
@@ -23296,6 +24295,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.adjust_line_height_in_table {
             val.write_element("w:adjustLineHeightInTable", writer)?;
         }
@@ -23312,6 +24312,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.auto_space_like_word95 {
             val.write_element("w:autoSpaceLikeWord95", writer)?;
         }
@@ -23328,6 +24329,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.no_space_raise_lower {
             val.write_element("w:noSpaceRaiseLower", writer)?;
         }
@@ -23344,6 +24346,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_use_h_t_m_l_paragraph_auto_spacing {
             val.write_element("w:doNotUseHTMLParagraphAutoSpacing", writer)?;
         }
@@ -23360,6 +24363,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.layout_raw_table_width {
             val.write_element("w:layoutRawTableWidth", writer)?;
         }
@@ -23376,6 +24380,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.layout_table_rows_apart {
             val.write_element("w:layoutTableRowsApart", writer)?;
         }
@@ -23392,6 +24397,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.use_word97_line_break_rules {
             val.write_element("w:useWord97LineBreakRules", writer)?;
         }
@@ -23408,6 +24414,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_break_wrapped_tables {
             val.write_element("w:doNotBreakWrappedTables", writer)?;
         }
@@ -23424,6 +24431,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_snap_to_grid_in_cell {
             val.write_element("w:doNotSnapToGridInCell", writer)?;
         }
@@ -23440,6 +24448,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.select_fld_with_first_or_last_char {
             val.write_element("w:selectFldWithFirstOrLastChar", writer)?;
         }
@@ -23456,6 +24465,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.apply_breaking_rules {
             val.write_element("w:applyBreakingRules", writer)?;
         }
@@ -23472,6 +24482,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_wrap_text_with_punct {
             val.write_element("w:doNotWrapTextWithPunct", writer)?;
         }
@@ -23488,6 +24499,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_use_east_asian_break_rules {
             val.write_element("w:doNotUseEastAsianBreakRules", writer)?;
         }
@@ -23504,6 +24516,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.use_word2002_table_style_rules {
             val.write_element("w:useWord2002TableStyleRules", writer)?;
         }
@@ -23520,6 +24533,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.grow_autofit {
             val.write_element("w:growAutofit", writer)?;
         }
@@ -23536,6 +24550,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.use_f_e_layout {
             val.write_element("w:useFELayout", writer)?;
         }
@@ -23552,6 +24567,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.use_normal_style_for_list {
             val.write_element("w:useNormalStyleForList", writer)?;
         }
@@ -23568,6 +24584,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_use_indent_as_numbering_tab_stop {
             val.write_element("w:doNotUseIndentAsNumberingTabStop", writer)?;
         }
@@ -23584,6 +24601,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.use_alt_kinsoku_line_break_rules {
             val.write_element("w:useAltKinsokuLineBreakRules", writer)?;
         }
@@ -23600,6 +24618,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.allow_space_of_same_style_in_table {
             val.write_element("w:allowSpaceOfSameStyleInTable", writer)?;
         }
@@ -23616,6 +24635,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_suppress_indentation {
             val.write_element("w:doNotSuppressIndentation", writer)?;
         }
@@ -23632,6 +24652,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_autofit_constrained_tables {
             val.write_element("w:doNotAutofitConstrainedTables", writer)?;
         }
@@ -23648,6 +24669,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.autofit_to_first_fixed_width_cell {
             val.write_element("w:autofitToFirstFixedWidthCell", writer)?;
         }
@@ -23664,6 +24686,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.underline_tab_in_num_list {
             val.write_element("w:underlineTabInNumList", writer)?;
         }
@@ -23680,6 +24703,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.display_hangul_fixed_width {
             val.write_element("w:displayHangulFixedWidth", writer)?;
         }
@@ -23696,6 +24720,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.split_pg_break_and_para_mark {
             val.write_element("w:splitPgBreakAndParaMark", writer)?;
         }
@@ -23712,6 +24737,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_vert_align_cell_with_sp {
             val.write_element("w:doNotVertAlignCellWithSp", writer)?;
         }
@@ -23728,6 +24754,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_break_constrained_forced_table {
             val.write_element("w:doNotBreakConstrainedForcedTable", writer)?;
         }
@@ -23744,6 +24771,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_vert_align_in_txbx {
             val.write_element("w:doNotVertAlignInTxbx", writer)?;
         }
@@ -23760,6 +24788,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.use_ansi_kerning_pairs {
             val.write_element("w:useAnsiKerningPairs", writer)?;
         }
@@ -23776,6 +24805,7 @@ impl ToXml for Compatibility {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.cached_col_balance {
             val.write_element("w:cachedColBalance", writer)?;
         }
@@ -23783,6 +24813,7 @@ impl ToXml for Compatibility {
         {
             emit_idx += 1;
         }
+        #[cfg(feature = "wml-settings")]
         for item in &self.compat_setting {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -23807,201 +24838,267 @@ impl ToXml for Compatibility {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.use_single_borderfor_contiguous_cells.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.wp_justification.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.no_tab_hang_ind.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.no_leading.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.space_for_u_l.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.no_column_balance.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.balance_single_byte_double_byte_width.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.no_extra_line_spacing.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_leave_backslash_alone.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.ul_trail_space.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_expand_shift_return.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.spacing_in_whole_points.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.line_wrap_like_word6.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.print_body_text_before_header.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.print_col_black.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.wp_space_width.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.show_breaks_in_frames.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.sub_font_by_size.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.suppress_bottom_spacing.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.suppress_top_spacing.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.suppress_spacing_at_top_of_page.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.suppress_top_spacing_w_p.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.suppress_sp_bf_after_pg_brk.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.swap_borders_facing_pages.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.conv_mail_merge_esc.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.truncate_font_heights_like_w_p6.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.mw_small_caps.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.use_printer_metrics.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_suppress_paragraph_borders.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.wrap_trail_spaces.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.footnote_layout_like_w_w8.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.shape_layout_like_w_w8.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.align_tables_row_by_row.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.forget_last_tab_alignment.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.adjust_line_height_in_table.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.auto_space_like_word95.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.no_space_raise_lower.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_use_h_t_m_l_paragraph_auto_spacing.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.layout_raw_table_width.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.layout_table_rows_apart.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.use_word97_line_break_rules.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_break_wrapped_tables.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_snap_to_grid_in_cell.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.select_fld_with_first_or_last_char.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.apply_breaking_rules.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_wrap_text_with_punct.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_use_east_asian_break_rules.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.use_word2002_table_style_rules.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.grow_autofit.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.use_f_e_layout.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.use_normal_style_for_list.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_use_indent_as_numbering_tab_stop.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.use_alt_kinsoku_line_break_rules.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.allow_space_of_same_style_in_table.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_suppress_indentation.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_autofit_constrained_tables.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.autofit_to_first_fixed_width_cell.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.underline_tab_in_num_list.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.display_hangul_fixed_width.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.split_pg_break_and_para_mark.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_vert_align_cell_with_sp.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_break_constrained_forced_table.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_vert_align_in_txbx.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.use_ansi_kerning_pairs.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.cached_col_balance.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if !self.compat_setting.is_empty() {
             return false;
         }
@@ -24068,6 +25165,7 @@ impl ToXml for CTDocVars {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
+        #[cfg(feature = "wml-settings")]
         for item in &self.doc_var {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -24092,6 +25190,7 @@ impl ToXml for CTDocVars {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if !self.doc_var.is_empty() {
             return false;
         }
@@ -24118,6 +25217,7 @@ impl ToXml for CTDocRsids {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.rsid_root {
             val.write_element("w:rsidRoot", writer)?;
         }
@@ -24125,6 +25225,7 @@ impl ToXml for CTDocRsids {
         {
             emit_idx += 1;
         }
+        #[cfg(feature = "wml-track-changes")]
         for item in &self.rsid {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -24149,9 +25250,11 @@ impl ToXml for CTDocRsids {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-track-changes")]
         if self.rsid_root.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-track-changes")]
         if !self.rsid.is_empty() {
             return false;
         }
@@ -24190,9 +25293,11 @@ impl ToXml for CTSaveThroughXslt {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.id {
             start.push_attribute(("r:id", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.solution_i_d {
             start.push_attribute(("w:solutionID", val.as_str()));
         }
@@ -24208,7 +25313,7 @@ impl ToXml for CTSaveThroughXslt {
     }
 }
 
-impl ToXml for CTRPrDefault {
+impl ToXml for RunPropertiesDefault {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         #[cfg(feature = "extra-children")]
         let mut extra_iter = self.extra_children.iter().peekable();
@@ -24249,7 +25354,7 @@ impl ToXml for CTRPrDefault {
     }
 }
 
-impl ToXml for CTPPrDefault {
+impl ToXml for ParagraphPropertiesDefault {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         #[cfg(feature = "extra-children")]
         let mut extra_iter = self.extra_children.iter().peekable();
@@ -24290,7 +25395,7 @@ impl ToXml for CTPPrDefault {
     }
 }
 
-impl ToXml for CTDocDefaults {
+impl ToXml for DocumentDefaults {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         #[cfg(feature = "extra-children")]
         let mut extra_iter = self.extra_children.iter().peekable();
@@ -24354,72 +25459,84 @@ impl ToXml for CTColorSchemeMapping {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.bg1 {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:bg1", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.t1 {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:t1", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.bg2 {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:bg2", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.t2 {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:t2", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.accent1 {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:accent1", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.accent2 {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:accent2", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.accent3 {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:accent3", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.accent4 {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:accent4", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.accent5 {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:accent5", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.accent6 {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:accent6", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.hyperlink {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:hyperlink", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.followed_hyperlink {
             {
                 let s = val.to_string();
@@ -24442,6 +25559,7 @@ impl ToXml for CTReadingModeInkLockDown {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.actual_pg;
             {
@@ -24449,6 +25567,7 @@ impl ToXml for CTReadingModeInkLockDown {
                 start.push_attribute(("w:actualPg", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.width;
             {
@@ -24456,6 +25575,7 @@ impl ToXml for CTReadingModeInkLockDown {
                 start.push_attribute(("w:w", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.height;
             {
@@ -24463,6 +25583,7 @@ impl ToXml for CTReadingModeInkLockDown {
                 start.push_attribute(("w:h", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.font_sz;
             {
@@ -24486,90 +25607,107 @@ impl ToXml for CTWriteProtection {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.recommended {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:recommended", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.algorithm_name {
             start.push_attribute(("w:algorithmName", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.hash_value {
             {
                 let b64 = encode_base64(val);
                 start.push_attribute(("w:hashValue", b64.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.salt_value {
             {
                 let b64 = encode_base64(val);
                 start.push_attribute(("w:saltValue", b64.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.spin_count {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:spinCount", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.crypt_provider_type {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:cryptProviderType", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.crypt_algorithm_class {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:cryptAlgorithmClass", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.crypt_algorithm_type {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:cryptAlgorithmType", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.crypt_algorithm_sid {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:cryptAlgorithmSid", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.crypt_spin_count {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:cryptSpinCount", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.crypt_provider {
             start.push_attribute(("w:cryptProvider", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.alg_id_ext {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:algIdExt", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.alg_id_ext_source {
             start.push_attribute(("w:algIdExtSource", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.crypt_provider_type_ext {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:cryptProviderTypeExt", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.crypt_provider_type_ext_source {
             start.push_attribute(("w:cryptProviderTypeExtSource", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.hash {
             {
                 let b64 = encode_base64(val);
                 start.push_attribute(("w:hash", b64.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.salt {
             {
                 let b64 = encode_base64(val);
@@ -24654,6 +25792,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.remove_personal_information {
             val.write_element("w:removePersonalInformation", writer)?;
         }
@@ -24670,6 +25809,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.remove_date_and_time {
             val.write_element("w:removeDateAndTime", writer)?;
         }
@@ -24686,6 +25826,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_display_page_boundaries {
             val.write_element("w:doNotDisplayPageBoundaries", writer)?;
         }
@@ -24702,6 +25843,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.display_background_shape {
             val.write_element("w:displayBackgroundShape", writer)?;
         }
@@ -24718,6 +25860,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.print_post_script_over_text {
             val.write_element("w:printPostScriptOverText", writer)?;
         }
@@ -24734,6 +25877,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.print_fractional_character_width {
             val.write_element("w:printFractionalCharacterWidth", writer)?;
         }
@@ -24750,6 +25894,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.print_forms_data {
             val.write_element("w:printFormsData", writer)?;
         }
@@ -24766,6 +25911,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.embed_true_type_fonts {
             val.write_element("w:embedTrueTypeFonts", writer)?;
         }
@@ -24782,6 +25928,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.embed_system_fonts {
             val.write_element("w:embedSystemFonts", writer)?;
         }
@@ -24798,6 +25945,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.save_subset_fonts {
             val.write_element("w:saveSubsetFonts", writer)?;
         }
@@ -24814,6 +25962,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.save_forms_data {
             val.write_element("w:saveFormsData", writer)?;
         }
@@ -24830,6 +25979,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.mirror_margins {
             val.write_element("w:mirrorMargins", writer)?;
         }
@@ -24846,6 +25996,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.align_borders_and_edges {
             val.write_element("w:alignBordersAndEdges", writer)?;
         }
@@ -24862,6 +26013,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.borders_do_not_surround_header {
             val.write_element("w:bordersDoNotSurroundHeader", writer)?;
         }
@@ -24878,6 +26030,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.borders_do_not_surround_footer {
             val.write_element("w:bordersDoNotSurroundFooter", writer)?;
         }
@@ -24894,6 +26047,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.gutter_at_top {
             val.write_element("w:gutterAtTop", writer)?;
         }
@@ -24910,6 +26064,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.hide_spelling_errors {
             val.write_element("w:hideSpellingErrors", writer)?;
         }
@@ -24926,6 +26081,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.hide_grammatical_errors {
             val.write_element("w:hideGrammaticalErrors", writer)?;
         }
@@ -24933,6 +26089,7 @@ impl ToXml for Settings {
         {
             emit_idx += 1;
         }
+        #[cfg(feature = "wml-settings")]
         for item in &self.active_writing_style {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -24958,6 +26115,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.proof_state {
             val.write_element("w:proofState", writer)?;
         }
@@ -24974,6 +26132,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.forms_design {
             val.write_element("w:formsDesign", writer)?;
         }
@@ -25007,6 +26166,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.link_styles {
             val.write_element("w:linkStyles", writer)?;
         }
@@ -25023,6 +26183,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.style_pane_format_filter {
             val.write_element("w:stylePaneFormatFilter", writer)?;
         }
@@ -25039,6 +26200,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.style_pane_sort_method {
             val.write_element("w:stylePaneSortMethod", writer)?;
         }
@@ -25055,6 +26217,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.document_type {
             val.write_element("w:documentType", writer)?;
         }
@@ -25122,6 +26285,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.do_not_track_moves {
             val.write_element("w:doNotTrackMoves", writer)?;
         }
@@ -25138,6 +26302,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.do_not_track_formatting {
             val.write_element("w:doNotTrackFormatting", writer)?;
         }
@@ -25171,6 +26336,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.auto_format_override {
             val.write_element("w:autoFormatOverride", writer)?;
         }
@@ -25187,6 +26353,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.style_lock_theme {
             val.write_element("w:styleLockTheme", writer)?;
         }
@@ -25203,6 +26370,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.style_lock_q_f_set {
             val.write_element("w:styleLockQFSet", writer)?;
         }
@@ -25236,6 +26404,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.auto_hyphenation {
             val.write_element("w:autoHyphenation", writer)?;
         }
@@ -25252,6 +26421,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.consecutive_hyphen_limit {
             val.write_element("w:consecutiveHyphenLimit", writer)?;
         }
@@ -25268,6 +26438,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.hyphenation_zone {
             val.write_element("w:hyphenationZone", writer)?;
         }
@@ -25284,6 +26455,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_hyphenate_caps {
             val.write_element("w:doNotHyphenateCaps", writer)?;
         }
@@ -25300,6 +26472,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.show_envelope {
             val.write_element("w:showEnvelope", writer)?;
         }
@@ -25316,6 +26489,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.summary_length {
             val.write_element("w:summaryLength", writer)?;
         }
@@ -25332,6 +26506,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.click_and_type_style {
             val.write_element("w:clickAndTypeStyle", writer)?;
         }
@@ -25348,6 +26523,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.default_table_style {
             val.write_element("w:defaultTableStyle", writer)?;
         }
@@ -25381,6 +26557,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.book_fold_rev_printing {
             val.write_element("w:bookFoldRevPrinting", writer)?;
         }
@@ -25397,6 +26574,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.book_fold_printing {
             val.write_element("w:bookFoldPrinting", writer)?;
         }
@@ -25413,6 +26591,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.book_fold_printing_sheets {
             val.write_element("w:bookFoldPrintingSheets", writer)?;
         }
@@ -25429,6 +26608,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.drawing_grid_horizontal_spacing {
             val.write_element("w:drawingGridHorizontalSpacing", writer)?;
         }
@@ -25445,6 +26625,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.drawing_grid_vertical_spacing {
             val.write_element("w:drawingGridVerticalSpacing", writer)?;
         }
@@ -25461,6 +26642,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.display_horizontal_drawing_grid_every {
             val.write_element("w:displayHorizontalDrawingGridEvery", writer)?;
         }
@@ -25477,6 +26659,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.display_vertical_drawing_grid_every {
             val.write_element("w:displayVerticalDrawingGridEvery", writer)?;
         }
@@ -25493,6 +26676,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_use_margins_for_drawing_grid_origin {
             val.write_element("w:doNotUseMarginsForDrawingGridOrigin", writer)?;
         }
@@ -25509,6 +26693,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.drawing_grid_horizontal_origin {
             val.write_element("w:drawingGridHorizontalOrigin", writer)?;
         }
@@ -25525,6 +26710,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.drawing_grid_vertical_origin {
             val.write_element("w:drawingGridVerticalOrigin", writer)?;
         }
@@ -25541,6 +26727,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_shade_form_data {
             val.write_element("w:doNotShadeFormData", writer)?;
         }
@@ -25557,6 +26744,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.no_punctuation_kerning {
             val.write_element("w:noPunctuationKerning", writer)?;
         }
@@ -25573,6 +26761,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.character_spacing_control {
             val.write_element("w:characterSpacingControl", writer)?;
         }
@@ -25589,6 +26778,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.print_two_on_one {
             val.write_element("w:printTwoOnOne", writer)?;
         }
@@ -25605,6 +26795,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.strict_first_and_last_chars {
             val.write_element("w:strictFirstAndLastChars", writer)?;
         }
@@ -25621,6 +26812,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.no_line_breaks_after {
             val.write_element("w:noLineBreaksAfter", writer)?;
         }
@@ -25637,6 +26829,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.no_line_breaks_before {
             val.write_element("w:noLineBreaksBefore", writer)?;
         }
@@ -25653,6 +26846,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.save_preview_picture {
             val.write_element("w:savePreviewPicture", writer)?;
         }
@@ -25669,6 +26863,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_validate_against_schema {
             val.write_element("w:doNotValidateAgainstSchema", writer)?;
         }
@@ -25685,6 +26880,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.save_invalid_xml {
             val.write_element("w:saveInvalidXml", writer)?;
         }
@@ -25701,6 +26897,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.ignore_mixed_content {
             val.write_element("w:ignoreMixedContent", writer)?;
         }
@@ -25717,6 +26914,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.always_show_placeholder_text {
             val.write_element("w:alwaysShowPlaceholderText", writer)?;
         }
@@ -25733,6 +26931,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_demarcate_invalid_xml {
             val.write_element("w:doNotDemarcateInvalidXml", writer)?;
         }
@@ -25749,6 +26948,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.save_xml_data_only {
             val.write_element("w:saveXmlDataOnly", writer)?;
         }
@@ -25765,6 +26965,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.use_x_s_l_t_when_saving {
             val.write_element("w:useXSLTWhenSaving", writer)?;
         }
@@ -25781,6 +26982,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.save_through_xslt {
             val.write_element("w:saveThroughXslt", writer)?;
         }
@@ -25797,6 +26999,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.show_x_m_l_tags {
             val.write_element("w:showXMLTags", writer)?;
         }
@@ -25813,6 +27016,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.always_merge_empty_namespace {
             val.write_element("w:alwaysMergeEmptyNamespace", writer)?;
         }
@@ -25829,6 +27033,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.update_fields {
             val.write_element("w:updateFields", writer)?;
         }
@@ -25845,6 +27050,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.hdr_shape_defaults {
             val.write_element("w:hdrShapeDefaults", writer)?;
         }
@@ -25861,6 +27067,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-comments")]
         if let Some(ref val) = self.footnote_pr {
             val.write_element("w:footnotePr", writer)?;
         }
@@ -25877,6 +27084,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-comments")]
         if let Some(ref val) = self.endnote_pr {
             val.write_element("w:endnotePr", writer)?;
         }
@@ -25935,6 +27143,7 @@ impl ToXml for Settings {
         {
             emit_idx += 1;
         }
+        #[cfg(feature = "wml-settings")]
         for item in &self.attached_schema {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -25960,6 +27169,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.theme_font_lang {
             val.write_element("w:themeFontLang", writer)?;
         }
@@ -25976,6 +27186,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.clr_scheme_mapping {
             val.write_element("w:clrSchemeMapping", writer)?;
         }
@@ -25992,6 +27203,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_include_subdocs_in_stats {
             val.write_element("w:doNotIncludeSubdocsInStats", writer)?;
         }
@@ -26008,6 +27220,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_auto_compress_pictures {
             val.write_element("w:doNotAutoCompressPictures", writer)?;
         }
@@ -26024,6 +27237,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.force_upgrade {
             val.write_element("w:forceUpgrade", writer)?;
         }
@@ -26040,6 +27254,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.captions {
             val.write_element("w:captions", writer)?;
         }
@@ -26056,6 +27271,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.read_mode_ink_lock_down {
             val.write_element("w:readModeInkLockDown", writer)?;
         }
@@ -26063,6 +27279,7 @@ impl ToXml for Settings {
         {
             emit_idx += 1;
         }
+        #[cfg(feature = "wml-settings")]
         for item in &self.smart_tag_type {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -26088,6 +27305,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-drawings")]
         if let Some(ref val) = self.shape_defaults {
             val.write_element("w:shapeDefaults", writer)?;
         }
@@ -26104,6 +27322,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_embed_smart_tags {
             val.write_element("w:doNotEmbedSmartTags", writer)?;
         }
@@ -26120,6 +27339,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.decimal_symbol {
             val.write_element("w:decimalSymbol", writer)?;
         }
@@ -26136,6 +27356,7 @@ impl ToXml for Settings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.list_separator {
             val.write_element("w:listSeparator", writer)?;
         }
@@ -26163,66 +27384,87 @@ impl ToXml for Settings {
         if self.zoom.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.remove_personal_information.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.remove_date_and_time.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_display_page_boundaries.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.display_background_shape.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.print_post_script_over_text.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.print_fractional_character_width.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.print_forms_data.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.embed_true_type_fonts.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.embed_system_fonts.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.save_subset_fonts.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.save_forms_data.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.mirror_margins.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.align_borders_and_edges.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.borders_do_not_surround_header.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.borders_do_not_surround_footer.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.gutter_at_top.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.hide_spelling_errors.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.hide_grammatical_errors.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if !self.active_writing_style.is_empty() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.proof_state.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.forms_design.is_some() {
             return false;
         }
@@ -26230,15 +27472,19 @@ impl ToXml for Settings {
         if self.attached_template.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.link_styles.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.style_pane_format_filter.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.style_pane_sort_method.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.document_type.is_some() {
             return false;
         }
@@ -26254,9 +27500,11 @@ impl ToXml for Settings {
         if self.track_revisions.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-track-changes")]
         if self.do_not_track_moves.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-track-changes")]
         if self.do_not_track_formatting.is_some() {
             return false;
         }
@@ -26264,12 +27512,15 @@ impl ToXml for Settings {
         if self.document_protection.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.auto_format_override.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.style_lock_theme.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.style_lock_q_f_set.is_some() {
             return false;
         }
@@ -26277,27 +27528,35 @@ impl ToXml for Settings {
         if self.default_tab_stop.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.auto_hyphenation.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.consecutive_hyphen_limit.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.hyphenation_zone.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_hyphenate_caps.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.show_envelope.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.summary_length.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.click_and_type_style.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.default_table_style.is_some() {
             return false;
         }
@@ -26305,99 +27564,131 @@ impl ToXml for Settings {
         if self.even_and_odd_headers.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.book_fold_rev_printing.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.book_fold_printing.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.book_fold_printing_sheets.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.drawing_grid_horizontal_spacing.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.drawing_grid_vertical_spacing.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.display_horizontal_drawing_grid_every.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.display_vertical_drawing_grid_every.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_use_margins_for_drawing_grid_origin.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.drawing_grid_horizontal_origin.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.drawing_grid_vertical_origin.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_shade_form_data.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.no_punctuation_kerning.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.character_spacing_control.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.print_two_on_one.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.strict_first_and_last_chars.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.no_line_breaks_after.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.no_line_breaks_before.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.save_preview_picture.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_validate_against_schema.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.save_invalid_xml.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.ignore_mixed_content.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.always_show_placeholder_text.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_demarcate_invalid_xml.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.save_xml_data_only.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.use_x_s_l_t_when_saving.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.save_through_xslt.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.show_x_m_l_tags.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.always_merge_empty_namespace.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.update_fields.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-drawings")]
         if self.hdr_shape_defaults.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-comments")]
         if self.footnote_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-comments")]
         if self.endnote_pr.is_some() {
             return false;
         }
@@ -26413,42 +27704,55 @@ impl ToXml for Settings {
         if self.rsids.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if !self.attached_schema.is_empty() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.theme_font_lang.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.clr_scheme_mapping.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_include_subdocs_in_stats.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_auto_compress_pictures.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.force_upgrade.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.captions.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.read_mode_ink_lock_down.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if !self.smart_tag_type.is_empty() {
             return false;
         }
+        #[cfg(feature = "wml-drawings")]
         if self.shape_defaults.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_embed_smart_tags.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.decimal_symbol.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.list_separator.is_some() {
             return false;
         }
@@ -26487,96 +27791,112 @@ impl ToXml for CTStylePaneFilter {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.all_styles {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:allStyles", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.custom_styles {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:customStyles", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.latent_styles {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:latentStyles", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.styles_in_use {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:stylesInUse", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.heading_styles {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:headingStyles", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.numbering_styles {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:numberingStyles", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.table_styles {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:tableStyles", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.direct_formatting_on_runs {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:directFormattingOnRuns", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.direct_formatting_on_paragraphs {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:directFormattingOnParagraphs", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.direct_formatting_on_numbering {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:directFormattingOnNumbering", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.direct_formatting_on_tables {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:directFormattingOnTables", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.clear_formatting {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:clearFormatting", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.top3_heading_styles {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:top3HeadingStyles", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.visible_styles {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:visibleStyles", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.alternate_style_names {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:alternateStyleNames", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.value {
             {
                 let hex = encode_hex(val);
@@ -26610,6 +27930,7 @@ impl ToXml for CTWebSettings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.frameset {
             val.write_element("w:frameset", writer)?;
         }
@@ -26626,6 +27947,7 @@ impl ToXml for CTWebSettings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.divs {
             val.write_element("w:divs", writer)?;
         }
@@ -26642,6 +27964,7 @@ impl ToXml for CTWebSettings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.encoding {
             val.write_element("w:encoding", writer)?;
         }
@@ -26658,6 +27981,7 @@ impl ToXml for CTWebSettings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.optimize_for_browser {
             val.write_element("w:optimizeForBrowser", writer)?;
         }
@@ -26674,6 +27998,7 @@ impl ToXml for CTWebSettings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.rely_on_v_m_l {
             val.write_element("w:relyOnVML", writer)?;
         }
@@ -26690,6 +28015,7 @@ impl ToXml for CTWebSettings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.allow_p_n_g {
             val.write_element("w:allowPNG", writer)?;
         }
@@ -26706,6 +28032,7 @@ impl ToXml for CTWebSettings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_rely_on_c_s_s {
             val.write_element("w:doNotRelyOnCSS", writer)?;
         }
@@ -26722,6 +28049,7 @@ impl ToXml for CTWebSettings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_save_as_single_file {
             val.write_element("w:doNotSaveAsSingleFile", writer)?;
         }
@@ -26738,6 +28066,7 @@ impl ToXml for CTWebSettings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_organize_in_folder {
             val.write_element("w:doNotOrganizeInFolder", writer)?;
         }
@@ -26754,6 +28083,7 @@ impl ToXml for CTWebSettings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.do_not_use_long_file_names {
             val.write_element("w:doNotUseLongFileNames", writer)?;
         }
@@ -26770,6 +28100,7 @@ impl ToXml for CTWebSettings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.pixels_per_inch {
             val.write_element("w:pixelsPerInch", writer)?;
         }
@@ -26786,6 +28117,7 @@ impl ToXml for CTWebSettings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.target_screen_sz {
             val.write_element("w:targetScreenSz", writer)?;
         }
@@ -26802,6 +28134,7 @@ impl ToXml for CTWebSettings {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.save_smart_tags_as_xml {
             val.write_element("w:saveSmartTagsAsXml", writer)?;
         }
@@ -26817,42 +28150,55 @@ impl ToXml for CTWebSettings {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.frameset.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.divs.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.encoding.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.optimize_for_browser.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.rely_on_v_m_l.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.allow_p_n_g.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_rely_on_c_s_s.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_save_as_single_file.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_organize_in_folder.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.do_not_use_long_file_names.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.pixels_per_inch.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.target_screen_sz.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.save_smart_tags_as_xml.is_some() {
             return false;
         }
@@ -26897,6 +28243,7 @@ impl ToXml for CTOptimizeForBrowser {
                 start.push_attribute(("w:val", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.target {
             start.push_attribute(("w:target", val.as_str()));
         }
@@ -26927,6 +28274,7 @@ impl ToXml for CTFrame {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.size {
             val.write_element("w:sz", writer)?;
         }
@@ -26943,6 +28291,7 @@ impl ToXml for CTFrame {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.name {
             val.write_element("w:name", writer)?;
         }
@@ -26959,6 +28308,7 @@ impl ToXml for CTFrame {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.title {
             val.write_element("w:title", writer)?;
         }
@@ -26975,6 +28325,7 @@ impl ToXml for CTFrame {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.long_desc {
             val.write_element("w:longDesc", writer)?;
         }
@@ -26991,6 +28342,7 @@ impl ToXml for CTFrame {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.source_file_name {
             val.write_element("w:sourceFileName", writer)?;
         }
@@ -27007,6 +28359,7 @@ impl ToXml for CTFrame {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.mar_w {
             val.write_element("w:marW", writer)?;
         }
@@ -27023,6 +28376,7 @@ impl ToXml for CTFrame {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.mar_h {
             val.write_element("w:marH", writer)?;
         }
@@ -27039,6 +28393,7 @@ impl ToXml for CTFrame {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.scrollbar {
             val.write_element("w:scrollbar", writer)?;
         }
@@ -27055,6 +28410,7 @@ impl ToXml for CTFrame {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.no_resize_allowed {
             val.write_element("w:noResizeAllowed", writer)?;
         }
@@ -27071,6 +28427,7 @@ impl ToXml for CTFrame {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.linked_to_file {
             val.write_element("w:linkedToFile", writer)?;
         }
@@ -27086,33 +28443,43 @@ impl ToXml for CTFrame {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.size.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.name.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.title.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.long_desc.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.source_file_name.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.mar_w.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.mar_h.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.scrollbar.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.no_resize_allowed.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.linked_to_file.is_some() {
             return false;
         }
@@ -27162,6 +28529,7 @@ impl ToXml for CTFramesetSplitbar {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.width {
             val.write_element("w:w", writer)?;
         }
@@ -27178,6 +28546,7 @@ impl ToXml for CTFramesetSplitbar {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.color {
             val.write_element("w:color", writer)?;
         }
@@ -27194,6 +28563,7 @@ impl ToXml for CTFramesetSplitbar {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.no_border {
             val.write_element("w:noBorder", writer)?;
         }
@@ -27210,6 +28580,7 @@ impl ToXml for CTFramesetSplitbar {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.flat_borders {
             val.write_element("w:flatBorders", writer)?;
         }
@@ -27225,15 +28596,19 @@ impl ToXml for CTFramesetSplitbar {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.width.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.color.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.no_border.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.flat_borders.is_some() {
             return false;
         }
@@ -27260,6 +28635,7 @@ impl ToXml for CTFrameset {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.size {
             val.write_element("w:sz", writer)?;
         }
@@ -27276,6 +28652,7 @@ impl ToXml for CTFrameset {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.frameset_splitbar {
             val.write_element("w:framesetSplitbar", writer)?;
         }
@@ -27292,6 +28669,7 @@ impl ToXml for CTFrameset {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.frame_layout {
             val.write_element("w:frameLayout", writer)?;
         }
@@ -27308,6 +28686,7 @@ impl ToXml for CTFrameset {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.title {
             val.write_element("w:title", writer)?;
         }
@@ -27323,15 +28702,19 @@ impl ToXml for CTFrameset {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.size.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.frameset_splitbar.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.frame_layout.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.title.is_some() {
             return false;
         }
@@ -27375,6 +28758,7 @@ impl ToXml for CTNumPicBullet {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.pict {
             val.write_element("w:pict", writer)?;
         }
@@ -27391,6 +28775,7 @@ impl ToXml for CTNumPicBullet {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.drawing {
             val.write_element("w:drawing", writer)?;
         }
@@ -27406,9 +28791,11 @@ impl ToXml for CTNumPicBullet {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-numbering")]
         if self.pict.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-numbering")]
         if self.drawing.is_some() {
             return false;
         }
@@ -27450,6 +28837,7 @@ impl ToXml for CTLevelText {
         if let Some(ref val) = self.value {
             start.push_attribute(("w:val", val.as_str()));
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.null {
             {
                 let s = val.to_string();
@@ -27472,18 +28860,21 @@ impl ToXml for CTLvlLegacy {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.legacy {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:legacy", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.legacy_space {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:legacySpace", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.legacy_indent {
             {
                 let s = val.to_string();
@@ -27513,12 +28904,14 @@ impl ToXml for Level {
                 start.push_attribute(("w:ilvl", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.tplc {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("w:tplc", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.tentative {
             {
                 let s = val.to_string();
@@ -27546,6 +28939,7 @@ impl ToXml for Level {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.start {
             val.write_element("w:start", writer)?;
         }
@@ -27562,6 +28956,7 @@ impl ToXml for Level {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.num_fmt {
             val.write_element("w:numFmt", writer)?;
         }
@@ -27578,6 +28973,7 @@ impl ToXml for Level {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.lvl_restart {
             val.write_element("w:lvlRestart", writer)?;
         }
@@ -27594,6 +28990,7 @@ impl ToXml for Level {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.paragraph_style {
             val.write_element("w:pStyle", writer)?;
         }
@@ -27610,6 +29007,7 @@ impl ToXml for Level {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.is_lgl {
             val.write_element("w:isLgl", writer)?;
         }
@@ -27626,6 +29024,7 @@ impl ToXml for Level {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.suff {
             val.write_element("w:suff", writer)?;
         }
@@ -27642,6 +29041,7 @@ impl ToXml for Level {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.lvl_text {
             val.write_element("w:lvlText", writer)?;
         }
@@ -27658,6 +29058,7 @@ impl ToXml for Level {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.lvl_pic_bullet_id {
             val.write_element("w:lvlPicBulletId", writer)?;
         }
@@ -27674,6 +29075,7 @@ impl ToXml for Level {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.legacy {
             val.write_element("w:legacy", writer)?;
         }
@@ -27690,6 +29092,7 @@ impl ToXml for Level {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.lvl_jc {
             val.write_element("w:lvlJc", writer)?;
         }
@@ -27706,6 +29109,7 @@ impl ToXml for Level {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.p_pr {
             val.write_element("w:pPr", writer)?;
         }
@@ -27722,6 +29126,7 @@ impl ToXml for Level {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.r_pr {
             val.write_element("w:rPr", writer)?;
         }
@@ -27737,39 +29142,51 @@ impl ToXml for Level {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-numbering")]
         if self.start.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-numbering")]
         if self.num_fmt.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-numbering")]
         if self.lvl_restart.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-numbering")]
         if self.paragraph_style.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-numbering")]
         if self.is_lgl.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-numbering")]
         if self.suff.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-numbering")]
         if self.lvl_text.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-numbering")]
         if self.lvl_pic_bullet_id.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-numbering")]
         if self.legacy.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-numbering")]
         if self.lvl_jc.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-numbering")]
         if self.p_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-numbering")]
         if self.r_pr.is_some() {
             return false;
         }
@@ -27836,6 +29253,7 @@ impl ToXml for AbstractNumbering {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.nsid {
             val.write_element("w:nsid", writer)?;
         }
@@ -27852,6 +29270,7 @@ impl ToXml for AbstractNumbering {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.multi_level_type {
             val.write_element("w:multiLevelType", writer)?;
         }
@@ -27868,6 +29287,7 @@ impl ToXml for AbstractNumbering {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.tmpl {
             val.write_element("w:tmpl", writer)?;
         }
@@ -27884,6 +29304,7 @@ impl ToXml for AbstractNumbering {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.name {
             val.write_element("w:name", writer)?;
         }
@@ -27900,6 +29321,7 @@ impl ToXml for AbstractNumbering {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.style_link {
             val.write_element("w:styleLink", writer)?;
         }
@@ -27916,6 +29338,7 @@ impl ToXml for AbstractNumbering {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.num_style_link {
             val.write_element("w:numStyleLink", writer)?;
         }
@@ -27947,21 +29370,27 @@ impl ToXml for AbstractNumbering {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-numbering")]
         if self.nsid.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-numbering")]
         if self.multi_level_type.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-numbering")]
         if self.tmpl.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-numbering")]
         if self.name.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-numbering")]
         if self.style_link.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-numbering")]
         if self.num_style_link.is_some() {
             return false;
         }
@@ -28008,6 +29437,7 @@ impl ToXml for CTNumLvl {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.start_override {
             val.write_element("w:startOverride", writer)?;
         }
@@ -28024,6 +29454,7 @@ impl ToXml for CTNumLvl {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.lvl {
             val.write_element("w:lvl", writer)?;
         }
@@ -28039,9 +29470,11 @@ impl ToXml for CTNumLvl {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-numbering")]
         if self.start_override.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-numbering")]
         if self.lvl.is_some() {
             return false;
         }
@@ -28093,6 +29526,7 @@ impl ToXml for NumberingInstance {
         {
             emit_idx += 1;
         }
+        #[cfg(feature = "wml-numbering")]
         for item in &self.lvl_override {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -28223,7 +29657,7 @@ impl ToXml for Numbering {
     }
 }
 
-impl ToXml for CTTblStylePr {
+impl ToXml for TableStyleProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
@@ -28255,6 +29689,7 @@ impl ToXml for CTTblStylePr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.p_pr {
             val.write_element("w:pPr", writer)?;
         }
@@ -28271,6 +29706,7 @@ impl ToXml for CTTblStylePr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.r_pr {
             val.write_element("w:rPr", writer)?;
         }
@@ -28287,6 +29723,7 @@ impl ToXml for CTTblStylePr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.table_properties {
             val.write_element("w:tblPr", writer)?;
         }
@@ -28303,6 +29740,7 @@ impl ToXml for CTTblStylePr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.row_properties {
             val.write_element("w:trPr", writer)?;
         }
@@ -28319,6 +29757,7 @@ impl ToXml for CTTblStylePr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.cell_properties {
             val.write_element("w:tcPr", writer)?;
         }
@@ -28334,18 +29773,23 @@ impl ToXml for CTTblStylePr {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-styling")]
         if self.p_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.r_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.table_properties.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.row_properties.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.cell_properties.is_some() {
             return false;
         }
@@ -28587,6 +30031,7 @@ impl ToXml for Style {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.locked {
             val.write_element("w:locked", writer)?;
         }
@@ -28603,6 +30048,7 @@ impl ToXml for Style {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.personal {
             val.write_element("w:personal", writer)?;
         }
@@ -28619,6 +30065,7 @@ impl ToXml for Style {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.personal_compose {
             val.write_element("w:personalCompose", writer)?;
         }
@@ -28635,6 +30082,7 @@ impl ToXml for Style {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.personal_reply {
             val.write_element("w:personalReply", writer)?;
         }
@@ -28651,6 +30099,7 @@ impl ToXml for Style {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.rsid {
             val.write_element("w:rsid", writer)?;
         }
@@ -28809,18 +30258,23 @@ impl ToXml for Style {
         if self.q_format.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.locked.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.personal.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.personal_compose.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.personal_reply.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-track-changes")]
         if self.rsid.is_some() {
             return false;
         }
@@ -28856,7 +30310,7 @@ impl ToXml for Style {
     }
 }
 
-impl ToXml for CTLsdException {
+impl ToXml for LatentStyleException {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
@@ -28864,30 +30318,35 @@ impl ToXml for CTLsdException {
             let val = &self.name;
             start.push_attribute(("w:name", val.as_str()));
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.locked {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:locked", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.ui_priority {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:uiPriority", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.semi_hidden {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:semiHidden", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.unhide_when_used {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:unhideWhenUsed", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.q_format {
             {
                 let s = val.to_string();
@@ -28906,40 +30365,46 @@ impl ToXml for CTLsdException {
     }
 }
 
-impl ToXml for CTLatentStyles {
+impl ToXml for LatentStyles {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.def_locked_state {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:defLockedState", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.def_u_i_priority {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:defUIPriority", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.def_semi_hidden {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:defSemiHidden", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.def_unhide_when_used {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:defUnhideWhenUsed", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.def_q_format {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:defQFormat", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.count {
             {
                 let s = val.to_string();
@@ -29024,6 +30489,7 @@ impl ToXml for Styles {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.latent_styles {
             val.write_element("w:latentStyles", writer)?;
         }
@@ -29058,6 +30524,7 @@ impl ToXml for Styles {
         if self.doc_defaults.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.latent_styles.is_some() {
             return false;
         }
@@ -29145,6 +30612,7 @@ impl ToXml for CTFontSig {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-styling")]
         {
             let val = &self.usb0;
             {
@@ -29152,6 +30620,7 @@ impl ToXml for CTFontSig {
                 start.push_attribute(("w:usb0", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         {
             let val = &self.usb1;
             {
@@ -29159,6 +30628,7 @@ impl ToXml for CTFontSig {
                 start.push_attribute(("w:usb1", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         {
             let val = &self.usb2;
             {
@@ -29166,6 +30636,7 @@ impl ToXml for CTFontSig {
                 start.push_attribute(("w:usb2", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         {
             let val = &self.usb3;
             {
@@ -29173,6 +30644,7 @@ impl ToXml for CTFontSig {
                 start.push_attribute(("w:usb3", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         {
             let val = &self.csb0;
             {
@@ -29180,6 +30652,7 @@ impl ToXml for CTFontSig {
                 start.push_attribute(("w:csb0", hex.as_str()));
             }
         }
+        #[cfg(feature = "wml-styling")]
         {
             let val = &self.csb1;
             {
@@ -29203,13 +30676,16 @@ impl ToXml for CTFontRel {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-styling")]
         {
             let val = &self.id;
             start.push_attribute(("r:id", val.as_str()));
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.font_key {
             start.push_attribute(("w:fontKey", val.as_str()));
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.subsetted {
             {
                 let s = val.to_string();
@@ -29257,6 +30733,7 @@ impl ToXml for Font {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.alt_name {
             val.write_element("w:altName", writer)?;
         }
@@ -29273,6 +30750,7 @@ impl ToXml for Font {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.panose1 {
             val.write_element("w:panose1", writer)?;
         }
@@ -29289,6 +30767,7 @@ impl ToXml for Font {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.charset {
             val.write_element("w:charset", writer)?;
         }
@@ -29305,6 +30784,7 @@ impl ToXml for Font {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.family {
             val.write_element("w:family", writer)?;
         }
@@ -29321,6 +30801,7 @@ impl ToXml for Font {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.not_true_type {
             val.write_element("w:notTrueType", writer)?;
         }
@@ -29337,6 +30818,7 @@ impl ToXml for Font {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.pitch {
             val.write_element("w:pitch", writer)?;
         }
@@ -29353,6 +30835,7 @@ impl ToXml for Font {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.sig {
             val.write_element("w:sig", writer)?;
         }
@@ -29369,6 +30852,7 @@ impl ToXml for Font {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.embed_regular {
             val.write_element("w:embedRegular", writer)?;
         }
@@ -29385,6 +30869,7 @@ impl ToXml for Font {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.embed_bold {
             val.write_element("w:embedBold", writer)?;
         }
@@ -29401,6 +30886,7 @@ impl ToXml for Font {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.embed_italic {
             val.write_element("w:embedItalic", writer)?;
         }
@@ -29417,6 +30903,7 @@ impl ToXml for Font {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.embed_bold_italic {
             val.write_element("w:embedBoldItalic", writer)?;
         }
@@ -29432,36 +30919,47 @@ impl ToXml for Font {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-styling")]
         if self.alt_name.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.panose1.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.charset.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.family.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.not_true_type.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.pitch.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.sig.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.embed_regular.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.embed_bold.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.embed_italic.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.embed_bold_italic.is_some() {
             return false;
         }
@@ -29529,6 +31027,7 @@ impl ToXml for CTDivBdr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.top {
             val.write_element("w:top", writer)?;
         }
@@ -29545,6 +31044,7 @@ impl ToXml for CTDivBdr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.left {
             val.write_element("w:left", writer)?;
         }
@@ -29561,6 +31061,7 @@ impl ToXml for CTDivBdr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.bottom {
             val.write_element("w:bottom", writer)?;
         }
@@ -29577,6 +31078,7 @@ impl ToXml for CTDivBdr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.right {
             val.write_element("w:right", writer)?;
         }
@@ -29592,15 +31094,19 @@ impl ToXml for CTDivBdr {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.top.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.left.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.bottom.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.right.is_some() {
             return false;
         }
@@ -29616,6 +31122,7 @@ impl ToXml for CTDiv {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.id;
             {
@@ -29644,6 +31151,7 @@ impl ToXml for CTDiv {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.block_quote {
             val.write_element("w:blockQuote", writer)?;
         }
@@ -29660,6 +31168,7 @@ impl ToXml for CTDiv {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.body_div {
             val.write_element("w:bodyDiv", writer)?;
         }
@@ -29676,6 +31185,7 @@ impl ToXml for CTDiv {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.mar_left;
             val.write_element("w:marLeft", writer)?;
@@ -29693,6 +31203,7 @@ impl ToXml for CTDiv {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.mar_right;
             val.write_element("w:marRight", writer)?;
@@ -29710,6 +31221,7 @@ impl ToXml for CTDiv {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.mar_top;
             val.write_element("w:marTop", writer)?;
@@ -29727,6 +31239,7 @@ impl ToXml for CTDiv {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.mar_bottom;
             val.write_element("w:marBottom", writer)?;
@@ -29744,6 +31257,7 @@ impl ToXml for CTDiv {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.div_bdr {
             val.write_element("w:divBdr", writer)?;
         }
@@ -29751,6 +31265,7 @@ impl ToXml for CTDiv {
         {
             emit_idx += 1;
         }
+        #[cfg(feature = "wml-settings")]
         for item in &self.divs_child {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -29775,13 +31290,35 @@ impl ToXml for CTDiv {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.block_quote.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.body_div.is_some() {
             return false;
         }
-        false
+        #[cfg(feature = "wml-settings")]
+        return false;
+        #[cfg(feature = "wml-settings")]
+        return false;
+        #[cfg(feature = "wml-settings")]
+        return false;
+        #[cfg(feature = "wml-settings")]
+        return false;
+        #[cfg(feature = "wml-settings")]
+        if self.div_bdr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "wml-settings")]
+        if !self.divs_child.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -29791,6 +31328,7 @@ impl ToXml for CTDivs {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
+        #[cfg(feature = "wml-settings")]
         for item in &self.div {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -29815,6 +31353,7 @@ impl ToXml for CTDivs {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if !self.div.is_empty() {
             return false;
         }
@@ -30244,12 +31783,15 @@ impl ToXml for CTSmartTagType {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.namespaceuri {
             start.push_attribute(("w:namespaceuri", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.name {
             start.push_attribute(("w:name", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.url {
             start.push_attribute(("w:url", val.as_str()));
         }
@@ -30294,6 +31836,7 @@ impl ToXml for CTDocPartBehaviors {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
+        #[cfg(feature = "wml-settings")]
         for item in &self.behavior {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -30318,6 +31861,7 @@ impl ToXml for CTDocPartBehaviors {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if !self.behavior.is_empty() {
             return false;
         }
@@ -30356,6 +31900,7 @@ impl ToXml for CTDocPartTypes {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.all {
             {
                 let s = val.to_string();
@@ -30374,6 +31919,7 @@ impl ToXml for CTDocPartTypes {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
+        #[cfg(feature = "wml-settings")]
         for item in &self.r#type {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -30398,6 +31944,7 @@ impl ToXml for CTDocPartTypes {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if !self.r#type.is_empty() {
             return false;
         }
@@ -30464,6 +32011,7 @@ impl ToXml for CTDocPartCategory {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.gallery;
             val.write_element("w:gallery", writer)?;
@@ -30492,6 +32040,7 @@ impl ToXml for CTDocPartName {
             let val = &self.value;
             start.push_attribute(("w:val", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.decorated {
             {
                 let s = val.to_string();
@@ -30525,6 +32074,7 @@ impl ToXml for CTDocPartPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.name;
             val.write_element("w:name", writer)?;
@@ -30542,6 +32092,7 @@ impl ToXml for CTDocPartPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.style {
             val.write_element("w:style", writer)?;
         }
@@ -30558,6 +32109,7 @@ impl ToXml for CTDocPartPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.category {
             val.write_element("w:category", writer)?;
         }
@@ -30574,6 +32126,7 @@ impl ToXml for CTDocPartPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.types {
             val.write_element("w:types", writer)?;
         }
@@ -30590,6 +32143,7 @@ impl ToXml for CTDocPartPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.behaviors {
             val.write_element("w:behaviors", writer)?;
         }
@@ -30606,6 +32160,7 @@ impl ToXml for CTDocPartPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.description {
             val.write_element("w:description", writer)?;
         }
@@ -30622,6 +32177,7 @@ impl ToXml for CTDocPartPr {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.guid {
             val.write_element("w:guid", writer)?;
         }
@@ -30637,7 +32193,37 @@ impl ToXml for CTDocPartPr {
     }
 
     fn is_empty_element(&self) -> bool {
-        false
+        #[cfg(feature = "wml-settings")]
+        return false;
+        #[cfg(feature = "wml-settings")]
+        if self.style.is_some() {
+            return false;
+        }
+        #[cfg(feature = "wml-settings")]
+        if self.category.is_some() {
+            return false;
+        }
+        #[cfg(feature = "wml-settings")]
+        if self.types.is_some() {
+            return false;
+        }
+        #[cfg(feature = "wml-settings")]
+        if self.behaviors.is_some() {
+            return false;
+        }
+        #[cfg(feature = "wml-settings")]
+        if self.description.is_some() {
+            return false;
+        }
+        #[cfg(feature = "wml-settings")]
+        if self.guid.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -30656,6 +32242,7 @@ impl ToXml for CTDocPart {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.doc_part_pr {
             val.write_element("w:docPartPr", writer)?;
         }
@@ -30672,6 +32259,7 @@ impl ToXml for CTDocPart {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.doc_part_body {
             val.write_element("w:docPartBody", writer)?;
         }
@@ -30687,9 +32275,11 @@ impl ToXml for CTDocPart {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.doc_part_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.doc_part_body.is_some() {
             return false;
         }
@@ -30707,6 +32297,7 @@ impl ToXml for CTDocParts {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
+        #[cfg(feature = "wml-settings")]
         for item in &self.doc_part {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -30731,6 +32322,7 @@ impl ToXml for CTDocParts {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if !self.doc_part.is_empty() {
             return false;
         }
@@ -30746,40 +32338,47 @@ impl ToXml for CTCaption {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.name;
             start.push_attribute(("w:name", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.pos {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:pos", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.chap_num {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:chapNum", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.heading {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:heading", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.no_label {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:noLabel", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.num_fmt {
             {
                 let s = val.to_string();
                 start.push_attribute(("w:numFmt", s.as_str()));
             }
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.sep {
             {
                 let s = val.to_string();
@@ -30802,10 +32401,12 @@ impl ToXml for CTAutoCaption {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.name;
             start.push_attribute(("w:name", val.as_str()));
         }
+        #[cfg(feature = "wml-settings")]
         {
             let val = &self.caption;
             start.push_attribute(("w:caption", val.as_str()));
@@ -30828,6 +32429,7 @@ impl ToXml for CTAutoCaptions {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
+        #[cfg(feature = "wml-settings")]
         for item in &self.auto_caption {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -30852,6 +32454,7 @@ impl ToXml for CTAutoCaptions {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if !self.auto_caption.is_empty() {
             return false;
         }
@@ -30869,6 +32472,7 @@ impl ToXml for CTCaptions {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
+        #[cfg(feature = "wml-settings")]
         for item in &self.caption {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -30894,6 +32498,7 @@ impl ToXml for CTCaptions {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.auto_captions {
             val.write_element("w:autoCaptions", writer)?;
         }
@@ -30909,9 +32514,11 @@ impl ToXml for CTCaptions {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if !self.caption.is_empty() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.auto_captions.is_some() {
             return false;
         }
@@ -30938,6 +32545,7 @@ impl ToXml for CTDocumentBase {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.background {
             val.write_element("w:background", writer)?;
         }
@@ -30953,6 +32561,7 @@ impl ToXml for CTDocumentBase {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-styling")]
         if self.background.is_some() {
             return false;
         }
@@ -31073,6 +32682,7 @@ impl ToXml for CTGlossaryDocument {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.doc_parts {
             val.write_element("w:docParts", writer)?;
         }
@@ -31091,6 +32701,7 @@ impl ToXml for CTGlossaryDocument {
         if self.background.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.doc_parts.is_some() {
             return false;
         }

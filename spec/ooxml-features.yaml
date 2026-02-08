@@ -699,6 +699,7 @@ wml:
   Document:
     body: [core]
     background: [styling]
+    conformance: [core]
 
   Body:
     # block_level_elts omitted — EG_* content, always included
@@ -708,6 +709,11 @@ wml:
   # Paragraph
   # ---------------------------------------------------------------------------
   Paragraph:
+    rsidRPr: [track-changes]
+    rsidR: [track-changes]
+    rsidDel: [track-changes]
+    rsidP: [track-changes]
+    rsidRDefault: [track-changes]
     pPr: [styling]
     # p_content omitted — EG_* content, always included
 
@@ -753,6 +759,9 @@ wml:
   # Run
   # ---------------------------------------------------------------------------
   Run:
+    rsidRPr: [track-changes]
+    rsidDel: [track-changes]
+    rsidR: [track-changes]
     rPr: [styling]
     # run_inner_content omitted — EG_* content, always included
 
@@ -802,6 +811,10 @@ wml:
   # Section
   # ---------------------------------------------------------------------------
   SectionProperties:
+    rsidRPr: [track-changes]
+    rsidDel: [track-changes]
+    rsidR: [track-changes]
+    rsidSect: [track-changes]
     # hdr_ftr_references omitted — EG_* content, always included
     footnotePr: [comments]
     endnotePr: [comments]
@@ -833,11 +846,16 @@ wml:
     tblGrid: [core]
 
   CTRow:
+    rsidRPr: [track-changes]
+    rsidR: [track-changes]
+    rsidDel: [track-changes]
+    rsidTr: [track-changes]
     tblPrEx: [tables]
     trPr: [tables]
     # content_cell_content omitted — EG_* content
 
   TableCell:
+    id: [tables]
     tcPr: [tables]
     # block_level_elts omitted — EG_* content
 
@@ -876,8 +894,21 @@ wml:
     vAlign: [tables]
     hideMark: [tables]
     headers: [tables]
+    tcPrChange: [track-changes]
 
   TableRowProperties:
+    cnfStyle: [styling]
+    divId: [settings]
+    gridBefore: [tables]
+    gridAfter: [tables]
+    wBefore: [tables]
+    wAfter: [tables]
+    cantSplit: [tables]
+    trHeight: [tables]
+    tblHeader: [tables]
+    tblCellSpacing: [tables]
+    jc: [tables]
+    hidden: [tables]
     ins: [track-changes]
     del: [track-changes]
     trPrChange: [track-changes]
@@ -886,7 +917,12 @@ wml:
   # Styles
   # ---------------------------------------------------------------------------
   Style:
+    type: [core]
+    styleId: [core]
+    default: [core]
+    customStyle: [core]
     name: [core]
+    aliases: [core]
     basedOn: [core]
     next: [styling]
     link: [styling]
@@ -896,12 +932,22 @@ wml:
     semiHidden: [styling]
     unhideWhenUsed: [styling]
     qFormat: [styling]
+    locked: [settings]
+    personal: [settings]
+    personalCompose: [settings]
+    personalReply: [settings]
+    rsid: [track-changes]
     pPr: [styling]
     rPr: [styling]
     tblPr: [styling]
     trPr: [styling]
     tcPr: [styling]
     tblStylePr: [styling]
+
+  Styles:
+    docDefaults: [core]
+    latentStyles: [styling]
+    style: [core]
 
   # ---------------------------------------------------------------------------
   # Settings
@@ -910,16 +956,99 @@ wml:
     writeProtection: [settings]
     view: [settings]
     zoom: [settings]
-    defaultTabStop: [settings]
-    compat: [settings]
-    rsids: [settings]
-    docVars: [settings]
-    trackRevisions: [settings, track-changes]
-    revisionView: [settings, track-changes]
-    documentProtection: [settings]
-    evenAndOddHeaders: [settings]
-    mailMerge: [settings]
+    removePersonalInformation: [settings]
+    removeDateAndTime: [settings]
+    doNotDisplayPageBoundaries: [settings]
+    displayBackgroundShape: [settings]
+    printPostScriptOverText: [settings]
+    printFractionalCharacterWidth: [settings]
+    printFormsData: [settings]
+    embedTrueTypeFonts: [settings]
+    embedSystemFonts: [settings]
+    saveSubsetFonts: [settings]
+    saveFormsData: [settings]
+    mirrorMargins: [settings]
+    alignBordersAndEdges: [settings]
+    bordersDoNotSurroundHeader: [settings]
+    bordersDoNotSurroundFooter: [settings]
+    gutterAtTop: [settings]
+    hideSpellingErrors: [settings]
+    hideGrammaticalErrors: [settings]
+    activeWritingStyle: [settings]
+    proofState: [settings]
+    formsDesign: [settings]
     attachedTemplate: [settings]
+    linkStyles: [settings]
+    stylePaneFormatFilter: [settings]
+    stylePaneSortMethod: [settings]
+    documentType: [settings]
+    mailMerge: [settings]
+    revisionView: [settings, track-changes]
+    trackRevisions: [settings, track-changes]
+    doNotTrackMoves: [track-changes]
+    doNotTrackFormatting: [track-changes]
+    documentProtection: [settings]
+    autoFormatOverride: [settings]
+    styleLockTheme: [settings]
+    styleLockQFSet: [settings]
+    defaultTabStop: [settings]
+    autoHyphenation: [settings]
+    consecutiveHyphenLimit: [settings]
+    hyphenationZone: [settings]
+    doNotHyphenateCaps: [settings]
+    showEnvelope: [settings]
+    summaryLength: [settings]
+    clickAndTypeStyle: [settings]
+    defaultTableStyle: [settings]
+    evenAndOddHeaders: [settings]
+    bookFoldRevPrinting: [settings]
+    bookFoldPrinting: [settings]
+    bookFoldPrintingSheets: [settings]
+    drawingGridHorizontalSpacing: [settings]
+    drawingGridVerticalSpacing: [settings]
+    displayHorizontalDrawingGridEvery: [settings]
+    displayVerticalDrawingGridEvery: [settings]
+    doNotUseMarginsForDrawingGridOrigin: [settings]
+    drawingGridHorizontalOrigin: [settings]
+    drawingGridVerticalOrigin: [settings]
+    doNotShadeFormData: [settings]
+    noPunctuationKerning: [settings]
+    characterSpacingControl: [settings]
+    printTwoOnOne: [settings]
+    strictFirstAndLastChars: [settings]
+    noLineBreaksAfter: [settings]
+    noLineBreaksBefore: [settings]
+    savePreviewPicture: [settings]
+    doNotValidateAgainstSchema: [settings]
+    saveInvalidXml: [settings]
+    ignoreMixedContent: [settings]
+    alwaysShowPlaceholderText: [settings]
+    doNotDemarcateInvalidXml: [settings]
+    saveXmlDataOnly: [settings]
+    useXSLTWhenSaving: [settings]
+    saveThroughXslt: [settings]
+    showXMLTags: [settings]
+    alwaysMergeEmptyNamespace: [settings]
+    updateFields: [settings]
+    hdrShapeDefaults: [drawings]
+    footnotePr: [comments]
+    endnotePr: [comments]
+    compat: [settings]
+    docVars: [settings]
+    rsids: [settings]
+    attachedSchema: [settings]
+    themeFontLang: [settings]
+    clrSchemeMapping: [settings]
+    doNotIncludeSubdocsInStats: [settings]
+    doNotAutoCompressPictures: [settings]
+    forceUpgrade: [settings]
+    captions: [settings]
+    readModeInkLockDown: [settings]
+    smartTagType: [settings]
+    shapeDefaults: [drawings]
+    doNotEmbedSmartTags: [settings]
+    decimalSymbol: [settings]
+    listSeparator: [settings]
 
   # ---------------------------------------------------------------------------
   # Numbering
@@ -929,6 +1058,1351 @@ wml:
     abstractNum: [core]
     num: [core]
     numIdMacAtCleanup: [numbering]
+
+  AbstractNumbering:
+    abstractNumId: [core]
+    nsid: [numbering]
+    multiLevelType: [numbering]
+    tmpl: [numbering]
+    name: [numbering]
+    styleLink: [numbering]
+    numStyleLink: [numbering]
+    lvl: [core]
+
+  Level:
+    ilvl: [core]
+    tplc: [numbering]
+    tentative: [numbering]
+    start: [numbering]
+    numFmt: [numbering]
+    lvlRestart: [numbering]
+    pStyle: [numbering]
+    isLgl: [numbering]
+    suff: [numbering]
+    lvlText: [numbering]
+    lvlPicBulletId: [numbering]
+    legacy: [numbering]
+    lvlJc: [numbering]
+    pPr: [numbering]
+    rPr: [numbering]
+
+  NumberingInstance:
+    numId: [core]
+    abstractNumId: [core]
+    lvlOverride: [numbering]
+
+  # ---------------------------------------------------------------------------
+  # Comments
+  # ---------------------------------------------------------------------------
+  Comment:
+    id: [core]
+    author: [core]
+    date: [comments]
+    initials: [comments]
+
+  Comments:
+    comment: [core]
+
+  # ---------------------------------------------------------------------------
+  # Footnotes / Endnotes
+  # ---------------------------------------------------------------------------
+  FootnoteEndnote:
+    type: [comments]
+    id: [core]
+
+  Footnotes:
+    footnote: [core]
+
+  Endnotes:
+    endnote: [core]
+
+  # ---------------------------------------------------------------------------
+  # Hyperlinks
+  # ---------------------------------------------------------------------------
+  Hyperlink:
+    tgtFrame: [hyperlinks]
+    tooltip: [hyperlinks]
+    docLocation: [hyperlinks]
+    history: [hyperlinks]
+    anchor: [hyperlinks]
+    id: [hyperlinks]
+
+  # ---------------------------------------------------------------------------
+  # Bookmarks
+  # ---------------------------------------------------------------------------
+  Bookmark:
+    id: [core]
+    displacedByCustomXml: [settings]
+    colFirst: [tables]
+    colLast: [tables]
+    name: [core]
+
+  # ---------------------------------------------------------------------------
+  # Fonts (CT_RFonts)
+  # ---------------------------------------------------------------------------
+  Fonts:
+    hint: [styling]
+    ascii: [styling]
+    hAnsi: [styling]
+    eastAsia: [styling]
+    cs: [styling]
+    asciiTheme: [styling]
+    hAnsiTheme: [styling]
+    eastAsiaTheme: [styling]
+    cstheme: [styling]
+
+  # ---------------------------------------------------------------------------
+  # Header / Footer
+  # ---------------------------------------------------------------------------
+  HeaderFooterReference:
+    id: [core]
+    type: [core]
+
+  TableGrid:
+    gridCol: [core]
+    tblGridChange: [track-changes]
+
+  TableGridColumn:
+    w: [core]
+
+  # ---------------------------------------------------------------------------
+  # Compatibility (all fields → settings)
+  # ---------------------------------------------------------------------------
+  Compatibility:
+    "*": [settings]
+
+  CTCompatSetting:
+    "*": [core]
+
+  # ---------------------------------------------------------------------------
+  # Document defaults, styles containers
+  # ---------------------------------------------------------------------------
+  DocumentDefaults:
+    pPrDefault: [core]
+    rPrDefault: [core]
+
+  ParagraphPropertiesDefault:
+    pPr: [core]
+
+  RunPropertiesDefault:
+    rPr: [core]
+
+  LatentStyles:
+    count: [styling]
+    defLockedState: [styling]
+    defQFormat: [styling]
+    defSemiHidden: [styling]
+    defUIPriority: [styling]
+    defUnhideWhenUsed: [styling]
+    lsdException: [core]
+
+  LatentStyleException:
+    locked: [styling]
+    name: [core]
+    qFormat: [styling]
+    semiHidden: [styling]
+    uiPriority: [styling]
+    unhideWhenUsed: [styling]
+
+  TableStyleProperties:
+    type: [core]
+    pPr: [styling]
+    rPr: [styling]
+    tblPr: [styling]
+    tcPr: [styling]
+    trPr: [styling]
+
+  NumberingProperties:
+    ilvl: [numbering]
+    ins: [track-changes]
+    numberingChange: [track-changes]
+    numId: [numbering]
+
+  # ---------------------------------------------------------------------------
+  # Font definition (CT_Font)
+  # ---------------------------------------------------------------------------
+  Font:
+    name: [core]
+    altName: [styling]
+    panose1: [styling]
+    charset: [styling]
+    family: [styling]
+    notTrueType: [styling]
+    pitch: [styling]
+    sig: [styling]
+    embedRegular: [styling]
+    embedBold: [styling]
+    embedItalic: [styling]
+    embedBoldItalic: [styling]
+
+  # ---------------------------------------------------------------------------
+  # Page layout types
+  # ---------------------------------------------------------------------------
+  PageSize:
+    w: [layout]
+    h: [layout]
+    orient: [layout]
+    code: [layout]
+
+  PageMargins:
+    top: [layout]
+    right: [layout]
+    bottom: [layout]
+    left: [layout]
+    header: [layout]
+    footer: [layout]
+    gutter: [layout]
+
+  DocumentGrid:
+    type: [layout]
+    linePitch: [layout]
+    charSpace: [layout]
+
+  Columns:
+    num: [layout]
+    space: [layout]
+    sep: [layout]
+    equalWidth: [layout]
+    col: [layout]
+
+  CTColumn:
+    w: [layout]
+    space: [layout]
+
+  CTPageBorders:
+    display: [layout]
+    offsetFrom: [layout]
+    zOrder: [layout]
+    top: [layout]
+    left: [layout]
+    bottom: [layout]
+    right: [layout]
+
+  CTPageBorder:
+    id: [layout]
+
+  CTBottomPageBorder:
+    bottomLeft: [layout]
+    bottomRight: [layout]
+
+  CTTopPageBorder:
+    topLeft: [layout]
+    topRight: [layout]
+
+  CTPageNumber:
+    fmt: [layout]
+    start: [layout]
+    chapStyle: [layout]
+    chapSep: [layout]
+
+  CTPaperSource:
+    first: [layout]
+    other: [layout]
+
+  CTLineNumber:
+    countBy: [layout]
+    start: [layout]
+    distance: [layout]
+    restart: [layout]
+
+  # ---------------------------------------------------------------------------
+  # Property base types (used by change tracking *Change elements)
+  # ---------------------------------------------------------------------------
+  CTPPrBase:
+    pStyle: [core]
+    keepNext: [layout]
+    keepLines: [layout]
+    pageBreakBefore: [layout]
+    framePr: [layout]
+    widowControl: [layout]
+    numPr: [numbering]
+    suppressLineNumbers: [layout]
+    pBdr: [styling]
+    shd: [styling]
+    tabs: [styling]
+    suppressAutoHyphens: [styling]
+    kinsoku: [styling]
+    wordWrap: [styling]
+    overflowPunct: [styling]
+    topLinePunct: [styling]
+    autoSpaceDE: [styling]
+    autoSpaceDN: [styling]
+    bidi: [styling]
+    adjustRightInd: [styling]
+    snapToGrid: [layout]
+    spacing: [styling]
+    ind: [styling]
+    contextualSpacing: [styling]
+    mirrorIndents: [styling]
+    suppressOverlap: [layout]
+    jc: [styling]
+    textDirection: [styling]
+    textAlignment: [styling]
+    textboxTightWrap: [styling]
+    outlineLvl: [styling]
+    divId: [styling]
+    cnfStyle: [styling]
+
+  CTPPrGeneral:
+    pPrChange: [track-changes]
+
+  CTPPrChange:
+    pPr: [track-changes]
+
+  CTTblPrBase:
+    tblStyle: [styling]
+    tblpPr: [tables]
+    tblOverlap: [tables]
+    bidiVisual: [tables]
+    tblStyleRowBandSize: [styling]
+    tblStyleColBandSize: [styling]
+    tblW: [tables]
+    jc: [tables]
+    tblCellSpacing: [tables]
+    tblInd: [tables]
+    tblBorders: [tables]
+    shd: [tables]
+    tblLayout: [tables]
+    tblCellMar: [tables]
+    tblLook: [tables]
+    tblCaption: [tables]
+    tblDescription: [tables]
+
+  CTTblPrChange:
+    tblPr: [track-changes]
+
+  CTTcPrBase:
+    cnfStyle: [styling]
+    tcW: [tables]
+    gridSpan: [tables]
+    hMerge: [tables]
+    vMerge: [tables]
+    tcBorders: [tables]
+    shd: [tables]
+    noWrap: [tables]
+    tcMar: [tables]
+    textDirection: [tables]
+    tcFitText: [tables]
+    vAlign: [tables]
+    hideMark: [tables]
+    headers: [tables]
+
+  CTTcPrInner:
+    tcPrChange: [track-changes]
+
+  CTTcPrChange:
+    tcPr: [track-changes]
+
+  CTTrPrBase:
+    cnfStyle: [styling]
+    divId: [settings]
+    gridBefore: [tables]
+    gridAfter: [tables]
+    wBefore: [tables]
+    wAfter: [tables]
+    cantSplit: [tables]
+    trHeight: [tables]
+    tblHeader: [tables]
+    tblCellSpacing: [tables]
+    jc: [tables]
+    hidden: [tables]
+
+  CTTrPrChange:
+    trPr: [track-changes]
+
+  CTSectPrBase:
+    rsidDel: [track-changes]
+    rsidR: [track-changes]
+    rsidRPr: [track-changes]
+    rsidSect: [track-changes]
+
+  CTSectPrChange:
+    sectPr: [track-changes]
+
+  CTTblPrExBase:
+    tblW: [tables]
+    jc: [tables]
+    tblCellSpacing: [tables]
+    tblInd: [tables]
+    tblBorders: [tables]
+    shd: [tables]
+    tblLayout: [tables]
+    tblLook: [tables]
+    tblCellMar: [tables]
+
+  CTTblPrEx:
+    tblPrExChange: [track-changes]
+
+  CTTblPrExChange:
+    tblPrEx: [track-changes]
+
+  CTTblGridBase:
+    gridCol: [core]
+
+  CTTblGridChange:
+    tblGrid: [track-changes]
+
+  # ---------------------------------------------------------------------------
+  # Styling leaf types (borders, shading, spacing, etc.)
+  # ---------------------------------------------------------------------------
+  CTBorder:
+    val: [core]
+    color: [styling]
+    themeColor: [styling]
+    themeTint: [styling]
+    themeShade: [styling]
+    sz: [styling]
+    space: [styling]
+    shadow: [styling]
+    frame: [styling]
+
+  CTColor:
+    val: [core]
+    themeColor: [styling]
+    themeTint: [styling]
+    themeShade: [styling]
+
+  CTUnderline:
+    val: [core]
+    color: [styling]
+    themeColor: [styling]
+    themeTint: [styling]
+    themeShade: [styling]
+
+  CTShd:
+    val: [core]
+    color: [styling]
+    fill: [styling]
+    themeColor: [styling]
+    themeFill: [styling]
+    themeTint: [styling]
+    themeShade: [styling]
+    themeFillTint: [styling]
+    themeFillShade: [styling]
+
+  CTSpacing:
+    before: [styling]
+    beforeLines: [styling]
+    beforeAutospacing: [styling]
+    after: [styling]
+    afterLines: [styling]
+    afterAutospacing: [styling]
+    line: [styling]
+    lineRule: [styling]
+
+  CTInd:
+    left: [styling]
+    leftChars: [styling]
+    right: [styling]
+    rightChars: [styling]
+    hanging: [styling]
+    hangingChars: [styling]
+    firstLine: [styling]
+    firstLineChars: [styling]
+    start: [styling]
+    startChars: [styling]
+    end: [styling]
+    endChars: [styling]
+
+  CTTabs:
+    tab: [core]
+
+  CTTabStop:
+    val: [core]
+    pos: [core]
+    leader: [styling]
+
+  CTPBdr:
+    top: [styling]
+    left: [styling]
+    bottom: [styling]
+    right: [styling]
+    between: [styling]
+    bar: [styling]
+
+  CTLang:
+    val: [core]
+
+  CTLanguage:
+    val: [styling]
+    eastAsia: [styling]
+    bidi: [styling]
+
+  CTCnf:
+    val: [styling]
+    firstRow: [styling]
+    lastRow: [styling]
+    firstColumn: [styling]
+    lastColumn: [styling]
+    oddHBand: [styling]
+    evenHBand: [styling]
+    oddVBand: [styling]
+    evenVBand: [styling]
+    firstRowFirstColumn: [styling]
+    firstRowLastColumn: [styling]
+    lastRowFirstColumn: [styling]
+    lastRowLastColumn: [styling]
+
+  # ---------------------------------------------------------------------------
+  # Table detail types
+  # ---------------------------------------------------------------------------
+  CTTblBorders:
+    top: [tables]
+    left: [tables]
+    start: [tables]
+    bottom: [tables]
+    right: [tables]
+    end: [tables]
+    insideH: [tables]
+    insideV: [tables]
+
+  CTTblCellMar:
+    top: [tables]
+    left: [tables]
+    start: [tables]
+    bottom: [tables]
+    right: [tables]
+    end: [tables]
+
+  CTTblWidth:
+    w: [core]
+    type: [core]
+
+  CTTblLook:
+    val: [tables]
+    firstRow: [tables]
+    lastRow: [tables]
+    firstColumn: [tables]
+    lastColumn: [tables]
+    noHBand: [tables]
+    noVBand: [tables]
+
+  CTTblPPr:
+    leftFromText: [tables]
+    rightFromText: [tables]
+    topFromText: [tables]
+    bottomFromText: [tables]
+    vertAnchor: [tables]
+    horzAnchor: [tables]
+    tblpXSpec: [tables]
+    tblpX: [tables]
+    tblpYSpec: [tables]
+    tblpY: [tables]
+
+  CTTblLayoutType:
+    type: [core]
+
+  CTTblOverlap:
+    val: [core]
+
+  CTHeight:
+    val: [core]
+    hRule: [tables]
+
+  CTTcBorders:
+    top: [tables]
+    left: [tables]
+    start: [tables]
+    bottom: [tables]
+    right: [tables]
+    end: [tables]
+    insideH: [tables]
+    insideV: [tables]
+    tl2br: [tables]
+    tr2bl: [tables]
+
+  CTTcMar:
+    top: [tables]
+    left: [tables]
+    start: [tables]
+    bottom: [tables]
+    right: [tables]
+    end: [tables]
+
+  CTVMerge:
+    val: [core]
+
+  CTHMerge:
+    val: [core]
+
+  CTHeaders:
+    header: [core]
+
+  # ---------------------------------------------------------------------------
+  # Simple value wrapper types
+  # ---------------------------------------------------------------------------
+  CTOnOff:
+    val: [core]
+
+  CTString:
+    val: [core]
+
+  CTDecimalNumber:
+    val: [core]
+
+  CTUnsignedDecimalNumber:
+    val: [core]
+
+  CTTwipsMeasure:
+    val: [core]
+
+  CTSignedTwipsMeasure:
+    val: [core]
+
+  CTHpsMeasure:
+    val: [core]
+
+  CTSignedHpsMeasure:
+    val: [core]
+
+  CTLongHexNumber:
+    val: [core]
+
+  CTBase64Binary:
+    val: [core]
+
+  CTTextScale:
+    val: [core]
+
+  CTHighlight:
+    val: [core]
+
+  CTJc:
+    val: [core]
+
+  CTJcTable:
+    val: [core]
+
+  CTVerticalAlignRun:
+    val: [core]
+
+  CTVerticalJc:
+    val: [core]
+
+  CTTextAlignment:
+    val: [core]
+
+  CTTextboxTightWrap:
+    val: [core]
+
+  CTTextDirection:
+    val: [core]
+
+  CTTextEffect:
+    val: [core]
+
+  CTEm:
+    val: [core]
+
+  CTLock:
+    val: [core]
+
+  CTCharacterSpacing:
+    val: [core]
+
+  CTRubyAlign:
+    val: [core]
+
+  CTCalendarType:
+    val: [core]
+
+  CTSectType:
+    val: [core]
+
+  CTDocType:
+    val: [core]
+
+  CTGuid:
+    val: [core]
+
+  CTMacroName:
+    val: [core]
+
+  CTLevelSuffix:
+    val: [core]
+
+  CTMultiLevelType:
+    val: [core]
+
+  CTNumRestart:
+    val: [core]
+
+  CTDecimalNumberOrPrecent:
+    val: [core]
+
+  CTPanose:
+    val: [core]
+
+  CTPitch:
+    val: [core]
+
+  CTFontFamily:
+    val: [core]
+
+  CTCharset:
+    val: [core]
+    characterSet: [styling]
+
+  CTFrameLayout:
+    val: [core]
+
+  CTFrameScrollbar:
+    val: [core]
+
+  CTView:
+    val: [core]
+
+  CTStyleSort:
+    val: [core]
+
+  CTZoom:
+    val: [settings]
+    percent: [core]
+
+  CTPixelsMeasure:
+    val: [core]
+
+  CTTargetScreenSz:
+    val: [core]
+
+  CTFtnPos:
+    val: [core]
+
+  CTEdnPos:
+    val: [core]
+
+  CTNumFmt:
+    val: [core]
+    format: [numbering]
+
+  CTLevelText:
+    val: [core]
+    null: [numbering]
+
+  CTLvlLegacy:
+    legacy: [numbering]
+    legacySpace: [numbering]
+    legacyIndent: [numbering]
+
+  # ---------------------------------------------------------------------------
+  # Track changes and markup
+  # ---------------------------------------------------------------------------
+  CTMarkup:
+    id: [core]
+
+  CTTrackChange:
+    author: [core]
+    date: [track-changes]
+
+  CTTrackChangeRange:
+    displacedByCustomXml: [settings]
+
+  CTTrackChangesView:
+    markup: [settings]
+    comments: [settings]
+    insDel: [settings]
+    formatting: [settings]
+    inkAnnotations: [settings]
+
+  CTTrackChangeNumbering:
+    original: [track-changes]
+
+  CTCellMergeTrackChange:
+    vMerge: [track-changes]
+    vMergeOrig: [track-changes]
+
+  CTMoveBookmark:
+    author: [track-changes]
+    date: [track-changes]
+
+  CTMarkupRange:
+    displacedByCustomXml: [settings]
+
+  CTBookmarkRange:
+    colFirst: [tables]
+    colLast: [tables]
+
+  CTDocRsids:
+    rsidRoot: [track-changes]
+    rsid: [track-changes]
+
+  CTRPrChange:
+    rPr: [track-changes]
+
+  CTParaRPr:
+    rPrChange: [track-changes]
+
+  CTParaRPrChange:
+    rPr: [track-changes]
+
+  CTRunTrackChange:
+    "*": [track-changes]
+
+  # ---------------------------------------------------------------------------
+  # Fields
+  # ---------------------------------------------------------------------------
+  CTSimpleField:
+    instr: [core]
+    fldLock: [fields]
+    dirty: [fields]
+    fldData: [fields]
+
+  CTFldChar:
+    fldCharType: [core]
+    fldLock: [fields]
+    dirty: [fields]
+    fldData: [fields]
+    ffData: [fields]
+    numberingChange: [track-changes]
+
+  # ---------------------------------------------------------------------------
+  # Footnote/endnote properties
+  # ---------------------------------------------------------------------------
+  CTFtnProps:
+    pos: [comments]
+    numFmt: [comments]
+
+  CTEdnProps:
+    pos: [comments]
+    numFmt: [comments]
+
+  CTFtnDocProps:
+    footnote: [comments]
+
+  CTEdnDocProps:
+    endnote: [comments]
+
+  CTFtnEdnSepRef:
+    id: [core]
+
+  FootnoteEndnoteRef:
+    customMarkFollows: [comments]
+    id: [core]
+
+  # ---------------------------------------------------------------------------
+  # Numbering detail types
+  # ---------------------------------------------------------------------------
+  CTNumLvl:
+    ilvl: [core]
+    startOverride: [numbering]
+    lvl: [numbering]
+
+  CTNumPicBullet:
+    numPicBulletId: [core]
+    pict: [numbering]
+    drawing: [numbering]
+
+  # ---------------------------------------------------------------------------
+  # Misc structural types
+  # ---------------------------------------------------------------------------
+  CTBackground:
+    color: [styling]
+    themeColor: [styling]
+    themeTint: [styling]
+    themeShade: [styling]
+    drawing: [drawings]
+
+  CTBr:
+    type: [core]
+    clear: [core]
+
+  CTRel:
+    id: [core]
+
+  CTPerm:
+    id: [core]
+    displacedByCustomXml: [settings]
+
+  CTPermStart:
+    ed: [settings]
+    edGrp: [settings]
+    colFirst: [tables]
+    colLast: [tables]
+
+  CTFramePr:
+    dropCap: [layout]
+    lines: [layout]
+    w: [layout]
+    h: [layout]
+    hSpace: [layout]
+    vSpace: [layout]
+    wrap: [layout]
+    hAnchor: [layout]
+    vAnchor: [layout]
+    x: [layout]
+    xAlign: [layout]
+    y: [layout]
+    yAlign: [layout]
+    hRule: [layout]
+    anchorLock: [layout]
+
+  CTEastAsianLayout:
+    "*": [styling]
+
+  CTFitText:
+    val: [styling]
+    id: [styling]
+
+  CTRubyPr:
+    "*": [styling]
+
+  CTRuby:
+    rubyPr: [styling]
+    rt: [core]
+    rubyBase: [core]
+
+  CTSym:
+    font: [styling]
+    char: [core]
+
+  CTPTab:
+    alignment: [core]
+    relativeTo: [core]
+    leader: [styling]
+
+  CTKinsoku:
+    lang: [styling]
+    val: [styling]
+
+  CTProofErr:
+    type: [core]
+
+  CTProof:
+    spelling: [settings]
+    grammar: [settings]
+
+  # ---------------------------------------------------------------------------
+  # Settings detail types
+  # ---------------------------------------------------------------------------
+  CTDocProtect:
+    "*": [settings]
+
+  CTWriteProtection:
+    "*": [settings]
+
+  CTWritingStyle:
+    "*": [settings]
+
+  CTReadingModeInkLockDown:
+    "*": [settings]
+
+  CTColorSchemeMapping:
+    "*": [settings]
+
+  CTStylePaneFilter:
+    "*": [settings]
+
+  CTSaveThroughXslt:
+    "*": [settings]
+
+  CTCaptions:
+    "*": [settings]
+
+  CTCaption:
+    "*": [settings]
+
+  CTAutoCaptions:
+    autoCaption: [settings]
+
+  CTAutoCaption:
+    "*": [settings]
+
+  CTDocVars:
+    docVar: [settings]
+
+  CTDocVar:
+    name: [core]
+    val: [core]
+
+  CTSmartTagType:
+    "*": [settings]
+
+  CTOptimizeForBrowser:
+    target: [settings]
+
+  CTFontSig:
+    "*": [styling]
+
+  CTFontRel:
+    "*": [styling]
+
+  # ---------------------------------------------------------------------------
+  # Web settings
+  # ---------------------------------------------------------------------------
+  CTWebSettings:
+    "*": [settings]
+
+  CTDiv:
+    "*": [settings]
+
+  CTDivs:
+    div: [settings]
+
+  CTDivBdr:
+    "*": [settings]
+
+  CTFrameset:
+    "*": [settings]
+
+  CTFramesetSplitbar:
+    "*": [settings]
+
+  CTFrame:
+    "*": [settings]
+
+  # ---------------------------------------------------------------------------
+  # Object and picture
+  # ---------------------------------------------------------------------------
+  CTObject:
+    "*": [drawings]
+
+  CTObjectEmbed:
+    "*": [drawings]
+
+  CTObjectLink:
+    "*": [drawings]
+
+  CTPicture:
+    "*": [drawings]
+
+  CTControl:
+    "*": [drawings]
+
+  CTDrawing:
+    "*": [drawings]
+
+  # ---------------------------------------------------------------------------
+  # Structured document tags (content controls)
+  # ---------------------------------------------------------------------------
+  CTSdtPr:
+    "*": [settings]
+
+  CTSdtBlock:
+    sdtPr: [settings]
+    sdtEndPr: [settings]
+    sdtContent: [core]
+
+  CTSdtRun:
+    sdtPr: [settings]
+    sdtEndPr: [settings]
+    sdtContent: [core]
+
+  CTSdtCell:
+    sdtPr: [settings]
+    sdtEndPr: [settings]
+    sdtContent: [core]
+
+  CTSdtRow:
+    sdtPr: [settings]
+    sdtEndPr: [settings]
+    sdtContent: [core]
+
+  CTSdtEndPr:
+    rPr: [styling]
+
+  CTSdtComboBox:
+    "*": [settings]
+
+  CTSdtDropDownList:
+    "*": [settings]
+
+  CTSdtDate:
+    "*": [settings]
+
+  CTSdtDateMappingType:
+    val: [core]
+
+  CTSdtDocPart:
+    "*": [settings]
+
+  CTSdtListItem:
+    displayText: [core]
+    value: [core]
+
+  CTSdtText:
+    multiLine: [settings]
+
+  CTDataBinding:
+    "*": [settings]
+
+  CTPlaceholder:
+    docPart: [settings]
+
+  # ---------------------------------------------------------------------------
+  # Custom XML
+  # ---------------------------------------------------------------------------
+  CTCustomXmlBlock:
+    uri: [settings]
+    element: [settings]
+    customXmlPr: [settings]
+
+  CTCustomXmlRun:
+    uri: [settings]
+    element: [settings]
+    customXmlPr: [settings]
+
+  CTCustomXmlCell:
+    uri: [settings]
+    element: [settings]
+    customXmlPr: [settings]
+
+  CTCustomXmlRow:
+    uri: [settings]
+    element: [settings]
+    customXmlPr: [settings]
+
+  CTCustomXmlPr:
+    placeholder: [settings]
+    attr: [settings]
+
+  CTSmartTagRun:
+    uri: [settings]
+    element: [settings]
+    smartTagPr: [settings]
+
+  CTSmartTagPr:
+    attr: [settings]
+
+  CTAttr:
+    "*": [core]
+
+  # ---------------------------------------------------------------------------
+  # Mail merge
+  # ---------------------------------------------------------------------------
+  CTMailMerge:
+    "*": [settings]
+
+  CTMailMergeDataType:
+    val: [core]
+
+  CTMailMergeDest:
+    val: [core]
+
+  CTMailMergeDocType:
+    val: [core]
+
+  CTMailMergeSourceType:
+    val: [core]
+
+  CTMailMergeOdsoFMDFieldType:
+    val: [core]
+
+  CTOdso:
+    "*": [settings]
+
+  CTOdsoFieldMapData:
+    "*": [settings]
+
+  CTRecipientData:
+    "*": [settings]
+
+  CTRecipients:
+    recipientData: [settings]
+
+  # ---------------------------------------------------------------------------
+  # Document parts / glossary
+  # ---------------------------------------------------------------------------
+  CTDocParts:
+    docPart: [settings]
+
+  CTDocPart:
+    docPartPr: [settings]
+    docPartBody: [settings]
+
+  CTDocPartPr:
+    "*": [settings]
+
+  CTDocPartName:
+    val: [core]
+    decorated: [settings]
+
+  CTDocPartBehaviors:
+    behavior: [settings]
+
+  CTDocPartBehavior:
+    val: [core]
+
+  CTDocPartCategory:
+    name: [core]
+    gallery: [settings]
+
+  CTDocPartGallery:
+    val: [core]
+
+  CTDocPartTypes:
+    all: [settings]
+    type: [settings]
+
+  CTDocPartType:
+    val: [core]
+
+  CTGlossaryDocument:
+    docParts: [settings]
+
+  # ---------------------------------------------------------------------------
+  # Form fields
+  # ---------------------------------------------------------------------------
+  CTFFData:
+    "*": [fields]
+
+  CTFFTextType:
+    val: [core]
+
+  CTFFName:
+    val: [core]
+
+  CTFFHelpText:
+    type: [core]
+    val: [core]
+
+  CTFFStatusText:
+    type: [core]
+    val: [core]
+
+  CTFFCheckBox:
+    "*": [fields]
+
+  CTFFDDList:
+    "*": [fields]
+
+  CTFFTextInput:
+    "*": [fields]
+
+  # ---------------------------------------------------------------------------
+  # Misc/rare types
+  # ---------------------------------------------------------------------------
+  CTDocumentBase:
+    background: [styling]
+
+  CTAltChunk:
+    id: [core]
+    altChunkPr: [settings]
+
+  CTAltChunkPr:
+    matchSrc: [settings]
+
+  CTBdoContentRun:
+    val: [core]
+
+  CTDirContentRun:
+    val: [core]
+
+  CTShapeDefaults:
+    "*": [drawings]
+
+  CTFontsList:
+    font: [core]
+
+  CTMathCtrlDel:
+    rPr: [styling]
+
+  CTMathCtrlIns:
+    del: [track-changes]
+    rPr: [styling]
+
+  MathRunProperties:
+    del: [track-changes]
+    ins: [track-changes]
+
+  # ---------------------------------------------------------------------------
+  # EG_* content types (mapped for completeness, always included)
+  # ---------------------------------------------------------------------------
+  BlockContent:
+    altChunk: [settings]
+
+  BlockContentChoice:
+    p: [core]
+    tbl: [core]
+    customXml: [settings]
+    sdt: [settings]
+
+  ParagraphContent:
+    hyperlink: [hyperlinks]
+    fldSimple: [fields]
+    subDoc: [settings]
+
+  ParagraphContentBase:
+    customXml: [settings]
+    fldSimple: [fields]
+    hyperlink: [hyperlinks]
+
+  RunContentChoice:
+    r: [core]
+    customXml: [settings]
+    sdt: [settings]
+    smartTag: [settings]
+    bdo: [core]
+    dir: [core]
+
+  RunContentBase:
+    sdt: [settings]
+    smartTag: [settings]
+
+  RunContent:
+    t: [core]
+    br: [core]
+    cr: [core]
+    tab: [core]
+    noBreakHyphen: [core]
+    softHyphen: [core]
+    sym: [styling]
+    drawing: [drawings]
+    pict: [drawings]
+    object: [drawings]
+    ruby: [styling]
+    ptab: [core]
+    annotationRef: [comments]
+    commentReference: [comments]
+    footnoteReference: [comments]
+    footnoteRef: [comments]
+    endnoteReference: [comments]
+    endnoteRef: [comments]
+    fldChar: [fields]
+    instrText: [fields]
+    delInstrText: [fields]
+    delText: [track-changes]
+    separator: [core]
+    continuationSeparator: [core]
+    lastRenderedPageBreak: [core]
+    pgNum: [core]
+    dayShort: [fields]
+    monthShort: [fields]
+    yearShort: [fields]
+    dayLong: [fields]
+    monthLong: [fields]
+    yearLong: [fields]
+    contentPart: [core]
+
+  RunLevelContent:
+    proofErr: [core]
+    permStart: [settings]
+    permEnd: [settings]
+    ins: [track-changes]
+    del: [track-changes]
+    moveFrom: [track-changes]
+    moveTo: [track-changes]
+
+  RowContent:
+    tr: [core]
+    customXml: [settings]
+    sdt: [settings]
+
+  CellContent:
+    tc: [core]
+    customXml: [settings]
+    sdt: [settings]
+
+  CellMarkup:
+    cellIns: [track-changes]
+    cellDel: [track-changes]
+    cellMerge: [track-changes]
+
+  RubyContent:
+    r: [core]
+
+  HeaderFooterRef:
+    headerReference: [core]
+    footerReference: [core]
 
 # =============================================================================
 # PresentationML (PowerPoint) - TODO: expand

@@ -911,6 +911,7 @@ impl DocumentBuilder {
             PendingFootnote {
                 id,
                 body: types::FootnoteEndnote {
+                    #[cfg(feature = "wml-comments")]
                     r#type: None,
                     id: id as i64,
                     block_content: Vec::new(),
@@ -937,6 +938,7 @@ impl DocumentBuilder {
             PendingEndnote {
                 id,
                 body: types::FootnoteEndnote {
+                    #[cfg(feature = "wml-comments")]
                     r#type: None,
                     id: id as i64,
                     block_content: Vec::new(),
@@ -968,8 +970,10 @@ impl DocumentBuilder {
                 body: types::Comment {
                     id: 0,                 // set in build_comments
                     author: String::new(), // set in build_comments
+                    #[cfg(feature = "wml-comments")]
                     date: None,
                     block_content: Vec::new(),
+                    #[cfg(feature = "wml-comments")]
                     initials: None,
                     #[cfg(feature = "extra-attrs")]
                     extra_attrs: Default::default(),
@@ -1318,8 +1322,11 @@ fn build_separator_ftn_edn(id: i64, ftn_type: types::STFtnEdn) -> types::Footnot
     };
 
     let run = types::Run {
+        #[cfg(feature = "wml-track-changes")]
         rsid_r_pr: None,
+        #[cfg(feature = "wml-track-changes")]
         rsid_del: None,
+        #[cfg(feature = "wml-track-changes")]
         rsid_r: None,
         #[cfg(feature = "wml-styling")]
         r_pr: None,
@@ -1331,10 +1338,15 @@ fn build_separator_ftn_edn(id: i64, ftn_type: types::STFtnEdn) -> types::Footnot
     };
 
     let para = types::Paragraph {
+        #[cfg(feature = "wml-track-changes")]
         rsid_r_pr: None,
+        #[cfg(feature = "wml-track-changes")]
         rsid_r: None,
+        #[cfg(feature = "wml-track-changes")]
         rsid_del: None,
+        #[cfg(feature = "wml-track-changes")]
         rsid_p: None,
+        #[cfg(feature = "wml-track-changes")]
         rsid_r_default: None,
         #[cfg(feature = "wml-styling")]
         p_pr: None,
@@ -1346,6 +1358,7 @@ fn build_separator_ftn_edn(id: i64, ftn_type: types::STFtnEdn) -> types::Footnot
     };
 
     types::FootnoteEndnote {
+        #[cfg(feature = "wml-comments")]
         r#type: Some(ftn_type),
         id,
         block_content: vec![types::BlockContent::P(Box::new(para))],
@@ -1426,9 +1439,11 @@ fn build_comments(comments: &HashMap<i32, PendingComment>) -> types::Comments {
         if let Some(ref author) = pc.author {
             comment.author = author.clone();
         }
+        #[cfg(feature = "wml-comments")]
         if let Some(ref date) = pc.date {
             comment.date = Some(date.clone());
         }
+        #[cfg(feature = "wml-comments")]
         if let Some(ref initials) = pc.initials {
             comment.initials = Some(initials.clone());
         }
@@ -1468,41 +1483,55 @@ fn build_numbering(numberings: &HashMap<u32, PendingNumbering>) -> types::Number
     sorted.sort_by_key(|n| n.num_id);
 
     for pn in &sorted {
-        let (num_fmt, lvl_text) = list_type_to_num_fmt_and_text(pn.list_type);
+        let (_num_fmt, _lvl_text) = list_type_to_num_fmt_and_text(pn.list_type);
 
         let level = types::Level {
             ilvl: 0,
+            #[cfg(feature = "wml-numbering")]
             tplc: None,
+            #[cfg(feature = "wml-numbering")]
             tentative: None,
+            #[cfg(feature = "wml-numbering")]
             start: Some(Box::new(types::CTDecimalNumber {
                 value: 1,
                 #[cfg(feature = "extra-attrs")]
                 extra_attrs: std::collections::HashMap::new(),
             })),
+            #[cfg(feature = "wml-numbering")]
             num_fmt: Some(Box::new(types::CTNumFmt {
-                value: num_fmt,
+                value: _num_fmt,
                 format: None,
                 #[cfg(feature = "extra-attrs")]
                 extra_attrs: std::collections::HashMap::new(),
             })),
+            #[cfg(feature = "wml-numbering")]
             lvl_restart: None,
+            #[cfg(feature = "wml-numbering")]
             paragraph_style: None,
+            #[cfg(feature = "wml-numbering")]
             is_lgl: None,
+            #[cfg(feature = "wml-numbering")]
             suff: None,
+            #[cfg(feature = "wml-numbering")]
             lvl_text: Some(Box::new(types::CTLevelText {
-                value: Some(lvl_text.to_string()),
+                value: Some(_lvl_text.to_string()),
                 null: None,
                 #[cfg(feature = "extra-attrs")]
                 extra_attrs: std::collections::HashMap::new(),
             })),
+            #[cfg(feature = "wml-numbering")]
             lvl_pic_bullet_id: None,
+            #[cfg(feature = "wml-numbering")]
             legacy: None,
+            #[cfg(feature = "wml-numbering")]
             lvl_jc: Some(Box::new(types::CTJc {
                 value: types::STJc::Left,
                 #[cfg(feature = "extra-attrs")]
                 extra_attrs: std::collections::HashMap::new(),
             })),
+            #[cfg(feature = "wml-numbering")]
             p_pr: None,
+            #[cfg(feature = "wml-numbering")]
             r_pr: if pn.list_type == ListType::Bullet {
                 // For bullet lists, use Symbol font
                 Some(Box::new(build_bullet_run_properties()))
@@ -1517,11 +1546,17 @@ fn build_numbering(numberings: &HashMap<u32, PendingNumbering>) -> types::Number
 
         let abs = types::AbstractNumbering {
             abstract_num_id: pn.abstract_num_id as i64,
+            #[cfg(feature = "wml-numbering")]
             nsid: None,
+            #[cfg(feature = "wml-numbering")]
             multi_level_type: None,
+            #[cfg(feature = "wml-numbering")]
             tmpl: None,
+            #[cfg(feature = "wml-numbering")]
             name: None,
+            #[cfg(feature = "wml-numbering")]
             style_link: None,
+            #[cfg(feature = "wml-numbering")]
             num_style_link: None,
             lvl: vec![level],
             #[cfg(feature = "extra-attrs")]
@@ -1538,6 +1573,7 @@ fn build_numbering(numberings: &HashMap<u32, PendingNumbering>) -> types::Number
                 #[cfg(feature = "extra-attrs")]
                 extra_attrs: std::collections::HashMap::new(),
             }),
+            #[cfg(feature = "wml-numbering")]
             lvl_override: Vec::new(),
             #[cfg(feature = "extra-attrs")]
             extra_attrs: std::collections::HashMap::new(),
@@ -1566,6 +1602,7 @@ fn build_bullet_run_properties() -> types::RunProperties {
 
 /// Stub for when wml-styling is not enabled.
 #[cfg(not(feature = "wml-styling"))]
+#[allow(dead_code)]
 fn build_bullet_run_properties() -> types::RunProperties {
     types::RunProperties::default()
 }
