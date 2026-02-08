@@ -695,6 +695,13 @@ wml:
     CT_FtrRef: FooterReference
     CT_Settings: Settings
     CT_Compat: Compatibility
+    CT_NumPr: NumberingProperties
+    CT_TblStylePr: TableStyleProperties
+    CT_LsdException: LatentStyleException
+    CT_LatentStyles: LatentStyles
+    CT_DocDefaults: DocumentDefaults
+    CT_PPrDefault: ParagraphPropertiesDefault
+    CT_RPrDefault: RunPropertiesDefault
     CT_DrawingML: Drawing
     CT_Inline: InlineDrawing
     CT_Anchor: AnchoredDrawing

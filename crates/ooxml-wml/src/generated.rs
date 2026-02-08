@@ -5927,6 +5927,7 @@ pub struct CTCharset {
     #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STUcharHexNumber>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:characterSet")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub character_set: Option<STString>,
@@ -6100,12 +6101,15 @@ pub struct CTHighlight {
 pub struct CTColor {
     #[serde(rename = "@w:val")]
     pub value: STHexColor,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:themeColor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_color: Option<STThemeColor>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:themeTint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_tint: Option<STUcharHexNumber>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:themeShade")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_shade: Option<STUcharHexNumber>,
@@ -6150,15 +6154,19 @@ pub struct CTUnderline {
     #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STUnderline>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:color")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<STHexColor>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:themeColor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_color: Option<STThemeColor>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:themeTint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_tint: Option<STUcharHexNumber>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:themeShade")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_shade: Option<STUcharHexNumber>,
@@ -6188,27 +6196,35 @@ pub struct CTTextEffect {
 pub struct CTBorder {
     #[serde(rename = "@w:val")]
     pub value: STBorder,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:color")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<STHexColor>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:themeColor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_color: Option<STThemeColor>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:themeTint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_tint: Option<STUcharHexNumber>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:themeShade")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_shade: Option<STUcharHexNumber>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:sz")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub size: Option<STEighthPointMeasure>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:space")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub space: Option<STPointMeasure>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:shadow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shadow: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:frame")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub frame: Option<OnOff>,
@@ -6225,27 +6241,35 @@ pub struct CTBorder {
 pub struct CTShd {
     #[serde(rename = "@w:val")]
     pub value: STShd,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:color")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<STHexColor>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:themeColor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_color: Option<STThemeColor>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:themeTint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_tint: Option<STUcharHexNumber>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:themeShade")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_shade: Option<STUcharHexNumber>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:fill")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fill: Option<STHexColor>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:themeFill")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_fill: Option<STThemeColor>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:themeFillTint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_fill_tint: Option<STUcharHexNumber>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:themeFillShade")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_fill_shade: Option<STUcharHexNumber>,
@@ -6273,8 +6297,10 @@ pub struct CTVerticalAlignRun {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFitText {
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:val")]
     pub value: STTwipsMeasure,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:id")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub id: Option<STDecimalNumber>,
@@ -6302,12 +6328,15 @@ pub struct CTEm {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTLanguage {
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<Language>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:eastAsia")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub east_asia: Option<Language>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:bidi")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bidi: Option<Language>,
@@ -6322,18 +6351,23 @@ pub struct CTLanguage {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTEastAsianLayout {
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:id")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub id: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:combine")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub combine: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:combineBrackets")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub combine_brackets: Option<STCombineBrackets>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:vert")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vert: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:vertCompress")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vert_compress: Option<OnOff>,
@@ -6348,48 +6382,63 @@ pub struct CTEastAsianLayout {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTFramePr {
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:dropCap")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drop_cap: Option<STDropCap>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:lines")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lines: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:w")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub width: Option<STTwipsMeasure>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:h")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub height: Option<STTwipsMeasure>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:vSpace")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub v_space: Option<STTwipsMeasure>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:hSpace")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub h_space: Option<STTwipsMeasure>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:wrap")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub wrap: Option<STWrap>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:hAnchor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub h_anchor: Option<STHAnchor>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:vAnchor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub v_anchor: Option<STVAnchor>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:x")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub x: Option<STSignedTwipsMeasure>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:xAlign")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub x_align: Option<STXAlign>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:y")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub y: Option<STSignedTwipsMeasure>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:yAlign")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub y_align: Option<STYAlign>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:hRule")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub h_rule: Option<STHeightRule>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:anchorLock")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub anchor_lock: Option<OnOff>,
@@ -6406,6 +6455,7 @@ pub struct CTFramePr {
 pub struct CTTabStop {
     #[serde(rename = "@w:val")]
     pub value: STTabJc,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:leader")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub leader: Option<STTabTlc>,
@@ -6422,27 +6472,35 @@ pub struct CTTabStop {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSpacing {
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:before")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub before: Option<STTwipsMeasure>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:beforeLines")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub before_lines: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:beforeAutospacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub before_autospacing: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:after")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub after: Option<STTwipsMeasure>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:afterLines")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub after_lines: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:afterAutospacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub after_autospacing: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:line")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub line: Option<STSignedTwipsMeasure>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:lineRule")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub line_rule: Option<STLineSpacingRule>,
@@ -6457,39 +6515,51 @@ pub struct CTSpacing {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTInd {
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:start")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start: Option<STSignedTwipsMeasure>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:startChars")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start_chars: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:end")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end: Option<STSignedTwipsMeasure>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:endChars")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end_chars: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:left")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub left: Option<STSignedTwipsMeasure>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:leftChars")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub left_chars: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:right")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub right: Option<STSignedTwipsMeasure>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:rightChars")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub right_chars: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:hanging")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hanging: Option<STTwipsMeasure>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:hangingChars")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hanging_chars: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:firstLine")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_line: Option<STTwipsMeasure>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:firstLineChars")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_line_chars: Option<STDecimalNumber>,
@@ -6543,6 +6613,7 @@ pub struct CTView {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTZoom {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STZoom>,
@@ -6559,17 +6630,23 @@ pub struct CTZoom {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTWritingStyle {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:lang")]
     pub lang: Language,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:vendorID")]
     pub vendor_i_d: STString,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:dllVersion")]
     pub dll_version: STString,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:nlCheck")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub nl_check: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:checkStyle")]
     pub check_style: OnOff,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:appName")]
     pub app_name: STString,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6583,9 +6660,11 @@ pub struct CTWritingStyle {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTProof {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:spelling")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spelling: Option<STProof>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:grammar")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub grammar: Option<STProof>,
@@ -6683,60 +6762,79 @@ pub struct WAGTransitionalPassword {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTDocProtect {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:edit")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub edit: Option<STDocProtect>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:formatting")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub formatting: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:enforcement")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub enforcement: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:algorithmName")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub algorithm_name: Option<STString>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:hashValue")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hash_value: Option<Vec<u8>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:saltValue")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub salt_value: Option<Vec<u8>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:spinCount")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spin_count: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:cryptProviderType")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_provider_type: Option<STCryptProv>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:cryptAlgorithmClass")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_algorithm_class: Option<STAlgClass>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:cryptAlgorithmType")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_algorithm_type: Option<STAlgType>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:cryptAlgorithmSid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_algorithm_sid: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:cryptSpinCount")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_spin_count: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:cryptProvider")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_provider: Option<STString>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:algIdExt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alg_id_ext: Option<STLongHexNumber>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:algIdExtSource")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alg_id_ext_source: Option<STString>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:cryptProviderTypeExt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_provider_type_ext: Option<STLongHexNumber>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:cryptProviderTypeExtSource")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_provider_type_ext_source: Option<STString>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:hash")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hash: Option<Vec<u8>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:salt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub salt: Option<Vec<u8>>,
@@ -6803,18 +6901,23 @@ pub struct CTMailMergeOdsoFMDFieldType {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTrackChangesView {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:markup")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub markup: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:comments")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub comments: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:insDel")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ins_del: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:formatting")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub formatting: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:inkAnnotations")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ink_annotations: Option<OnOff>,
@@ -6829,8 +6932,10 @@ pub struct CTTrackChangesView {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTKinsoku {
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:lang")]
     pub lang: Language,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:val")]
     pub value: STString,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6887,6 +6992,7 @@ pub struct CTTrackChange {
     pub id: STDecimalNumber,
     #[serde(rename = "@w:author")]
     pub author: STString,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
@@ -6908,9 +7014,11 @@ pub struct CTCellMergeTrackChange {
     #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:vMerge")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vertical_merge: Option<STAnnotationVMerge>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:vMergeOrig")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub v_merge_orig: Option<STAnnotationVMerge>,
@@ -6932,6 +7040,7 @@ pub struct CTTrackChangeRange {
     #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:displacedByCustomXml")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub displaced_by_custom_xml: Option<STDisplacedByCustomXml>,
@@ -6948,6 +7057,7 @@ pub struct CTTrackChangeRange {
 pub struct CTMarkupRange {
     #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:displacedByCustomXml")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub displaced_by_custom_xml: Option<STDisplacedByCustomXml>,
@@ -6967,9 +7077,11 @@ pub struct CTBookmarkRange {
     #[serde(rename = "@w:displacedByCustomXml")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub displaced_by_custom_xml: Option<STDisplacedByCustomXml>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:colFirst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_first: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:colLast")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_last: Option<STDecimalNumber>,
@@ -6986,12 +7098,15 @@ pub struct CTBookmarkRange {
 pub struct Bookmark {
     #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:displacedByCustomXml")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub displaced_by_custom_xml: Option<STDisplacedByCustomXml>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:colFirst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_first: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:colLast")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_last: Option<STDecimalNumber>,
@@ -7021,8 +7136,10 @@ pub struct CTMoveBookmark {
     pub col_last: Option<STDecimalNumber>,
     #[serde(rename = "@w:name")]
     pub name: STString,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:author")]
     pub author: STString,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:date")]
     pub date: STDateTime,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -7040,12 +7157,14 @@ pub struct Comment {
     pub id: STDecimalNumber,
     #[serde(rename = "@w:author")]
     pub author: STString,
+    #[cfg(feature = "wml-comments")]
     #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
     #[serde(skip)]
     #[serde(default)]
     pub block_content: Vec<BlockContent>,
+    #[cfg(feature = "wml-comments")]
     #[serde(rename = "@w:initials")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub initials: Option<STString>,
@@ -7072,6 +7191,7 @@ pub struct CTTrackChangeNumbering {
     #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:original")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub original: Option<STString>,
@@ -7093,6 +7213,7 @@ pub struct CTTblPrExChange {
     #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "tblPrEx")]
     pub tbl_pr_ex: Box<CTTblPrExBase>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -7118,6 +7239,7 @@ pub struct CTTcPrChange {
     #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "tcPr")]
     pub cell_properties: Box<CTTcPrInner>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -7143,6 +7265,7 @@ pub struct CTTrPrChange {
     #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "trPr")]
     pub row_properties: Box<CTTrPrBase>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -7163,6 +7286,7 @@ pub struct CTTrPrChange {
 pub struct CTTblGridChange {
     #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "tblGrid")]
     pub tbl_grid: Box<CTTblGridBase>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -7188,6 +7312,7 @@ pub struct CTTblPrChange {
     #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "tblPr")]
     pub table_properties: Box<CTTblPrBase>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -7213,6 +7338,7 @@ pub struct CTSectPrChange {
     #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "sectPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sect_pr: Option<Box<CTSectPrBase>>,
@@ -7239,6 +7365,7 @@ pub struct CTPPrChange {
     #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "pPr")]
     pub p_pr: Box<CTPPrBase>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -7264,6 +7391,7 @@ pub struct CTRPrChange {
     #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "rPr")]
     pub r_pr: Box<CTRPrOriginal>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -7289,6 +7417,7 @@ pub struct CTParaRPrChange {
     #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "rPr")]
     pub r_pr: Box<CTParaRPrOriginal>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -7307,13 +7436,17 @@ pub struct CTParaRPrChange {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTRunTrackChange {
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:author")]
     pub author: STString,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(skip)]
     #[serde(default)]
     pub run_content: Vec<RunContentChoice>,
@@ -7347,16 +7480,20 @@ pub struct MathContent {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTNumPr {
+pub struct NumberingProperties {
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "ilvl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ilvl: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "numId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub num_id: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "numberingChange")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub numbering_change: Option<Box<CTTrackChangeNumbering>>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "ins")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ins: Option<Box<CTTrackChange>>,
@@ -7369,21 +7506,27 @@ pub struct CTNumPr {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPBdr {
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "top")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "left")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub left: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "bottom")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bottom: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "right")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub right: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "between")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub between: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "bar")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bar: Option<Box<CTBorder>>,
@@ -7447,7 +7590,7 @@ pub struct ParagraphProperties {
     #[cfg(feature = "wml-numbering")]
     #[serde(rename = "numPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub num_pr: Option<Box<CTNumPr>>,
+    pub num_pr: Option<Box<NumberingProperties>>,
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "suppressLineNumbers")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7576,99 +7719,131 @@ pub struct CTPPrBase {
     #[serde(rename = "pStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub paragraph_style: Option<Box<CTString>>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "keepNext")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub keep_next: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "keepLines")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub keep_lines: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "pageBreakBefore")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_break_before: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "framePr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub frame_pr: Option<Box<CTFramePr>>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "widowControl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub widow_control: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "numPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub num_pr: Option<Box<CTNumPr>>,
+    pub num_pr: Option<Box<NumberingProperties>>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "suppressLineNumbers")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub suppress_line_numbers: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "pBdr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub paragraph_border: Option<Box<CTPBdr>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "shd")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shading: Option<Box<CTShd>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "tabs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tabs: Option<Box<CTTabs>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "suppressAutoHyphens")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub suppress_auto_hyphens: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "kinsoku")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub kinsoku: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "wordWrap")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub word_wrap: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "overflowPunct")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub overflow_punct: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "topLinePunct")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top_line_punct: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "autoSpaceDE")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_space_d_e: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "autoSpaceDN")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_space_d_n: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "bidi")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bidi: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "adjustRightInd")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub adjust_right_ind: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "snapToGrid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub snap_to_grid: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "spacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spacing: Option<Box<CTSpacing>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "ind")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub indentation: Option<Box<CTInd>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "contextualSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub contextual_spacing: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "mirrorIndents")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mirror_indents: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "suppressOverlap")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub suppress_overlap: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "jc")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub justification: Option<Box<CTJc>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "textDirection")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub text_direction: Option<Box<CTTextDirection>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "textAlignment")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub text_alignment: Option<Box<CTTextAlignment>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "textboxTightWrap")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub textbox_tight_wrap: Option<Box<CTTextboxTightWrap>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "outlineLvl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outline_lvl: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "divId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub div_id: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "cnfStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cnf_style: Option<Box<CTCnf>>,
@@ -7701,7 +7876,7 @@ pub struct CTPPrGeneral {
     pub widow_control: Option<Box<CTOnOff>>,
     #[serde(rename = "numPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub num_pr: Option<Box<CTNumPr>>,
+    pub num_pr: Option<Box<NumberingProperties>>,
     #[serde(rename = "suppressLineNumbers")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub suppress_line_numbers: Option<Box<CTOnOff>>,
@@ -7780,6 +7955,7 @@ pub struct CTPPrGeneral {
     #[serde(rename = "cnfStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cnf_style: Option<Box<CTCnf>>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "pPrChange")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub p_pr_change: Option<Box<CTPPrChange>>,
@@ -7792,12 +7968,15 @@ pub struct CTPPrGeneral {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTControl {
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "@w:name")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<STString>,
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "@w:shapeid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shapeid: Option<STString>,
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "@r:id")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub id: Option<STRelationshipId>,
@@ -7812,18 +7991,23 @@ pub struct CTControl {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTBackground {
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:color")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<STHexColor>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:themeColor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_color: Option<STThemeColor>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:themeTint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_tint: Option<STUcharHexNumber>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:themeShade")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_shade: Option<STUcharHexNumber>,
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "drawing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drawing: Option<Box<CTDrawing>>,
@@ -7856,24 +8040,31 @@ pub struct CTRel {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTObject {
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "@w:dxaOrig")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dxa_orig: Option<STTwipsMeasure>,
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "@w:dyaOrig")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dya_orig: Option<STTwipsMeasure>,
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "drawing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drawing: Option<Box<CTDrawing>>,
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "control")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub control: Option<Box<CTControl>>,
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "objectLink")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub object_link: Option<Box<CTObjectLink>>,
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "objectEmbed")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub object_embed: Option<Box<CTObjectEmbed>>,
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "movie")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub movie: Option<Box<CTRel>>,
@@ -7893,9 +8084,11 @@ pub struct CTObject {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPicture {
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "movie")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub movie: Option<Box<CTRel>>,
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "control")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub control: Option<Box<CTControl>>,
@@ -7908,17 +8101,22 @@ pub struct CTPicture {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTObjectEmbed {
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "@w:drawAspect")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub draw_aspect: Option<STObjectDrawAspect>,
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "@r:id")]
     pub id: STRelationshipId,
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "@w:progId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prog_id: Option<STString>,
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "@w:shapeId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shape_id: Option<STString>,
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "@w:fieldCodes")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub field_codes: Option<STString>,
@@ -7933,22 +8131,29 @@ pub struct CTObjectEmbed {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTObjectLink {
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "@w:drawAspect")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub draw_aspect: Option<STObjectDrawAspect>,
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "@r:id")]
     pub id: STRelationshipId,
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "@w:progId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prog_id: Option<STString>,
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "@w:shapeId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shape_id: Option<STString>,
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "@w:fieldCodes")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub field_codes: Option<STString>,
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "@w:updateMode")]
     pub update_mode: STObjectUpdateMode,
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "@w:lockedField")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub locked_field: Option<OnOff>,
@@ -7974,12 +8179,15 @@ pub struct CTDrawing {
 pub struct CTSimpleField {
     #[serde(rename = "@w:instr")]
     pub instr: STString,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "@w:fldLock")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fld_lock: Option<OnOff>,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "@w:dirty")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dirty: Option<OnOff>,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "fldData")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fld_data: Option<Box<Text>>,
@@ -8031,18 +8239,23 @@ pub struct CTFFName {
 pub struct CTFldChar {
     #[serde(rename = "@w:fldCharType")]
     pub fld_char_type: STFldCharType,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "@w:fldLock")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fld_lock: Option<OnOff>,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "@w:dirty")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dirty: Option<OnOff>,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "fldData")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fld_data: Option<Box<Text>>,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "ffData")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ff_data: Option<Box<CTFFData>>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "numberingChange")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub numbering_change: Option<Box<CTTrackChangeNumbering>>,
@@ -8062,21 +8275,27 @@ pub struct CTFldChar {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Hyperlink {
+    #[cfg(feature = "wml-hyperlinks")]
     #[serde(rename = "@w:tgtFrame")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tgt_frame: Option<STString>,
+    #[cfg(feature = "wml-hyperlinks")]
     #[serde(rename = "@w:tooltip")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tooltip: Option<STString>,
+    #[cfg(feature = "wml-hyperlinks")]
     #[serde(rename = "@w:docLocation")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc_location: Option<STString>,
+    #[cfg(feature = "wml-hyperlinks")]
     #[serde(rename = "@w:history")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub history: Option<OnOff>,
+    #[cfg(feature = "wml-hyperlinks")]
     #[serde(rename = "@w:anchor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub anchor: Option<STString>,
+    #[cfg(feature = "wml-hyperlinks")]
     #[serde(rename = "@r:id")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub id: Option<STRelationshipId>,
@@ -8099,30 +8318,39 @@ pub struct Hyperlink {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTFFData {
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "name")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub name: Vec<CTFFName>,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "label")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub label: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "tabIndex")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab_index: Option<Box<CTUnsignedDecimalNumber>>,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "enabled")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub enabled: Vec<CTOnOff>,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "calcOnExit")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub calc_on_exit: Vec<CTOnOff>,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "entryMacro")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub entry_macro: Option<Box<CTMacroName>>,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "exitMacro")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub exit_macro: Option<Box<CTMacroName>>,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "helpText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub help_text: Option<Box<CTFFHelpText>>,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "statusText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub status_text: Option<Box<CTFFStatusText>>,
@@ -8169,15 +8397,19 @@ pub struct CTFFStatusText {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTFFCheckBox {
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "size")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub size: Option<Box<CTHpsMeasure>>,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "sizeAuto")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub size_auto: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "default")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "checked")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub checked: Option<Box<CTOnOff>>,
@@ -8190,12 +8422,15 @@ pub struct CTFFCheckBox {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTFFDDList {
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "result")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub result: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "default")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "listEntry")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub list_entry: Vec<CTString>,
@@ -8208,15 +8443,19 @@ pub struct CTFFDDList {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTFFTextInput {
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "type")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<Box<CTFFTextType>>,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "default")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default: Option<Box<CTString>>,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "maxLength")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub max_length: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-fields")]
     #[serde(rename = "format")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub format: Option<Box<CTString>>,
@@ -8243,9 +8482,11 @@ pub struct CTSectType {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPaperSource {
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:first")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:other")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub other: Option<STDecimalNumber>,
@@ -8260,15 +8501,19 @@ pub struct CTPaperSource {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PageSize {
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:w")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub width: Option<STTwipsMeasure>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:h")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub height: Option<STTwipsMeasure>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:orient")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub orient: Option<STPageOrientation>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:code")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub code: Option<STDecimalNumber>,
@@ -8283,18 +8528,25 @@ pub struct PageSize {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PageMargins {
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:top")]
     pub top: STSignedTwipsMeasure,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:right")]
     pub right: STTwipsMeasure,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:bottom")]
     pub bottom: STSignedTwipsMeasure,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:left")]
     pub left: STTwipsMeasure,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:header")]
     pub header: STTwipsMeasure,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:footer")]
     pub footer: STTwipsMeasure,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:gutter")]
     pub gutter: STTwipsMeasure,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -8308,24 +8560,31 @@ pub struct PageMargins {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPageBorders {
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:zOrder")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub z_order: Option<STPageBorderZOrder>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:display")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub display: Option<STPageBorderDisplay>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:offsetFrom")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub offset_from: Option<STPageBorderOffset>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "top")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top: Option<Box<CTTopPageBorder>>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "left")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub left: Option<Box<CTPageBorder>>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "bottom")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bottom: Option<Box<CTBottomPageBorder>>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "right")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub right: Option<Box<CTPageBorder>>,
@@ -8371,6 +8630,7 @@ pub struct CTPageBorder {
     #[serde(rename = "@w:frame")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub frame: Option<OnOff>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@r:id")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub id: Option<STRelationshipId>,
@@ -8414,9 +8674,11 @@ pub struct CTBottomPageBorder {
     #[serde(rename = "@r:id")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub id: Option<STRelationshipId>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@r:bottomLeft")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bottom_left: Option<STRelationshipId>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@r:bottomRight")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bottom_right: Option<STRelationshipId>,
@@ -8460,9 +8722,11 @@ pub struct CTTopPageBorder {
     #[serde(rename = "@r:id")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub id: Option<STRelationshipId>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@r:topLeft")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top_left: Option<STRelationshipId>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@r:topRight")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top_right: Option<STRelationshipId>,
@@ -8477,15 +8741,19 @@ pub struct CTTopPageBorder {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTLineNumber {
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:countBy")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count_by: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:start")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:distance")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub distance: Option<STTwipsMeasure>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:restart")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub restart: Option<STLineNumberRestart>,
@@ -8500,15 +8768,19 @@ pub struct CTLineNumber {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPageNumber {
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:fmt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fmt: Option<STNumberFormat>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:start")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:chapStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub chap_style: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:chapSep")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub chap_sep: Option<STChapterSep>,
@@ -8523,9 +8795,11 @@ pub struct CTPageNumber {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTColumn {
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:w")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub width: Option<STTwipsMeasure>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:space")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub space: Option<STTwipsMeasure>,
@@ -8540,18 +8814,23 @@ pub struct CTColumn {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Columns {
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:equalWidth")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub equal_width: Option<OnOff>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:space")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub space: Option<STTwipsMeasure>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:num")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub num: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:sep")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sep: Option<OnOff>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "col")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub col: Vec<CTColumn>,
@@ -8584,12 +8863,15 @@ pub struct CTVerticalJc {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct DocumentGrid {
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:type")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<STDocGrid>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:linePitch")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub line_pitch: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-layout")]
     #[serde(rename = "@w:charSpace")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub char_space: Option<STDecimalNumber>,
@@ -8720,15 +9002,19 @@ pub struct WAGSectPrAttributes {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSectPrBase {
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:rsidRPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r_pr: Option<STLongHexNumber>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:rsidDel")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_del: Option<STLongHexNumber>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:rsidR")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r: Option<STLongHexNumber>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:rsidSect")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_sect: Option<STLongHexNumber>,
@@ -8805,15 +9091,19 @@ pub struct CTSectPrBase {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct SectionProperties {
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:rsidRPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r_pr: Option<STLongHexNumber>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:rsidDel")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_del: Option<STLongHexNumber>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:rsidR")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r: Option<STLongHexNumber>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:rsidSect")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_sect: Option<STLongHexNumber>,
@@ -8937,6 +9227,7 @@ pub struct CTPTab {
     pub alignment: STPTabAlignment,
     #[serde(rename = "@w:relativeTo")]
     pub relative_to: STPTabRelativeTo,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:leader")]
     pub leader: STPTabLeader,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -8950,6 +9241,7 @@ pub struct CTPTab {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSym {
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:font")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub font: Option<STString>,
@@ -8982,6 +9274,7 @@ pub struct CTProofErr {
 pub struct CTPerm {
     #[serde(rename = "@w:id")]
     pub id: STString,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:displacedByCustomXml")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub displaced_by_custom_xml: Option<STDisplacedByCustomXml>,
@@ -9001,15 +9294,19 @@ pub struct CTPermStart {
     #[serde(rename = "@w:displacedByCustomXml")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub displaced_by_custom_xml: Option<STDisplacedByCustomXml>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:edGrp")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ed_grp: Option<STEdGrp>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:ed")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ed: Option<STString>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:colFirst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_first: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:colLast")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_last: Option<STDecimalNumber>,
@@ -9036,12 +9333,15 @@ pub struct Text {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Run {
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:rsidRPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r_pr: Option<STLongHexNumber>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:rsidDel")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_del: Option<STLongHexNumber>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:rsidR")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r: Option<STLongHexNumber>,
@@ -9068,30 +9368,39 @@ pub struct Run {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Fonts {
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:hint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hint: Option<STHint>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:ascii")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ascii: Option<STString>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:hAnsi")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub h_ansi: Option<STString>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:eastAsia")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub east_asia: Option<STString>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:cs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cs: Option<STString>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:asciiTheme")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ascii_theme: Option<STTheme>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:hAnsiTheme")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub h_ansi_theme: Option<STTheme>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:eastAsiaTheme")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub east_asia_theme: Option<STTheme>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:cstheme")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cstheme: Option<STTheme>,
@@ -9548,9 +9857,11 @@ pub struct CTMathCtrlIns {
     #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "del")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub del: Option<Box<CTRPrChange>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "rPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r_pr: Option<Box<RunProperties>>,
@@ -9577,6 +9888,7 @@ pub struct CTMathCtrlDel {
     #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "rPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r_pr: Option<Box<RunProperties>>,
@@ -9989,6 +10301,7 @@ pub struct CTParaRPr {
     #[serde(rename = "oMath")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub o_math: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "rPrChange")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r_pr_change: Option<Box<CTParaRPrChange>>,
@@ -10025,6 +10338,7 @@ pub struct CTAltChunk {
     #[serde(rename = "@r:id")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub id: Option<STRelationshipId>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "altChunkPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alt_chunk_pr: Option<Box<CTAltChunkPr>>,
@@ -10044,6 +10358,7 @@ pub struct CTAltChunk {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTAltChunkPr {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "matchSrc")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub match_src: Option<Box<CTOnOff>>,
@@ -10069,16 +10384,22 @@ pub struct CTRubyAlign {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTRubyPr {
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "rubyAlign")]
     pub ruby_align: Box<CTRubyAlign>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "hps")]
     pub hps: Box<CTHpsMeasure>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "hpsRaise")]
     pub hps_raise: Box<CTHpsMeasure>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "hpsBaseText")]
     pub hps_base_text: Box<CTHpsMeasure>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "lid")]
     pub lid: Box<CTLang>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "dirty")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dirty: Option<Box<CTOnOff>>,
@@ -10103,6 +10424,7 @@ pub struct CTRubyContent {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTRuby {
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "rubyPr")]
     pub ruby_pr: Box<CTRubyPr>,
     #[serde(rename = "rt")]
@@ -10177,18 +10499,23 @@ pub struct CTCalendarType {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSdtDate {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:fullDate")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub full_date: Option<STDateTime>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "dateFormat")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date_format: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "lid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lid: Option<Box<CTLang>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "storeMappedDataAs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub store_mapped_data_as: Option<Box<CTSdtDateMappingType>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "calendar")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub calendar: Option<Box<CTCalendarType>>,
@@ -10208,9 +10535,11 @@ pub struct CTSdtDate {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSdtComboBox {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:lastValue")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_value: Option<STString>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "listItem")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub list_item: Vec<CTSdtListItem>,
@@ -10230,12 +10559,15 @@ pub struct CTSdtComboBox {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSdtDocPart {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "docPartGallery")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc_part_gallery: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "docPartCategory")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc_part_category: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "docPartUnique")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc_part_unique: Option<Box<CTOnOff>>,
@@ -10248,9 +10580,11 @@ pub struct CTSdtDocPart {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSdtDropDownList {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:lastValue")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_value: Option<STString>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "listItem")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub list_item: Vec<CTSdtListItem>,
@@ -10272,6 +10606,7 @@ pub type CTPlaceholder = Box<CTString>;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSdtText {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:multiLine")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub multi_line: Option<OnOff>,
@@ -10286,11 +10621,14 @@ pub struct CTSdtText {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDataBinding {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:prefixMappings")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prefix_mappings: Option<STString>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:xpath")]
     pub xpath: STString,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:storeItemID")]
     pub store_item_i_d: STString,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -10304,72 +10642,95 @@ pub struct CTDataBinding {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSdtPr {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "rPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r_pr: Option<Box<RunProperties>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "alias")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alias: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "tag")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tag: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "id")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub id: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "lock")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lock: Option<Box<CTLock>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "placeholder")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub placeholder: Option<CTPlaceholder>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "temporary")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub temporary: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "showingPlcHdr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub showing_plc_hdr: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "dataBinding")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_binding: Option<Box<CTDataBinding>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "label")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub label: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "tabIndex")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab_index: Option<Box<CTUnsignedDecimalNumber>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "equation")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub equation: Option<Box<CTEmpty>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "comboBox")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub combo_box: Option<Box<CTSdtComboBox>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<Box<CTSdtDate>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "docPartObj")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc_part_obj: Option<Box<CTSdtDocPart>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "docPartList")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc_part_list: Option<Box<CTSdtDocPart>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "dropDownList")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drop_down_list: Option<Box<CTSdtDropDownList>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "picture")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub picture: Option<Box<CTEmpty>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "richText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rich_text: Option<Box<CTEmpty>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "text")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub text: Option<Box<CTSdtText>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "citation")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub citation: Option<Box<CTEmpty>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "group")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub group: Option<Box<CTEmpty>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "bibliography")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bibliography: Option<Box<CTEmpty>>,
@@ -10382,6 +10743,7 @@ pub struct CTSdtPr {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSdtEndPr {
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "rPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r_pr: Option<Box<RunProperties>>,
@@ -10486,9 +10848,11 @@ pub struct CTSdtContentCell {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSdtBlock {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "sdtPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sdt_pr: Option<Box<CTSdtPr>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "sdtEndPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sdt_end_pr: Option<Box<CTSdtEndPr>>,
@@ -10504,9 +10868,11 @@ pub struct CTSdtBlock {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSdtRun {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "sdtPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sdt_pr: Option<Box<CTSdtPr>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "sdtEndPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sdt_end_pr: Option<Box<CTSdtEndPr>>,
@@ -10522,9 +10888,11 @@ pub struct CTSdtRun {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSdtCell {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "sdtPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sdt_pr: Option<Box<CTSdtPr>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "sdtEndPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sdt_end_pr: Option<Box<CTSdtEndPr>>,
@@ -10540,9 +10908,11 @@ pub struct CTSdtCell {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSdtRow {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "sdtPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sdt_pr: Option<Box<CTSdtPr>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "sdtEndPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sdt_end_pr: Option<Box<CTSdtEndPr>>,
@@ -10576,11 +10946,14 @@ pub struct CTAttr {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCustomXmlRun {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:uri")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub uri: Option<STString>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:element")]
     pub element: STXmlName,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "customXmlPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_xml_pr: Option<Box<CTCustomXmlPr>>,
@@ -10603,11 +10976,14 @@ pub struct CTCustomXmlRun {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTSmartTagRun {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:uri")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub uri: Option<STString>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:element")]
     pub element: STXmlName,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "smartTagPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub smart_tag_pr: Option<Box<CTSmartTagPr>>,
@@ -10630,11 +11006,14 @@ pub struct CTSmartTagRun {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCustomXmlBlock {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:uri")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub uri: Option<STString>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:element")]
     pub element: STXmlName,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "customXmlPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_xml_pr: Option<Box<CTCustomXmlPr>>,
@@ -10657,9 +11036,11 @@ pub struct CTCustomXmlBlock {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTCustomXmlPr {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "placeholder")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub placeholder: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "attr")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub attr: Vec<CTAttr>,
@@ -10672,11 +11053,14 @@ pub struct CTCustomXmlPr {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCustomXmlRow {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:uri")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub uri: Option<STString>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:element")]
     pub element: STXmlName,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "customXmlPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_xml_pr: Option<Box<CTCustomXmlPr>>,
@@ -10699,11 +11083,14 @@ pub struct CTCustomXmlRow {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCustomXmlCell {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:uri")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub uri: Option<STString>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:element")]
     pub element: STXmlName,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "customXmlPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_xml_pr: Option<Box<CTCustomXmlPr>>,
@@ -10726,6 +11113,7 @@ pub struct CTCustomXmlCell {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSmartTagPr {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "attr")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub attr: Vec<CTAttr>,
@@ -10738,18 +11126,23 @@ pub struct CTSmartTagPr {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Paragraph {
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:rsidRPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r_pr: Option<STLongHexNumber>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:rsidR")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r: Option<STLongHexNumber>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:rsidDel")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_del: Option<STLongHexNumber>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:rsidP")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_p: Option<STLongHexNumber>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:rsidRDefault")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r_default: Option<STLongHexNumber>,
@@ -10779,6 +11172,7 @@ pub struct CTHeight {
     #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STTwipsMeasure>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:hRule")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub h_rule: Option<STHeightRule>,
@@ -10839,6 +11233,7 @@ pub struct TableGrid {
     #[serde(rename = "gridCol")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub grid_col: Vec<TableGridColumn>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "tblGridChange")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_grid_change: Option<Box<CTTblGridChange>>,
@@ -10851,33 +11246,43 @@ pub struct TableGrid {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTcBorders {
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "top")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "start")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "left")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub left: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "bottom")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bottom: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "end")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "right")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub right: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "insideH")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub inside_h: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "insideV")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub inside_v: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tl2br")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tl2br: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tr2bl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tr2bl: Option<Box<CTBorder>>,
@@ -10890,21 +11295,27 @@ pub struct CTTcBorders {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTcMar {
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "top")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "start")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "left")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub left: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "bottom")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bottom: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "end")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "right")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub right: Option<Box<CTTblWidth>>,
@@ -10945,45 +11356,59 @@ pub struct CTHMerge {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTcPrBase {
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "cnfStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cnf_style: Option<Box<CTCnf>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tcW")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tc_w: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "gridSpan")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub grid_span: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "hMerge")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub horizontal_merge: Option<Box<CTHMerge>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "vMerge")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vertical_merge: Option<Box<CTVMerge>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tcBorders")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tc_borders: Option<Box<CTTcBorders>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "shd")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shading: Option<Box<CTShd>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "noWrap")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub no_wrap: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tcMar")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tc_mar: Option<Box<CTTcMar>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "textDirection")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub text_direction: Option<Box<CTTextDirection>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tcFitText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tc_fit_text: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "vAlign")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub v_align: Option<Box<CTVerticalJc>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "hideMark")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hide_mark: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "headers")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub headers: Option<Box<CTHeaders>>,
@@ -11055,6 +11480,7 @@ pub struct TableCellProperties {
     #[serde(skip)]
     #[serde(default)]
     pub cell_markup: Option<Box<CellMarkup>>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "tcPrChange")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tc_pr_change: Option<Box<CTTcPrChange>>,
@@ -11121,6 +11547,7 @@ pub struct CTTcPrInner {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct TableCell {
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:id")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub id: Option<STString>,
@@ -11147,42 +11574,55 @@ pub struct TableCell {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTCnf {
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STCnf>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:firstRow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_row: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:lastRow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_row: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:firstColumn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_column: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:lastColumn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_column: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:oddVBand")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub odd_v_band: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:evenVBand")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub even_v_band: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:oddHBand")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub odd_h_band: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:evenHBand")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub even_h_band: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:firstRowFirstColumn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_row_first_column: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:firstRowLastColumn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_row_last_column: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:lastRowFirstColumn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_row_first_column: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:lastRowLastColumn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_row_last_column: Option<OnOff>,
@@ -11209,39 +11649,51 @@ pub struct CTHeaders {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTrPrBase {
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "cnfStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cnf_style: Option<Box<CTCnf>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "divId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub div_id: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "gridBefore")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub grid_before: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "gridAfter")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub grid_after: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "wBefore")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub w_before: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "wAfter")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub w_after: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "cantSplit")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cant_split: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "trHeight")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tr_height: Option<Box<CTHeight>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblHeader")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_header: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblCellSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_cell_spacing: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "jc")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub justification: Option<Box<CTJcTable>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "hidden")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hidden: Option<Box<CTOnOff>>,
@@ -11254,39 +11706,51 @@ pub struct CTTrPrBase {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct TableRowProperties {
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "cnfStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cnf_style: Option<Box<CTCnf>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "divId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub div_id: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "gridBefore")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub grid_before: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "gridAfter")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub grid_after: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "wBefore")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub w_before: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "wAfter")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub w_after: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "cantSplit")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cant_split: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "trHeight")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tr_height: Option<Box<CTHeight>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblHeader")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_header: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblCellSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_cell_spacing: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "jc")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub justification: Option<Box<CTJcTable>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "hidden")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hidden: Option<Box<CTOnOff>>,
@@ -11311,15 +11775,19 @@ pub struct TableRowProperties {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTRow {
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:rsidRPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r_pr: Option<STLongHexNumber>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:rsidR")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r: Option<STLongHexNumber>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:rsidDel")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_del: Option<STLongHexNumber>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "@w:rsidTr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_tr: Option<STLongHexNumber>,
@@ -11377,33 +11845,43 @@ pub struct CTTblOverlap {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTblPPr {
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:leftFromText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub left_from_text: Option<STTwipsMeasure>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:rightFromText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub right_from_text: Option<STTwipsMeasure>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:topFromText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top_from_text: Option<STTwipsMeasure>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:bottomFromText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bottom_from_text: Option<STTwipsMeasure>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:vertAnchor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vert_anchor: Option<STVAnchor>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:horzAnchor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub horz_anchor: Option<STHAnchor>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:tblpXSpec")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tblp_x_spec: Option<STXAlign>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:tblpX")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tblp_x: Option<STSignedTwipsMeasure>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:tblpYSpec")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tblp_y_spec: Option<STYAlign>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:tblpY")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tblp_y: Option<STSignedTwipsMeasure>,
@@ -11418,21 +11896,27 @@ pub struct CTTblPPr {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTblCellMar {
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "top")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "start")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "left")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub left: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "bottom")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bottom: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "end")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "right")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub right: Option<Box<CTTblWidth>>,
@@ -11445,27 +11929,35 @@ pub struct CTTblCellMar {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTblBorders {
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "top")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "start")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "left")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub left: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "bottom")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bottom: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "end")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "right")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub right: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "insideH")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub inside_h: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "insideV")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub inside_v: Option<Box<CTBorder>>,
@@ -11478,54 +11970,71 @@ pub struct CTTblBorders {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTblPrBase {
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "tblStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_style: Option<Box<CTString>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblpPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tblp_pr: Option<Box<CTTblPPr>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblOverlap")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_overlap: Option<Box<CTTblOverlap>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "bidiVisual")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bidi_visual: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "tblStyleRowBandSize")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_style_row_band_size: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "tblStyleColBandSize")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_style_col_band_size: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblW")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_w: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "jc")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub justification: Option<Box<CTJcTable>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblCellSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_cell_spacing: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblInd")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_ind: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblBorders")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_borders: Option<Box<CTTblBorders>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "shd")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shading: Option<Box<CTShd>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblLayout")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_layout: Option<Box<CTTblLayoutType>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblCellMar")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_cell_mar: Option<Box<CTTblCellMar>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblLook")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_look: Option<Box<CTTblLook>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblCaption")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_caption: Option<Box<CTString>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblDescription")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_description: Option<Box<CTString>>,
@@ -11619,30 +12128,39 @@ pub struct TableProperties {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTblPrExBase {
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblW")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_w: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "jc")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub justification: Option<Box<CTJcTable>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblCellSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_cell_spacing: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblInd")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_ind: Option<Box<CTTblWidth>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblBorders")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_borders: Option<Box<CTTblBorders>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "shd")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shading: Option<Box<CTShd>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblLayout")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_layout: Option<Box<CTTblLayoutType>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblCellMar")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_cell_mar: Option<Box<CTTblCellMar>>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblLook")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_look: Option<Box<CTTblLook>>,
@@ -11682,6 +12200,7 @@ pub struct CTTblPrEx {
     #[serde(rename = "tblLook")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_look: Option<Box<CTTblLook>>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "tblPrExChange")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_pr_ex_change: Option<Box<CTTblPrExChange>>,
@@ -11713,24 +12232,31 @@ pub struct Table {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTblLook {
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:firstRow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_row: Option<OnOff>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:lastRow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_row: Option<OnOff>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:firstColumn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_column: Option<OnOff>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:lastColumn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_column: Option<OnOff>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:noHBand")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub no_h_band: Option<OnOff>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:noVBand")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub no_v_band: Option<OnOff>,
+    #[cfg(feature = "wml-tables")]
     #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STShortHexNumber>,
@@ -11773,6 +12299,7 @@ pub struct CTEdnPos {
 pub struct CTNumFmt {
     #[serde(rename = "@w:val")]
     pub value: STNumberFormat,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "@w:format")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub format: Option<STString>,
@@ -11800,6 +12327,7 @@ pub struct CTNumRestart {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FootnoteEndnoteRef {
+    #[cfg(feature = "wml-comments")]
     #[serde(rename = "@w:customMarkFollows")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_mark_follows: Option<OnOff>,
@@ -11829,6 +12357,7 @@ pub struct CTFtnEdnSepRef {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FootnoteEndnote {
+    #[cfg(feature = "wml-comments")]
     #[serde(rename = "@w:type")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<STFtnEdn>,
@@ -11868,9 +12397,11 @@ pub struct EGFtnEdnNumProps {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTFtnProps {
+    #[cfg(feature = "wml-comments")]
     #[serde(rename = "pos")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pos: Option<Box<CTFtnPos>>,
+    #[cfg(feature = "wml-comments")]
     #[serde(rename = "numFmt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub num_fmt: Option<Box<CTNumFmt>>,
@@ -11889,9 +12420,11 @@ pub struct CTFtnProps {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTEdnProps {
+    #[cfg(feature = "wml-comments")]
     #[serde(rename = "pos")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pos: Option<Box<CTEdnPos>>,
+    #[cfg(feature = "wml-comments")]
     #[serde(rename = "numFmt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub num_fmt: Option<Box<CTNumFmt>>,
@@ -11922,6 +12455,7 @@ pub struct CTFtnDocProps {
     #[serde(rename = "numRestart")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub num_restart: Option<Box<CTNumRestart>>,
+    #[cfg(feature = "wml-comments")]
     #[serde(rename = "footnote")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub footnote: Vec<CTFtnEdnSepRef>,
@@ -11946,6 +12480,7 @@ pub struct CTEdnDocProps {
     #[serde(rename = "numRestart")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub num_restart: Option<Box<CTNumRestart>>,
+    #[cfg(feature = "wml-comments")]
     #[serde(rename = "endnote")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub endnote: Vec<CTFtnEdnSepRef>,
@@ -11958,11 +12493,14 @@ pub struct CTEdnDocProps {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTRecipientData {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "active")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub active: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "column")]
     pub column: Box<CTDecimalNumber>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "uniqueTag")]
     pub unique_tag: Box<CTBase64Binary>,
     /// Unknown child elements captured for roundtrip fidelity.
@@ -11987,6 +12525,7 @@ pub struct CTBase64Binary {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTRecipients {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "recipientData")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub recipient_data: Vec<CTRecipientData>,
@@ -12001,21 +12540,27 @@ pub type WRecipients = Box<CTRecipients>;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTOdsoFieldMapData {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "type")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<Box<CTMailMergeOdsoFMDFieldType>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "name")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "mappedName")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mapped_name: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "column")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub column: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "lid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lid: Option<Box<CTLang>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "dynamicAddress")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dynamic_address: Option<Box<CTOnOff>>,
@@ -12041,27 +12586,35 @@ pub struct CTMailMergeSourceType {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTOdso {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "udl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub udl: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "table")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub table: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "src")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub src: Option<Box<CTRel>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "colDelim")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_delim: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "type")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<Box<CTMailMergeSourceType>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "fHdr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub f_hdr: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "fieldMapData")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub field_map_data: Vec<CTOdsoFieldMapData>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "recipientData")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub recipient_data: Vec<CTRel>,
@@ -12074,49 +12627,65 @@ pub struct CTOdso {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMailMerge {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "mainDocumentType")]
     pub main_document_type: Box<CTMailMergeDocType>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "linkToQuery")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub link_to_query: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "dataType")]
     pub data_type: Box<CTMailMergeDataType>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "connectString")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub connect_string: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "query")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub query: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "dataSource")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_source: Option<Box<CTRel>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "headerSource")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub header_source: Option<Box<CTRel>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotSuppressBlankLines")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_suppress_blank_lines: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "destination")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub destination: Option<Box<CTMailMergeDest>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "addressFieldName")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub address_field_name: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "mailSubject")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mail_subject: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "mailAsAttachment")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mail_as_attachment: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "viewMergedData")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub view_merged_data: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "activeRecord")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub active_record: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "checkErrors")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub check_errors: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "odso")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub odso: Option<Box<CTOdso>>,
@@ -12142,201 +12711,267 @@ pub struct CTTargetScreenSz {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Compatibility {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "useSingleBorderforContiguousCells")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub use_single_borderfor_contiguous_cells: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "wpJustification")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub wp_justification: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "noTabHangInd")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub no_tab_hang_ind: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "noLeading")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub no_leading: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "spaceForUL")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub space_for_u_l: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "noColumnBalance")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub no_column_balance: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "balanceSingleByteDoubleByteWidth")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub balance_single_byte_double_byte_width: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "noExtraLineSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub no_extra_line_spacing: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotLeaveBackslashAlone")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_leave_backslash_alone: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "ulTrailSpace")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ul_trail_space: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotExpandShiftReturn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_expand_shift_return: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "spacingInWholePoints")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spacing_in_whole_points: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "lineWrapLikeWord6")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub line_wrap_like_word6: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "printBodyTextBeforeHeader")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub print_body_text_before_header: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "printColBlack")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub print_col_black: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "wpSpaceWidth")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub wp_space_width: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "showBreaksInFrames")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_breaks_in_frames: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "subFontBySize")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sub_font_by_size: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "suppressBottomSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub suppress_bottom_spacing: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "suppressTopSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub suppress_top_spacing: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "suppressSpacingAtTopOfPage")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub suppress_spacing_at_top_of_page: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "suppressTopSpacingWP")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub suppress_top_spacing_w_p: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "suppressSpBfAfterPgBrk")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub suppress_sp_bf_after_pg_brk: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "swapBordersFacingPages")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub swap_borders_facing_pages: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "convMailMergeEsc")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub conv_mail_merge_esc: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "truncateFontHeightsLikeWP6")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub truncate_font_heights_like_w_p6: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "mwSmallCaps")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mw_small_caps: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "usePrinterMetrics")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub use_printer_metrics: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotSuppressParagraphBorders")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_suppress_paragraph_borders: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "wrapTrailSpaces")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub wrap_trail_spaces: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "footnoteLayoutLikeWW8")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub footnote_layout_like_w_w8: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "shapeLayoutLikeWW8")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shape_layout_like_w_w8: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "alignTablesRowByRow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub align_tables_row_by_row: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "forgetLastTabAlignment")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub forget_last_tab_alignment: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "adjustLineHeightInTable")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub adjust_line_height_in_table: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "autoSpaceLikeWord95")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_space_like_word95: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "noSpaceRaiseLower")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub no_space_raise_lower: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotUseHTMLParagraphAutoSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_use_h_t_m_l_paragraph_auto_spacing: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "layoutRawTableWidth")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub layout_raw_table_width: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "layoutTableRowsApart")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub layout_table_rows_apart: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "useWord97LineBreakRules")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub use_word97_line_break_rules: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotBreakWrappedTables")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_break_wrapped_tables: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotSnapToGridInCell")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_snap_to_grid_in_cell: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "selectFldWithFirstOrLastChar")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub select_fld_with_first_or_last_char: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "applyBreakingRules")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub apply_breaking_rules: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotWrapTextWithPunct")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_wrap_text_with_punct: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotUseEastAsianBreakRules")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_use_east_asian_break_rules: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "useWord2002TableStyleRules")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub use_word2002_table_style_rules: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "growAutofit")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub grow_autofit: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "useFELayout")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub use_f_e_layout: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "useNormalStyleForList")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub use_normal_style_for_list: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotUseIndentAsNumberingTabStop")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_use_indent_as_numbering_tab_stop: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "useAltKinsokuLineBreakRules")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub use_alt_kinsoku_line_break_rules: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "allowSpaceOfSameStyleInTable")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub allow_space_of_same_style_in_table: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotSuppressIndentation")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_suppress_indentation: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotAutofitConstrainedTables")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_autofit_constrained_tables: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "autofitToFirstFixedWidthCell")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub autofit_to_first_fixed_width_cell: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "underlineTabInNumList")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub underline_tab_in_num_list: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "displayHangulFixedWidth")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub display_hangul_fixed_width: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "splitPgBreakAndParaMark")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub split_pg_break_and_para_mark: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotVertAlignCellWithSp")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_vert_align_cell_with_sp: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotBreakConstrainedForcedTable")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_break_constrained_forced_table: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotVertAlignInTxbx")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_vert_align_in_txbx: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "useAnsiKerningPairs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub use_ansi_kerning_pairs: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "cachedColBalance")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cached_col_balance: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "compatSetting")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub compat_setting: Vec<CTCompatSetting>,
@@ -12384,6 +13019,7 @@ pub struct CTDocVar {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTDocVars {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "docVar")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub doc_var: Vec<CTDocVar>,
@@ -12396,9 +13032,11 @@ pub struct CTDocVars {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTDocRsids {
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "rsidRoot")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_root: Option<Box<CTLongHexNumber>>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "rsid")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub rsid: Vec<CTLongHexNumber>,
@@ -12424,9 +13062,11 @@ pub struct CTCharacterSpacing {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSaveThroughXslt {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@r:id")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub id: Option<STRelationshipId>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:solutionID")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub solution_i_d: Option<STString>,
@@ -12440,7 +13080,7 @@ pub struct CTSaveThroughXslt {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTRPrDefault {
+pub struct RunPropertiesDefault {
     #[serde(rename = "rPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r_pr: Option<Box<RunProperties>>,
@@ -12452,7 +13092,7 @@ pub struct CTRPrDefault {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTPPrDefault {
+pub struct ParagraphPropertiesDefault {
     #[serde(rename = "pPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub p_pr: Option<Box<CTPPrGeneral>>,
@@ -12464,13 +13104,13 @@ pub struct CTPPrDefault {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTDocDefaults {
+pub struct DocumentDefaults {
     #[serde(rename = "rPrDefault")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub r_pr_default: Option<Box<CTRPrDefault>>,
+    pub r_pr_default: Option<Box<RunPropertiesDefault>>,
     #[serde(rename = "pPrDefault")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub p_pr_default: Option<Box<CTPPrDefault>>,
+    pub p_pr_default: Option<Box<ParagraphPropertiesDefault>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -12480,39 +13120,51 @@ pub struct CTDocDefaults {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTColorSchemeMapping {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:bg1")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bg1: Option<STWmlColorSchemeIndex>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:t1")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub t1: Option<STWmlColorSchemeIndex>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:bg2")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bg2: Option<STWmlColorSchemeIndex>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:t2")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub t2: Option<STWmlColorSchemeIndex>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:accent1")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub accent1: Option<STWmlColorSchemeIndex>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:accent2")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub accent2: Option<STWmlColorSchemeIndex>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:accent3")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub accent3: Option<STWmlColorSchemeIndex>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:accent4")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub accent4: Option<STWmlColorSchemeIndex>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:accent5")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub accent5: Option<STWmlColorSchemeIndex>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:accent6")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub accent6: Option<STWmlColorSchemeIndex>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:hyperlink")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hyperlink: Option<STWmlColorSchemeIndex>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:followedHyperlink")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub followed_hyperlink: Option<STWmlColorSchemeIndex>,
@@ -12527,12 +13179,16 @@ pub struct CTColorSchemeMapping {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTReadingModeInkLockDown {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:actualPg")]
     pub actual_pg: OnOff,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:w")]
     pub width: STPixelsMeasure,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:h")]
     pub height: STPixelsMeasure,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:fontSz")]
     pub font_sz: STDecimalNumberOrPercent,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -12546,54 +13202,71 @@ pub struct CTReadingModeInkLockDown {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTWriteProtection {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:recommended")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub recommended: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:algorithmName")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub algorithm_name: Option<STString>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:hashValue")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hash_value: Option<Vec<u8>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:saltValue")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub salt_value: Option<Vec<u8>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:spinCount")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spin_count: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:cryptProviderType")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_provider_type: Option<STCryptProv>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:cryptAlgorithmClass")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_algorithm_class: Option<STAlgClass>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:cryptAlgorithmType")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_algorithm_type: Option<STAlgType>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:cryptAlgorithmSid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_algorithm_sid: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:cryptSpinCount")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_spin_count: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:cryptProvider")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_provider: Option<STString>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:algIdExt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alg_id_ext: Option<STLongHexNumber>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:algIdExtSource")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alg_id_ext_source: Option<STString>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:cryptProviderTypeExt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_provider_type_ext: Option<STLongHexNumber>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:cryptProviderTypeExtSource")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_provider_type_ext_source: Option<STString>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:hash")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hash: Option<Vec<u8>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:salt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub salt: Option<Vec<u8>>,
@@ -12620,66 +13293,87 @@ pub struct Settings {
     #[serde(rename = "zoom")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub zoom: Option<Box<CTZoom>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "removePersonalInformation")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub remove_personal_information: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "removeDateAndTime")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub remove_date_and_time: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotDisplayPageBoundaries")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_display_page_boundaries: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "displayBackgroundShape")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub display_background_shape: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "printPostScriptOverText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub print_post_script_over_text: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "printFractionalCharacterWidth")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub print_fractional_character_width: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "printFormsData")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub print_forms_data: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "embedTrueTypeFonts")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub embed_true_type_fonts: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "embedSystemFonts")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub embed_system_fonts: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "saveSubsetFonts")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub save_subset_fonts: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "saveFormsData")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub save_forms_data: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "mirrorMargins")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mirror_margins: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "alignBordersAndEdges")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub align_borders_and_edges: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "bordersDoNotSurroundHeader")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub borders_do_not_surround_header: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "bordersDoNotSurroundFooter")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub borders_do_not_surround_footer: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "gutterAtTop")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub gutter_at_top: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "hideSpellingErrors")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hide_spelling_errors: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "hideGrammaticalErrors")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hide_grammatical_errors: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "activeWritingStyle")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub active_writing_style: Vec<CTWritingStyle>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "proofState")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub proof_state: Option<Box<CTProof>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "formsDesign")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub forms_design: Option<Box<CTOnOff>>,
@@ -12687,15 +13381,19 @@ pub struct Settings {
     #[serde(rename = "attachedTemplate")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub attached_template: Option<Box<CTRel>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "linkStyles")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub link_styles: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "stylePaneFormatFilter")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub style_pane_format_filter: Option<Box<CTStylePaneFilter>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "stylePaneSortMethod")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub style_pane_sort_method: Option<Box<CTStyleSort>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "documentType")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub document_type: Option<Box<CTDocType>>,
@@ -12711,9 +13409,11 @@ pub struct Settings {
     #[serde(rename = "trackRevisions")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub track_revisions: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "doNotTrackMoves")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_track_moves: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "doNotTrackFormatting")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_track_formatting: Option<Box<CTOnOff>>,
@@ -12721,12 +13421,15 @@ pub struct Settings {
     #[serde(rename = "documentProtection")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub document_protection: Option<Box<CTDocProtect>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "autoFormatOverride")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_format_override: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "styleLockTheme")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub style_lock_theme: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "styleLockQFSet")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub style_lock_q_f_set: Option<Box<CTOnOff>>,
@@ -12734,27 +13437,35 @@ pub struct Settings {
     #[serde(rename = "defaultTabStop")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_tab_stop: Option<Box<CTTwipsMeasure>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "autoHyphenation")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_hyphenation: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "consecutiveHyphenLimit")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub consecutive_hyphen_limit: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "hyphenationZone")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hyphenation_zone: Option<Box<CTTwipsMeasure>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotHyphenateCaps")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_hyphenate_caps: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "showEnvelope")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_envelope: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "summaryLength")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub summary_length: Option<Box<CTDecimalNumberOrPrecent>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "clickAndTypeStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub click_and_type_style: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "defaultTableStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_table_style: Option<Box<CTString>>,
@@ -12762,99 +13473,131 @@ pub struct Settings {
     #[serde(rename = "evenAndOddHeaders")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub even_and_odd_headers: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "bookFoldRevPrinting")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub book_fold_rev_printing: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "bookFoldPrinting")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub book_fold_printing: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "bookFoldPrintingSheets")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub book_fold_printing_sheets: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "drawingGridHorizontalSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drawing_grid_horizontal_spacing: Option<Box<CTTwipsMeasure>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "drawingGridVerticalSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drawing_grid_vertical_spacing: Option<Box<CTTwipsMeasure>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "displayHorizontalDrawingGridEvery")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub display_horizontal_drawing_grid_every: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "displayVerticalDrawingGridEvery")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub display_vertical_drawing_grid_every: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotUseMarginsForDrawingGridOrigin")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_use_margins_for_drawing_grid_origin: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "drawingGridHorizontalOrigin")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drawing_grid_horizontal_origin: Option<Box<CTTwipsMeasure>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "drawingGridVerticalOrigin")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drawing_grid_vertical_origin: Option<Box<CTTwipsMeasure>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotShadeFormData")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_shade_form_data: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "noPunctuationKerning")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub no_punctuation_kerning: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "characterSpacingControl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub character_spacing_control: Option<Box<CTCharacterSpacing>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "printTwoOnOne")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub print_two_on_one: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "strictFirstAndLastChars")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub strict_first_and_last_chars: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "noLineBreaksAfter")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub no_line_breaks_after: Option<Box<CTKinsoku>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "noLineBreaksBefore")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub no_line_breaks_before: Option<Box<CTKinsoku>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "savePreviewPicture")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub save_preview_picture: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotValidateAgainstSchema")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_validate_against_schema: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "saveInvalidXml")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub save_invalid_xml: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "ignoreMixedContent")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ignore_mixed_content: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "alwaysShowPlaceholderText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub always_show_placeholder_text: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotDemarcateInvalidXml")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_demarcate_invalid_xml: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "saveXmlDataOnly")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub save_xml_data_only: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "useXSLTWhenSaving")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub use_x_s_l_t_when_saving: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "saveThroughXslt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub save_through_xslt: Option<Box<CTSaveThroughXslt>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "showXMLTags")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_x_m_l_tags: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "alwaysMergeEmptyNamespace")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub always_merge_empty_namespace: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "updateFields")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub update_fields: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "hdrShapeDefaults")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hdr_shape_defaults: Option<Box<CTShapeDefaults>>,
+    #[cfg(feature = "wml-comments")]
     #[serde(rename = "footnotePr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub footnote_pr: Option<Box<CTFtnDocProps>>,
+    #[cfg(feature = "wml-comments")]
     #[serde(rename = "endnotePr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub endnote_pr: Option<Box<CTEdnDocProps>>,
@@ -12870,42 +13613,55 @@ pub struct Settings {
     #[serde(rename = "rsids")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsids: Option<Box<CTDocRsids>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "attachedSchema")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub attached_schema: Vec<CTString>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "themeFontLang")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_font_lang: Option<Box<CTLanguage>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "clrSchemeMapping")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub clr_scheme_mapping: Option<Box<CTColorSchemeMapping>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotIncludeSubdocsInStats")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_include_subdocs_in_stats: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotAutoCompressPictures")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_auto_compress_pictures: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "forceUpgrade")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub force_upgrade: Option<Box<CTEmpty>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "captions")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub captions: Option<Box<CTCaptions>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "readModeInkLockDown")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub read_mode_ink_lock_down: Option<Box<CTReadingModeInkLockDown>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "smartTagType")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub smart_tag_type: Vec<CTSmartTagType>,
+    #[cfg(feature = "wml-drawings")]
     #[serde(rename = "shapeDefaults")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shape_defaults: Option<Box<CTShapeDefaults>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotEmbedSmartTags")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_embed_smart_tags: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "decimalSymbol")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub decimal_symbol: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "listSeparator")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub list_separator: Option<Box<CTString>>,
@@ -12931,51 +13687,67 @@ pub struct CTStyleSort {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTStylePaneFilter {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:allStyles")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub all_styles: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:customStyles")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_styles: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:latentStyles")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub latent_styles: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:stylesInUse")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub styles_in_use: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:headingStyles")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub heading_styles: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:numberingStyles")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub numbering_styles: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:tableStyles")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub table_styles: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:directFormattingOnRuns")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub direct_formatting_on_runs: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:directFormattingOnParagraphs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub direct_formatting_on_paragraphs: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:directFormattingOnNumbering")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub direct_formatting_on_numbering: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:directFormattingOnTables")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub direct_formatting_on_tables: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:clearFormatting")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub clear_formatting: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:top3HeadingStyles")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top3_heading_styles: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:visibleStyles")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub visible_styles: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:alternateStyleNames")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alternate_style_names: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STShortHexNumber>,
@@ -12990,42 +13762,55 @@ pub struct CTStylePaneFilter {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTWebSettings {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "frameset")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub frameset: Option<Box<CTFrameset>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "divs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub divs: Option<Box<CTDivs>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "encoding")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub encoding: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "optimizeForBrowser")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub optimize_for_browser: Option<Box<CTOptimizeForBrowser>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "relyOnVML")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rely_on_v_m_l: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "allowPNG")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub allow_p_n_g: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotRelyOnCSS")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_rely_on_c_s_s: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotSaveAsSingleFile")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_save_as_single_file: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotOrganizeInFolder")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_organize_in_folder: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotUseLongFileNames")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub do_not_use_long_file_names: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "pixelsPerInch")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pixels_per_inch: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "targetScreenSz")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub target_screen_sz: Option<Box<CTTargetScreenSz>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "saveSmartTagsAsXml")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub save_smart_tags_as_xml: Option<Box<CTOnOff>>,
@@ -13054,6 +13839,7 @@ pub struct CTOptimizeForBrowser {
     #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:target")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub target: Option<STString>,
@@ -13068,33 +13854,43 @@ pub struct CTOptimizeForBrowser {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTFrame {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "sz")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub size: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "name")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "title")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "longDesc")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub long_desc: Option<Box<CTRel>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "sourceFileName")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub source_file_name: Option<Box<CTRel>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "marW")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mar_w: Option<Box<CTPixelsMeasure>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "marH")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mar_h: Option<Box<CTPixelsMeasure>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "scrollbar")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub scrollbar: Option<Box<CTFrameScrollbar>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "noResizeAllowed")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub no_resize_allowed: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "linkedToFile")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub linked_to_file: Option<Box<CTOnOff>>,
@@ -13120,15 +13916,19 @@ pub struct CTFrameLayout {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTFramesetSplitbar {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "w")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub width: Option<Box<CTTwipsMeasure>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "color")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<Box<CTColor>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "noBorder")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub no_border: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "flatBorders")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub flat_borders: Option<Box<CTOnOff>>,
@@ -13141,15 +13941,19 @@ pub struct CTFramesetSplitbar {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTFrameset {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "sz")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub size: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "framesetSplitbar")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub frameset_splitbar: Option<Box<CTFramesetSplitbar>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "frameLayout")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub frame_layout: Option<Box<CTFrameLayout>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "title")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<Box<CTString>>,
@@ -13164,9 +13968,11 @@ pub struct CTFrameset {
 pub struct CTNumPicBullet {
     #[serde(rename = "@w:numPicBulletId")]
     pub num_pic_bullet_id: STDecimalNumber,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "pict")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pict: Option<Box<CTPicture>>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "drawing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drawing: Option<Box<CTDrawing>>,
@@ -13202,6 +14008,7 @@ pub struct CTLevelText {
     #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STString>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "@w:null")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub null: Option<OnOff>,
@@ -13216,12 +14023,15 @@ pub struct CTLevelText {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTLvlLegacy {
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "@w:legacy")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub legacy: Option<OnOff>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "@w:legacySpace")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub legacy_space: Option<STTwipsMeasure>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "@w:legacyIndent")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub legacy_indent: Option<STSignedTwipsMeasure>,
@@ -13238,45 +14048,59 @@ pub struct CTLvlLegacy {
 pub struct Level {
     #[serde(rename = "@w:ilvl")]
     pub ilvl: STDecimalNumber,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "@w:tplc")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tplc: Option<STLongHexNumber>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "@w:tentative")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tentative: Option<OnOff>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "start")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "numFmt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub num_fmt: Option<Box<CTNumFmt>>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "lvlRestart")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lvl_restart: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "pStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub paragraph_style: Option<Box<CTString>>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "isLgl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub is_lgl: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "suff")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub suff: Option<Box<CTLevelSuffix>>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "lvlText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lvl_text: Option<Box<CTLevelText>>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "lvlPicBulletId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lvl_pic_bullet_id: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "legacy")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub legacy: Option<Box<CTLvlLegacy>>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "lvlJc")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lvl_jc: Option<Box<CTJc>>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "pPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub p_pr: Option<Box<CTPPrGeneral>>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "rPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r_pr: Option<Box<RunProperties>>,
@@ -13311,21 +14135,27 @@ pub struct CTMultiLevelType {
 pub struct AbstractNumbering {
     #[serde(rename = "@w:abstractNumId")]
     pub abstract_num_id: STDecimalNumber,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "nsid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub nsid: Option<Box<CTLongHexNumber>>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "multiLevelType")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub multi_level_type: Option<Box<CTMultiLevelType>>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "tmpl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tmpl: Option<Box<CTLongHexNumber>>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "name")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<Box<CTString>>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "styleLink")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub style_link: Option<Box<CTString>>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "numStyleLink")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub num_style_link: Option<Box<CTString>>,
@@ -13350,9 +14180,11 @@ pub struct AbstractNumbering {
 pub struct CTNumLvl {
     #[serde(rename = "@w:ilvl")]
     pub ilvl: STDecimalNumber,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "startOverride")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start_override: Option<Box<CTDecimalNumber>>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "lvl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lvl: Option<Box<Level>>,
@@ -13376,6 +14208,7 @@ pub struct NumberingInstance {
     pub num_id: STDecimalNumber,
     #[serde(rename = "abstractNumId")]
     pub abstract_num_id: Box<CTDecimalNumber>,
+    #[cfg(feature = "wml-numbering")]
     #[serde(rename = "lvlOverride")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub lvl_override: Vec<CTNumLvl>,
@@ -13417,21 +14250,26 @@ pub struct Numbering {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTTblStylePr {
+pub struct TableStyleProperties {
     #[serde(rename = "@w:type")]
     pub r#type: STTblStyleOverrideType,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "pPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub p_pr: Option<Box<CTPPrGeneral>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "rPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r_pr: Option<Box<RunProperties>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "tblPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub table_properties: Option<Box<CTTblPrBase>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "trPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub row_properties: Option<Box<TableRowProperties>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "tcPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell_properties: Option<Box<TableCellProperties>>,
@@ -13504,18 +14342,23 @@ pub struct Style {
     #[serde(rename = "qFormat")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub q_format: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "locked")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub locked: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "personal")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub personal: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "personalCompose")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub personal_compose: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "personalReply")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub personal_reply: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "rsid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid: Option<Box<CTLongHexNumber>>,
@@ -13542,7 +14385,7 @@ pub struct Style {
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "tblStylePr")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub tbl_style_pr: Vec<CTTblStylePr>,
+    pub tbl_style_pr: Vec<TableStyleProperties>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -13558,21 +14401,26 @@ pub struct Style {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTLsdException {
+pub struct LatentStyleException {
     #[serde(rename = "@w:name")]
     pub name: STString,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:locked")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub locked: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:uiPriority")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ui_priority: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:semiHidden")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub semi_hidden: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:unhideWhenUsed")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub unhide_when_used: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:qFormat")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub q_format: Option<OnOff>,
@@ -13586,28 +14434,34 @@ pub struct CTLsdException {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTLatentStyles {
+pub struct LatentStyles {
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:defLockedState")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub def_locked_state: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:defUIPriority")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub def_u_i_priority: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:defSemiHidden")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub def_semi_hidden: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:defUnhideWhenUsed")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub def_unhide_when_used: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:defQFormat")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub def_q_format: Option<OnOff>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<STDecimalNumber>,
     #[serde(rename = "lsdException")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub lsd_exception: Vec<CTLsdException>,
+    pub lsd_exception: Vec<LatentStyleException>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -13626,10 +14480,11 @@ pub struct CTLatentStyles {
 pub struct Styles {
     #[serde(rename = "docDefaults")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub doc_defaults: Option<Box<CTDocDefaults>>,
+    pub doc_defaults: Option<Box<DocumentDefaults>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "latentStyles")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub latent_styles: Option<Box<CTLatentStyles>>,
+    pub latent_styles: Option<Box<LatentStyles>>,
     #[serde(rename = "style")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub style: Vec<Style>,
@@ -13681,16 +14536,22 @@ pub struct CTPitch {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFontSig {
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:usb0")]
     pub usb0: STLongHexNumber,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:usb1")]
     pub usb1: STLongHexNumber,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:usb2")]
     pub usb2: STLongHexNumber,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:usb3")]
     pub usb3: STLongHexNumber,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:csb0")]
     pub csb0: STLongHexNumber,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:csb1")]
     pub csb1: STLongHexNumber,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -13704,11 +14565,14 @@ pub struct CTFontSig {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFontRel {
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@r:id")]
     pub id: STRelationshipId,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:fontKey")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub font_key: Option<Guid>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:subsetted")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub subsetted: Option<OnOff>,
@@ -13725,36 +14589,47 @@ pub struct CTFontRel {
 pub struct Font {
     #[serde(rename = "@w:name")]
     pub name: STString,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "altName")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alt_name: Option<Box<CTString>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "panose1")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub panose1: Option<Box<CTPanose>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "charset")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub charset: Option<Box<CTCharset>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "family")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub family: Option<Box<CTFontFamily>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "notTrueType")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub not_true_type: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "pitch")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pitch: Option<Box<CTPitch>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "sig")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sig: Option<Box<CTFontSig>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "embedRegular")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub embed_regular: Option<Box<CTFontRel>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "embedBold")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub embed_bold: Option<Box<CTFontRel>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "embedItalic")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub embed_italic: Option<Box<CTFontRel>>,
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "embedBoldItalic")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub embed_bold_italic: Option<Box<CTFontRel>>,
@@ -13786,15 +14661,19 @@ pub struct CTFontsList {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTDivBdr {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "top")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "left")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub left: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "bottom")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bottom: Option<Box<CTBorder>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "right")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub right: Option<Box<CTBorder>>,
@@ -13807,25 +14686,34 @@ pub struct CTDivBdr {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDiv {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "blockQuote")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub block_quote: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "bodyDiv")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub body_div: Option<Box<CTOnOff>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "marLeft")]
     pub mar_left: Box<CTSignedTwipsMeasure>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "marRight")]
     pub mar_right: Box<CTSignedTwipsMeasure>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "marTop")]
     pub mar_top: Box<CTSignedTwipsMeasure>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "marBottom")]
     pub mar_bottom: Box<CTSignedTwipsMeasure>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "divBdr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub div_bdr: Option<Box<CTDivBdr>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "divsChild")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub divs_child: Vec<CTDivs>,
@@ -13845,6 +14733,7 @@ pub struct CTDiv {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTDivs {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "div")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub div: Vec<CTDiv>,
@@ -13963,12 +14852,15 @@ pub type WFtr = Box<HeaderFooter>;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSmartTagType {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:namespaceuri")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub namespaceuri: Option<STString>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:name")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<STString>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:url")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub url: Option<STString>,
@@ -13996,6 +14888,7 @@ pub struct CTDocPartBehavior {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTDocPartBehaviors {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "behavior")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub behavior: Vec<CTDocPartBehavior>,
@@ -14021,9 +14914,11 @@ pub struct CTDocPartType {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTDocPartTypes {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:all")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub all: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "type")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub r#type: Vec<CTDocPartType>,
@@ -14058,6 +14953,7 @@ pub struct CTDocPartGallery {
 pub struct CTDocPartCategory {
     #[serde(rename = "name")]
     pub name: Box<CTString>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "gallery")]
     pub gallery: Box<CTDocPartGallery>,
     /// Unknown child elements captured for roundtrip fidelity.
@@ -14071,6 +14967,7 @@ pub struct CTDocPartCategory {
 pub struct CTDocPartName {
     #[serde(rename = "@w:val")]
     pub value: STString,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:decorated")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub decorated: Option<OnOff>,
@@ -14085,23 +14982,30 @@ pub struct CTDocPartName {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDocPartPr {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "name")]
     pub name: Box<CTDocPartName>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "style")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub style: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "category")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub category: Option<Box<CTDocPartCategory>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "types")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub types: Option<Box<CTDocPartTypes>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "behaviors")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub behaviors: Option<Box<CTDocPartBehaviors>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "description")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<Box<CTString>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "guid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub guid: Option<Box<CTGuid>>,
@@ -14114,9 +15018,11 @@ pub struct CTDocPartPr {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTDocPart {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "docPartPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc_part_pr: Option<Box<CTDocPartPr>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "docPartBody")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc_part_body: Option<Box<Body>>,
@@ -14129,6 +15035,7 @@ pub struct CTDocPart {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTDocParts {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "docPart")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub doc_part: Vec<CTDocPart>,
@@ -14151,23 +15058,30 @@ pub type WStyles = Box<Styles>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCaption {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:name")]
     pub name: STString,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:pos")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pos: Option<STCaptionPos>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:chapNum")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub chap_num: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:heading")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub heading: Option<STDecimalNumber>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:noLabel")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub no_label: Option<OnOff>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:numFmt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub num_fmt: Option<STNumberFormat>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:sep")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sep: Option<STChapterSep>,
@@ -14182,8 +15096,10 @@ pub struct CTCaption {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTAutoCaption {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:name")]
     pub name: STString,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "@w:caption")]
     pub caption: STString,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -14197,6 +15113,7 @@ pub struct CTAutoCaption {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTAutoCaptions {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "autoCaption")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub auto_caption: Vec<CTAutoCaption>,
@@ -14209,9 +15126,11 @@ pub struct CTAutoCaptions {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTCaptions {
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "caption")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub caption: Vec<CTCaption>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "autoCaptions")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_captions: Option<Box<CTAutoCaptions>>,
@@ -14224,6 +15143,7 @@ pub struct CTCaptions {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTDocumentBase {
+    #[cfg(feature = "wml-styling")]
     #[serde(rename = "background")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub background: Option<Box<CTBackground>>,
@@ -14265,6 +15185,7 @@ pub struct CTGlossaryDocument {
     #[serde(rename = "background")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub background: Option<Box<CTBackground>>,
+    #[cfg(feature = "wml-settings")]
     #[serde(rename = "docParts")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc_parts: Option<Box<CTDocParts>>,

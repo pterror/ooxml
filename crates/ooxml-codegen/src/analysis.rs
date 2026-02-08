@@ -4,7 +4,7 @@
 //! unmapped types and fields.
 
 use crate::ast::{Pattern, Schema};
-use crate::codegen::CodegenConfig;
+use crate::codegen::{CodegenConfig, to_pascal_case};
 use std::collections::{HashMap, HashSet};
 
 /// Analysis report for a single module.
@@ -73,10 +73,17 @@ pub fn analyze_schema(schema: &Schema, config: &CodegenConfig) -> ModuleReport {
 
     // Analyze each definition
     for def in &schema.definitions {
-        // Skip inline refs, simple types, and element groups
+        // Skip inline refs, simple types, attribute groups, element groups,
+        // and root element wrappers (e.g., `document = element w:document { CT_Document }`).
+        // AG_* and EG_* are always inlined into parent types, so their fields
+        // are already accounted for in the parent type's feature mapping.
+        // Root element wrappers are deduplicated by the codegen (their PascalCase
+        // name matches the mapped CT_* type), so they don't generate separate structs.
         if is_inline_attribute_ref(&def.name, &def.pattern)
             || is_simple_type(&def.pattern)
-            || (def.name.contains("_EG_") && is_element_choice(&def.pattern, &definitions))
+            || def.name.contains("_EG_")
+            || def.name.contains("_AG_")
+            || matches!(&def.pattern, Pattern::Element { .. })
         {
             continue;
         }
@@ -93,7 +100,7 @@ pub fn analyze_schema(schema: &Schema, config: &CodegenConfig) -> ModuleReport {
         // Collect and check fields
         // Use mapped name for feature lookup (YAML uses Worksheet, not CT_Worksheet)
         let mapped_name = get_mapped_name(config, spec_name);
-        let fields = collect_fields(&def.pattern, &definitions, &config.strip_prefix);
+        let fields = collect_fields(&def.pattern, &definitions);
         for field in fields {
             report.total_fields += 1;
             if !has_field_mapping(config, &mapped_name, &field) {
@@ -137,8 +144,8 @@ fn get_mapped_name(config: &CodegenConfig, spec_name: &str) -> String {
             return mapped.clone();
         }
     }
-    // No mapping - use spec name as-is
-    spec_name.to_string()
+    // No mapping - apply PascalCase like the codegen does
+    to_pascal_case(spec_name)
 }
 
 /// Check if a field has a feature mapping in the config.
@@ -157,26 +164,15 @@ fn has_field_mapping(config: &CodegenConfig, type_name: &str, field_name: &str) 
 }
 
 /// Collect field names from a pattern.
-fn collect_fields(
-    pattern: &Pattern,
-    definitions: &HashMap<&str, &Pattern>,
-    strip_prefix: &Option<String>,
-) -> Vec<String> {
+fn collect_fields(pattern: &Pattern, definitions: &HashMap<&str, &Pattern>) -> Vec<String> {
     let mut fields = Vec::new();
-    collect_fields_recursive(
-        pattern,
-        definitions,
-        strip_prefix,
-        &mut fields,
-        &mut HashSet::new(),
-    );
+    collect_fields_recursive(pattern, definitions, &mut fields, &mut HashSet::new());
     fields
 }
 
 fn collect_fields_recursive(
     pattern: &Pattern,
     definitions: &HashMap<&str, &Pattern>,
-    strip_prefix: &Option<String>,
     fields: &mut Vec<String>,
     visited: &mut HashSet<String>,
 ) {
@@ -186,21 +182,23 @@ fn collect_fields_recursive(
         | Pattern::ZeroOrMore(inner)
         | Pattern::OneOrMore(inner)
         | Pattern::Mixed(inner) => {
-            collect_fields_recursive(inner, definitions, strip_prefix, fields, visited);
+            collect_fields_recursive(inner, definitions, fields, visited);
         }
         Pattern::Interleave(parts) | Pattern::Choice(parts) | Pattern::Sequence(parts) => {
             for part in parts {
-                collect_fields_recursive(part, definitions, strip_prefix, fields, visited);
+                collect_fields_recursive(part, definitions, fields, visited);
             }
         }
         Pattern::Attribute { name, .. } => {
-            let field_name = to_snake_case(&name.local);
+            // Use original XML name (camelCase) to match ooxml-features.yaml keys
+            let field_name = name.local.clone();
             if !fields.contains(&field_name) {
                 fields.push(field_name);
             }
         }
         Pattern::Element { name, .. } => {
-            let field_name = to_snake_case(&name.local);
+            // Use original XML name (camelCase) to match ooxml-features.yaml keys
+            let field_name = name.local.clone();
             if !fields.contains(&field_name) {
                 fields.push(field_name);
             }
@@ -212,21 +210,9 @@ fn collect_fields_recursive(
             {
                 // Only follow AG_* (attribute groups) and CT_* base types
                 if name.contains("_AG_") || is_inline_attribute_ref(name, ref_pattern) {
-                    collect_fields_recursive(
-                        ref_pattern,
-                        definitions,
-                        strip_prefix,
-                        fields,
-                        visited,
-                    );
+                    collect_fields_recursive(ref_pattern, definitions, fields, visited);
                 } else if name.contains("_EG_") {
-                    // Element groups become their own field
-                    let spec_name = strip_namespace_prefix(name, strip_prefix);
-                    let short = spec_name.strip_prefix("EG_").unwrap_or(spec_name);
-                    let field_name = to_snake_case(short);
-                    if !fields.contains(&field_name) {
-                        fields.push(field_name);
-                    }
+                    // Element groups are always included (no feature gating) — skip
                 }
             }
         }
@@ -261,34 +247,7 @@ fn is_simple_type(pattern: &Pattern) -> bool {
     }
 }
 
-fn is_element_choice(pattern: &Pattern, definitions: &HashMap<&str, &Pattern>) -> bool {
-    match pattern {
-        Pattern::Choice(variants) => variants
-            .iter()
-            .all(|v| is_element_or_ref_to_element(v, definitions)),
-        Pattern::Group(inner) => is_element_choice(inner, definitions),
-        _ => false,
-    }
-}
-
-fn is_element_or_ref_to_element(pattern: &Pattern, definitions: &HashMap<&str, &Pattern>) -> bool {
-    match pattern {
-        Pattern::Element { .. } => true,
-        Pattern::Ref(name) => {
-            if let Some(p) = definitions.get(name.as_str()) {
-                matches!(p, Pattern::Element { .. }) || is_element_choice(p, definitions)
-            } else {
-                false
-            }
-        }
-        Pattern::Choice(variants) => variants
-            .iter()
-            .all(|v| is_element_or_ref_to_element(v, definitions)),
-        Pattern::Group(inner) => is_element_or_ref_to_element(inner, definitions),
-        _ => false,
-    }
-}
-
+#[cfg(test)]
 fn to_snake_case(s: &str) -> String {
     let mut result = String::new();
     let mut prev_lower = false;

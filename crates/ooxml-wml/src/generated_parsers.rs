@@ -206,6 +206,7 @@ impl FromXml for CTCharset {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_character_set = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -217,6 +218,7 @@ impl FromXml for CTCharset {
                 b"val" => {
                     f_value = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-styling")]
                 b"characterSet" => {
                     f_character_set = Some(val.into_owned());
                 }
@@ -244,6 +246,7 @@ impl FromXml for CTCharset {
 
         Ok(Self {
             value: f_value,
+            #[cfg(feature = "wml-styling")]
             character_set: f_character_set,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -822,8 +825,11 @@ impl FromXml for CTColor {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<STHexColor> = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_theme_color = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_theme_tint = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_theme_shade = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -835,12 +841,15 @@ impl FromXml for CTColor {
                 b"val" => {
                     f_value = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"themeColor" => {
                     f_theme_color = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"themeTint" => {
                     f_theme_tint = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-styling")]
                 b"themeShade" => {
                     f_theme_shade = decode_hex(&val);
                 }
@@ -868,8 +877,11 @@ impl FromXml for CTColor {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "wml-styling")]
             theme_color: f_theme_color,
+            #[cfg(feature = "wml-styling")]
             theme_tint: f_theme_tint,
+            #[cfg(feature = "wml-styling")]
             theme_shade: f_theme_shade,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -978,9 +990,13 @@ impl FromXml for CTUnderline {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_color = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_theme_color = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_theme_tint = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_theme_shade = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -992,15 +1008,19 @@ impl FromXml for CTUnderline {
                 b"val" => {
                     f_value = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"color" => {
                     f_color = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"themeColor" => {
                     f_theme_color = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"themeTint" => {
                     f_theme_tint = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-styling")]
                 b"themeShade" => {
                     f_theme_shade = decode_hex(&val);
                 }
@@ -1028,9 +1048,13 @@ impl FromXml for CTUnderline {
 
         Ok(Self {
             value: f_value,
+            #[cfg(feature = "wml-styling")]
             color: f_color,
+            #[cfg(feature = "wml-styling")]
             theme_color: f_theme_color,
+            #[cfg(feature = "wml-styling")]
             theme_tint: f_theme_tint,
+            #[cfg(feature = "wml-styling")]
             theme_shade: f_theme_shade,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -1092,13 +1116,21 @@ impl FromXml for CTBorder {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<STBorder> = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_color = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_theme_color = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_theme_tint = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_theme_shade = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_size = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_space = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_shadow = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_frame = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -1110,27 +1142,35 @@ impl FromXml for CTBorder {
                 b"val" => {
                     f_value = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"color" => {
                     f_color = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"themeColor" => {
                     f_theme_color = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"themeTint" => {
                     f_theme_tint = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-styling")]
                 b"themeShade" => {
                     f_theme_shade = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-styling")]
                 b"sz" => {
                     f_size = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"space" => {
                     f_space = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"shadow" => {
                     f_shadow = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"frame" => {
                     f_frame = Some(val.into_owned());
                 }
@@ -1158,13 +1198,21 @@ impl FromXml for CTBorder {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "wml-styling")]
             color: f_color,
+            #[cfg(feature = "wml-styling")]
             theme_color: f_theme_color,
+            #[cfg(feature = "wml-styling")]
             theme_tint: f_theme_tint,
+            #[cfg(feature = "wml-styling")]
             theme_shade: f_theme_shade,
+            #[cfg(feature = "wml-styling")]
             size: f_size,
+            #[cfg(feature = "wml-styling")]
             space: f_space,
+            #[cfg(feature = "wml-styling")]
             shadow: f_shadow,
+            #[cfg(feature = "wml-styling")]
             frame: f_frame,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -1179,13 +1227,21 @@ impl FromXml for CTShd {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<STShd> = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_color = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_theme_color = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_theme_tint = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_theme_shade = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_fill = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_theme_fill = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_theme_fill_tint = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_theme_fill_shade = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -1197,27 +1253,35 @@ impl FromXml for CTShd {
                 b"val" => {
                     f_value = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"color" => {
                     f_color = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"themeColor" => {
                     f_theme_color = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"themeTint" => {
                     f_theme_tint = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-styling")]
                 b"themeShade" => {
                     f_theme_shade = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-styling")]
                 b"fill" => {
                     f_fill = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"themeFill" => {
                     f_theme_fill = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"themeFillTint" => {
                     f_theme_fill_tint = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-styling")]
                 b"themeFillShade" => {
                     f_theme_fill_shade = decode_hex(&val);
                 }
@@ -1245,13 +1309,21 @@ impl FromXml for CTShd {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "wml-styling")]
             color: f_color,
+            #[cfg(feature = "wml-styling")]
             theme_color: f_theme_color,
+            #[cfg(feature = "wml-styling")]
             theme_tint: f_theme_tint,
+            #[cfg(feature = "wml-styling")]
             theme_shade: f_theme_shade,
+            #[cfg(feature = "wml-styling")]
             fill: f_fill,
+            #[cfg(feature = "wml-styling")]
             theme_fill: f_theme_fill,
+            #[cfg(feature = "wml-styling")]
             theme_fill_tint: f_theme_fill_tint,
+            #[cfg(feature = "wml-styling")]
             theme_fill_shade: f_theme_fill_shade,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -1312,7 +1384,9 @@ impl FromXml for CTFitText {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_value: Option<STTwipsMeasure> = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_id = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -1321,9 +1395,11 @@ impl FromXml for CTFitText {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-styling")]
                 b"val" => {
                     f_value = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"id" => {
                     f_id = val.parse().ok();
                 }
@@ -1350,7 +1426,9 @@ impl FromXml for CTFitText {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "wml-styling")]
             id: f_id,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -1411,8 +1489,11 @@ impl FromXml for CTLanguage {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_value = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_east_asia = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_bidi = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -1421,12 +1502,15 @@ impl FromXml for CTLanguage {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-styling")]
                 b"val" => {
                     f_value = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"eastAsia" => {
                     f_east_asia = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"bidi" => {
                     f_bidi = Some(val.into_owned());
                 }
@@ -1453,8 +1537,11 @@ impl FromXml for CTLanguage {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             value: f_value,
+            #[cfg(feature = "wml-styling")]
             east_asia: f_east_asia,
+            #[cfg(feature = "wml-styling")]
             bidi: f_bidi,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -1468,10 +1555,15 @@ impl FromXml for CTEastAsianLayout {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_id = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_combine = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_combine_brackets = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_vert = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_vert_compress = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -1480,18 +1572,23 @@ impl FromXml for CTEastAsianLayout {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-styling")]
                 b"id" => {
                     f_id = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"combine" => {
                     f_combine = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"combineBrackets" => {
                     f_combine_brackets = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"vert" => {
                     f_vert = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"vertCompress" => {
                     f_vert_compress = Some(val.into_owned());
                 }
@@ -1518,10 +1615,15 @@ impl FromXml for CTEastAsianLayout {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             id: f_id,
+            #[cfg(feature = "wml-styling")]
             combine: f_combine,
+            #[cfg(feature = "wml-styling")]
             combine_brackets: f_combine_brackets,
+            #[cfg(feature = "wml-styling")]
             vert: f_vert,
+            #[cfg(feature = "wml-styling")]
             vert_compress: f_vert_compress,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -1535,20 +1637,35 @@ impl FromXml for CTFramePr {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-layout")]
         let mut f_drop_cap = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_lines = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_width = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_height = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_v_space = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_h_space = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_wrap = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_h_anchor = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_v_anchor = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_x = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_x_align = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_y = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_y_align = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_h_rule = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_anchor_lock = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -1557,48 +1674,63 @@ impl FromXml for CTFramePr {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-layout")]
                 b"dropCap" => {
                     f_drop_cap = val.parse().ok();
                 }
+                #[cfg(feature = "wml-layout")]
                 b"lines" => {
                     f_lines = val.parse().ok();
                 }
+                #[cfg(feature = "wml-layout")]
                 b"w" => {
                     f_width = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"h" => {
                     f_height = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"vSpace" => {
                     f_v_space = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"hSpace" => {
                     f_h_space = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"wrap" => {
                     f_wrap = val.parse().ok();
                 }
+                #[cfg(feature = "wml-layout")]
                 b"hAnchor" => {
                     f_h_anchor = val.parse().ok();
                 }
+                #[cfg(feature = "wml-layout")]
                 b"vAnchor" => {
                     f_v_anchor = val.parse().ok();
                 }
+                #[cfg(feature = "wml-layout")]
                 b"x" => {
                     f_x = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"xAlign" => {
                     f_x_align = val.parse().ok();
                 }
+                #[cfg(feature = "wml-layout")]
                 b"y" => {
                     f_y = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"yAlign" => {
                     f_y_align = val.parse().ok();
                 }
+                #[cfg(feature = "wml-layout")]
                 b"hRule" => {
                     f_h_rule = val.parse().ok();
                 }
+                #[cfg(feature = "wml-layout")]
                 b"anchorLock" => {
                     f_anchor_lock = Some(val.into_owned());
                 }
@@ -1625,20 +1757,35 @@ impl FromXml for CTFramePr {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-layout")]
             drop_cap: f_drop_cap,
+            #[cfg(feature = "wml-layout")]
             lines: f_lines,
+            #[cfg(feature = "wml-layout")]
             width: f_width,
+            #[cfg(feature = "wml-layout")]
             height: f_height,
+            #[cfg(feature = "wml-layout")]
             v_space: f_v_space,
+            #[cfg(feature = "wml-layout")]
             h_space: f_h_space,
+            #[cfg(feature = "wml-layout")]
             wrap: f_wrap,
+            #[cfg(feature = "wml-layout")]
             h_anchor: f_h_anchor,
+            #[cfg(feature = "wml-layout")]
             v_anchor: f_v_anchor,
+            #[cfg(feature = "wml-layout")]
             x: f_x,
+            #[cfg(feature = "wml-layout")]
             x_align: f_x_align,
+            #[cfg(feature = "wml-layout")]
             y: f_y,
+            #[cfg(feature = "wml-layout")]
             y_align: f_y_align,
+            #[cfg(feature = "wml-layout")]
             h_rule: f_h_rule,
+            #[cfg(feature = "wml-layout")]
             anchor_lock: f_anchor_lock,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -1653,6 +1800,7 @@ impl FromXml for CTTabStop {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<STTabJc> = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_leader = None;
         let mut f_pos: Option<STSignedTwipsMeasure> = None;
         #[cfg(feature = "extra-attrs")]
@@ -1665,6 +1813,7 @@ impl FromXml for CTTabStop {
                 b"val" => {
                     f_value = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"leader" => {
                     f_leader = val.parse().ok();
                 }
@@ -1695,6 +1844,7 @@ impl FromXml for CTTabStop {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "wml-styling")]
             leader: f_leader,
             pos: f_pos.ok_or_else(|| ParseError::MissingAttribute("pos".to_string()))?,
             #[cfg(feature = "extra-attrs")]
@@ -1709,13 +1859,21 @@ impl FromXml for CTSpacing {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_before = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_before_lines = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_before_autospacing = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_after = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_after_lines = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_after_autospacing = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_line = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_line_rule = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -1724,27 +1882,35 @@ impl FromXml for CTSpacing {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-styling")]
                 b"before" => {
                     f_before = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"beforeLines" => {
                     f_before_lines = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"beforeAutospacing" => {
                     f_before_autospacing = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"after" => {
                     f_after = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"afterLines" => {
                     f_after_lines = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"afterAutospacing" => {
                     f_after_autospacing = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"line" => {
                     f_line = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"lineRule" => {
                     f_line_rule = val.parse().ok();
                 }
@@ -1771,13 +1937,21 @@ impl FromXml for CTSpacing {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             before: f_before,
+            #[cfg(feature = "wml-styling")]
             before_lines: f_before_lines,
+            #[cfg(feature = "wml-styling")]
             before_autospacing: f_before_autospacing,
+            #[cfg(feature = "wml-styling")]
             after: f_after,
+            #[cfg(feature = "wml-styling")]
             after_lines: f_after_lines,
+            #[cfg(feature = "wml-styling")]
             after_autospacing: f_after_autospacing,
+            #[cfg(feature = "wml-styling")]
             line: f_line,
+            #[cfg(feature = "wml-styling")]
             line_rule: f_line_rule,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -1791,17 +1965,29 @@ impl FromXml for CTInd {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_start = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_start_chars = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_end = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_end_chars = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_left = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_left_chars = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_right = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_right_chars = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_hanging = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_hanging_chars = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_first_line = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_first_line_chars = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -1810,39 +1996,51 @@ impl FromXml for CTInd {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-styling")]
                 b"start" => {
                     f_start = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"startChars" => {
                     f_start_chars = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"end" => {
                     f_end = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"endChars" => {
                     f_end_chars = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"left" => {
                     f_left = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"leftChars" => {
                     f_left_chars = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"right" => {
                     f_right = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"rightChars" => {
                     f_right_chars = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"hanging" => {
                     f_hanging = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"hangingChars" => {
                     f_hanging_chars = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"firstLine" => {
                     f_first_line = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"firstLineChars" => {
                     f_first_line_chars = val.parse().ok();
                 }
@@ -1869,17 +2067,29 @@ impl FromXml for CTInd {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             start: f_start,
+            #[cfg(feature = "wml-styling")]
             start_chars: f_start_chars,
+            #[cfg(feature = "wml-styling")]
             end: f_end,
+            #[cfg(feature = "wml-styling")]
             end_chars: f_end_chars,
+            #[cfg(feature = "wml-styling")]
             left: f_left,
+            #[cfg(feature = "wml-styling")]
             left_chars: f_left_chars,
+            #[cfg(feature = "wml-styling")]
             right: f_right,
+            #[cfg(feature = "wml-styling")]
             right_chars: f_right_chars,
+            #[cfg(feature = "wml-styling")]
             hanging: f_hanging,
+            #[cfg(feature = "wml-styling")]
             hanging_chars: f_hanging_chars,
+            #[cfg(feature = "wml-styling")]
             first_line: f_first_line,
+            #[cfg(feature = "wml-styling")]
             first_line_chars: f_first_line_chars,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -2034,6 +2244,7 @@ impl FromXml for CTZoom {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_value = None;
         let mut f_percent: Option<STDecimalNumberOrPercent> = None;
         #[cfg(feature = "extra-attrs")]
@@ -2043,6 +2254,7 @@ impl FromXml for CTZoom {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"val" => {
                     f_value = val.parse().ok();
                 }
@@ -2072,6 +2284,7 @@ impl FromXml for CTZoom {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             value: f_value,
             percent: f_percent
                 .ok_or_else(|| ParseError::MissingAttribute("percent".to_string()))?,
@@ -2087,11 +2300,17 @@ impl FromXml for CTWritingStyle {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_lang: Option<Language> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_vendor_i_d: Option<STString> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_dll_version: Option<STString> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_nl_check = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_check_style: Option<OnOff> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_app_name: Option<STString> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -2100,21 +2319,27 @@ impl FromXml for CTWritingStyle {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"lang" => {
                     f_lang = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"vendorID" => {
                     f_vendor_i_d = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"dllVersion" => {
                     f_dll_version = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"nlCheck" => {
                     f_nl_check = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"checkStyle" => {
                     f_check_style = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"appName" => {
                     f_app_name = Some(val.into_owned());
                 }
@@ -2141,14 +2366,20 @@ impl FromXml for CTWritingStyle {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             lang: f_lang.ok_or_else(|| ParseError::MissingAttribute("lang".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             vendor_i_d: f_vendor_i_d
                 .ok_or_else(|| ParseError::MissingAttribute("vendorID".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             dll_version: f_dll_version
                 .ok_or_else(|| ParseError::MissingAttribute("dllVersion".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             nl_check: f_nl_check,
+            #[cfg(feature = "wml-settings")]
             check_style: f_check_style
                 .ok_or_else(|| ParseError::MissingAttribute("checkStyle".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             app_name: f_app_name
                 .ok_or_else(|| ParseError::MissingAttribute("appName".to_string()))?,
             #[cfg(feature = "extra-attrs")]
@@ -2163,7 +2394,9 @@ impl FromXml for CTProof {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_spelling = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_grammar = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -2172,9 +2405,11 @@ impl FromXml for CTProof {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"spelling" => {
                     f_spelling = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"grammar" => {
                     f_grammar = val.parse().ok();
                 }
@@ -2201,7 +2436,9 @@ impl FromXml for CTProof {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             spelling: f_spelling,
+            #[cfg(feature = "wml-settings")]
             grammar: f_grammar,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -2426,24 +2663,43 @@ impl FromXml for CTDocProtect {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_edit = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_formatting = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_enforcement = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_algorithm_name = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_hash_value = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_salt_value = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_spin_count = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_crypt_provider_type = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_crypt_algorithm_class = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_crypt_algorithm_type = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_crypt_algorithm_sid = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_crypt_spin_count = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_crypt_provider = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_alg_id_ext = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_alg_id_ext_source = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_crypt_provider_type_ext = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_crypt_provider_type_ext_source = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_hash = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_salt = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -2452,60 +2708,79 @@ impl FromXml for CTDocProtect {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"edit" => {
                     f_edit = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"formatting" => {
                     f_formatting = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"enforcement" => {
                     f_enforcement = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"algorithmName" => {
                     f_algorithm_name = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"hashValue" => {
                     f_hash_value = decode_base64(&val);
                 }
+                #[cfg(feature = "wml-settings")]
                 b"saltValue" => {
                     f_salt_value = decode_base64(&val);
                 }
+                #[cfg(feature = "wml-settings")]
                 b"spinCount" => {
                     f_spin_count = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"cryptProviderType" => {
                     f_crypt_provider_type = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"cryptAlgorithmClass" => {
                     f_crypt_algorithm_class = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"cryptAlgorithmType" => {
                     f_crypt_algorithm_type = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"cryptAlgorithmSid" => {
                     f_crypt_algorithm_sid = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"cryptSpinCount" => {
                     f_crypt_spin_count = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"cryptProvider" => {
                     f_crypt_provider = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"algIdExt" => {
                     f_alg_id_ext = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-settings")]
                 b"algIdExtSource" => {
                     f_alg_id_ext_source = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"cryptProviderTypeExt" => {
                     f_crypt_provider_type_ext = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-settings")]
                 b"cryptProviderTypeExtSource" => {
                     f_crypt_provider_type_ext_source = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"hash" => {
                     f_hash = decode_base64(&val);
                 }
+                #[cfg(feature = "wml-settings")]
                 b"salt" => {
                     f_salt = decode_base64(&val);
                 }
@@ -2532,24 +2807,43 @@ impl FromXml for CTDocProtect {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             edit: f_edit,
+            #[cfg(feature = "wml-settings")]
             formatting: f_formatting,
+            #[cfg(feature = "wml-settings")]
             enforcement: f_enforcement,
+            #[cfg(feature = "wml-settings")]
             algorithm_name: f_algorithm_name,
+            #[cfg(feature = "wml-settings")]
             hash_value: f_hash_value,
+            #[cfg(feature = "wml-settings")]
             salt_value: f_salt_value,
+            #[cfg(feature = "wml-settings")]
             spin_count: f_spin_count,
+            #[cfg(feature = "wml-settings")]
             crypt_provider_type: f_crypt_provider_type,
+            #[cfg(feature = "wml-settings")]
             crypt_algorithm_class: f_crypt_algorithm_class,
+            #[cfg(feature = "wml-settings")]
             crypt_algorithm_type: f_crypt_algorithm_type,
+            #[cfg(feature = "wml-settings")]
             crypt_algorithm_sid: f_crypt_algorithm_sid,
+            #[cfg(feature = "wml-settings")]
             crypt_spin_count: f_crypt_spin_count,
+            #[cfg(feature = "wml-settings")]
             crypt_provider: f_crypt_provider,
+            #[cfg(feature = "wml-settings")]
             alg_id_ext: f_alg_id_ext,
+            #[cfg(feature = "wml-settings")]
             alg_id_ext_source: f_alg_id_ext_source,
+            #[cfg(feature = "wml-settings")]
             crypt_provider_type_ext: f_crypt_provider_type_ext,
+            #[cfg(feature = "wml-settings")]
             crypt_provider_type_ext_source: f_crypt_provider_type_ext_source,
+            #[cfg(feature = "wml-settings")]
             hash: f_hash,
+            #[cfg(feature = "wml-settings")]
             salt: f_salt,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -2751,10 +3045,15 @@ impl FromXml for CTTrackChangesView {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_markup = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_comments = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_ins_del = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_formatting = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_ink_annotations = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -2763,18 +3062,23 @@ impl FromXml for CTTrackChangesView {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"markup" => {
                     f_markup = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"comments" => {
                     f_comments = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"insDel" => {
                     f_ins_del = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"formatting" => {
                     f_formatting = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"inkAnnotations" => {
                     f_ink_annotations = Some(val.into_owned());
                 }
@@ -2801,10 +3105,15 @@ impl FromXml for CTTrackChangesView {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             markup: f_markup,
+            #[cfg(feature = "wml-settings")]
             comments: f_comments,
+            #[cfg(feature = "wml-settings")]
             ins_del: f_ins_del,
+            #[cfg(feature = "wml-settings")]
             formatting: f_formatting,
+            #[cfg(feature = "wml-settings")]
             ink_annotations: f_ink_annotations,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -2818,7 +3127,9 @@ impl FromXml for CTKinsoku {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_lang: Option<Language> = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_value: Option<STString> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -2827,9 +3138,11 @@ impl FromXml for CTKinsoku {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-styling")]
                 b"lang" => {
                     f_lang = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"val" => {
                     f_value = Some(val.into_owned());
                 }
@@ -2856,7 +3169,9 @@ impl FromXml for CTKinsoku {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             lang: f_lang.ok_or_else(|| ParseError::MissingAttribute("lang".to_string()))?,
+            #[cfg(feature = "wml-styling")]
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -3013,6 +3328,7 @@ impl FromXml for CTTrackChange {
     ) -> Result<Self, ParseError> {
         let mut f_id: Option<STDecimalNumber> = None;
         let mut f_author: Option<STString> = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_date = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -3027,6 +3343,7 @@ impl FromXml for CTTrackChange {
                 b"author" => {
                     f_author = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"date" => {
                     f_date = Some(val.into_owned());
                 }
@@ -3055,6 +3372,7 @@ impl FromXml for CTTrackChange {
         Ok(Self {
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
+            #[cfg(feature = "wml-track-changes")]
             date: f_date,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -3071,7 +3389,9 @@ impl FromXml for CTCellMergeTrackChange {
         let mut f_id: Option<STDecimalNumber> = None;
         let mut f_author: Option<STString> = None;
         let mut f_date = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_vertical_merge = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_v_merge_orig = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -3089,9 +3409,11 @@ impl FromXml for CTCellMergeTrackChange {
                 b"date" => {
                     f_date = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"vMerge" => {
                     f_vertical_merge = val.parse().ok();
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"vMergeOrig" => {
                     f_v_merge_orig = val.parse().ok();
                 }
@@ -3121,7 +3443,9 @@ impl FromXml for CTCellMergeTrackChange {
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
             date: f_date,
+            #[cfg(feature = "wml-track-changes")]
             vertical_merge: f_vertical_merge,
+            #[cfg(feature = "wml-track-changes")]
             v_merge_orig: f_v_merge_orig,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -3138,6 +3462,7 @@ impl FromXml for CTTrackChangeRange {
         let mut f_id: Option<STDecimalNumber> = None;
         let mut f_author: Option<STString> = None;
         let mut f_date = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_displaced_by_custom_xml = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -3155,6 +3480,7 @@ impl FromXml for CTTrackChangeRange {
                 b"date" => {
                     f_date = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"displacedByCustomXml" => {
                     f_displaced_by_custom_xml = val.parse().ok();
                 }
@@ -3184,6 +3510,7 @@ impl FromXml for CTTrackChangeRange {
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
             date: f_date,
+            #[cfg(feature = "wml-settings")]
             displaced_by_custom_xml: f_displaced_by_custom_xml,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -3198,6 +3525,7 @@ impl FromXml for CTMarkupRange {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_id: Option<STDecimalNumber> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_displaced_by_custom_xml = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -3209,6 +3537,7 @@ impl FromXml for CTMarkupRange {
                 b"id" => {
                     f_id = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"displacedByCustomXml" => {
                     f_displaced_by_custom_xml = val.parse().ok();
                 }
@@ -3236,6 +3565,7 @@ impl FromXml for CTMarkupRange {
 
         Ok(Self {
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             displaced_by_custom_xml: f_displaced_by_custom_xml,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -3251,7 +3581,9 @@ impl FromXml for CTBookmarkRange {
     ) -> Result<Self, ParseError> {
         let mut f_id: Option<STDecimalNumber> = None;
         let mut f_displaced_by_custom_xml = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_col_first = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_col_last = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -3266,9 +3598,11 @@ impl FromXml for CTBookmarkRange {
                 b"displacedByCustomXml" => {
                     f_displaced_by_custom_xml = val.parse().ok();
                 }
+                #[cfg(feature = "wml-tables")]
                 b"colFirst" => {
                     f_col_first = val.parse().ok();
                 }
+                #[cfg(feature = "wml-tables")]
                 b"colLast" => {
                     f_col_last = val.parse().ok();
                 }
@@ -3297,7 +3631,9 @@ impl FromXml for CTBookmarkRange {
         Ok(Self {
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             displaced_by_custom_xml: f_displaced_by_custom_xml,
+            #[cfg(feature = "wml-tables")]
             col_first: f_col_first,
+            #[cfg(feature = "wml-tables")]
             col_last: f_col_last,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -3312,8 +3648,11 @@ impl FromXml for Bookmark {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_id: Option<STDecimalNumber> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_displaced_by_custom_xml = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_col_first = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_col_last = None;
         let mut f_name: Option<STString> = None;
         #[cfg(feature = "extra-attrs")]
@@ -3326,12 +3665,15 @@ impl FromXml for Bookmark {
                 b"id" => {
                     f_id = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"displacedByCustomXml" => {
                     f_displaced_by_custom_xml = val.parse().ok();
                 }
+                #[cfg(feature = "wml-tables")]
                 b"colFirst" => {
                     f_col_first = val.parse().ok();
                 }
+                #[cfg(feature = "wml-tables")]
                 b"colLast" => {
                     f_col_last = val.parse().ok();
                 }
@@ -3362,8 +3704,11 @@ impl FromXml for Bookmark {
 
         Ok(Self {
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             displaced_by_custom_xml: f_displaced_by_custom_xml,
+            #[cfg(feature = "wml-tables")]
             col_first: f_col_first,
+            #[cfg(feature = "wml-tables")]
             col_last: f_col_last,
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
             #[cfg(feature = "extra-attrs")]
@@ -3383,7 +3728,9 @@ impl FromXml for CTMoveBookmark {
         let mut f_col_first = None;
         let mut f_col_last = None;
         let mut f_name: Option<STString> = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_author: Option<STString> = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_date: Option<STDateTime> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -3407,9 +3754,11 @@ impl FromXml for CTMoveBookmark {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"author" => {
                     f_author = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"date" => {
                     f_date = Some(val.into_owned());
                 }
@@ -3441,7 +3790,9 @@ impl FromXml for CTMoveBookmark {
             col_first: f_col_first,
             col_last: f_col_last,
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            #[cfg(feature = "wml-track-changes")]
             author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
+            #[cfg(feature = "wml-track-changes")]
             date: f_date.ok_or_else(|| ParseError::MissingAttribute("date".to_string()))?,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -3457,8 +3808,10 @@ impl FromXml for Comment {
     ) -> Result<Self, ParseError> {
         let mut f_id: Option<STDecimalNumber> = None;
         let mut f_author: Option<STString> = None;
+        #[cfg(feature = "wml-comments")]
         let mut f_date = None;
         let mut f_block_content = Vec::new();
+        #[cfg(feature = "wml-comments")]
         let mut f_initials = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -3477,9 +3830,11 @@ impl FromXml for Comment {
                 b"author" => {
                     f_author = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-comments")]
                 b"date" => {
                     f_date = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-comments")]
                 b"initials" => {
                     f_initials = Some(val.into_owned());
                 }
@@ -3612,8 +3967,10 @@ impl FromXml for Comment {
         Ok(Self {
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
+            #[cfg(feature = "wml-comments")]
             date: f_date,
             block_content: f_block_content,
+            #[cfg(feature = "wml-comments")]
             initials: f_initials,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -3632,6 +3989,7 @@ impl FromXml for CTTrackChangeNumbering {
         let mut f_id: Option<STDecimalNumber> = None;
         let mut f_author: Option<STString> = None;
         let mut f_date = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_original = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -3649,6 +4007,7 @@ impl FromXml for CTTrackChangeNumbering {
                 b"date" => {
                     f_date = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"original" => {
                     f_original = Some(val.into_owned());
                 }
@@ -3678,6 +4037,7 @@ impl FromXml for CTTrackChangeNumbering {
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
             date: f_date,
+            #[cfg(feature = "wml-track-changes")]
             original: f_original,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -3694,6 +4054,7 @@ impl FromXml for CTTblPrExChange {
         let mut f_id: Option<STDecimalNumber> = None;
         let mut f_author: Option<STString> = None;
         let mut f_date = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_tbl_pr_ex: Option<Box<CTTblPrExBase>> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -3732,6 +4093,7 @@ impl FromXml for CTTblPrExChange {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"tblPrEx" => {
                                 f_tbl_pr_ex =
                                     Some(Box::new(CTTblPrExBase::from_xml(reader, &e, false)?));
@@ -3759,6 +4121,7 @@ impl FromXml for CTTblPrExChange {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"tblPrEx" => {
                                 f_tbl_pr_ex =
                                     Some(Box::new(CTTblPrExBase::from_xml(reader, &e, true)?));
@@ -3793,6 +4156,7 @@ impl FromXml for CTTblPrExChange {
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
             date: f_date,
+            #[cfg(feature = "wml-track-changes")]
             tbl_pr_ex: f_tbl_pr_ex
                 .ok_or_else(|| ParseError::MissingAttribute("tblPrEx".to_string()))?,
             #[cfg(feature = "extra-attrs")]
@@ -3812,6 +4176,7 @@ impl FromXml for CTTcPrChange {
         let mut f_id: Option<STDecimalNumber> = None;
         let mut f_author: Option<STString> = None;
         let mut f_date = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_cell_properties: Option<Box<CTTcPrInner>> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -3850,6 +4215,7 @@ impl FromXml for CTTcPrChange {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"tcPr" => {
                                 f_cell_properties =
                                     Some(Box::new(CTTcPrInner::from_xml(reader, &e, false)?));
@@ -3877,6 +4243,7 @@ impl FromXml for CTTcPrChange {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"tcPr" => {
                                 f_cell_properties =
                                     Some(Box::new(CTTcPrInner::from_xml(reader, &e, true)?));
@@ -3911,6 +4278,7 @@ impl FromXml for CTTcPrChange {
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
             date: f_date,
+            #[cfg(feature = "wml-track-changes")]
             cell_properties: f_cell_properties
                 .ok_or_else(|| ParseError::MissingAttribute("tcPr".to_string()))?,
             #[cfg(feature = "extra-attrs")]
@@ -3930,6 +4298,7 @@ impl FromXml for CTTrPrChange {
         let mut f_id: Option<STDecimalNumber> = None;
         let mut f_author: Option<STString> = None;
         let mut f_date = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_row_properties: Option<Box<CTTrPrBase>> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -3968,6 +4337,7 @@ impl FromXml for CTTrPrChange {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"trPr" => {
                                 f_row_properties =
                                     Some(Box::new(CTTrPrBase::from_xml(reader, &e, false)?));
@@ -3995,6 +4365,7 @@ impl FromXml for CTTrPrChange {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"trPr" => {
                                 f_row_properties =
                                     Some(Box::new(CTTrPrBase::from_xml(reader, &e, true)?));
@@ -4029,6 +4400,7 @@ impl FromXml for CTTrPrChange {
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
             date: f_date,
+            #[cfg(feature = "wml-track-changes")]
             row_properties: f_row_properties
                 .ok_or_else(|| ParseError::MissingAttribute("trPr".to_string()))?,
             #[cfg(feature = "extra-attrs")]
@@ -4046,6 +4418,7 @@ impl FromXml for CTTblGridChange {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_id: Option<STDecimalNumber> = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_tbl_grid: Option<Box<CTTblGridBase>> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -4078,6 +4451,7 @@ impl FromXml for CTTblGridChange {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"tblGrid" => {
                                 f_tbl_grid =
                                     Some(Box::new(CTTblGridBase::from_xml(reader, &e, false)?));
@@ -4105,6 +4479,7 @@ impl FromXml for CTTblGridChange {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"tblGrid" => {
                                 f_tbl_grid =
                                     Some(Box::new(CTTblGridBase::from_xml(reader, &e, true)?));
@@ -4137,6 +4512,7 @@ impl FromXml for CTTblGridChange {
 
         Ok(Self {
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            #[cfg(feature = "wml-track-changes")]
             tbl_grid: f_tbl_grid
                 .ok_or_else(|| ParseError::MissingAttribute("tblGrid".to_string()))?,
             #[cfg(feature = "extra-attrs")]
@@ -4156,6 +4532,7 @@ impl FromXml for CTTblPrChange {
         let mut f_id: Option<STDecimalNumber> = None;
         let mut f_author: Option<STString> = None;
         let mut f_date = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_table_properties: Option<Box<CTTblPrBase>> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -4194,6 +4571,7 @@ impl FromXml for CTTblPrChange {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"tblPr" => {
                                 f_table_properties =
                                     Some(Box::new(CTTblPrBase::from_xml(reader, &e, false)?));
@@ -4221,6 +4599,7 @@ impl FromXml for CTTblPrChange {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"tblPr" => {
                                 f_table_properties =
                                     Some(Box::new(CTTblPrBase::from_xml(reader, &e, true)?));
@@ -4255,6 +4634,7 @@ impl FromXml for CTTblPrChange {
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
             date: f_date,
+            #[cfg(feature = "wml-track-changes")]
             table_properties: f_table_properties
                 .ok_or_else(|| ParseError::MissingAttribute("tblPr".to_string()))?,
             #[cfg(feature = "extra-attrs")]
@@ -4274,6 +4654,7 @@ impl FromXml for CTSectPrChange {
         let mut f_id: Option<STDecimalNumber> = None;
         let mut f_author: Option<STString> = None;
         let mut f_date = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_sect_pr = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -4312,6 +4693,7 @@ impl FromXml for CTSectPrChange {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"sectPr" => {
                                 f_sect_pr =
                                     Some(Box::new(CTSectPrBase::from_xml(reader, &e, false)?));
@@ -4339,6 +4721,7 @@ impl FromXml for CTSectPrChange {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"sectPr" => {
                                 f_sect_pr =
                                     Some(Box::new(CTSectPrBase::from_xml(reader, &e, true)?));
@@ -4373,6 +4756,7 @@ impl FromXml for CTSectPrChange {
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
             date: f_date,
+            #[cfg(feature = "wml-track-changes")]
             sect_pr: f_sect_pr,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -4391,6 +4775,7 @@ impl FromXml for CTPPrChange {
         let mut f_id: Option<STDecimalNumber> = None;
         let mut f_author: Option<STString> = None;
         let mut f_date = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_p_pr: Option<Box<CTPPrBase>> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -4429,6 +4814,7 @@ impl FromXml for CTPPrChange {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"pPr" => {
                                 f_p_pr = Some(Box::new(CTPPrBase::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -4455,6 +4841,7 @@ impl FromXml for CTPPrChange {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"pPr" => {
                                 f_p_pr = Some(Box::new(CTPPrBase::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -4488,6 +4875,7 @@ impl FromXml for CTPPrChange {
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
             date: f_date,
+            #[cfg(feature = "wml-track-changes")]
             p_pr: f_p_pr.ok_or_else(|| ParseError::MissingAttribute("pPr".to_string()))?,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -4506,6 +4894,7 @@ impl FromXml for CTRPrChange {
         let mut f_id: Option<STDecimalNumber> = None;
         let mut f_author: Option<STString> = None;
         let mut f_date = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_r_pr: Option<Box<CTRPrOriginal>> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -4544,6 +4933,7 @@ impl FromXml for CTRPrChange {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"rPr" => {
                                 f_r_pr =
                                     Some(Box::new(CTRPrOriginal::from_xml(reader, &e, false)?));
@@ -4571,6 +4961,7 @@ impl FromXml for CTRPrChange {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"rPr" => {
                                 f_r_pr = Some(Box::new(CTRPrOriginal::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -4604,6 +4995,7 @@ impl FromXml for CTRPrChange {
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
             date: f_date,
+            #[cfg(feature = "wml-track-changes")]
             r_pr: f_r_pr.ok_or_else(|| ParseError::MissingAttribute("rPr".to_string()))?,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -4622,6 +5014,7 @@ impl FromXml for CTParaRPrChange {
         let mut f_id: Option<STDecimalNumber> = None;
         let mut f_author: Option<STString> = None;
         let mut f_date = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_r_pr: Option<Box<CTParaRPrOriginal>> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -4660,6 +5053,7 @@ impl FromXml for CTParaRPrChange {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"rPr" => {
                                 f_r_pr =
                                     Some(Box::new(CTParaRPrOriginal::from_xml(reader, &e, false)?));
@@ -4687,6 +5081,7 @@ impl FromXml for CTParaRPrChange {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"rPr" => {
                                 f_r_pr =
                                     Some(Box::new(CTParaRPrOriginal::from_xml(reader, &e, true)?));
@@ -4721,6 +5116,7 @@ impl FromXml for CTParaRPrChange {
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
             date: f_date,
+            #[cfg(feature = "wml-track-changes")]
             r_pr: f_r_pr.ok_or_else(|| ParseError::MissingAttribute("rPr".to_string()))?,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -4736,9 +5132,13 @@ impl FromXml for CTRunTrackChange {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-track-changes")]
         let mut f_id: Option<STDecimalNumber> = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_author: Option<STString> = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_date = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_run_content = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -4751,12 +5151,15 @@ impl FromXml for CTRunTrackChange {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-track-changes")]
                 b"id" => {
                     f_id = val.parse().ok();
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"author" => {
                     f_author = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"date" => {
                     f_date = Some(val.into_owned());
                 }
@@ -4777,6 +5180,7 @@ impl FromXml for CTRunTrackChange {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"customXml"
                             | b"smartTag"
                             | b"sdt"
@@ -4831,6 +5235,7 @@ impl FromXml for CTRunTrackChange {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"customXml"
                             | b"smartTag"
                             | b"sdt"
@@ -4889,9 +5294,13 @@ impl FromXml for CTRunTrackChange {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-track-changes")]
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            #[cfg(feature = "wml-track-changes")]
             author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
+            #[cfg(feature = "wml-track-changes")]
             date: f_date,
+            #[cfg(feature = "wml-track-changes")]
             run_content: f_run_content,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -5299,15 +5708,19 @@ impl FromXml for RangeMarkup {
     }
 }
 
-impl FromXml for CTNumPr {
+impl FromXml for NumberingProperties {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-numbering")]
         let mut f_ilvl = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_num_id = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_numbering_change = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_ins = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -5321,6 +5734,7 @@ impl FromXml for CTNumPr {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-numbering")]
                             b"ilvl" => {
                                 f_ilvl =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -5329,6 +5743,7 @@ impl FromXml for CTNumPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"numId" => {
                                 f_num_id =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -5337,6 +5752,7 @@ impl FromXml for CTNumPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"numberingChange" => {
                                 f_numbering_change = Some(Box::new(
                                     CTTrackChangeNumbering::from_xml(reader, &e, false)?,
@@ -5346,6 +5762,7 @@ impl FromXml for CTNumPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"ins" => {
                                 f_ins = Some(Box::new(CTTrackChange::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -5372,6 +5789,7 @@ impl FromXml for CTNumPr {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-numbering")]
                             b"ilvl" => {
                                 f_ilvl =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -5380,6 +5798,7 @@ impl FromXml for CTNumPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"numId" => {
                                 f_num_id =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -5388,6 +5807,7 @@ impl FromXml for CTNumPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"numberingChange" => {
                                 f_numbering_change = Some(Box::new(
                                     CTTrackChangeNumbering::from_xml(reader, &e, true)?,
@@ -5397,6 +5817,7 @@ impl FromXml for CTNumPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"ins" => {
                                 f_ins = Some(Box::new(CTTrackChange::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -5427,9 +5848,13 @@ impl FromXml for CTNumPr {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-numbering")]
             ilvl: f_ilvl,
+            #[cfg(feature = "wml-numbering")]
             num_id: f_num_id,
+            #[cfg(feature = "wml-track-changes")]
             numbering_change: f_numbering_change,
+            #[cfg(feature = "wml-track-changes")]
             ins: f_ins,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -5443,11 +5868,17 @@ impl FromXml for CTPBdr {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_top = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_left = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_bottom = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_right = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_between = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_bar = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -5461,6 +5892,7 @@ impl FromXml for CTPBdr {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"top" => {
                                 f_top = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -5468,6 +5900,7 @@ impl FromXml for CTPBdr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"left" => {
                                 f_left = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -5475,6 +5908,7 @@ impl FromXml for CTPBdr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"bottom" => {
                                 f_bottom = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -5482,6 +5916,7 @@ impl FromXml for CTPBdr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"right" => {
                                 f_right = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -5489,6 +5924,7 @@ impl FromXml for CTPBdr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"between" => {
                                 f_between = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -5496,6 +5932,7 @@ impl FromXml for CTPBdr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"bar" => {
                                 f_bar = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -5522,6 +5959,7 @@ impl FromXml for CTPBdr {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"top" => {
                                 f_top = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -5529,6 +5967,7 @@ impl FromXml for CTPBdr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"left" => {
                                 f_left = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -5536,6 +5975,7 @@ impl FromXml for CTPBdr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"bottom" => {
                                 f_bottom = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -5543,6 +5983,7 @@ impl FromXml for CTPBdr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"right" => {
                                 f_right = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -5550,6 +5991,7 @@ impl FromXml for CTPBdr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"between" => {
                                 f_between = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -5557,6 +5999,7 @@ impl FromXml for CTPBdr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"bar" => {
                                 f_bar = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -5587,11 +6030,17 @@ impl FromXml for CTPBdr {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             top: f_top,
+            #[cfg(feature = "wml-styling")]
             left: f_left,
+            #[cfg(feature = "wml-styling")]
             bottom: f_bottom,
+            #[cfg(feature = "wml-styling")]
             right: f_right,
+            #[cfg(feature = "wml-styling")]
             between: f_between,
+            #[cfg(feature = "wml-styling")]
             bar: f_bar,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -5871,7 +6320,9 @@ impl FromXml for ParagraphProperties {
                             }
                             #[cfg(feature = "wml-numbering")]
                             b"numPr" => {
-                                f_num_pr = Some(Box::new(CTNumPr::from_xml(reader, &e, false)?));
+                                f_num_pr = Some(Box::new(NumberingProperties::from_xml(
+                                    reader, &e, false,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6201,7 +6652,9 @@ impl FromXml for ParagraphProperties {
                             }
                             #[cfg(feature = "wml-numbering")]
                             b"numPr" => {
-                                f_num_pr = Some(Box::new(CTNumPr::from_xml(reader, &e, true)?));
+                                f_num_pr = Some(Box::new(NumberingProperties::from_xml(
+                                    reader, &e, true,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6565,37 +7018,69 @@ impl FromXml for CTPPrBase {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_paragraph_style = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_keep_next = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_keep_lines = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_page_break_before = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_frame_pr = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_widow_control = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_num_pr = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_suppress_line_numbers = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_paragraph_border = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_shading = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_tabs = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_suppress_auto_hyphens = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_kinsoku = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_word_wrap = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_overflow_punct = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_top_line_punct = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_auto_space_d_e = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_auto_space_d_n = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_bidi = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_adjust_right_ind = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_snap_to_grid = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_spacing = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_indentation = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_contextual_spacing = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_mirror_indents = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_suppress_overlap = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_justification = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_text_direction = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_text_alignment = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_textbox_tight_wrap = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_outline_lvl = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_div_id = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_cnf_style = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -6617,6 +7102,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"keepNext" => {
                                 f_keep_next = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -6624,6 +7110,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"keepLines" => {
                                 f_keep_lines =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -6632,6 +7119,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"pageBreakBefore" => {
                                 f_page_break_before =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -6640,6 +7128,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"framePr" => {
                                 f_frame_pr =
                                     Some(Box::new(CTFramePr::from_xml(reader, &e, false)?));
@@ -6648,6 +7137,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"widowControl" => {
                                 f_widow_control =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -6656,13 +7146,17 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"numPr" => {
-                                f_num_pr = Some(Box::new(CTNumPr::from_xml(reader, &e, false)?));
+                                f_num_pr = Some(Box::new(NumberingProperties::from_xml(
+                                    reader, &e, false,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"suppressLineNumbers" => {
                                 f_suppress_line_numbers =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -6671,6 +7165,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"pBdr" => {
                                 f_paragraph_border =
                                     Some(Box::new(CTPBdr::from_xml(reader, &e, false)?));
@@ -6679,6 +7174,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"shd" => {
                                 f_shading = Some(Box::new(CTShd::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -6686,6 +7182,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"tabs" => {
                                 f_tabs = Some(Box::new(CTTabs::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -6693,6 +7190,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"suppressAutoHyphens" => {
                                 f_suppress_auto_hyphens =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -6701,6 +7199,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"kinsoku" => {
                                 f_kinsoku = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -6708,6 +7207,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"wordWrap" => {
                                 f_word_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -6715,6 +7215,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"overflowPunct" => {
                                 f_overflow_punct =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -6723,6 +7224,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"topLinePunct" => {
                                 f_top_line_punct =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -6731,6 +7233,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"autoSpaceDE" => {
                                 f_auto_space_d_e =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -6739,6 +7242,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"autoSpaceDN" => {
                                 f_auto_space_d_n =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -6747,6 +7251,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"bidi" => {
                                 f_bidi = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -6754,6 +7259,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"adjustRightInd" => {
                                 f_adjust_right_ind =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -6762,6 +7268,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"snapToGrid" => {
                                 f_snap_to_grid =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -6770,6 +7277,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"spacing" => {
                                 f_spacing = Some(Box::new(CTSpacing::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -6777,6 +7285,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"ind" => {
                                 f_indentation = Some(Box::new(CTInd::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -6784,6 +7293,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"contextualSpacing" => {
                                 f_contextual_spacing =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -6792,6 +7302,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"mirrorIndents" => {
                                 f_mirror_indents =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -6800,6 +7311,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"suppressOverlap" => {
                                 f_suppress_overlap =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -6808,6 +7320,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"jc" => {
                                 f_justification =
                                     Some(Box::new(CTJc::from_xml(reader, &e, false)?));
@@ -6816,6 +7329,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"textDirection" => {
                                 f_text_direction =
                                     Some(Box::new(CTTextDirection::from_xml(reader, &e, false)?));
@@ -6824,6 +7338,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"textAlignment" => {
                                 f_text_alignment =
                                     Some(Box::new(CTTextAlignment::from_xml(reader, &e, false)?));
@@ -6832,6 +7347,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"textboxTightWrap" => {
                                 f_textbox_tight_wrap = Some(Box::new(
                                     CTTextboxTightWrap::from_xml(reader, &e, false)?,
@@ -6841,6 +7357,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"outlineLvl" => {
                                 f_outline_lvl =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -6849,6 +7366,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"divId" => {
                                 f_div_id =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -6857,6 +7375,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"cnfStyle" => {
                                 f_cnf_style = Some(Box::new(CTCnf::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -6891,6 +7410,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"keepNext" => {
                                 f_keep_next = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -6898,6 +7418,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"keepLines" => {
                                 f_keep_lines = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -6905,6 +7426,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"pageBreakBefore" => {
                                 f_page_break_before =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -6913,6 +7435,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"framePr" => {
                                 f_frame_pr = Some(Box::new(CTFramePr::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -6920,6 +7443,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"widowControl" => {
                                 f_widow_control =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -6928,13 +7452,17 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"numPr" => {
-                                f_num_pr = Some(Box::new(CTNumPr::from_xml(reader, &e, true)?));
+                                f_num_pr = Some(Box::new(NumberingProperties::from_xml(
+                                    reader, &e, true,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"suppressLineNumbers" => {
                                 f_suppress_line_numbers =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -6943,6 +7471,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"pBdr" => {
                                 f_paragraph_border =
                                     Some(Box::new(CTPBdr::from_xml(reader, &e, true)?));
@@ -6951,6 +7480,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"shd" => {
                                 f_shading = Some(Box::new(CTShd::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -6958,6 +7488,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"tabs" => {
                                 f_tabs = Some(Box::new(CTTabs::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -6965,6 +7496,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"suppressAutoHyphens" => {
                                 f_suppress_auto_hyphens =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -6973,6 +7505,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"kinsoku" => {
                                 f_kinsoku = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -6980,6 +7513,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"wordWrap" => {
                                 f_word_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -6987,6 +7521,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"overflowPunct" => {
                                 f_overflow_punct =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -6995,6 +7530,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"topLinePunct" => {
                                 f_top_line_punct =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -7003,6 +7539,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"autoSpaceDE" => {
                                 f_auto_space_d_e =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -7011,6 +7548,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"autoSpaceDN" => {
                                 f_auto_space_d_n =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -7019,6 +7557,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"bidi" => {
                                 f_bidi = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -7026,6 +7565,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"adjustRightInd" => {
                                 f_adjust_right_ind =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -7034,6 +7574,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"snapToGrid" => {
                                 f_snap_to_grid =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -7042,6 +7583,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"spacing" => {
                                 f_spacing = Some(Box::new(CTSpacing::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -7049,6 +7591,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"ind" => {
                                 f_indentation = Some(Box::new(CTInd::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -7056,6 +7599,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"contextualSpacing" => {
                                 f_contextual_spacing =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -7064,6 +7608,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"mirrorIndents" => {
                                 f_mirror_indents =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -7072,6 +7617,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"suppressOverlap" => {
                                 f_suppress_overlap =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -7080,6 +7626,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"jc" => {
                                 f_justification = Some(Box::new(CTJc::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -7087,6 +7634,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"textDirection" => {
                                 f_text_direction =
                                     Some(Box::new(CTTextDirection::from_xml(reader, &e, true)?));
@@ -7095,6 +7643,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"textAlignment" => {
                                 f_text_alignment =
                                     Some(Box::new(CTTextAlignment::from_xml(reader, &e, true)?));
@@ -7103,6 +7652,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"textboxTightWrap" => {
                                 f_textbox_tight_wrap =
                                     Some(Box::new(CTTextboxTightWrap::from_xml(reader, &e, true)?));
@@ -7111,6 +7661,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"outlineLvl" => {
                                 f_outline_lvl =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -7119,6 +7670,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"divId" => {
                                 f_div_id =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -7127,6 +7679,7 @@ impl FromXml for CTPPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"cnfStyle" => {
                                 f_cnf_style = Some(Box::new(CTCnf::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -7158,37 +7711,69 @@ impl FromXml for CTPPrBase {
 
         Ok(Self {
             paragraph_style: f_paragraph_style,
+            #[cfg(feature = "wml-layout")]
             keep_next: f_keep_next,
+            #[cfg(feature = "wml-layout")]
             keep_lines: f_keep_lines,
+            #[cfg(feature = "wml-layout")]
             page_break_before: f_page_break_before,
+            #[cfg(feature = "wml-layout")]
             frame_pr: f_frame_pr,
+            #[cfg(feature = "wml-layout")]
             widow_control: f_widow_control,
+            #[cfg(feature = "wml-numbering")]
             num_pr: f_num_pr,
+            #[cfg(feature = "wml-layout")]
             suppress_line_numbers: f_suppress_line_numbers,
+            #[cfg(feature = "wml-styling")]
             paragraph_border: f_paragraph_border,
+            #[cfg(feature = "wml-styling")]
             shading: f_shading,
+            #[cfg(feature = "wml-styling")]
             tabs: f_tabs,
+            #[cfg(feature = "wml-styling")]
             suppress_auto_hyphens: f_suppress_auto_hyphens,
+            #[cfg(feature = "wml-styling")]
             kinsoku: f_kinsoku,
+            #[cfg(feature = "wml-styling")]
             word_wrap: f_word_wrap,
+            #[cfg(feature = "wml-styling")]
             overflow_punct: f_overflow_punct,
+            #[cfg(feature = "wml-styling")]
             top_line_punct: f_top_line_punct,
+            #[cfg(feature = "wml-styling")]
             auto_space_d_e: f_auto_space_d_e,
+            #[cfg(feature = "wml-styling")]
             auto_space_d_n: f_auto_space_d_n,
+            #[cfg(feature = "wml-styling")]
             bidi: f_bidi,
+            #[cfg(feature = "wml-styling")]
             adjust_right_ind: f_adjust_right_ind,
+            #[cfg(feature = "wml-layout")]
             snap_to_grid: f_snap_to_grid,
+            #[cfg(feature = "wml-styling")]
             spacing: f_spacing,
+            #[cfg(feature = "wml-styling")]
             indentation: f_indentation,
+            #[cfg(feature = "wml-styling")]
             contextual_spacing: f_contextual_spacing,
+            #[cfg(feature = "wml-styling")]
             mirror_indents: f_mirror_indents,
+            #[cfg(feature = "wml-layout")]
             suppress_overlap: f_suppress_overlap,
+            #[cfg(feature = "wml-styling")]
             justification: f_justification,
+            #[cfg(feature = "wml-styling")]
             text_direction: f_text_direction,
+            #[cfg(feature = "wml-styling")]
             text_alignment: f_text_alignment,
+            #[cfg(feature = "wml-styling")]
             textbox_tight_wrap: f_textbox_tight_wrap,
+            #[cfg(feature = "wml-styling")]
             outline_lvl: f_outline_lvl,
+            #[cfg(feature = "wml-styling")]
             div_id: f_div_id,
+            #[cfg(feature = "wml-styling")]
             cnf_style: f_cnf_style,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -7235,6 +7820,7 @@ impl FromXml for CTPPrGeneral {
         let mut f_outline_lvl = None;
         let mut f_div_id = None;
         let mut f_cnf_style = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_p_pr_change = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -7296,7 +7882,9 @@ impl FromXml for CTPPrGeneral {
                                 }
                             }
                             b"numPr" => {
-                                f_num_pr = Some(Box::new(CTNumPr::from_xml(reader, &e, false)?));
+                                f_num_pr = Some(Box::new(NumberingProperties::from_xml(
+                                    reader, &e, false,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7503,6 +8091,7 @@ impl FromXml for CTPPrGeneral {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"pPrChange" => {
                                 f_p_pr_change =
                                     Some(Box::new(CTPPrChange::from_xml(reader, &e, false)?));
@@ -7576,7 +8165,9 @@ impl FromXml for CTPPrGeneral {
                                 }
                             }
                             b"numPr" => {
-                                f_num_pr = Some(Box::new(CTNumPr::from_xml(reader, &e, true)?));
+                                f_num_pr = Some(Box::new(NumberingProperties::from_xml(
+                                    reader, &e, true,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7781,6 +8372,7 @@ impl FromXml for CTPPrGeneral {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"pPrChange" => {
                                 f_p_pr_change =
                                     Some(Box::new(CTPPrChange::from_xml(reader, &e, true)?));
@@ -7845,6 +8437,7 @@ impl FromXml for CTPPrGeneral {
             outline_lvl: f_outline_lvl,
             div_id: f_div_id,
             cnf_style: f_cnf_style,
+            #[cfg(feature = "wml-track-changes")]
             p_pr_change: f_p_pr_change,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -7858,8 +8451,11 @@ impl FromXml for CTControl {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-drawings")]
         let mut f_name = None;
+        #[cfg(feature = "wml-drawings")]
         let mut f_shapeid = None;
+        #[cfg(feature = "wml-drawings")]
         let mut f_id = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -7868,12 +8464,15 @@ impl FromXml for CTControl {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-drawings")]
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-drawings")]
                 b"shapeid" => {
                     f_shapeid = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-drawings")]
                 b"id" => {
                     f_id = Some(val.into_owned());
                 }
@@ -7900,8 +8499,11 @@ impl FromXml for CTControl {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-drawings")]
             name: f_name,
+            #[cfg(feature = "wml-drawings")]
             shapeid: f_shapeid,
+            #[cfg(feature = "wml-drawings")]
             id: f_id,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -7915,10 +8517,15 @@ impl FromXml for CTBackground {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_color = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_theme_color = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_theme_tint = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_theme_shade = None;
+        #[cfg(feature = "wml-drawings")]
         let mut f_drawing = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -7931,15 +8538,19 @@ impl FromXml for CTBackground {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-styling")]
                 b"color" => {
                     f_color = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"themeColor" => {
                     f_theme_color = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"themeTint" => {
                     f_theme_tint = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-styling")]
                 b"themeShade" => {
                     f_theme_shade = decode_hex(&val);
                 }
@@ -7960,6 +8571,7 @@ impl FromXml for CTBackground {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-drawings")]
                             b"drawing" => {
                                 f_drawing = Some(Box::new(CTDrawing::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -7986,6 +8598,7 @@ impl FromXml for CTBackground {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-drawings")]
                             b"drawing" => {
                                 f_drawing = Some(Box::new(CTDrawing::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -8016,10 +8629,15 @@ impl FromXml for CTBackground {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             color: f_color,
+            #[cfg(feature = "wml-styling")]
             theme_color: f_theme_color,
+            #[cfg(feature = "wml-styling")]
             theme_tint: f_theme_tint,
+            #[cfg(feature = "wml-styling")]
             theme_shade: f_theme_shade,
+            #[cfg(feature = "wml-drawings")]
             drawing: f_drawing,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -8082,12 +8700,19 @@ impl FromXml for CTObject {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-drawings")]
         let mut f_dxa_orig = None;
+        #[cfg(feature = "wml-drawings")]
         let mut f_dya_orig = None;
+        #[cfg(feature = "wml-drawings")]
         let mut f_drawing = None;
+        #[cfg(feature = "wml-drawings")]
         let mut f_control = None;
+        #[cfg(feature = "wml-drawings")]
         let mut f_object_link = None;
+        #[cfg(feature = "wml-drawings")]
         let mut f_object_embed = None;
+        #[cfg(feature = "wml-drawings")]
         let mut f_movie = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -8100,9 +8725,11 @@ impl FromXml for CTObject {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-drawings")]
                 b"dxaOrig" => {
                     f_dxa_orig = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-drawings")]
                 b"dyaOrig" => {
                     f_dya_orig = Some(val.into_owned());
                 }
@@ -8123,6 +8750,7 @@ impl FromXml for CTObject {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-drawings")]
                             b"drawing" => {
                                 f_drawing = Some(Box::new(CTDrawing::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -8130,6 +8758,7 @@ impl FromXml for CTObject {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-drawings")]
                             b"control" => {
                                 f_control = Some(Box::new(CTControl::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -8137,6 +8766,7 @@ impl FromXml for CTObject {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-drawings")]
                             b"objectLink" => {
                                 f_object_link =
                                     Some(Box::new(CTObjectLink::from_xml(reader, &e, false)?));
@@ -8145,6 +8775,7 @@ impl FromXml for CTObject {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-drawings")]
                             b"objectEmbed" => {
                                 f_object_embed =
                                     Some(Box::new(CTObjectEmbed::from_xml(reader, &e, false)?));
@@ -8153,6 +8784,7 @@ impl FromXml for CTObject {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-drawings")]
                             b"movie" => {
                                 f_movie = Some(Box::new(CTRel::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -8179,6 +8811,7 @@ impl FromXml for CTObject {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-drawings")]
                             b"drawing" => {
                                 f_drawing = Some(Box::new(CTDrawing::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -8186,6 +8819,7 @@ impl FromXml for CTObject {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-drawings")]
                             b"control" => {
                                 f_control = Some(Box::new(CTControl::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -8193,6 +8827,7 @@ impl FromXml for CTObject {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-drawings")]
                             b"objectLink" => {
                                 f_object_link =
                                     Some(Box::new(CTObjectLink::from_xml(reader, &e, true)?));
@@ -8201,6 +8836,7 @@ impl FromXml for CTObject {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-drawings")]
                             b"objectEmbed" => {
                                 f_object_embed =
                                     Some(Box::new(CTObjectEmbed::from_xml(reader, &e, true)?));
@@ -8209,6 +8845,7 @@ impl FromXml for CTObject {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-drawings")]
                             b"movie" => {
                                 f_movie = Some(Box::new(CTRel::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -8239,12 +8876,19 @@ impl FromXml for CTObject {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-drawings")]
             dxa_orig: f_dxa_orig,
+            #[cfg(feature = "wml-drawings")]
             dya_orig: f_dya_orig,
+            #[cfg(feature = "wml-drawings")]
             drawing: f_drawing,
+            #[cfg(feature = "wml-drawings")]
             control: f_control,
+            #[cfg(feature = "wml-drawings")]
             object_link: f_object_link,
+            #[cfg(feature = "wml-drawings")]
             object_embed: f_object_embed,
+            #[cfg(feature = "wml-drawings")]
             movie: f_movie,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -8260,7 +8904,9 @@ impl FromXml for CTPicture {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-drawings")]
         let mut f_movie = None;
+        #[cfg(feature = "wml-drawings")]
         let mut f_control = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -8274,6 +8920,7 @@ impl FromXml for CTPicture {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-drawings")]
                             b"movie" => {
                                 f_movie = Some(Box::new(CTRel::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -8281,6 +8928,7 @@ impl FromXml for CTPicture {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-drawings")]
                             b"control" => {
                                 f_control = Some(Box::new(CTControl::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -8307,6 +8955,7 @@ impl FromXml for CTPicture {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-drawings")]
                             b"movie" => {
                                 f_movie = Some(Box::new(CTRel::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -8314,6 +8963,7 @@ impl FromXml for CTPicture {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-drawings")]
                             b"control" => {
                                 f_control = Some(Box::new(CTControl::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -8344,7 +8994,9 @@ impl FromXml for CTPicture {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-drawings")]
             movie: f_movie,
+            #[cfg(feature = "wml-drawings")]
             control: f_control,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -8358,10 +9010,15 @@ impl FromXml for CTObjectEmbed {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-drawings")]
         let mut f_draw_aspect = None;
+        #[cfg(feature = "wml-drawings")]
         let mut f_id: Option<STRelationshipId> = None;
+        #[cfg(feature = "wml-drawings")]
         let mut f_prog_id = None;
+        #[cfg(feature = "wml-drawings")]
         let mut f_shape_id = None;
+        #[cfg(feature = "wml-drawings")]
         let mut f_field_codes = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -8370,18 +9027,23 @@ impl FromXml for CTObjectEmbed {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-drawings")]
                 b"drawAspect" => {
                     f_draw_aspect = val.parse().ok();
                 }
+                #[cfg(feature = "wml-drawings")]
                 b"id" => {
                     f_id = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-drawings")]
                 b"progId" => {
                     f_prog_id = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-drawings")]
                 b"shapeId" => {
                     f_shape_id = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-drawings")]
                 b"fieldCodes" => {
                     f_field_codes = Some(val.into_owned());
                 }
@@ -8408,10 +9070,15 @@ impl FromXml for CTObjectEmbed {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-drawings")]
             draw_aspect: f_draw_aspect,
+            #[cfg(feature = "wml-drawings")]
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            #[cfg(feature = "wml-drawings")]
             prog_id: f_prog_id,
+            #[cfg(feature = "wml-drawings")]
             shape_id: f_shape_id,
+            #[cfg(feature = "wml-drawings")]
             field_codes: f_field_codes,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -8425,12 +9092,19 @@ impl FromXml for CTObjectLink {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-drawings")]
         let mut f_draw_aspect = None;
+        #[cfg(feature = "wml-drawings")]
         let mut f_id: Option<STRelationshipId> = None;
+        #[cfg(feature = "wml-drawings")]
         let mut f_prog_id = None;
+        #[cfg(feature = "wml-drawings")]
         let mut f_shape_id = None;
+        #[cfg(feature = "wml-drawings")]
         let mut f_field_codes = None;
+        #[cfg(feature = "wml-drawings")]
         let mut f_update_mode: Option<STObjectUpdateMode> = None;
+        #[cfg(feature = "wml-drawings")]
         let mut f_locked_field = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -8439,24 +9113,31 @@ impl FromXml for CTObjectLink {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-drawings")]
                 b"drawAspect" => {
                     f_draw_aspect = val.parse().ok();
                 }
+                #[cfg(feature = "wml-drawings")]
                 b"id" => {
                     f_id = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-drawings")]
                 b"progId" => {
                     f_prog_id = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-drawings")]
                 b"shapeId" => {
                     f_shape_id = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-drawings")]
                 b"fieldCodes" => {
                     f_field_codes = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-drawings")]
                 b"updateMode" => {
                     f_update_mode = val.parse().ok();
                 }
+                #[cfg(feature = "wml-drawings")]
                 b"lockedField" => {
                     f_locked_field = Some(val.into_owned());
                 }
@@ -8483,13 +9164,20 @@ impl FromXml for CTObjectLink {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-drawings")]
             draw_aspect: f_draw_aspect,
+            #[cfg(feature = "wml-drawings")]
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            #[cfg(feature = "wml-drawings")]
             prog_id: f_prog_id,
+            #[cfg(feature = "wml-drawings")]
             shape_id: f_shape_id,
+            #[cfg(feature = "wml-drawings")]
             field_codes: f_field_codes,
+            #[cfg(feature = "wml-drawings")]
             update_mode: f_update_mode
                 .ok_or_else(|| ParseError::MissingAttribute("updateMode".to_string()))?,
+            #[cfg(feature = "wml-drawings")]
             locked_field: f_locked_field,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -8552,8 +9240,11 @@ impl FromXml for CTSimpleField {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_instr: Option<STString> = None;
+        #[cfg(feature = "wml-fields")]
         let mut f_fld_lock = None;
+        #[cfg(feature = "wml-fields")]
         let mut f_dirty = None;
+        #[cfg(feature = "wml-fields")]
         let mut f_fld_data = None;
         let mut f_paragraph_content = Vec::new();
         #[cfg(feature = "extra-attrs")]
@@ -8570,9 +9261,11 @@ impl FromXml for CTSimpleField {
                 b"instr" => {
                     f_instr = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-fields")]
                 b"fldLock" => {
                     f_fld_lock = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-fields")]
                 b"dirty" => {
                     f_dirty = Some(val.into_owned());
                 }
@@ -8593,6 +9286,7 @@ impl FromXml for CTSimpleField {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-fields")]
                             b"fldData" => {
                                 f_fld_data = Some(Box::new(Text::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -8658,6 +9352,7 @@ impl FromXml for CTSimpleField {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-fields")]
                             b"fldData" => {
                                 f_fld_data = Some(Box::new(Text::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -8728,8 +9423,11 @@ impl FromXml for CTSimpleField {
 
         Ok(Self {
             instr: f_instr.ok_or_else(|| ParseError::MissingAttribute("instr".to_string()))?,
+            #[cfg(feature = "wml-fields")]
             fld_lock: f_fld_lock,
+            #[cfg(feature = "wml-fields")]
             dirty: f_dirty,
+            #[cfg(feature = "wml-fields")]
             fld_data: f_fld_data,
             paragraph_content: f_paragraph_content,
             #[cfg(feature = "extra-attrs")]
@@ -8841,10 +9539,15 @@ impl FromXml for CTFldChar {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_fld_char_type: Option<STFldCharType> = None;
+        #[cfg(feature = "wml-fields")]
         let mut f_fld_lock = None;
+        #[cfg(feature = "wml-fields")]
         let mut f_dirty = None;
+        #[cfg(feature = "wml-fields")]
         let mut f_fld_data = None;
+        #[cfg(feature = "wml-fields")]
         let mut f_ff_data = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_numbering_change = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -8860,9 +9563,11 @@ impl FromXml for CTFldChar {
                 b"fldCharType" => {
                     f_fld_char_type = val.parse().ok();
                 }
+                #[cfg(feature = "wml-fields")]
                 b"fldLock" => {
                     f_fld_lock = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-fields")]
                 b"dirty" => {
                     f_dirty = Some(val.into_owned());
                 }
@@ -8883,6 +9588,7 @@ impl FromXml for CTFldChar {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-fields")]
                             b"fldData" => {
                                 f_fld_data = Some(Box::new(Text::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -8890,6 +9596,7 @@ impl FromXml for CTFldChar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"ffData" => {
                                 f_ff_data = Some(Box::new(CTFFData::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -8897,6 +9604,7 @@ impl FromXml for CTFldChar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"numberingChange" => {
                                 f_numbering_change = Some(Box::new(
                                     CTTrackChangeNumbering::from_xml(reader, &e, false)?,
@@ -8925,6 +9633,7 @@ impl FromXml for CTFldChar {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-fields")]
                             b"fldData" => {
                                 f_fld_data = Some(Box::new(Text::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -8932,6 +9641,7 @@ impl FromXml for CTFldChar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"ffData" => {
                                 f_ff_data = Some(Box::new(CTFFData::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -8939,6 +9649,7 @@ impl FromXml for CTFldChar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"numberingChange" => {
                                 f_numbering_change = Some(Box::new(
                                     CTTrackChangeNumbering::from_xml(reader, &e, true)?,
@@ -8973,10 +9684,15 @@ impl FromXml for CTFldChar {
         Ok(Self {
             fld_char_type: f_fld_char_type
                 .ok_or_else(|| ParseError::MissingAttribute("fldCharType".to_string()))?,
+            #[cfg(feature = "wml-fields")]
             fld_lock: f_fld_lock,
+            #[cfg(feature = "wml-fields")]
             dirty: f_dirty,
+            #[cfg(feature = "wml-fields")]
             fld_data: f_fld_data,
+            #[cfg(feature = "wml-fields")]
             ff_data: f_ff_data,
+            #[cfg(feature = "wml-track-changes")]
             numbering_change: f_numbering_change,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -8992,11 +9708,17 @@ impl FromXml for Hyperlink {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-hyperlinks")]
         let mut f_tgt_frame = None;
+        #[cfg(feature = "wml-hyperlinks")]
         let mut f_tooltip = None;
+        #[cfg(feature = "wml-hyperlinks")]
         let mut f_doc_location = None;
+        #[cfg(feature = "wml-hyperlinks")]
         let mut f_history = None;
+        #[cfg(feature = "wml-hyperlinks")]
         let mut f_anchor = None;
+        #[cfg(feature = "wml-hyperlinks")]
         let mut f_id = None;
         let mut f_paragraph_content = Vec::new();
         #[cfg(feature = "extra-attrs")]
@@ -9010,21 +9732,27 @@ impl FromXml for Hyperlink {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-hyperlinks")]
                 b"tgtFrame" => {
                     f_tgt_frame = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-hyperlinks")]
                 b"tooltip" => {
                     f_tooltip = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-hyperlinks")]
                 b"docLocation" => {
                     f_doc_location = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-hyperlinks")]
                 b"history" => {
                     f_history = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-hyperlinks")]
                 b"anchor" => {
                     f_anchor = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-hyperlinks")]
                 b"id" => {
                     f_id = Some(val.into_owned());
                 }
@@ -9165,11 +9893,17 @@ impl FromXml for Hyperlink {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-hyperlinks")]
             tgt_frame: f_tgt_frame,
+            #[cfg(feature = "wml-hyperlinks")]
             tooltip: f_tooltip,
+            #[cfg(feature = "wml-hyperlinks")]
             doc_location: f_doc_location,
+            #[cfg(feature = "wml-hyperlinks")]
             history: f_history,
+            #[cfg(feature = "wml-hyperlinks")]
             anchor: f_anchor,
+            #[cfg(feature = "wml-hyperlinks")]
             id: f_id,
             paragraph_content: f_paragraph_content,
             #[cfg(feature = "extra-attrs")]
@@ -9186,14 +9920,23 @@ impl FromXml for CTFFData {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-fields")]
         let mut f_name = Vec::new();
+        #[cfg(feature = "wml-fields")]
         let mut f_label = None;
+        #[cfg(feature = "wml-fields")]
         let mut f_tab_index = None;
+        #[cfg(feature = "wml-fields")]
         let mut f_enabled = Vec::new();
+        #[cfg(feature = "wml-fields")]
         let mut f_calc_on_exit = Vec::new();
+        #[cfg(feature = "wml-fields")]
         let mut f_entry_macro = None;
+        #[cfg(feature = "wml-fields")]
         let mut f_exit_macro = None;
+        #[cfg(feature = "wml-fields")]
         let mut f_help_text = None;
+        #[cfg(feature = "wml-fields")]
         let mut f_status_text = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -9207,6 +9950,7 @@ impl FromXml for CTFFData {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-fields")]
                             b"name" => {
                                 f_name.push(CTFFName::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -9214,6 +9958,7 @@ impl FromXml for CTFFData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"label" => {
                                 f_label =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -9222,6 +9967,7 @@ impl FromXml for CTFFData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"tabIndex" => {
                                 f_tab_index = Some(Box::new(CTUnsignedDecimalNumber::from_xml(
                                     reader, &e, false,
@@ -9231,6 +9977,7 @@ impl FromXml for CTFFData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"enabled" => {
                                 f_enabled.push(CTOnOff::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -9238,6 +9985,7 @@ impl FromXml for CTFFData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"calcOnExit" => {
                                 f_calc_on_exit.push(CTOnOff::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -9245,6 +9993,7 @@ impl FromXml for CTFFData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"entryMacro" => {
                                 f_entry_macro =
                                     Some(Box::new(CTMacroName::from_xml(reader, &e, false)?));
@@ -9253,6 +10002,7 @@ impl FromXml for CTFFData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"exitMacro" => {
                                 f_exit_macro =
                                     Some(Box::new(CTMacroName::from_xml(reader, &e, false)?));
@@ -9261,6 +10011,7 @@ impl FromXml for CTFFData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"helpText" => {
                                 f_help_text =
                                     Some(Box::new(CTFFHelpText::from_xml(reader, &e, false)?));
@@ -9269,6 +10020,7 @@ impl FromXml for CTFFData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"statusText" => {
                                 f_status_text =
                                     Some(Box::new(CTFFStatusText::from_xml(reader, &e, false)?));
@@ -9296,6 +10048,7 @@ impl FromXml for CTFFData {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-fields")]
                             b"name" => {
                                 f_name.push(CTFFName::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -9303,6 +10056,7 @@ impl FromXml for CTFFData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"label" => {
                                 f_label =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -9311,6 +10065,7 @@ impl FromXml for CTFFData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"tabIndex" => {
                                 f_tab_index = Some(Box::new(CTUnsignedDecimalNumber::from_xml(
                                     reader, &e, true,
@@ -9320,6 +10075,7 @@ impl FromXml for CTFFData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"enabled" => {
                                 f_enabled.push(CTOnOff::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -9327,6 +10083,7 @@ impl FromXml for CTFFData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"calcOnExit" => {
                                 f_calc_on_exit.push(CTOnOff::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -9334,6 +10091,7 @@ impl FromXml for CTFFData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"entryMacro" => {
                                 f_entry_macro =
                                     Some(Box::new(CTMacroName::from_xml(reader, &e, true)?));
@@ -9342,6 +10100,7 @@ impl FromXml for CTFFData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"exitMacro" => {
                                 f_exit_macro =
                                     Some(Box::new(CTMacroName::from_xml(reader, &e, true)?));
@@ -9350,6 +10109,7 @@ impl FromXml for CTFFData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"helpText" => {
                                 f_help_text =
                                     Some(Box::new(CTFFHelpText::from_xml(reader, &e, true)?));
@@ -9358,6 +10118,7 @@ impl FromXml for CTFFData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"statusText" => {
                                 f_status_text =
                                     Some(Box::new(CTFFStatusText::from_xml(reader, &e, true)?));
@@ -9389,14 +10150,23 @@ impl FromXml for CTFFData {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-fields")]
             name: f_name,
+            #[cfg(feature = "wml-fields")]
             label: f_label,
+            #[cfg(feature = "wml-fields")]
             tab_index: f_tab_index,
+            #[cfg(feature = "wml-fields")]
             enabled: f_enabled,
+            #[cfg(feature = "wml-fields")]
             calc_on_exit: f_calc_on_exit,
+            #[cfg(feature = "wml-fields")]
             entry_macro: f_entry_macro,
+            #[cfg(feature = "wml-fields")]
             exit_macro: f_exit_macro,
+            #[cfg(feature = "wml-fields")]
             help_text: f_help_text,
+            #[cfg(feature = "wml-fields")]
             status_text: f_status_text,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -9514,9 +10284,13 @@ impl FromXml for CTFFCheckBox {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-fields")]
         let mut f_size = None;
+        #[cfg(feature = "wml-fields")]
         let mut f_size_auto = None;
+        #[cfg(feature = "wml-fields")]
         let mut f_default = None;
+        #[cfg(feature = "wml-fields")]
         let mut f_checked = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -9530,6 +10304,7 @@ impl FromXml for CTFFCheckBox {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-fields")]
                             b"size" => {
                                 f_size = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -9537,6 +10312,7 @@ impl FromXml for CTFFCheckBox {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"sizeAuto" => {
                                 f_size_auto = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -9544,6 +10320,7 @@ impl FromXml for CTFFCheckBox {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"default" => {
                                 f_default = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -9551,6 +10328,7 @@ impl FromXml for CTFFCheckBox {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"checked" => {
                                 f_checked = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -9577,6 +10355,7 @@ impl FromXml for CTFFCheckBox {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-fields")]
                             b"size" => {
                                 f_size = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -9584,6 +10363,7 @@ impl FromXml for CTFFCheckBox {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"sizeAuto" => {
                                 f_size_auto = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -9591,6 +10371,7 @@ impl FromXml for CTFFCheckBox {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"default" => {
                                 f_default = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -9598,6 +10379,7 @@ impl FromXml for CTFFCheckBox {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"checked" => {
                                 f_checked = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -9628,9 +10410,13 @@ impl FromXml for CTFFCheckBox {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-fields")]
             size: f_size,
+            #[cfg(feature = "wml-fields")]
             size_auto: f_size_auto,
+            #[cfg(feature = "wml-fields")]
             default: f_default,
+            #[cfg(feature = "wml-fields")]
             checked: f_checked,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -9644,8 +10430,11 @@ impl FromXml for CTFFDDList {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-fields")]
         let mut f_result = None;
+        #[cfg(feature = "wml-fields")]
         let mut f_default = None;
+        #[cfg(feature = "wml-fields")]
         let mut f_list_entry = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -9659,6 +10448,7 @@ impl FromXml for CTFFDDList {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-fields")]
                             b"result" => {
                                 f_result =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -9667,6 +10457,7 @@ impl FromXml for CTFFDDList {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"default" => {
                                 f_default =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -9675,6 +10466,7 @@ impl FromXml for CTFFDDList {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"listEntry" => {
                                 f_list_entry.push(CTString::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -9701,6 +10493,7 @@ impl FromXml for CTFFDDList {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-fields")]
                             b"result" => {
                                 f_result =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -9709,6 +10502,7 @@ impl FromXml for CTFFDDList {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"default" => {
                                 f_default =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -9717,6 +10511,7 @@ impl FromXml for CTFFDDList {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"listEntry" => {
                                 f_list_entry.push(CTString::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -9747,8 +10542,11 @@ impl FromXml for CTFFDDList {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-fields")]
             result: f_result,
+            #[cfg(feature = "wml-fields")]
             default: f_default,
+            #[cfg(feature = "wml-fields")]
             list_entry: f_list_entry,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -9762,9 +10560,13 @@ impl FromXml for CTFFTextInput {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-fields")]
         let mut f_type = None;
+        #[cfg(feature = "wml-fields")]
         let mut f_default = None;
+        #[cfg(feature = "wml-fields")]
         let mut f_max_length = None;
+        #[cfg(feature = "wml-fields")]
         let mut f_format = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -9778,6 +10580,7 @@ impl FromXml for CTFFTextInput {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-fields")]
                             b"type" => {
                                 f_type = Some(Box::new(CTFFTextType::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -9785,6 +10588,7 @@ impl FromXml for CTFFTextInput {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"default" => {
                                 f_default = Some(Box::new(CTString::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -9792,6 +10596,7 @@ impl FromXml for CTFFTextInput {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"maxLength" => {
                                 f_max_length =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -9800,6 +10605,7 @@ impl FromXml for CTFFTextInput {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"format" => {
                                 f_format = Some(Box::new(CTString::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -9826,6 +10632,7 @@ impl FromXml for CTFFTextInput {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-fields")]
                             b"type" => {
                                 f_type = Some(Box::new(CTFFTextType::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -9833,6 +10640,7 @@ impl FromXml for CTFFTextInput {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"default" => {
                                 f_default = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -9840,6 +10648,7 @@ impl FromXml for CTFFTextInput {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"maxLength" => {
                                 f_max_length =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -9848,6 +10657,7 @@ impl FromXml for CTFFTextInput {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-fields")]
                             b"format" => {
                                 f_format = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -9878,9 +10688,13 @@ impl FromXml for CTFFTextInput {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-fields")]
             r#type: f_type,
+            #[cfg(feature = "wml-fields")]
             default: f_default,
+            #[cfg(feature = "wml-fields")]
             max_length: f_max_length,
+            #[cfg(feature = "wml-fields")]
             format: f_format,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -9941,7 +10755,9 @@ impl FromXml for CTPaperSource {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-layout")]
         let mut f_first = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_other = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -9950,9 +10766,11 @@ impl FromXml for CTPaperSource {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-layout")]
                 b"first" => {
                     f_first = val.parse().ok();
                 }
+                #[cfg(feature = "wml-layout")]
                 b"other" => {
                     f_other = val.parse().ok();
                 }
@@ -9979,7 +10797,9 @@ impl FromXml for CTPaperSource {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-layout")]
             first: f_first,
+            #[cfg(feature = "wml-layout")]
             other: f_other,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -9993,9 +10813,13 @@ impl FromXml for PageSize {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-layout")]
         let mut f_width = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_height = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_orient = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_code = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -10004,15 +10828,19 @@ impl FromXml for PageSize {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-layout")]
                 b"w" => {
                     f_width = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"h" => {
                     f_height = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"orient" => {
                     f_orient = val.parse().ok();
                 }
+                #[cfg(feature = "wml-layout")]
                 b"code" => {
                     f_code = val.parse().ok();
                 }
@@ -10039,9 +10867,13 @@ impl FromXml for PageSize {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-layout")]
             width: f_width,
+            #[cfg(feature = "wml-layout")]
             height: f_height,
+            #[cfg(feature = "wml-layout")]
             orient: f_orient,
+            #[cfg(feature = "wml-layout")]
             code: f_code,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -10055,12 +10887,19 @@ impl FromXml for PageMargins {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-layout")]
         let mut f_top: Option<STSignedTwipsMeasure> = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_right: Option<STTwipsMeasure> = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_bottom: Option<STSignedTwipsMeasure> = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_left: Option<STTwipsMeasure> = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_header: Option<STTwipsMeasure> = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_footer: Option<STTwipsMeasure> = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_gutter: Option<STTwipsMeasure> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -10069,24 +10908,31 @@ impl FromXml for PageMargins {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-layout")]
                 b"top" => {
                     f_top = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"right" => {
                     f_right = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"bottom" => {
                     f_bottom = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"left" => {
                     f_left = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"header" => {
                     f_header = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"footer" => {
                     f_footer = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"gutter" => {
                     f_gutter = Some(val.into_owned());
                 }
@@ -10113,12 +10959,19 @@ impl FromXml for PageMargins {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-layout")]
             top: f_top.ok_or_else(|| ParseError::MissingAttribute("top".to_string()))?,
+            #[cfg(feature = "wml-layout")]
             right: f_right.ok_or_else(|| ParseError::MissingAttribute("right".to_string()))?,
+            #[cfg(feature = "wml-layout")]
             bottom: f_bottom.ok_or_else(|| ParseError::MissingAttribute("bottom".to_string()))?,
+            #[cfg(feature = "wml-layout")]
             left: f_left.ok_or_else(|| ParseError::MissingAttribute("left".to_string()))?,
+            #[cfg(feature = "wml-layout")]
             header: f_header.ok_or_else(|| ParseError::MissingAttribute("header".to_string()))?,
+            #[cfg(feature = "wml-layout")]
             footer: f_footer.ok_or_else(|| ParseError::MissingAttribute("footer".to_string()))?,
+            #[cfg(feature = "wml-layout")]
             gutter: f_gutter.ok_or_else(|| ParseError::MissingAttribute("gutter".to_string()))?,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -10132,12 +10985,19 @@ impl FromXml for CTPageBorders {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-layout")]
         let mut f_z_order = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_display = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_offset_from = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_top = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_left = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_bottom = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_right = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -10150,12 +11010,15 @@ impl FromXml for CTPageBorders {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-layout")]
                 b"zOrder" => {
                     f_z_order = val.parse().ok();
                 }
+                #[cfg(feature = "wml-layout")]
                 b"display" => {
                     f_display = val.parse().ok();
                 }
+                #[cfg(feature = "wml-layout")]
                 b"offsetFrom" => {
                     f_offset_from = val.parse().ok();
                 }
@@ -10176,6 +11039,7 @@ impl FromXml for CTPageBorders {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-layout")]
                             b"top" => {
                                 f_top =
                                     Some(Box::new(CTTopPageBorder::from_xml(reader, &e, false)?));
@@ -10184,6 +11048,7 @@ impl FromXml for CTPageBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"left" => {
                                 f_left = Some(Box::new(CTPageBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -10191,6 +11056,7 @@ impl FromXml for CTPageBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"bottom" => {
                                 f_bottom = Some(Box::new(CTBottomPageBorder::from_xml(
                                     reader, &e, false,
@@ -10200,6 +11066,7 @@ impl FromXml for CTPageBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"right" => {
                                 f_right =
                                     Some(Box::new(CTPageBorder::from_xml(reader, &e, false)?));
@@ -10227,6 +11094,7 @@ impl FromXml for CTPageBorders {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-layout")]
                             b"top" => {
                                 f_top =
                                     Some(Box::new(CTTopPageBorder::from_xml(reader, &e, true)?));
@@ -10235,6 +11103,7 @@ impl FromXml for CTPageBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"left" => {
                                 f_left = Some(Box::new(CTPageBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -10242,6 +11111,7 @@ impl FromXml for CTPageBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"bottom" => {
                                 f_bottom =
                                     Some(Box::new(CTBottomPageBorder::from_xml(reader, &e, true)?));
@@ -10250,6 +11120,7 @@ impl FromXml for CTPageBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"right" => {
                                 f_right = Some(Box::new(CTPageBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -10280,12 +11151,19 @@ impl FromXml for CTPageBorders {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-layout")]
             z_order: f_z_order,
+            #[cfg(feature = "wml-layout")]
             display: f_display,
+            #[cfg(feature = "wml-layout")]
             offset_from: f_offset_from,
+            #[cfg(feature = "wml-layout")]
             top: f_top,
+            #[cfg(feature = "wml-layout")]
             left: f_left,
+            #[cfg(feature = "wml-layout")]
             bottom: f_bottom,
+            #[cfg(feature = "wml-layout")]
             right: f_right,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -10310,6 +11188,7 @@ impl FromXml for CTPageBorder {
         let mut f_space = None;
         let mut f_shadow = None;
         let mut f_frame = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_id = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -10345,6 +11224,7 @@ impl FromXml for CTPageBorder {
                 b"frame" => {
                     f_frame = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"id" => {
                     f_id = Some(val.into_owned());
                 }
@@ -10380,6 +11260,7 @@ impl FromXml for CTPageBorder {
             space: f_space,
             shadow: f_shadow,
             frame: f_frame,
+            #[cfg(feature = "wml-layout")]
             id: f_id,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -10403,7 +11284,9 @@ impl FromXml for CTBottomPageBorder {
         let mut f_shadow = None;
         let mut f_frame = None;
         let mut f_id = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_bottom_left = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_bottom_right = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -10442,9 +11325,11 @@ impl FromXml for CTBottomPageBorder {
                 b"id" => {
                     f_id = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"bottomLeft" => {
                     f_bottom_left = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"bottomRight" => {
                     f_bottom_right = Some(val.into_owned());
                 }
@@ -10481,7 +11366,9 @@ impl FromXml for CTBottomPageBorder {
             shadow: f_shadow,
             frame: f_frame,
             id: f_id,
+            #[cfg(feature = "wml-layout")]
             bottom_left: f_bottom_left,
+            #[cfg(feature = "wml-layout")]
             bottom_right: f_bottom_right,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -10505,7 +11392,9 @@ impl FromXml for CTTopPageBorder {
         let mut f_shadow = None;
         let mut f_frame = None;
         let mut f_id = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_top_left = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_top_right = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -10544,9 +11433,11 @@ impl FromXml for CTTopPageBorder {
                 b"id" => {
                     f_id = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"topLeft" => {
                     f_top_left = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"topRight" => {
                     f_top_right = Some(val.into_owned());
                 }
@@ -10583,7 +11474,9 @@ impl FromXml for CTTopPageBorder {
             shadow: f_shadow,
             frame: f_frame,
             id: f_id,
+            #[cfg(feature = "wml-layout")]
             top_left: f_top_left,
+            #[cfg(feature = "wml-layout")]
             top_right: f_top_right,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -10597,9 +11490,13 @@ impl FromXml for CTLineNumber {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-layout")]
         let mut f_count_by = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_start = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_distance = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_restart = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -10608,15 +11505,19 @@ impl FromXml for CTLineNumber {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-layout")]
                 b"countBy" => {
                     f_count_by = val.parse().ok();
                 }
+                #[cfg(feature = "wml-layout")]
                 b"start" => {
                     f_start = val.parse().ok();
                 }
+                #[cfg(feature = "wml-layout")]
                 b"distance" => {
                     f_distance = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"restart" => {
                     f_restart = val.parse().ok();
                 }
@@ -10643,9 +11544,13 @@ impl FromXml for CTLineNumber {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-layout")]
             count_by: f_count_by,
+            #[cfg(feature = "wml-layout")]
             start: f_start,
+            #[cfg(feature = "wml-layout")]
             distance: f_distance,
+            #[cfg(feature = "wml-layout")]
             restart: f_restart,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -10659,9 +11564,13 @@ impl FromXml for CTPageNumber {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-layout")]
         let mut f_fmt = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_start = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_chap_style = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_chap_sep = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -10670,15 +11579,19 @@ impl FromXml for CTPageNumber {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-layout")]
                 b"fmt" => {
                     f_fmt = val.parse().ok();
                 }
+                #[cfg(feature = "wml-layout")]
                 b"start" => {
                     f_start = val.parse().ok();
                 }
+                #[cfg(feature = "wml-layout")]
                 b"chapStyle" => {
                     f_chap_style = val.parse().ok();
                 }
+                #[cfg(feature = "wml-layout")]
                 b"chapSep" => {
                     f_chap_sep = val.parse().ok();
                 }
@@ -10705,9 +11618,13 @@ impl FromXml for CTPageNumber {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-layout")]
             fmt: f_fmt,
+            #[cfg(feature = "wml-layout")]
             start: f_start,
+            #[cfg(feature = "wml-layout")]
             chap_style: f_chap_style,
+            #[cfg(feature = "wml-layout")]
             chap_sep: f_chap_sep,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -10721,7 +11638,9 @@ impl FromXml for CTColumn {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-layout")]
         let mut f_width = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_space = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -10730,9 +11649,11 @@ impl FromXml for CTColumn {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-layout")]
                 b"w" => {
                     f_width = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"space" => {
                     f_space = Some(val.into_owned());
                 }
@@ -10759,7 +11680,9 @@ impl FromXml for CTColumn {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-layout")]
             width: f_width,
+            #[cfg(feature = "wml-layout")]
             space: f_space,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -10773,10 +11696,15 @@ impl FromXml for Columns {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-layout")]
         let mut f_equal_width = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_space = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_num = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_sep = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_col = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -10789,15 +11717,19 @@ impl FromXml for Columns {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-layout")]
                 b"equalWidth" => {
                     f_equal_width = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"space" => {
                     f_space = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-layout")]
                 b"num" => {
                     f_num = val.parse().ok();
                 }
+                #[cfg(feature = "wml-layout")]
                 b"sep" => {
                     f_sep = Some(val.into_owned());
                 }
@@ -10818,6 +11750,7 @@ impl FromXml for Columns {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-layout")]
                             b"col" => {
                                 f_col.push(CTColumn::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -10844,6 +11777,7 @@ impl FromXml for Columns {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-layout")]
                             b"col" => {
                                 f_col.push(CTColumn::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -10874,10 +11808,15 @@ impl FromXml for Columns {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-layout")]
             equal_width: f_equal_width,
+            #[cfg(feature = "wml-layout")]
             space: f_space,
+            #[cfg(feature = "wml-layout")]
             num: f_num,
+            #[cfg(feature = "wml-layout")]
             sep: f_sep,
+            #[cfg(feature = "wml-layout")]
             col: f_col,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -10940,8 +11879,11 @@ impl FromXml for DocumentGrid {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-layout")]
         let mut f_type = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_line_pitch = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_char_space = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -10950,12 +11892,15 @@ impl FromXml for DocumentGrid {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-layout")]
                 b"type" => {
                     f_type = val.parse().ok();
                 }
+                #[cfg(feature = "wml-layout")]
                 b"linePitch" => {
                     f_line_pitch = val.parse().ok();
                 }
+                #[cfg(feature = "wml-layout")]
                 b"charSpace" => {
                     f_char_space = val.parse().ok();
                 }
@@ -10982,8 +11927,11 @@ impl FromXml for DocumentGrid {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-layout")]
             r#type: f_type,
+            #[cfg(feature = "wml-layout")]
             line_pitch: f_line_pitch,
+            #[cfg(feature = "wml-layout")]
             char_space: f_char_space,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -11663,9 +12611,13 @@ impl FromXml for CTSectPrBase {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid_r_pr = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid_del = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid_r = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid_sect = None;
         let mut f_footnote_pr = None;
         let mut f_endnote_pr = None;
@@ -11697,15 +12649,19 @@ impl FromXml for CTSectPrBase {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-track-changes")]
                 b"rsidRPr" => {
                     f_rsid_r_pr = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"rsidDel" => {
                     f_rsid_del = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"rsidR" => {
                     f_rsid_r = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"rsidSect" => {
                     f_rsid_sect = decode_hex(&val);
                 }
@@ -12057,9 +13013,13 @@ impl FromXml for CTSectPrBase {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-track-changes")]
             rsid_r_pr: f_rsid_r_pr,
+            #[cfg(feature = "wml-track-changes")]
             rsid_del: f_rsid_del,
+            #[cfg(feature = "wml-track-changes")]
             rsid_r: f_rsid_r,
+            #[cfg(feature = "wml-track-changes")]
             rsid_sect: f_rsid_sect,
             footnote_pr: f_footnote_pr,
             endnote_pr: f_endnote_pr,
@@ -12094,9 +13054,13 @@ impl FromXml for SectionProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid_r_pr = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid_del = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid_r = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid_sect = None;
         let mut f_header_footer_refs = Vec::new();
         #[cfg(feature = "wml-comments")]
@@ -12150,15 +13114,19 @@ impl FromXml for SectionProperties {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-track-changes")]
                 b"rsidRPr" => {
                     f_rsid_r_pr = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"rsidDel" => {
                     f_rsid_del = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"rsidR" => {
                     f_rsid_r = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"rsidSect" => {
                     f_rsid_sect = decode_hex(&val);
                 }
@@ -12582,9 +13550,13 @@ impl FromXml for SectionProperties {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-track-changes")]
             rsid_r_pr: f_rsid_r_pr,
+            #[cfg(feature = "wml-track-changes")]
             rsid_del: f_rsid_del,
+            #[cfg(feature = "wml-track-changes")]
             rsid_r: f_rsid_r,
+            #[cfg(feature = "wml-track-changes")]
             rsid_sect: f_rsid_sect,
             header_footer_refs: f_header_footer_refs,
             #[cfg(feature = "wml-comments")]
@@ -12695,6 +13667,7 @@ impl FromXml for CTPTab {
     ) -> Result<Self, ParseError> {
         let mut f_alignment: Option<STPTabAlignment> = None;
         let mut f_relative_to: Option<STPTabRelativeTo> = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_leader: Option<STPTabLeader> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -12709,6 +13682,7 @@ impl FromXml for CTPTab {
                 b"relativeTo" => {
                     f_relative_to = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"leader" => {
                     f_leader = val.parse().ok();
                 }
@@ -12739,6 +13713,7 @@ impl FromXml for CTPTab {
                 .ok_or_else(|| ParseError::MissingAttribute("alignment".to_string()))?,
             relative_to: f_relative_to
                 .ok_or_else(|| ParseError::MissingAttribute("relativeTo".to_string()))?,
+            #[cfg(feature = "wml-styling")]
             leader: f_leader.ok_or_else(|| ParseError::MissingAttribute("leader".to_string()))?,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -12752,6 +13727,7 @@ impl FromXml for CTSym {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_font = None;
         let mut f_char = None;
         #[cfg(feature = "extra-attrs")]
@@ -12761,6 +13737,7 @@ impl FromXml for CTSym {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-styling")]
                 b"font" => {
                     f_font = Some(val.into_owned());
                 }
@@ -12790,6 +13767,7 @@ impl FromXml for CTSym {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             font: f_font,
             char: f_char,
             #[cfg(feature = "extra-attrs")]
@@ -12852,6 +13830,7 @@ impl FromXml for CTPerm {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_id: Option<STString> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_displaced_by_custom_xml = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -12863,6 +13842,7 @@ impl FromXml for CTPerm {
                 b"id" => {
                     f_id = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"displacedByCustomXml" => {
                     f_displaced_by_custom_xml = val.parse().ok();
                 }
@@ -12890,6 +13870,7 @@ impl FromXml for CTPerm {
 
         Ok(Self {
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             displaced_by_custom_xml: f_displaced_by_custom_xml,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -12905,9 +13886,13 @@ impl FromXml for CTPermStart {
     ) -> Result<Self, ParseError> {
         let mut f_id: Option<STString> = None;
         let mut f_displaced_by_custom_xml = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_ed_grp = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_ed = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_col_first = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_col_last = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -12922,15 +13907,19 @@ impl FromXml for CTPermStart {
                 b"displacedByCustomXml" => {
                     f_displaced_by_custom_xml = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"edGrp" => {
                     f_ed_grp = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"ed" => {
                     f_ed = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-tables")]
                 b"colFirst" => {
                     f_col_first = val.parse().ok();
                 }
+                #[cfg(feature = "wml-tables")]
                 b"colLast" => {
                     f_col_last = val.parse().ok();
                 }
@@ -12959,9 +13948,13 @@ impl FromXml for CTPermStart {
         Ok(Self {
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             displaced_by_custom_xml: f_displaced_by_custom_xml,
+            #[cfg(feature = "wml-settings")]
             ed_grp: f_ed_grp,
+            #[cfg(feature = "wml-settings")]
             ed: f_ed,
+            #[cfg(feature = "wml-tables")]
             col_first: f_col_first,
+            #[cfg(feature = "wml-tables")]
             col_last: f_col_last,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -13193,8 +14186,11 @@ impl FromXml for Run {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid_r_pr = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid_del = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid_r = None;
         #[cfg(feature = "wml-styling")]
         let mut f_r_pr = None;
@@ -13210,12 +14206,15 @@ impl FromXml for Run {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-track-changes")]
                 b"rsidRPr" => {
                     f_rsid_r_pr = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"rsidDel" => {
                     f_rsid_del = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"rsidR" => {
                     f_rsid_r = decode_hex(&val);
                 }
@@ -13373,8 +14372,11 @@ impl FromXml for Run {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-track-changes")]
             rsid_r_pr: f_rsid_r_pr,
+            #[cfg(feature = "wml-track-changes")]
             rsid_del: f_rsid_del,
+            #[cfg(feature = "wml-track-changes")]
             rsid_r: f_rsid_r,
             #[cfg(feature = "wml-styling")]
             r_pr: f_r_pr,
@@ -13393,14 +14395,23 @@ impl FromXml for Fonts {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_hint = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_ascii = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_h_ansi = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_east_asia = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_cs = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_ascii_theme = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_h_ansi_theme = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_east_asia_theme = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_cstheme = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -13409,30 +14420,39 @@ impl FromXml for Fonts {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-styling")]
                 b"hint" => {
                     f_hint = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"ascii" => {
                     f_ascii = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"hAnsi" => {
                     f_h_ansi = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"eastAsia" => {
                     f_east_asia = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"cs" => {
                     f_cs = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"asciiTheme" => {
                     f_ascii_theme = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"hAnsiTheme" => {
                     f_h_ansi_theme = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"eastAsiaTheme" => {
                     f_east_asia_theme = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"cstheme" => {
                     f_cstheme = val.parse().ok();
                 }
@@ -13459,14 +14479,23 @@ impl FromXml for Fonts {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             hint: f_hint,
+            #[cfg(feature = "wml-styling")]
             ascii: f_ascii,
+            #[cfg(feature = "wml-styling")]
             h_ansi: f_h_ansi,
+            #[cfg(feature = "wml-styling")]
             east_asia: f_east_asia,
+            #[cfg(feature = "wml-styling")]
             cs: f_cs,
+            #[cfg(feature = "wml-styling")]
             ascii_theme: f_ascii_theme,
+            #[cfg(feature = "wml-styling")]
             h_ansi_theme: f_h_ansi_theme,
+            #[cfg(feature = "wml-styling")]
             east_asia_theme: f_east_asia_theme,
+            #[cfg(feature = "wml-styling")]
             cstheme: f_cstheme,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -15945,7 +16974,9 @@ impl FromXml for CTMathCtrlIns {
         let mut f_id: Option<STDecimalNumber> = None;
         let mut f_author: Option<STString> = None;
         let mut f_date = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_del = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_r_pr = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -15984,6 +17015,7 @@ impl FromXml for CTMathCtrlIns {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"del" => {
                                 f_del = Some(Box::new(CTRPrChange::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -15991,6 +17023,7 @@ impl FromXml for CTMathCtrlIns {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"rPr" => {
                                 f_r_pr =
                                     Some(Box::new(RunProperties::from_xml(reader, &e, false)?));
@@ -16018,6 +17051,7 @@ impl FromXml for CTMathCtrlIns {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"del" => {
                                 f_del = Some(Box::new(CTRPrChange::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -16025,6 +17059,7 @@ impl FromXml for CTMathCtrlIns {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"rPr" => {
                                 f_r_pr = Some(Box::new(RunProperties::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -16058,7 +17093,9 @@ impl FromXml for CTMathCtrlIns {
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
             date: f_date,
+            #[cfg(feature = "wml-track-changes")]
             del: f_del,
+            #[cfg(feature = "wml-styling")]
             r_pr: f_r_pr,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -16077,6 +17114,7 @@ impl FromXml for CTMathCtrlDel {
         let mut f_id: Option<STDecimalNumber> = None;
         let mut f_author: Option<STString> = None;
         let mut f_date = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_r_pr = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -16115,6 +17153,7 @@ impl FromXml for CTMathCtrlDel {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"rPr" => {
                                 f_r_pr =
                                     Some(Box::new(RunProperties::from_xml(reader, &e, false)?));
@@ -16142,6 +17181,7 @@ impl FromXml for CTMathCtrlDel {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"rPr" => {
                                 f_r_pr = Some(Box::new(RunProperties::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -16175,6 +17215,7 @@ impl FromXml for CTMathCtrlDel {
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
             date: f_date,
+            #[cfg(feature = "wml-styling")]
             r_pr: f_r_pr,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -17741,6 +18782,7 @@ impl FromXml for CTParaRPr {
         let mut f_east_asian_layout = None;
         let mut f_spec_vanish = None;
         let mut f_o_math = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_r_pr_change = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -18075,6 +19117,7 @@ impl FromXml for CTParaRPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"rPrChange" => {
                                 f_r_pr_change =
                                     Some(Box::new(CTParaRPrChange::from_xml(reader, &e, false)?));
@@ -18417,6 +19460,7 @@ impl FromXml for CTParaRPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"rPrChange" => {
                                 f_r_pr_change =
                                     Some(Box::new(CTParaRPrChange::from_xml(reader, &e, true)?));
@@ -18491,6 +19535,7 @@ impl FromXml for CTParaRPr {
             east_asian_layout: f_east_asian_layout,
             spec_vanish: f_spec_vanish,
             o_math: f_o_math,
+            #[cfg(feature = "wml-track-changes")]
             r_pr_change: f_r_pr_change,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -18639,6 +19684,7 @@ impl FromXml for CTAltChunk {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_id = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_alt_chunk_pr = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -18671,6 +19717,7 @@ impl FromXml for CTAltChunk {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"altChunkPr" => {
                                 f_alt_chunk_pr =
                                     Some(Box::new(CTAltChunkPr::from_xml(reader, &e, false)?));
@@ -18698,6 +19745,7 @@ impl FromXml for CTAltChunk {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"altChunkPr" => {
                                 f_alt_chunk_pr =
                                     Some(Box::new(CTAltChunkPr::from_xml(reader, &e, true)?));
@@ -18730,6 +19778,7 @@ impl FromXml for CTAltChunk {
 
         Ok(Self {
             id: f_id,
+            #[cfg(feature = "wml-settings")]
             alt_chunk_pr: f_alt_chunk_pr,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -18745,6 +19794,7 @@ impl FromXml for CTAltChunkPr {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_match_src = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -18758,6 +19808,7 @@ impl FromXml for CTAltChunkPr {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"matchSrc" => {
                                 f_match_src = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -18784,6 +19835,7 @@ impl FromXml for CTAltChunkPr {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"matchSrc" => {
                                 f_match_src = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -18814,6 +19866,7 @@ impl FromXml for CTAltChunkPr {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             match_src: f_match_src,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -18874,11 +19927,17 @@ impl FromXml for CTRubyPr {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_ruby_align: Option<Box<CTRubyAlign>> = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_hps: Option<Box<CTHpsMeasure>> = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_hps_raise: Option<Box<CTHpsMeasure>> = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_hps_base_text: Option<Box<CTHpsMeasure>> = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_lid: Option<Box<CTLang>> = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_dirty = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -18892,6 +19951,7 @@ impl FromXml for CTRubyPr {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"rubyAlign" => {
                                 f_ruby_align =
                                     Some(Box::new(CTRubyAlign::from_xml(reader, &e, false)?));
@@ -18900,6 +19960,7 @@ impl FromXml for CTRubyPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"hps" => {
                                 f_hps = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -18907,6 +19968,7 @@ impl FromXml for CTRubyPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"hpsRaise" => {
                                 f_hps_raise =
                                     Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
@@ -18915,6 +19977,7 @@ impl FromXml for CTRubyPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"hpsBaseText" => {
                                 f_hps_base_text =
                                     Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
@@ -18923,6 +19986,7 @@ impl FromXml for CTRubyPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"lid" => {
                                 f_lid = Some(Box::new(CTLang::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -18930,6 +19994,7 @@ impl FromXml for CTRubyPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"dirty" => {
                                 f_dirty = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -18956,6 +20021,7 @@ impl FromXml for CTRubyPr {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"rubyAlign" => {
                                 f_ruby_align =
                                     Some(Box::new(CTRubyAlign::from_xml(reader, &e, true)?));
@@ -18964,6 +20030,7 @@ impl FromXml for CTRubyPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"hps" => {
                                 f_hps = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -18971,6 +20038,7 @@ impl FromXml for CTRubyPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"hpsRaise" => {
                                 f_hps_raise =
                                     Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
@@ -18979,6 +20047,7 @@ impl FromXml for CTRubyPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"hpsBaseText" => {
                                 f_hps_base_text =
                                     Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
@@ -18987,6 +20056,7 @@ impl FromXml for CTRubyPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"lid" => {
                                 f_lid = Some(Box::new(CTLang::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -18994,6 +20064,7 @@ impl FromXml for CTRubyPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"dirty" => {
                                 f_dirty = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -19024,14 +20095,20 @@ impl FromXml for CTRubyPr {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             ruby_align: f_ruby_align
                 .ok_or_else(|| ParseError::MissingAttribute("rubyAlign".to_string()))?,
+            #[cfg(feature = "wml-styling")]
             hps: f_hps.ok_or_else(|| ParseError::MissingAttribute("hps".to_string()))?,
+            #[cfg(feature = "wml-styling")]
             hps_raise: f_hps_raise
                 .ok_or_else(|| ParseError::MissingAttribute("hpsRaise".to_string()))?,
+            #[cfg(feature = "wml-styling")]
             hps_base_text: f_hps_base_text
                 .ok_or_else(|| ParseError::MissingAttribute("hpsBaseText".to_string()))?,
+            #[cfg(feature = "wml-styling")]
             lid: f_lid.ok_or_else(|| ParseError::MissingAttribute("lid".to_string()))?,
+            #[cfg(feature = "wml-styling")]
             dirty: f_dirty,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -19284,6 +20361,7 @@ impl FromXml for CTRuby {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_ruby_pr: Option<Box<CTRubyPr>> = None;
         let mut f_rt: Option<Box<CTRubyContent>> = None;
         let mut f_ruby_base: Option<Box<CTRubyContent>> = None;
@@ -19299,6 +20377,7 @@ impl FromXml for CTRuby {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"rubyPr" => {
                                 f_ruby_pr = Some(Box::new(CTRubyPr::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -19340,6 +20419,7 @@ impl FromXml for CTRuby {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"rubyPr" => {
                                 f_ruby_pr = Some(Box::new(CTRubyPr::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -19385,6 +20465,7 @@ impl FromXml for CTRuby {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             ruby_pr: f_ruby_pr.ok_or_else(|| ParseError::MissingAttribute("rubyPr".to_string()))?,
             rt: f_rt.ok_or_else(|| ParseError::MissingAttribute("rt".to_string()))?,
             ruby_base: f_ruby_base
@@ -19594,10 +20675,15 @@ impl FromXml for CTSdtDate {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_full_date = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_date_format = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_lid = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_store_mapped_data_as = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_calendar = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -19610,6 +20696,7 @@ impl FromXml for CTSdtDate {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"fullDate" => {
                     f_full_date = Some(val.into_owned());
                 }
@@ -19630,6 +20717,7 @@ impl FromXml for CTSdtDate {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"dateFormat" => {
                                 f_date_format =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
@@ -19638,6 +20726,7 @@ impl FromXml for CTSdtDate {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"lid" => {
                                 f_lid = Some(Box::new(CTLang::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -19645,6 +20734,7 @@ impl FromXml for CTSdtDate {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"storeMappedDataAs" => {
                                 f_store_mapped_data_as = Some(Box::new(
                                     CTSdtDateMappingType::from_xml(reader, &e, false)?,
@@ -19654,6 +20744,7 @@ impl FromXml for CTSdtDate {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"calendar" => {
                                 f_calendar =
                                     Some(Box::new(CTCalendarType::from_xml(reader, &e, false)?));
@@ -19681,6 +20772,7 @@ impl FromXml for CTSdtDate {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"dateFormat" => {
                                 f_date_format =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
@@ -19689,6 +20781,7 @@ impl FromXml for CTSdtDate {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"lid" => {
                                 f_lid = Some(Box::new(CTLang::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -19696,6 +20789,7 @@ impl FromXml for CTSdtDate {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"storeMappedDataAs" => {
                                 f_store_mapped_data_as = Some(Box::new(
                                     CTSdtDateMappingType::from_xml(reader, &e, true)?,
@@ -19705,6 +20799,7 @@ impl FromXml for CTSdtDate {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"calendar" => {
                                 f_calendar =
                                     Some(Box::new(CTCalendarType::from_xml(reader, &e, true)?));
@@ -19736,10 +20831,15 @@ impl FromXml for CTSdtDate {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             full_date: f_full_date,
+            #[cfg(feature = "wml-settings")]
             date_format: f_date_format,
+            #[cfg(feature = "wml-settings")]
             lid: f_lid,
+            #[cfg(feature = "wml-settings")]
             store_mapped_data_as: f_store_mapped_data_as,
+            #[cfg(feature = "wml-settings")]
             calendar: f_calendar,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -19755,7 +20855,9 @@ impl FromXml for CTSdtComboBox {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_last_value = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_list_item = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -19768,6 +20870,7 @@ impl FromXml for CTSdtComboBox {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"lastValue" => {
                     f_last_value = Some(val.into_owned());
                 }
@@ -19788,6 +20891,7 @@ impl FromXml for CTSdtComboBox {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"listItem" => {
                                 f_list_item.push(CTSdtListItem::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -19814,6 +20918,7 @@ impl FromXml for CTSdtComboBox {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"listItem" => {
                                 f_list_item.push(CTSdtListItem::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -19844,7 +20949,9 @@ impl FromXml for CTSdtComboBox {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             last_value: f_last_value,
+            #[cfg(feature = "wml-settings")]
             list_item: f_list_item,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -19860,8 +20967,11 @@ impl FromXml for CTSdtDocPart {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_doc_part_gallery = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_doc_part_category = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_doc_part_unique = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -19875,6 +20985,7 @@ impl FromXml for CTSdtDocPart {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"docPartGallery" => {
                                 f_doc_part_gallery =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
@@ -19883,6 +20994,7 @@ impl FromXml for CTSdtDocPart {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"docPartCategory" => {
                                 f_doc_part_category =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
@@ -19891,6 +21003,7 @@ impl FromXml for CTSdtDocPart {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"docPartUnique" => {
                                 f_doc_part_unique =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -19918,6 +21031,7 @@ impl FromXml for CTSdtDocPart {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"docPartGallery" => {
                                 f_doc_part_gallery =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
@@ -19926,6 +21040,7 @@ impl FromXml for CTSdtDocPart {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"docPartCategory" => {
                                 f_doc_part_category =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
@@ -19934,6 +21049,7 @@ impl FromXml for CTSdtDocPart {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"docPartUnique" => {
                                 f_doc_part_unique =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -19965,8 +21081,11 @@ impl FromXml for CTSdtDocPart {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             doc_part_gallery: f_doc_part_gallery,
+            #[cfg(feature = "wml-settings")]
             doc_part_category: f_doc_part_category,
+            #[cfg(feature = "wml-settings")]
             doc_part_unique: f_doc_part_unique,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -19980,7 +21099,9 @@ impl FromXml for CTSdtDropDownList {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_last_value = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_list_item = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -19993,6 +21114,7 @@ impl FromXml for CTSdtDropDownList {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"lastValue" => {
                     f_last_value = Some(val.into_owned());
                 }
@@ -20013,6 +21135,7 @@ impl FromXml for CTSdtDropDownList {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"listItem" => {
                                 f_list_item.push(CTSdtListItem::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -20039,6 +21162,7 @@ impl FromXml for CTSdtDropDownList {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"listItem" => {
                                 f_list_item.push(CTSdtListItem::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -20069,7 +21193,9 @@ impl FromXml for CTSdtDropDownList {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             last_value: f_last_value,
+            #[cfg(feature = "wml-settings")]
             list_item: f_list_item,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -20085,6 +21211,7 @@ impl FromXml for CTSdtText {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_multi_line = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -20093,6 +21220,7 @@ impl FromXml for CTSdtText {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"multiLine" => {
                     f_multi_line = Some(val.into_owned());
                 }
@@ -20119,6 +21247,7 @@ impl FromXml for CTSdtText {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             multi_line: f_multi_line,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -20132,8 +21261,11 @@ impl FromXml for CTDataBinding {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_prefix_mappings = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_xpath: Option<STString> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_store_item_i_d: Option<STString> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -20142,12 +21274,15 @@ impl FromXml for CTDataBinding {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"prefixMappings" => {
                     f_prefix_mappings = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"xpath" => {
                     f_xpath = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"storeItemID" => {
                     f_store_item_i_d = Some(val.into_owned());
                 }
@@ -20174,8 +21309,11 @@ impl FromXml for CTDataBinding {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             prefix_mappings: f_prefix_mappings,
+            #[cfg(feature = "wml-settings")]
             xpath: f_xpath.ok_or_else(|| ParseError::MissingAttribute("xpath".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             store_item_i_d: f_store_item_i_d
                 .ok_or_else(|| ParseError::MissingAttribute("storeItemID".to_string()))?,
             #[cfg(feature = "extra-attrs")]
@@ -20190,28 +21328,51 @@ impl FromXml for CTSdtPr {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_r_pr = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_alias = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_tag = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_id = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_lock = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_placeholder = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_temporary = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_showing_plc_hdr = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_data_binding = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_label = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_tab_index = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_equation = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_combo_box = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_date = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_doc_part_obj = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_doc_part_list = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_drop_down_list = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_picture = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_rich_text = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_text = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_citation = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_group = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_bibliography = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -20225,6 +21386,7 @@ impl FromXml for CTSdtPr {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"rPr" => {
                                 f_r_pr =
                                     Some(Box::new(RunProperties::from_xml(reader, &e, false)?));
@@ -20233,6 +21395,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"alias" => {
                                 f_alias = Some(Box::new(CTString::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -20240,6 +21403,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"tag" => {
                                 f_tag = Some(Box::new(CTString::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -20247,6 +21411,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"id" => {
                                 f_id =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -20255,6 +21420,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"lock" => {
                                 f_lock = Some(Box::new(CTLock::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -20262,6 +21428,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"placeholder" => {
                                 f_placeholder =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
@@ -20270,6 +21437,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"temporary" => {
                                 f_temporary = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -20277,6 +21445,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"showingPlcHdr" => {
                                 f_showing_plc_hdr =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -20285,6 +21454,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"dataBinding" => {
                                 f_data_binding =
                                     Some(Box::new(CTDataBinding::from_xml(reader, &e, false)?));
@@ -20293,6 +21463,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"label" => {
                                 f_label =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -20301,6 +21472,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"tabIndex" => {
                                 f_tab_index = Some(Box::new(CTUnsignedDecimalNumber::from_xml(
                                     reader, &e, false,
@@ -20310,6 +21482,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"equation" => {
                                 f_equation = Some(Box::new(CTEmpty::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -20317,6 +21490,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"comboBox" => {
                                 f_combo_box =
                                     Some(Box::new(CTSdtComboBox::from_xml(reader, &e, false)?));
@@ -20325,6 +21499,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"date" => {
                                 f_date = Some(Box::new(CTSdtDate::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -20332,6 +21507,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"docPartObj" => {
                                 f_doc_part_obj =
                                     Some(Box::new(CTSdtDocPart::from_xml(reader, &e, false)?));
@@ -20340,6 +21516,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"docPartList" => {
                                 f_doc_part_list =
                                     Some(Box::new(CTSdtDocPart::from_xml(reader, &e, false)?));
@@ -20348,6 +21525,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"dropDownList" => {
                                 f_drop_down_list =
                                     Some(Box::new(CTSdtDropDownList::from_xml(reader, &e, false)?));
@@ -20356,6 +21534,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"picture" => {
                                 f_picture = Some(Box::new(CTEmpty::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -20363,6 +21542,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"richText" => {
                                 f_rich_text = Some(Box::new(CTEmpty::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -20370,6 +21550,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"text" => {
                                 f_text = Some(Box::new(CTSdtText::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -20377,6 +21558,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"citation" => {
                                 f_citation = Some(Box::new(CTEmpty::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -20384,6 +21566,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"group" => {
                                 f_group = Some(Box::new(CTEmpty::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -20391,6 +21574,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"bibliography" => {
                                 f_bibliography =
                                     Some(Box::new(CTEmpty::from_xml(reader, &e, false)?));
@@ -20418,6 +21602,7 @@ impl FromXml for CTSdtPr {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"rPr" => {
                                 f_r_pr = Some(Box::new(RunProperties::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -20425,6 +21610,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"alias" => {
                                 f_alias = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -20432,6 +21618,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"tag" => {
                                 f_tag = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -20439,6 +21626,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"id" => {
                                 f_id = Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -20446,6 +21634,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"lock" => {
                                 f_lock = Some(Box::new(CTLock::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -20453,6 +21642,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"placeholder" => {
                                 f_placeholder =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
@@ -20461,6 +21651,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"temporary" => {
                                 f_temporary = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -20468,6 +21659,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"showingPlcHdr" => {
                                 f_showing_plc_hdr =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -20476,6 +21668,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"dataBinding" => {
                                 f_data_binding =
                                     Some(Box::new(CTDataBinding::from_xml(reader, &e, true)?));
@@ -20484,6 +21677,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"label" => {
                                 f_label =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -20492,6 +21686,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"tabIndex" => {
                                 f_tab_index = Some(Box::new(CTUnsignedDecimalNumber::from_xml(
                                     reader, &e, true,
@@ -20501,6 +21696,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"equation" => {
                                 f_equation = Some(Box::new(CTEmpty::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -20508,6 +21704,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"comboBox" => {
                                 f_combo_box =
                                     Some(Box::new(CTSdtComboBox::from_xml(reader, &e, true)?));
@@ -20516,6 +21713,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"date" => {
                                 f_date = Some(Box::new(CTSdtDate::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -20523,6 +21721,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"docPartObj" => {
                                 f_doc_part_obj =
                                     Some(Box::new(CTSdtDocPart::from_xml(reader, &e, true)?));
@@ -20531,6 +21730,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"docPartList" => {
                                 f_doc_part_list =
                                     Some(Box::new(CTSdtDocPart::from_xml(reader, &e, true)?));
@@ -20539,6 +21739,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"dropDownList" => {
                                 f_drop_down_list =
                                     Some(Box::new(CTSdtDropDownList::from_xml(reader, &e, true)?));
@@ -20547,6 +21748,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"picture" => {
                                 f_picture = Some(Box::new(CTEmpty::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -20554,6 +21756,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"richText" => {
                                 f_rich_text = Some(Box::new(CTEmpty::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -20561,6 +21764,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"text" => {
                                 f_text = Some(Box::new(CTSdtText::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -20568,6 +21772,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"citation" => {
                                 f_citation = Some(Box::new(CTEmpty::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -20575,6 +21780,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"group" => {
                                 f_group = Some(Box::new(CTEmpty::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -20582,6 +21788,7 @@ impl FromXml for CTSdtPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"bibliography" => {
                                 f_bibliography =
                                     Some(Box::new(CTEmpty::from_xml(reader, &e, true)?));
@@ -20613,28 +21820,51 @@ impl FromXml for CTSdtPr {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             r_pr: f_r_pr,
+            #[cfg(feature = "wml-settings")]
             alias: f_alias,
+            #[cfg(feature = "wml-settings")]
             tag: f_tag,
+            #[cfg(feature = "wml-settings")]
             id: f_id,
+            #[cfg(feature = "wml-settings")]
             lock: f_lock,
+            #[cfg(feature = "wml-settings")]
             placeholder: f_placeholder,
+            #[cfg(feature = "wml-settings")]
             temporary: f_temporary,
+            #[cfg(feature = "wml-settings")]
             showing_plc_hdr: f_showing_plc_hdr,
+            #[cfg(feature = "wml-settings")]
             data_binding: f_data_binding,
+            #[cfg(feature = "wml-settings")]
             label: f_label,
+            #[cfg(feature = "wml-settings")]
             tab_index: f_tab_index,
+            #[cfg(feature = "wml-settings")]
             equation: f_equation,
+            #[cfg(feature = "wml-settings")]
             combo_box: f_combo_box,
+            #[cfg(feature = "wml-settings")]
             date: f_date,
+            #[cfg(feature = "wml-settings")]
             doc_part_obj: f_doc_part_obj,
+            #[cfg(feature = "wml-settings")]
             doc_part_list: f_doc_part_list,
+            #[cfg(feature = "wml-settings")]
             drop_down_list: f_drop_down_list,
+            #[cfg(feature = "wml-settings")]
             picture: f_picture,
+            #[cfg(feature = "wml-settings")]
             rich_text: f_rich_text,
+            #[cfg(feature = "wml-settings")]
             text: f_text,
+            #[cfg(feature = "wml-settings")]
             citation: f_citation,
+            #[cfg(feature = "wml-settings")]
             group: f_group,
+            #[cfg(feature = "wml-settings")]
             bibliography: f_bibliography,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -20648,6 +21878,7 @@ impl FromXml for CTSdtEndPr {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_r_pr = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -20661,6 +21892,7 @@ impl FromXml for CTSdtEndPr {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"rPr" => {
                                 f_r_pr =
                                     Some(Box::new(RunProperties::from_xml(reader, &e, false)?));
@@ -20688,6 +21920,7 @@ impl FromXml for CTSdtEndPr {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"rPr" => {
                                 f_r_pr = Some(Box::new(RunProperties::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -20718,6 +21951,7 @@ impl FromXml for CTSdtEndPr {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             r_pr: f_r_pr,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -22107,7 +23341,9 @@ impl FromXml for CTSdtBlock {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_sdt_pr = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_sdt_end_pr = None;
         let mut f_sdt_content = None;
         #[cfg(feature = "extra-children")]
@@ -22122,6 +23358,7 @@ impl FromXml for CTSdtBlock {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"sdtPr" => {
                                 f_sdt_pr = Some(Box::new(CTSdtPr::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -22129,6 +23366,7 @@ impl FromXml for CTSdtBlock {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"sdtEndPr" => {
                                 f_sdt_end_pr =
                                     Some(Box::new(CTSdtEndPr::from_xml(reader, &e, false)?));
@@ -22164,6 +23402,7 @@ impl FromXml for CTSdtBlock {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"sdtPr" => {
                                 f_sdt_pr = Some(Box::new(CTSdtPr::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -22171,6 +23410,7 @@ impl FromXml for CTSdtBlock {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"sdtEndPr" => {
                                 f_sdt_end_pr =
                                     Some(Box::new(CTSdtEndPr::from_xml(reader, &e, true)?));
@@ -22210,7 +23450,9 @@ impl FromXml for CTSdtBlock {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             sdt_pr: f_sdt_pr,
+            #[cfg(feature = "wml-settings")]
             sdt_end_pr: f_sdt_end_pr,
             sdt_content: f_sdt_content,
             #[cfg(feature = "extra-children")]
@@ -22225,7 +23467,9 @@ impl FromXml for CTSdtRun {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_sdt_pr = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_sdt_end_pr = None;
         let mut f_sdt_content = None;
         #[cfg(feature = "extra-children")]
@@ -22240,6 +23484,7 @@ impl FromXml for CTSdtRun {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"sdtPr" => {
                                 f_sdt_pr = Some(Box::new(CTSdtPr::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -22247,6 +23492,7 @@ impl FromXml for CTSdtRun {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"sdtEndPr" => {
                                 f_sdt_end_pr =
                                     Some(Box::new(CTSdtEndPr::from_xml(reader, &e, false)?));
@@ -22282,6 +23528,7 @@ impl FromXml for CTSdtRun {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"sdtPr" => {
                                 f_sdt_pr = Some(Box::new(CTSdtPr::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -22289,6 +23536,7 @@ impl FromXml for CTSdtRun {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"sdtEndPr" => {
                                 f_sdt_end_pr =
                                     Some(Box::new(CTSdtEndPr::from_xml(reader, &e, true)?));
@@ -22328,7 +23576,9 @@ impl FromXml for CTSdtRun {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             sdt_pr: f_sdt_pr,
+            #[cfg(feature = "wml-settings")]
             sdt_end_pr: f_sdt_end_pr,
             sdt_content: f_sdt_content,
             #[cfg(feature = "extra-children")]
@@ -22343,7 +23593,9 @@ impl FromXml for CTSdtCell {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_sdt_pr = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_sdt_end_pr = None;
         let mut f_sdt_content = None;
         #[cfg(feature = "extra-children")]
@@ -22358,6 +23610,7 @@ impl FromXml for CTSdtCell {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"sdtPr" => {
                                 f_sdt_pr = Some(Box::new(CTSdtPr::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -22365,6 +23618,7 @@ impl FromXml for CTSdtCell {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"sdtEndPr" => {
                                 f_sdt_end_pr =
                                     Some(Box::new(CTSdtEndPr::from_xml(reader, &e, false)?));
@@ -22400,6 +23654,7 @@ impl FromXml for CTSdtCell {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"sdtPr" => {
                                 f_sdt_pr = Some(Box::new(CTSdtPr::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -22407,6 +23662,7 @@ impl FromXml for CTSdtCell {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"sdtEndPr" => {
                                 f_sdt_end_pr =
                                     Some(Box::new(CTSdtEndPr::from_xml(reader, &e, true)?));
@@ -22446,7 +23702,9 @@ impl FromXml for CTSdtCell {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             sdt_pr: f_sdt_pr,
+            #[cfg(feature = "wml-settings")]
             sdt_end_pr: f_sdt_end_pr,
             sdt_content: f_sdt_content,
             #[cfg(feature = "extra-children")]
@@ -22461,7 +23719,9 @@ impl FromXml for CTSdtRow {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_sdt_pr = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_sdt_end_pr = None;
         let mut f_sdt_content = None;
         #[cfg(feature = "extra-children")]
@@ -22476,6 +23736,7 @@ impl FromXml for CTSdtRow {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"sdtPr" => {
                                 f_sdt_pr = Some(Box::new(CTSdtPr::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -22483,6 +23744,7 @@ impl FromXml for CTSdtRow {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"sdtEndPr" => {
                                 f_sdt_end_pr =
                                     Some(Box::new(CTSdtEndPr::from_xml(reader, &e, false)?));
@@ -22518,6 +23780,7 @@ impl FromXml for CTSdtRow {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"sdtPr" => {
                                 f_sdt_pr = Some(Box::new(CTSdtPr::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -22525,6 +23788,7 @@ impl FromXml for CTSdtRow {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"sdtEndPr" => {
                                 f_sdt_end_pr =
                                     Some(Box::new(CTSdtEndPr::from_xml(reader, &e, true)?));
@@ -22564,7 +23828,9 @@ impl FromXml for CTSdtRow {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             sdt_pr: f_sdt_pr,
+            #[cfg(feature = "wml-settings")]
             sdt_end_pr: f_sdt_end_pr,
             sdt_content: f_sdt_content,
             #[cfg(feature = "extra-children")]
@@ -22636,8 +23902,11 @@ impl FromXml for CTCustomXmlRun {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_uri = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_element: Option<STXmlName> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_custom_xml_pr = None;
         let mut f_paragraph_content = Vec::new();
         #[cfg(feature = "extra-attrs")]
@@ -22651,9 +23920,11 @@ impl FromXml for CTCustomXmlRun {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"uri" => {
                     f_uri = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"element" => {
                     f_element = Some(val.into_owned());
                 }
@@ -22674,6 +23945,7 @@ impl FromXml for CTCustomXmlRun {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"customXmlPr" => {
                                 f_custom_xml_pr =
                                     Some(Box::new(CTCustomXmlPr::from_xml(reader, &e, false)?));
@@ -22740,6 +24012,7 @@ impl FromXml for CTCustomXmlRun {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"customXmlPr" => {
                                 f_custom_xml_pr =
                                     Some(Box::new(CTCustomXmlPr::from_xml(reader, &e, true)?));
@@ -22810,9 +24083,12 @@ impl FromXml for CTCustomXmlRun {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             uri: f_uri,
+            #[cfg(feature = "wml-settings")]
             element: f_element
                 .ok_or_else(|| ParseError::MissingAttribute("element".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             custom_xml_pr: f_custom_xml_pr,
             paragraph_content: f_paragraph_content,
             #[cfg(feature = "extra-attrs")]
@@ -22829,8 +24105,11 @@ impl FromXml for CTSmartTagRun {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_uri = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_element: Option<STXmlName> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_smart_tag_pr = None;
         let mut f_paragraph_content = Vec::new();
         #[cfg(feature = "extra-attrs")]
@@ -22844,9 +24123,11 @@ impl FromXml for CTSmartTagRun {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"uri" => {
                     f_uri = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"element" => {
                     f_element = Some(val.into_owned());
                 }
@@ -22867,6 +24148,7 @@ impl FromXml for CTSmartTagRun {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"smartTagPr" => {
                                 f_smart_tag_pr =
                                     Some(Box::new(CTSmartTagPr::from_xml(reader, &e, false)?));
@@ -22933,6 +24215,7 @@ impl FromXml for CTSmartTagRun {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"smartTagPr" => {
                                 f_smart_tag_pr =
                                     Some(Box::new(CTSmartTagPr::from_xml(reader, &e, true)?));
@@ -23003,9 +24286,12 @@ impl FromXml for CTSmartTagRun {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             uri: f_uri,
+            #[cfg(feature = "wml-settings")]
             element: f_element
                 .ok_or_else(|| ParseError::MissingAttribute("element".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             smart_tag_pr: f_smart_tag_pr,
             paragraph_content: f_paragraph_content,
             #[cfg(feature = "extra-attrs")]
@@ -23022,8 +24308,11 @@ impl FromXml for CTCustomXmlBlock {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_uri = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_element: Option<STXmlName> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_custom_xml_pr = None;
         let mut f_block_content = Vec::new();
         #[cfg(feature = "extra-attrs")]
@@ -23037,9 +24326,11 @@ impl FromXml for CTCustomXmlBlock {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"uri" => {
                     f_uri = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"element" => {
                     f_element = Some(val.into_owned());
                 }
@@ -23060,6 +24351,7 @@ impl FromXml for CTCustomXmlBlock {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"customXmlPr" => {
                                 f_custom_xml_pr =
                                     Some(Box::new(CTCustomXmlPr::from_xml(reader, &e, false)?));
@@ -23121,6 +24413,7 @@ impl FromXml for CTCustomXmlBlock {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"customXmlPr" => {
                                 f_custom_xml_pr =
                                     Some(Box::new(CTCustomXmlPr::from_xml(reader, &e, true)?));
@@ -23186,9 +24479,12 @@ impl FromXml for CTCustomXmlBlock {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             uri: f_uri,
+            #[cfg(feature = "wml-settings")]
             element: f_element
                 .ok_or_else(|| ParseError::MissingAttribute("element".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             custom_xml_pr: f_custom_xml_pr,
             block_content: f_block_content,
             #[cfg(feature = "extra-attrs")]
@@ -23205,7 +24501,9 @@ impl FromXml for CTCustomXmlPr {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_placeholder = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_attr = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -23219,6 +24517,7 @@ impl FromXml for CTCustomXmlPr {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"placeholder" => {
                                 f_placeholder =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
@@ -23227,6 +24526,7 @@ impl FromXml for CTCustomXmlPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"attr" => {
                                 f_attr.push(CTAttr::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -23253,6 +24553,7 @@ impl FromXml for CTCustomXmlPr {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"placeholder" => {
                                 f_placeholder =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
@@ -23261,6 +24562,7 @@ impl FromXml for CTCustomXmlPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"attr" => {
                                 f_attr.push(CTAttr::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -23291,7 +24593,9 @@ impl FromXml for CTCustomXmlPr {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             placeholder: f_placeholder,
+            #[cfg(feature = "wml-settings")]
             attr: f_attr,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -23305,8 +24609,11 @@ impl FromXml for CTCustomXmlRow {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_uri = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_element: Option<STXmlName> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_custom_xml_pr = None;
         let mut f_rows = Vec::new();
         #[cfg(feature = "extra-attrs")]
@@ -23320,9 +24627,11 @@ impl FromXml for CTCustomXmlRow {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"uri" => {
                     f_uri = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"element" => {
                     f_element = Some(val.into_owned());
                 }
@@ -23343,6 +24652,7 @@ impl FromXml for CTCustomXmlRow {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"customXmlPr" => {
                                 f_custom_xml_pr =
                                     Some(Box::new(CTCustomXmlPr::from_xml(reader, &e, false)?));
@@ -23402,6 +24712,7 @@ impl FromXml for CTCustomXmlRow {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"customXmlPr" => {
                                 f_custom_xml_pr =
                                     Some(Box::new(CTCustomXmlPr::from_xml(reader, &e, true)?));
@@ -23465,9 +24776,12 @@ impl FromXml for CTCustomXmlRow {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             uri: f_uri,
+            #[cfg(feature = "wml-settings")]
             element: f_element
                 .ok_or_else(|| ParseError::MissingAttribute("element".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             custom_xml_pr: f_custom_xml_pr,
             rows: f_rows,
             #[cfg(feature = "extra-attrs")]
@@ -23484,8 +24798,11 @@ impl FromXml for CTCustomXmlCell {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_uri = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_element: Option<STXmlName> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_custom_xml_pr = None;
         let mut f_cells = Vec::new();
         #[cfg(feature = "extra-attrs")]
@@ -23499,9 +24816,11 @@ impl FromXml for CTCustomXmlCell {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"uri" => {
                     f_uri = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"element" => {
                     f_element = Some(val.into_owned());
                 }
@@ -23522,6 +24841,7 @@ impl FromXml for CTCustomXmlCell {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"customXmlPr" => {
                                 f_custom_xml_pr =
                                     Some(Box::new(CTCustomXmlPr::from_xml(reader, &e, false)?));
@@ -23581,6 +24901,7 @@ impl FromXml for CTCustomXmlCell {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"customXmlPr" => {
                                 f_custom_xml_pr =
                                     Some(Box::new(CTCustomXmlPr::from_xml(reader, &e, true)?));
@@ -23644,9 +24965,12 @@ impl FromXml for CTCustomXmlCell {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             uri: f_uri,
+            #[cfg(feature = "wml-settings")]
             element: f_element
                 .ok_or_else(|| ParseError::MissingAttribute("element".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             custom_xml_pr: f_custom_xml_pr,
             cells: f_cells,
             #[cfg(feature = "extra-attrs")]
@@ -23663,6 +24987,7 @@ impl FromXml for CTSmartTagPr {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_attr = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -23676,6 +25001,7 @@ impl FromXml for CTSmartTagPr {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"attr" => {
                                 f_attr.push(CTAttr::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -23702,6 +25028,7 @@ impl FromXml for CTSmartTagPr {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"attr" => {
                                 f_attr.push(CTAttr::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -23732,6 +25059,7 @@ impl FromXml for CTSmartTagPr {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             attr: f_attr,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -23888,10 +25216,15 @@ impl FromXml for Paragraph {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid_r_pr = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid_r = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid_del = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid_p = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid_r_default = None;
         #[cfg(feature = "wml-styling")]
         let mut f_p_pr = None;
@@ -23907,18 +25240,23 @@ impl FromXml for Paragraph {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-track-changes")]
                 b"rsidRPr" => {
                     f_rsid_r_pr = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"rsidR" => {
                     f_rsid_r = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"rsidDel" => {
                     f_rsid_del = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"rsidP" => {
                     f_rsid_p = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"rsidRDefault" => {
                     f_rsid_r_default = decode_hex(&val);
                 }
@@ -24079,10 +25417,15 @@ impl FromXml for Paragraph {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-track-changes")]
             rsid_r_pr: f_rsid_r_pr,
+            #[cfg(feature = "wml-track-changes")]
             rsid_r: f_rsid_r,
+            #[cfg(feature = "wml-track-changes")]
             rsid_del: f_rsid_del,
+            #[cfg(feature = "wml-track-changes")]
             rsid_p: f_rsid_p,
+            #[cfg(feature = "wml-track-changes")]
             rsid_r_default: f_rsid_r_default,
             #[cfg(feature = "wml-styling")]
             p_pr: f_p_pr,
@@ -24102,6 +25445,7 @@ impl FromXml for CTHeight {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_h_rule = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -24113,6 +25457,7 @@ impl FromXml for CTHeight {
                 b"val" => {
                     f_value = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-tables")]
                 b"hRule" => {
                     f_h_rule = val.parse().ok();
                 }
@@ -24140,6 +25485,7 @@ impl FromXml for CTHeight {
 
         Ok(Self {
             value: f_value,
+            #[cfg(feature = "wml-tables")]
             h_rule: f_h_rule,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -24335,6 +25681,7 @@ impl FromXml for TableGrid {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_grid_col = Vec::new();
+        #[cfg(feature = "wml-track-changes")]
         let mut f_tbl_grid_change = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -24355,6 +25702,7 @@ impl FromXml for TableGrid {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"tblGridChange" => {
                                 f_tbl_grid_change =
                                     Some(Box::new(CTTblGridChange::from_xml(reader, &e, false)?));
@@ -24389,6 +25737,7 @@ impl FromXml for TableGrid {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"tblGridChange" => {
                                 f_tbl_grid_change =
                                     Some(Box::new(CTTblGridChange::from_xml(reader, &e, true)?));
@@ -24421,6 +25770,7 @@ impl FromXml for TableGrid {
 
         Ok(Self {
             grid_col: f_grid_col,
+            #[cfg(feature = "wml-track-changes")]
             tbl_grid_change: f_tbl_grid_change,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -24434,15 +25784,25 @@ impl FromXml for CTTcBorders {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-tables")]
         let mut f_top = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_start = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_left = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_bottom = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_end = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_right = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_inside_h = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_inside_v = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tl2br = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tr2bl = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -24456,6 +25816,7 @@ impl FromXml for CTTcBorders {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-tables")]
                             b"top" => {
                                 f_top = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -24463,6 +25824,7 @@ impl FromXml for CTTcBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"start" => {
                                 f_start = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -24470,6 +25832,7 @@ impl FromXml for CTTcBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"left" => {
                                 f_left = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -24477,6 +25840,7 @@ impl FromXml for CTTcBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"bottom" => {
                                 f_bottom = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -24484,6 +25848,7 @@ impl FromXml for CTTcBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"end" => {
                                 f_end = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -24491,6 +25856,7 @@ impl FromXml for CTTcBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"right" => {
                                 f_right = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -24498,6 +25864,7 @@ impl FromXml for CTTcBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"insideH" => {
                                 f_inside_h = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -24505,6 +25872,7 @@ impl FromXml for CTTcBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"insideV" => {
                                 f_inside_v = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -24512,6 +25880,7 @@ impl FromXml for CTTcBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tl2br" => {
                                 f_tl2br = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -24519,6 +25888,7 @@ impl FromXml for CTTcBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tr2bl" => {
                                 f_tr2bl = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -24545,6 +25915,7 @@ impl FromXml for CTTcBorders {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-tables")]
                             b"top" => {
                                 f_top = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -24552,6 +25923,7 @@ impl FromXml for CTTcBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"start" => {
                                 f_start = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -24559,6 +25931,7 @@ impl FromXml for CTTcBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"left" => {
                                 f_left = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -24566,6 +25939,7 @@ impl FromXml for CTTcBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"bottom" => {
                                 f_bottom = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -24573,6 +25947,7 @@ impl FromXml for CTTcBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"end" => {
                                 f_end = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -24580,6 +25955,7 @@ impl FromXml for CTTcBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"right" => {
                                 f_right = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -24587,6 +25963,7 @@ impl FromXml for CTTcBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"insideH" => {
                                 f_inside_h = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -24594,6 +25971,7 @@ impl FromXml for CTTcBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"insideV" => {
                                 f_inside_v = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -24601,6 +25979,7 @@ impl FromXml for CTTcBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tl2br" => {
                                 f_tl2br = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -24608,6 +25987,7 @@ impl FromXml for CTTcBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tr2bl" => {
                                 f_tr2bl = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -24638,15 +26018,25 @@ impl FromXml for CTTcBorders {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-tables")]
             top: f_top,
+            #[cfg(feature = "wml-tables")]
             start: f_start,
+            #[cfg(feature = "wml-tables")]
             left: f_left,
+            #[cfg(feature = "wml-tables")]
             bottom: f_bottom,
+            #[cfg(feature = "wml-tables")]
             end: f_end,
+            #[cfg(feature = "wml-tables")]
             right: f_right,
+            #[cfg(feature = "wml-tables")]
             inside_h: f_inside_h,
+            #[cfg(feature = "wml-tables")]
             inside_v: f_inside_v,
+            #[cfg(feature = "wml-tables")]
             tl2br: f_tl2br,
+            #[cfg(feature = "wml-tables")]
             tr2bl: f_tr2bl,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -24660,11 +26050,17 @@ impl FromXml for CTTcMar {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-tables")]
         let mut f_top = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_start = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_left = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_bottom = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_end = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_right = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -24678,6 +26074,7 @@ impl FromXml for CTTcMar {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-tables")]
                             b"top" => {
                                 f_top = Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -24685,6 +26082,7 @@ impl FromXml for CTTcMar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"start" => {
                                 f_start = Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -24692,6 +26090,7 @@ impl FromXml for CTTcMar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"left" => {
                                 f_left = Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -24699,6 +26098,7 @@ impl FromXml for CTTcMar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"bottom" => {
                                 f_bottom = Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -24706,6 +26106,7 @@ impl FromXml for CTTcMar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"end" => {
                                 f_end = Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -24713,6 +26114,7 @@ impl FromXml for CTTcMar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"right" => {
                                 f_right = Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -24739,6 +26141,7 @@ impl FromXml for CTTcMar {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-tables")]
                             b"top" => {
                                 f_top = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -24746,6 +26149,7 @@ impl FromXml for CTTcMar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"start" => {
                                 f_start = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -24753,6 +26157,7 @@ impl FromXml for CTTcMar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"left" => {
                                 f_left = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -24760,6 +26165,7 @@ impl FromXml for CTTcMar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"bottom" => {
                                 f_bottom = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -24767,6 +26173,7 @@ impl FromXml for CTTcMar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"end" => {
                                 f_end = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -24774,6 +26181,7 @@ impl FromXml for CTTcMar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"right" => {
                                 f_right = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -24804,11 +26212,17 @@ impl FromXml for CTTcMar {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-tables")]
             top: f_top,
+            #[cfg(feature = "wml-tables")]
             start: f_start,
+            #[cfg(feature = "wml-tables")]
             left: f_left,
+            #[cfg(feature = "wml-tables")]
             bottom: f_bottom,
+            #[cfg(feature = "wml-tables")]
             end: f_end,
+            #[cfg(feature = "wml-tables")]
             right: f_right,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -24916,19 +26330,33 @@ impl FromXml for CTTcPrBase {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_cnf_style = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tc_w = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_grid_span = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_horizontal_merge = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_vertical_merge = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tc_borders = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_shading = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_no_wrap = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tc_mar = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_text_direction = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tc_fit_text = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_v_align = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_hide_mark = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_headers = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -24942,6 +26370,7 @@ impl FromXml for CTTcPrBase {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"cnfStyle" => {
                                 f_cnf_style = Some(Box::new(CTCnf::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -24949,6 +26378,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tcW" => {
                                 f_tc_w = Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -24956,6 +26386,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"gridSpan" => {
                                 f_grid_span =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -24964,6 +26395,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"hMerge" => {
                                 f_horizontal_merge =
                                     Some(Box::new(CTHMerge::from_xml(reader, &e, false)?));
@@ -24972,6 +26404,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"vMerge" => {
                                 f_vertical_merge =
                                     Some(Box::new(CTVMerge::from_xml(reader, &e, false)?));
@@ -24980,6 +26413,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tcBorders" => {
                                 f_tc_borders =
                                     Some(Box::new(CTTcBorders::from_xml(reader, &e, false)?));
@@ -24988,6 +26422,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"shd" => {
                                 f_shading = Some(Box::new(CTShd::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -24995,6 +26430,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"noWrap" => {
                                 f_no_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -25002,6 +26438,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tcMar" => {
                                 f_tc_mar = Some(Box::new(CTTcMar::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -25009,6 +26446,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"textDirection" => {
                                 f_text_direction =
                                     Some(Box::new(CTTextDirection::from_xml(reader, &e, false)?));
@@ -25017,6 +26455,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tcFitText" => {
                                 f_tc_fit_text =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -25025,6 +26464,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"vAlign" => {
                                 f_v_align =
                                     Some(Box::new(CTVerticalJc::from_xml(reader, &e, false)?));
@@ -25033,6 +26473,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"hideMark" => {
                                 f_hide_mark = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -25040,6 +26481,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"headers" => {
                                 f_headers = Some(Box::new(CTHeaders::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -25066,6 +26508,7 @@ impl FromXml for CTTcPrBase {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"cnfStyle" => {
                                 f_cnf_style = Some(Box::new(CTCnf::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -25073,6 +26516,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tcW" => {
                                 f_tc_w = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -25080,6 +26524,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"gridSpan" => {
                                 f_grid_span =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -25088,6 +26533,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"hMerge" => {
                                 f_horizontal_merge =
                                     Some(Box::new(CTHMerge::from_xml(reader, &e, true)?));
@@ -25096,6 +26542,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"vMerge" => {
                                 f_vertical_merge =
                                     Some(Box::new(CTVMerge::from_xml(reader, &e, true)?));
@@ -25104,6 +26551,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tcBorders" => {
                                 f_tc_borders =
                                     Some(Box::new(CTTcBorders::from_xml(reader, &e, true)?));
@@ -25112,6 +26560,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"shd" => {
                                 f_shading = Some(Box::new(CTShd::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -25119,6 +26568,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"noWrap" => {
                                 f_no_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -25126,6 +26576,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tcMar" => {
                                 f_tc_mar = Some(Box::new(CTTcMar::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -25133,6 +26584,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"textDirection" => {
                                 f_text_direction =
                                     Some(Box::new(CTTextDirection::from_xml(reader, &e, true)?));
@@ -25141,6 +26593,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tcFitText" => {
                                 f_tc_fit_text =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -25149,6 +26602,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"vAlign" => {
                                 f_v_align =
                                     Some(Box::new(CTVerticalJc::from_xml(reader, &e, true)?));
@@ -25157,6 +26611,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"hideMark" => {
                                 f_hide_mark = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -25164,6 +26619,7 @@ impl FromXml for CTTcPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"headers" => {
                                 f_headers = Some(Box::new(CTHeaders::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -25194,19 +26650,33 @@ impl FromXml for CTTcPrBase {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             cnf_style: f_cnf_style,
+            #[cfg(feature = "wml-tables")]
             tc_w: f_tc_w,
+            #[cfg(feature = "wml-tables")]
             grid_span: f_grid_span,
+            #[cfg(feature = "wml-tables")]
             horizontal_merge: f_horizontal_merge,
+            #[cfg(feature = "wml-tables")]
             vertical_merge: f_vertical_merge,
+            #[cfg(feature = "wml-tables")]
             tc_borders: f_tc_borders,
+            #[cfg(feature = "wml-tables")]
             shading: f_shading,
+            #[cfg(feature = "wml-tables")]
             no_wrap: f_no_wrap,
+            #[cfg(feature = "wml-tables")]
             tc_mar: f_tc_mar,
+            #[cfg(feature = "wml-tables")]
             text_direction: f_text_direction,
+            #[cfg(feature = "wml-tables")]
             tc_fit_text: f_tc_fit_text,
+            #[cfg(feature = "wml-tables")]
             v_align: f_v_align,
+            #[cfg(feature = "wml-tables")]
             hide_mark: f_hide_mark,
+            #[cfg(feature = "wml-tables")]
             headers: f_headers,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -25249,6 +26719,7 @@ impl FromXml for TableCellProperties {
         #[cfg(feature = "wml-tables")]
         let mut f_headers = None;
         let mut f_cell_markup = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_tc_pr_change = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -25389,6 +26860,7 @@ impl FromXml for TableCellProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"tcPrChange" => {
                                 f_tc_pr_change =
                                     Some(Box::new(CTTcPrChange::from_xml(reader, &e, false)?));
@@ -25543,6 +27015,7 @@ impl FromXml for TableCellProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"tcPrChange" => {
                                 f_tc_pr_change =
                                     Some(Box::new(CTTcPrChange::from_xml(reader, &e, true)?));
@@ -25603,6 +27076,7 @@ impl FromXml for TableCellProperties {
             #[cfg(feature = "wml-tables")]
             headers: f_headers,
             cell_markup: f_cell_markup,
+            #[cfg(feature = "wml-track-changes")]
             tc_pr_change: f_tc_pr_change,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -25938,6 +27412,7 @@ impl FromXml for TableCell {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-tables")]
         let mut f_id = None;
         #[cfg(feature = "wml-tables")]
         let mut f_cell_properties = None;
@@ -25953,6 +27428,7 @@ impl FromXml for TableCell {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-tables")]
                 b"id" => {
                     f_id = Some(val.into_owned());
                 }
@@ -26103,6 +27579,7 @@ impl FromXml for TableCell {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-tables")]
             id: f_id,
             #[cfg(feature = "wml-tables")]
             cell_properties: f_cell_properties,
@@ -26121,18 +27598,31 @@ impl FromXml for CTCnf {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_value = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_first_row = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_last_row = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_first_column = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_last_column = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_odd_v_band = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_even_v_band = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_odd_h_band = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_even_h_band = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_first_row_first_column = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_first_row_last_column = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_last_row_first_column = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_last_row_last_column = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -26141,42 +27631,55 @@ impl FromXml for CTCnf {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-styling")]
                 b"val" => {
                     f_value = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"firstRow" => {
                     f_first_row = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"lastRow" => {
                     f_last_row = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"firstColumn" => {
                     f_first_column = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"lastColumn" => {
                     f_last_column = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"oddVBand" => {
                     f_odd_v_band = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"evenVBand" => {
                     f_even_v_band = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"oddHBand" => {
                     f_odd_h_band = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"evenHBand" => {
                     f_even_h_band = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"firstRowFirstColumn" => {
                     f_first_row_first_column = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"firstRowLastColumn" => {
                     f_first_row_last_column = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"lastRowFirstColumn" => {
                     f_last_row_first_column = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"lastRowLastColumn" => {
                     f_last_row_last_column = Some(val.into_owned());
                 }
@@ -26203,18 +27706,31 @@ impl FromXml for CTCnf {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             value: f_value,
+            #[cfg(feature = "wml-styling")]
             first_row: f_first_row,
+            #[cfg(feature = "wml-styling")]
             last_row: f_last_row,
+            #[cfg(feature = "wml-styling")]
             first_column: f_first_column,
+            #[cfg(feature = "wml-styling")]
             last_column: f_last_column,
+            #[cfg(feature = "wml-styling")]
             odd_v_band: f_odd_v_band,
+            #[cfg(feature = "wml-styling")]
             even_v_band: f_even_v_band,
+            #[cfg(feature = "wml-styling")]
             odd_h_band: f_odd_h_band,
+            #[cfg(feature = "wml-styling")]
             even_h_band: f_even_h_band,
+            #[cfg(feature = "wml-styling")]
             first_row_first_column: f_first_row_first_column,
+            #[cfg(feature = "wml-styling")]
             first_row_last_column: f_first_row_last_column,
+            #[cfg(feature = "wml-styling")]
             last_row_first_column: f_last_row_first_column,
+            #[cfg(feature = "wml-styling")]
             last_row_last_column: f_last_row_last_column,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -26310,17 +27826,29 @@ impl FromXml for CTTrPrBase {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_cnf_style = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_div_id = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_grid_before = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_grid_after = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_w_before = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_w_after = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_cant_split = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tr_height = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_header = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_cell_spacing = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_justification = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_hidden = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -26334,6 +27862,7 @@ impl FromXml for CTTrPrBase {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"cnfStyle" => {
                                 f_cnf_style = Some(Box::new(CTCnf::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -26341,6 +27870,7 @@ impl FromXml for CTTrPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"divId" => {
                                 f_div_id =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -26349,6 +27879,7 @@ impl FromXml for CTTrPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"gridBefore" => {
                                 f_grid_before =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -26357,6 +27888,7 @@ impl FromXml for CTTrPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"gridAfter" => {
                                 f_grid_after =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -26365,6 +27897,7 @@ impl FromXml for CTTrPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"wBefore" => {
                                 f_w_before =
                                     Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
@@ -26373,6 +27906,7 @@ impl FromXml for CTTrPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"wAfter" => {
                                 f_w_after =
                                     Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
@@ -26381,6 +27915,7 @@ impl FromXml for CTTrPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"cantSplit" => {
                                 f_cant_split =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -26389,6 +27924,7 @@ impl FromXml for CTTrPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"trHeight" => {
                                 f_tr_height =
                                     Some(Box::new(CTHeight::from_xml(reader, &e, false)?));
@@ -26397,6 +27933,7 @@ impl FromXml for CTTrPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblHeader" => {
                                 f_tbl_header =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -26405,6 +27942,7 @@ impl FromXml for CTTrPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblCellSpacing" => {
                                 f_tbl_cell_spacing =
                                     Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
@@ -26413,6 +27951,7 @@ impl FromXml for CTTrPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"jc" => {
                                 f_justification =
                                     Some(Box::new(CTJcTable::from_xml(reader, &e, false)?));
@@ -26421,6 +27960,7 @@ impl FromXml for CTTrPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"hidden" => {
                                 f_hidden = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -26447,6 +27987,7 @@ impl FromXml for CTTrPrBase {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"cnfStyle" => {
                                 f_cnf_style = Some(Box::new(CTCnf::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -26454,6 +27995,7 @@ impl FromXml for CTTrPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"divId" => {
                                 f_div_id =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -26462,6 +28004,7 @@ impl FromXml for CTTrPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"gridBefore" => {
                                 f_grid_before =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -26470,6 +28013,7 @@ impl FromXml for CTTrPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"gridAfter" => {
                                 f_grid_after =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -26478,6 +28022,7 @@ impl FromXml for CTTrPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"wBefore" => {
                                 f_w_before =
                                     Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
@@ -26486,6 +28031,7 @@ impl FromXml for CTTrPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"wAfter" => {
                                 f_w_after = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -26493,6 +28039,7 @@ impl FromXml for CTTrPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"cantSplit" => {
                                 f_cant_split = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -26500,6 +28047,7 @@ impl FromXml for CTTrPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"trHeight" => {
                                 f_tr_height = Some(Box::new(CTHeight::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -26507,6 +28055,7 @@ impl FromXml for CTTrPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblHeader" => {
                                 f_tbl_header = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -26514,6 +28063,7 @@ impl FromXml for CTTrPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblCellSpacing" => {
                                 f_tbl_cell_spacing =
                                     Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
@@ -26522,6 +28072,7 @@ impl FromXml for CTTrPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"jc" => {
                                 f_justification =
                                     Some(Box::new(CTJcTable::from_xml(reader, &e, true)?));
@@ -26530,6 +28081,7 @@ impl FromXml for CTTrPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"hidden" => {
                                 f_hidden = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -26560,17 +28112,29 @@ impl FromXml for CTTrPrBase {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             cnf_style: f_cnf_style,
+            #[cfg(feature = "wml-settings")]
             div_id: f_div_id,
+            #[cfg(feature = "wml-tables")]
             grid_before: f_grid_before,
+            #[cfg(feature = "wml-tables")]
             grid_after: f_grid_after,
+            #[cfg(feature = "wml-tables")]
             w_before: f_w_before,
+            #[cfg(feature = "wml-tables")]
             w_after: f_w_after,
+            #[cfg(feature = "wml-tables")]
             cant_split: f_cant_split,
+            #[cfg(feature = "wml-tables")]
             tr_height: f_tr_height,
+            #[cfg(feature = "wml-tables")]
             tbl_header: f_tbl_header,
+            #[cfg(feature = "wml-tables")]
             tbl_cell_spacing: f_tbl_cell_spacing,
+            #[cfg(feature = "wml-tables")]
             justification: f_justification,
+            #[cfg(feature = "wml-tables")]
             hidden: f_hidden,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -26584,17 +28148,29 @@ impl FromXml for TableRowProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_cnf_style = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_div_id = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_grid_before = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_grid_after = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_w_before = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_w_after = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_cant_split = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tr_height = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_header = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_cell_spacing = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_justification = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_hidden = None;
         #[cfg(feature = "wml-track-changes")]
         let mut f_ins = None;
@@ -26614,6 +28190,7 @@ impl FromXml for TableRowProperties {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"cnfStyle" => {
                                 f_cnf_style = Some(Box::new(CTCnf::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -26621,6 +28198,7 @@ impl FromXml for TableRowProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"divId" => {
                                 f_div_id =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -26629,6 +28207,7 @@ impl FromXml for TableRowProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"gridBefore" => {
                                 f_grid_before =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -26637,6 +28216,7 @@ impl FromXml for TableRowProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"gridAfter" => {
                                 f_grid_after =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -26645,6 +28225,7 @@ impl FromXml for TableRowProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"wBefore" => {
                                 f_w_before =
                                     Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
@@ -26653,6 +28234,7 @@ impl FromXml for TableRowProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"wAfter" => {
                                 f_w_after =
                                     Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
@@ -26661,6 +28243,7 @@ impl FromXml for TableRowProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"cantSplit" => {
                                 f_cant_split =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -26669,6 +28252,7 @@ impl FromXml for TableRowProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"trHeight" => {
                                 f_tr_height =
                                     Some(Box::new(CTHeight::from_xml(reader, &e, false)?));
@@ -26677,6 +28261,7 @@ impl FromXml for TableRowProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblHeader" => {
                                 f_tbl_header =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -26685,6 +28270,7 @@ impl FromXml for TableRowProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblCellSpacing" => {
                                 f_tbl_cell_spacing =
                                     Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
@@ -26693,6 +28279,7 @@ impl FromXml for TableRowProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"jc" => {
                                 f_justification =
                                     Some(Box::new(CTJcTable::from_xml(reader, &e, false)?));
@@ -26701,6 +28288,7 @@ impl FromXml for TableRowProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"hidden" => {
                                 f_hidden = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -26752,6 +28340,7 @@ impl FromXml for TableRowProperties {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"cnfStyle" => {
                                 f_cnf_style = Some(Box::new(CTCnf::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -26759,6 +28348,7 @@ impl FromXml for TableRowProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"divId" => {
                                 f_div_id =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -26767,6 +28357,7 @@ impl FromXml for TableRowProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"gridBefore" => {
                                 f_grid_before =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -26775,6 +28366,7 @@ impl FromXml for TableRowProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"gridAfter" => {
                                 f_grid_after =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -26783,6 +28375,7 @@ impl FromXml for TableRowProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"wBefore" => {
                                 f_w_before =
                                     Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
@@ -26791,6 +28384,7 @@ impl FromXml for TableRowProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"wAfter" => {
                                 f_w_after = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -26798,6 +28392,7 @@ impl FromXml for TableRowProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"cantSplit" => {
                                 f_cant_split = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -26805,6 +28400,7 @@ impl FromXml for TableRowProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"trHeight" => {
                                 f_tr_height = Some(Box::new(CTHeight::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -26812,6 +28408,7 @@ impl FromXml for TableRowProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblHeader" => {
                                 f_tbl_header = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -26819,6 +28416,7 @@ impl FromXml for TableRowProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblCellSpacing" => {
                                 f_tbl_cell_spacing =
                                     Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
@@ -26827,6 +28425,7 @@ impl FromXml for TableRowProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"jc" => {
                                 f_justification =
                                     Some(Box::new(CTJcTable::from_xml(reader, &e, true)?));
@@ -26835,6 +28434,7 @@ impl FromXml for TableRowProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"hidden" => {
                                 f_hidden = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -26890,17 +28490,29 @@ impl FromXml for TableRowProperties {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             cnf_style: f_cnf_style,
+            #[cfg(feature = "wml-settings")]
             div_id: f_div_id,
+            #[cfg(feature = "wml-tables")]
             grid_before: f_grid_before,
+            #[cfg(feature = "wml-tables")]
             grid_after: f_grid_after,
+            #[cfg(feature = "wml-tables")]
             w_before: f_w_before,
+            #[cfg(feature = "wml-tables")]
             w_after: f_w_after,
+            #[cfg(feature = "wml-tables")]
             cant_split: f_cant_split,
+            #[cfg(feature = "wml-tables")]
             tr_height: f_tr_height,
+            #[cfg(feature = "wml-tables")]
             tbl_header: f_tbl_header,
+            #[cfg(feature = "wml-tables")]
             tbl_cell_spacing: f_tbl_cell_spacing,
+            #[cfg(feature = "wml-tables")]
             justification: f_justification,
+            #[cfg(feature = "wml-tables")]
             hidden: f_hidden,
             #[cfg(feature = "wml-track-changes")]
             ins: f_ins,
@@ -26920,9 +28532,13 @@ impl FromXml for CTRow {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid_r_pr = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid_r = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid_del = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid_tr = None;
         #[cfg(feature = "wml-tables")]
         let mut f_tbl_pr_ex = None;
@@ -26940,15 +28556,19 @@ impl FromXml for CTRow {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-track-changes")]
                 b"rsidRPr" => {
                     f_rsid_r_pr = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"rsidR" => {
                     f_rsid_r = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"rsidDel" => {
                     f_rsid_del = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-track-changes")]
                 b"rsidTr" => {
                     f_rsid_tr = decode_hex(&val);
                 }
@@ -27112,9 +28732,13 @@ impl FromXml for CTRow {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-track-changes")]
             rsid_r_pr: f_rsid_r_pr,
+            #[cfg(feature = "wml-track-changes")]
             rsid_r: f_rsid_r,
+            #[cfg(feature = "wml-track-changes")]
             rsid_del: f_rsid_del,
+            #[cfg(feature = "wml-track-changes")]
             rsid_tr: f_rsid_tr,
             #[cfg(feature = "wml-tables")]
             tbl_pr_ex: f_tbl_pr_ex,
@@ -27229,15 +28853,25 @@ impl FromXml for CTTblPPr {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-tables")]
         let mut f_left_from_text = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_right_from_text = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_top_from_text = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_bottom_from_text = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_vert_anchor = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_horz_anchor = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tblp_x_spec = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tblp_x = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tblp_y_spec = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tblp_y = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -27246,33 +28880,43 @@ impl FromXml for CTTblPPr {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-tables")]
                 b"leftFromText" => {
                     f_left_from_text = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-tables")]
                 b"rightFromText" => {
                     f_right_from_text = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-tables")]
                 b"topFromText" => {
                     f_top_from_text = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-tables")]
                 b"bottomFromText" => {
                     f_bottom_from_text = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-tables")]
                 b"vertAnchor" => {
                     f_vert_anchor = val.parse().ok();
                 }
+                #[cfg(feature = "wml-tables")]
                 b"horzAnchor" => {
                     f_horz_anchor = val.parse().ok();
                 }
+                #[cfg(feature = "wml-tables")]
                 b"tblpXSpec" => {
                     f_tblp_x_spec = val.parse().ok();
                 }
+                #[cfg(feature = "wml-tables")]
                 b"tblpX" => {
                     f_tblp_x = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-tables")]
                 b"tblpYSpec" => {
                     f_tblp_y_spec = val.parse().ok();
                 }
+                #[cfg(feature = "wml-tables")]
                 b"tblpY" => {
                     f_tblp_y = Some(val.into_owned());
                 }
@@ -27299,15 +28943,25 @@ impl FromXml for CTTblPPr {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-tables")]
             left_from_text: f_left_from_text,
+            #[cfg(feature = "wml-tables")]
             right_from_text: f_right_from_text,
+            #[cfg(feature = "wml-tables")]
             top_from_text: f_top_from_text,
+            #[cfg(feature = "wml-tables")]
             bottom_from_text: f_bottom_from_text,
+            #[cfg(feature = "wml-tables")]
             vert_anchor: f_vert_anchor,
+            #[cfg(feature = "wml-tables")]
             horz_anchor: f_horz_anchor,
+            #[cfg(feature = "wml-tables")]
             tblp_x_spec: f_tblp_x_spec,
+            #[cfg(feature = "wml-tables")]
             tblp_x: f_tblp_x,
+            #[cfg(feature = "wml-tables")]
             tblp_y_spec: f_tblp_y_spec,
+            #[cfg(feature = "wml-tables")]
             tblp_y: f_tblp_y,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -27321,11 +28975,17 @@ impl FromXml for CTTblCellMar {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-tables")]
         let mut f_top = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_start = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_left = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_bottom = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_end = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_right = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -27339,6 +28999,7 @@ impl FromXml for CTTblCellMar {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-tables")]
                             b"top" => {
                                 f_top = Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -27346,6 +29007,7 @@ impl FromXml for CTTblCellMar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"start" => {
                                 f_start = Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -27353,6 +29015,7 @@ impl FromXml for CTTblCellMar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"left" => {
                                 f_left = Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -27360,6 +29023,7 @@ impl FromXml for CTTblCellMar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"bottom" => {
                                 f_bottom = Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -27367,6 +29031,7 @@ impl FromXml for CTTblCellMar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"end" => {
                                 f_end = Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -27374,6 +29039,7 @@ impl FromXml for CTTblCellMar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"right" => {
                                 f_right = Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -27400,6 +29066,7 @@ impl FromXml for CTTblCellMar {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-tables")]
                             b"top" => {
                                 f_top = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -27407,6 +29074,7 @@ impl FromXml for CTTblCellMar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"start" => {
                                 f_start = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -27414,6 +29082,7 @@ impl FromXml for CTTblCellMar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"left" => {
                                 f_left = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -27421,6 +29090,7 @@ impl FromXml for CTTblCellMar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"bottom" => {
                                 f_bottom = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -27428,6 +29098,7 @@ impl FromXml for CTTblCellMar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"end" => {
                                 f_end = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -27435,6 +29106,7 @@ impl FromXml for CTTblCellMar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"right" => {
                                 f_right = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -27465,11 +29137,17 @@ impl FromXml for CTTblCellMar {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-tables")]
             top: f_top,
+            #[cfg(feature = "wml-tables")]
             start: f_start,
+            #[cfg(feature = "wml-tables")]
             left: f_left,
+            #[cfg(feature = "wml-tables")]
             bottom: f_bottom,
+            #[cfg(feature = "wml-tables")]
             end: f_end,
+            #[cfg(feature = "wml-tables")]
             right: f_right,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -27483,13 +29161,21 @@ impl FromXml for CTTblBorders {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-tables")]
         let mut f_top = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_start = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_left = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_bottom = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_end = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_right = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_inside_h = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_inside_v = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -27503,6 +29189,7 @@ impl FromXml for CTTblBorders {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-tables")]
                             b"top" => {
                                 f_top = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -27510,6 +29197,7 @@ impl FromXml for CTTblBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"start" => {
                                 f_start = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -27517,6 +29205,7 @@ impl FromXml for CTTblBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"left" => {
                                 f_left = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -27524,6 +29213,7 @@ impl FromXml for CTTblBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"bottom" => {
                                 f_bottom = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -27531,6 +29221,7 @@ impl FromXml for CTTblBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"end" => {
                                 f_end = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -27538,6 +29229,7 @@ impl FromXml for CTTblBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"right" => {
                                 f_right = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -27545,6 +29237,7 @@ impl FromXml for CTTblBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"insideH" => {
                                 f_inside_h = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -27552,6 +29245,7 @@ impl FromXml for CTTblBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"insideV" => {
                                 f_inside_v = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -27578,6 +29272,7 @@ impl FromXml for CTTblBorders {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-tables")]
                             b"top" => {
                                 f_top = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -27585,6 +29280,7 @@ impl FromXml for CTTblBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"start" => {
                                 f_start = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -27592,6 +29288,7 @@ impl FromXml for CTTblBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"left" => {
                                 f_left = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -27599,6 +29296,7 @@ impl FromXml for CTTblBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"bottom" => {
                                 f_bottom = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -27606,6 +29304,7 @@ impl FromXml for CTTblBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"end" => {
                                 f_end = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -27613,6 +29312,7 @@ impl FromXml for CTTblBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"right" => {
                                 f_right = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -27620,6 +29320,7 @@ impl FromXml for CTTblBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"insideH" => {
                                 f_inside_h = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -27627,6 +29328,7 @@ impl FromXml for CTTblBorders {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"insideV" => {
                                 f_inside_v = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -27657,13 +29359,21 @@ impl FromXml for CTTblBorders {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-tables")]
             top: f_top,
+            #[cfg(feature = "wml-tables")]
             start: f_start,
+            #[cfg(feature = "wml-tables")]
             left: f_left,
+            #[cfg(feature = "wml-tables")]
             bottom: f_bottom,
+            #[cfg(feature = "wml-tables")]
             end: f_end,
+            #[cfg(feature = "wml-tables")]
             right: f_right,
+            #[cfg(feature = "wml-tables")]
             inside_h: f_inside_h,
+            #[cfg(feature = "wml-tables")]
             inside_v: f_inside_v,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -27677,22 +29387,39 @@ impl FromXml for CTTblPrBase {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_tbl_style = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tblp_pr = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_overlap = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_bidi_visual = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_tbl_style_row_band_size = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_tbl_style_col_band_size = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_w = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_justification = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_cell_spacing = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_ind = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_borders = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_shading = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_layout = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_cell_mar = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_look = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_caption = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_description = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -27706,6 +29433,7 @@ impl FromXml for CTTblPrBase {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"tblStyle" => {
                                 f_tbl_style =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
@@ -27714,6 +29442,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblpPr" => {
                                 f_tblp_pr = Some(Box::new(CTTblPPr::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -27721,6 +29450,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblOverlap" => {
                                 f_tbl_overlap =
                                     Some(Box::new(CTTblOverlap::from_xml(reader, &e, false)?));
@@ -27729,6 +29459,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"bidiVisual" => {
                                 f_bidi_visual =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -27737,6 +29468,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"tblStyleRowBandSize" => {
                                 f_tbl_style_row_band_size =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -27745,6 +29477,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"tblStyleColBandSize" => {
                                 f_tbl_style_col_band_size =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -27753,6 +29486,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblW" => {
                                 f_tbl_w = Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -27760,6 +29494,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"jc" => {
                                 f_justification =
                                     Some(Box::new(CTJcTable::from_xml(reader, &e, false)?));
@@ -27768,6 +29503,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblCellSpacing" => {
                                 f_tbl_cell_spacing =
                                     Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
@@ -27776,6 +29512,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblInd" => {
                                 f_tbl_ind =
                                     Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
@@ -27784,6 +29521,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblBorders" => {
                                 f_tbl_borders =
                                     Some(Box::new(CTTblBorders::from_xml(reader, &e, false)?));
@@ -27792,6 +29530,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"shd" => {
                                 f_shading = Some(Box::new(CTShd::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -27799,6 +29538,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblLayout" => {
                                 f_tbl_layout =
                                     Some(Box::new(CTTblLayoutType::from_xml(reader, &e, false)?));
@@ -27807,6 +29547,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblCellMar" => {
                                 f_tbl_cell_mar =
                                     Some(Box::new(CTTblCellMar::from_xml(reader, &e, false)?));
@@ -27815,6 +29556,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblLook" => {
                                 f_tbl_look =
                                     Some(Box::new(CTTblLook::from_xml(reader, &e, false)?));
@@ -27823,6 +29565,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblCaption" => {
                                 f_tbl_caption =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
@@ -27831,6 +29574,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblDescription" => {
                                 f_tbl_description =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
@@ -27858,6 +29602,7 @@ impl FromXml for CTTblPrBase {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"tblStyle" => {
                                 f_tbl_style = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -27865,6 +29610,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblpPr" => {
                                 f_tblp_pr = Some(Box::new(CTTblPPr::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -27872,6 +29618,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblOverlap" => {
                                 f_tbl_overlap =
                                     Some(Box::new(CTTblOverlap::from_xml(reader, &e, true)?));
@@ -27880,6 +29627,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"bidiVisual" => {
                                 f_bidi_visual =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -27888,6 +29636,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"tblStyleRowBandSize" => {
                                 f_tbl_style_row_band_size =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -27896,6 +29645,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"tblStyleColBandSize" => {
                                 f_tbl_style_col_band_size =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -27904,6 +29654,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblW" => {
                                 f_tbl_w = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -27911,6 +29662,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"jc" => {
                                 f_justification =
                                     Some(Box::new(CTJcTable::from_xml(reader, &e, true)?));
@@ -27919,6 +29671,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblCellSpacing" => {
                                 f_tbl_cell_spacing =
                                     Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
@@ -27927,6 +29680,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblInd" => {
                                 f_tbl_ind = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -27934,6 +29688,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblBorders" => {
                                 f_tbl_borders =
                                     Some(Box::new(CTTblBorders::from_xml(reader, &e, true)?));
@@ -27942,6 +29697,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"shd" => {
                                 f_shading = Some(Box::new(CTShd::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -27949,6 +29705,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblLayout" => {
                                 f_tbl_layout =
                                     Some(Box::new(CTTblLayoutType::from_xml(reader, &e, true)?));
@@ -27957,6 +29714,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblCellMar" => {
                                 f_tbl_cell_mar =
                                     Some(Box::new(CTTblCellMar::from_xml(reader, &e, true)?));
@@ -27965,6 +29723,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblLook" => {
                                 f_tbl_look = Some(Box::new(CTTblLook::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -27972,6 +29731,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblCaption" => {
                                 f_tbl_caption =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
@@ -27980,6 +29740,7 @@ impl FromXml for CTTblPrBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblDescription" => {
                                 f_tbl_description =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
@@ -28011,22 +29772,39 @@ impl FromXml for CTTblPrBase {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             tbl_style: f_tbl_style,
+            #[cfg(feature = "wml-tables")]
             tblp_pr: f_tblp_pr,
+            #[cfg(feature = "wml-tables")]
             tbl_overlap: f_tbl_overlap,
+            #[cfg(feature = "wml-tables")]
             bidi_visual: f_bidi_visual,
+            #[cfg(feature = "wml-styling")]
             tbl_style_row_band_size: f_tbl_style_row_band_size,
+            #[cfg(feature = "wml-styling")]
             tbl_style_col_band_size: f_tbl_style_col_band_size,
+            #[cfg(feature = "wml-tables")]
             tbl_w: f_tbl_w,
+            #[cfg(feature = "wml-tables")]
             justification: f_justification,
+            #[cfg(feature = "wml-tables")]
             tbl_cell_spacing: f_tbl_cell_spacing,
+            #[cfg(feature = "wml-tables")]
             tbl_ind: f_tbl_ind,
+            #[cfg(feature = "wml-tables")]
             tbl_borders: f_tbl_borders,
+            #[cfg(feature = "wml-tables")]
             shading: f_shading,
+            #[cfg(feature = "wml-tables")]
             tbl_layout: f_tbl_layout,
+            #[cfg(feature = "wml-tables")]
             tbl_cell_mar: f_tbl_cell_mar,
+            #[cfg(feature = "wml-tables")]
             tbl_look: f_tbl_look,
+            #[cfg(feature = "wml-tables")]
             tbl_caption: f_tbl_caption,
+            #[cfg(feature = "wml-tables")]
             tbl_description: f_tbl_description,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -28493,14 +30271,23 @@ impl FromXml for CTTblPrExBase {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_w = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_justification = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_cell_spacing = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_ind = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_borders = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_shading = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_layout = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_cell_mar = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_look = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -28514,6 +30301,7 @@ impl FromXml for CTTblPrExBase {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-tables")]
                             b"tblW" => {
                                 f_tbl_w = Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -28521,6 +30309,7 @@ impl FromXml for CTTblPrExBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"jc" => {
                                 f_justification =
                                     Some(Box::new(CTJcTable::from_xml(reader, &e, false)?));
@@ -28529,6 +30318,7 @@ impl FromXml for CTTblPrExBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblCellSpacing" => {
                                 f_tbl_cell_spacing =
                                     Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
@@ -28537,6 +30327,7 @@ impl FromXml for CTTblPrExBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblInd" => {
                                 f_tbl_ind =
                                     Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
@@ -28545,6 +30336,7 @@ impl FromXml for CTTblPrExBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblBorders" => {
                                 f_tbl_borders =
                                     Some(Box::new(CTTblBorders::from_xml(reader, &e, false)?));
@@ -28553,6 +30345,7 @@ impl FromXml for CTTblPrExBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"shd" => {
                                 f_shading = Some(Box::new(CTShd::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -28560,6 +30353,7 @@ impl FromXml for CTTblPrExBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblLayout" => {
                                 f_tbl_layout =
                                     Some(Box::new(CTTblLayoutType::from_xml(reader, &e, false)?));
@@ -28568,6 +30362,7 @@ impl FromXml for CTTblPrExBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblCellMar" => {
                                 f_tbl_cell_mar =
                                     Some(Box::new(CTTblCellMar::from_xml(reader, &e, false)?));
@@ -28576,6 +30371,7 @@ impl FromXml for CTTblPrExBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblLook" => {
                                 f_tbl_look =
                                     Some(Box::new(CTTblLook::from_xml(reader, &e, false)?));
@@ -28603,6 +30399,7 @@ impl FromXml for CTTblPrExBase {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-tables")]
                             b"tblW" => {
                                 f_tbl_w = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -28610,6 +30407,7 @@ impl FromXml for CTTblPrExBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"jc" => {
                                 f_justification =
                                     Some(Box::new(CTJcTable::from_xml(reader, &e, true)?));
@@ -28618,6 +30416,7 @@ impl FromXml for CTTblPrExBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblCellSpacing" => {
                                 f_tbl_cell_spacing =
                                     Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
@@ -28626,6 +30425,7 @@ impl FromXml for CTTblPrExBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblInd" => {
                                 f_tbl_ind = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -28633,6 +30433,7 @@ impl FromXml for CTTblPrExBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblBorders" => {
                                 f_tbl_borders =
                                     Some(Box::new(CTTblBorders::from_xml(reader, &e, true)?));
@@ -28641,6 +30442,7 @@ impl FromXml for CTTblPrExBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"shd" => {
                                 f_shading = Some(Box::new(CTShd::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -28648,6 +30450,7 @@ impl FromXml for CTTblPrExBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblLayout" => {
                                 f_tbl_layout =
                                     Some(Box::new(CTTblLayoutType::from_xml(reader, &e, true)?));
@@ -28656,6 +30459,7 @@ impl FromXml for CTTblPrExBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblCellMar" => {
                                 f_tbl_cell_mar =
                                     Some(Box::new(CTTblCellMar::from_xml(reader, &e, true)?));
@@ -28664,6 +30468,7 @@ impl FromXml for CTTblPrExBase {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblLook" => {
                                 f_tbl_look = Some(Box::new(CTTblLook::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -28694,14 +30499,23 @@ impl FromXml for CTTblPrExBase {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-tables")]
             tbl_w: f_tbl_w,
+            #[cfg(feature = "wml-tables")]
             justification: f_justification,
+            #[cfg(feature = "wml-tables")]
             tbl_cell_spacing: f_tbl_cell_spacing,
+            #[cfg(feature = "wml-tables")]
             tbl_ind: f_tbl_ind,
+            #[cfg(feature = "wml-tables")]
             tbl_borders: f_tbl_borders,
+            #[cfg(feature = "wml-tables")]
             shading: f_shading,
+            #[cfg(feature = "wml-tables")]
             tbl_layout: f_tbl_layout,
+            #[cfg(feature = "wml-tables")]
             tbl_cell_mar: f_tbl_cell_mar,
+            #[cfg(feature = "wml-tables")]
             tbl_look: f_tbl_look,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -28724,6 +30538,7 @@ impl FromXml for CTTblPrEx {
         let mut f_tbl_layout = None;
         let mut f_tbl_cell_mar = None;
         let mut f_tbl_look = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_tbl_pr_ex_change = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -28807,6 +30622,7 @@ impl FromXml for CTTblPrEx {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"tblPrExChange" => {
                                 f_tbl_pr_ex_change =
                                     Some(Box::new(CTTblPrExChange::from_xml(reader, &e, false)?));
@@ -28902,6 +30718,7 @@ impl FromXml for CTTblPrEx {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"tblPrExChange" => {
                                 f_tbl_pr_ex_change =
                                     Some(Box::new(CTTblPrExChange::from_xml(reader, &e, true)?));
@@ -28942,6 +30759,7 @@ impl FromXml for CTTblPrEx {
             tbl_layout: f_tbl_layout,
             tbl_cell_mar: f_tbl_cell_mar,
             tbl_look: f_tbl_look,
+            #[cfg(feature = "wml-track-changes")]
             tbl_pr_ex_change: f_tbl_pr_ex_change,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -29122,12 +30940,19 @@ impl FromXml for CTTblLook {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-tables")]
         let mut f_first_row = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_last_row = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_first_column = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_last_column = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_no_h_band = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_no_v_band = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_value = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -29136,24 +30961,31 @@ impl FromXml for CTTblLook {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-tables")]
                 b"firstRow" => {
                     f_first_row = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-tables")]
                 b"lastRow" => {
                     f_last_row = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-tables")]
                 b"firstColumn" => {
                     f_first_column = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-tables")]
                 b"lastColumn" => {
                     f_last_column = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-tables")]
                 b"noHBand" => {
                     f_no_h_band = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-tables")]
                 b"noVBand" => {
                     f_no_v_band = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-tables")]
                 b"val" => {
                     f_value = decode_hex(&val);
                 }
@@ -29180,12 +31012,19 @@ impl FromXml for CTTblLook {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-tables")]
             first_row: f_first_row,
+            #[cfg(feature = "wml-tables")]
             last_row: f_last_row,
+            #[cfg(feature = "wml-tables")]
             first_column: f_first_column,
+            #[cfg(feature = "wml-tables")]
             last_column: f_last_column,
+            #[cfg(feature = "wml-tables")]
             no_h_band: f_no_h_band,
+            #[cfg(feature = "wml-tables")]
             no_v_band: f_no_v_band,
+            #[cfg(feature = "wml-tables")]
             value: f_value,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -29294,6 +31133,7 @@ impl FromXml for CTNumFmt {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<STNumberFormat> = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_format = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -29305,6 +31145,7 @@ impl FromXml for CTNumFmt {
                 b"val" => {
                     f_value = val.parse().ok();
                 }
+                #[cfg(feature = "wml-numbering")]
                 b"format" => {
                     f_format = Some(val.into_owned());
                 }
@@ -29332,6 +31173,7 @@ impl FromXml for CTNumFmt {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "wml-numbering")]
             format: f_format,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -29392,6 +31234,7 @@ impl FromXml for FootnoteEndnoteRef {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-comments")]
         let mut f_custom_mark_follows = None;
         let mut f_id: Option<STDecimalNumber> = None;
         #[cfg(feature = "extra-attrs")]
@@ -29401,6 +31244,7 @@ impl FromXml for FootnoteEndnoteRef {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-comments")]
                 b"customMarkFollows" => {
                     f_custom_mark_follows = Some(val.into_owned());
                 }
@@ -29430,6 +31274,7 @@ impl FromXml for FootnoteEndnoteRef {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-comments")]
             custom_mark_follows: f_custom_mark_follows,
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             #[cfg(feature = "extra-attrs")]
@@ -29491,6 +31336,7 @@ impl FromXml for FootnoteEndnote {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-comments")]
         let mut f_type = None;
         let mut f_id: Option<STDecimalNumber> = None;
         let mut f_block_content = Vec::new();
@@ -29505,6 +31351,7 @@ impl FromXml for FootnoteEndnote {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-comments")]
                 b"type" => {
                     f_type = val.parse().ok();
                 }
@@ -29638,6 +31485,7 @@ impl FromXml for FootnoteEndnote {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-comments")]
             r#type: f_type,
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             block_content: f_block_content,
@@ -29757,7 +31605,9 @@ impl FromXml for CTFtnProps {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-comments")]
         let mut f_pos = None;
+        #[cfg(feature = "wml-comments")]
         let mut f_num_fmt = None;
         let mut f_num_start = None;
         let mut f_num_restart = None;
@@ -29773,6 +31623,7 @@ impl FromXml for CTFtnProps {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-comments")]
                             b"pos" => {
                                 f_pos = Some(Box::new(CTFtnPos::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -29780,6 +31631,7 @@ impl FromXml for CTFtnProps {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-comments")]
                             b"numFmt" => {
                                 f_num_fmt = Some(Box::new(CTNumFmt::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -29822,6 +31674,7 @@ impl FromXml for CTFtnProps {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-comments")]
                             b"pos" => {
                                 f_pos = Some(Box::new(CTFtnPos::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -29829,6 +31682,7 @@ impl FromXml for CTFtnProps {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-comments")]
                             b"numFmt" => {
                                 f_num_fmt = Some(Box::new(CTNumFmt::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -29875,7 +31729,9 @@ impl FromXml for CTFtnProps {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-comments")]
             pos: f_pos,
+            #[cfg(feature = "wml-comments")]
             num_fmt: f_num_fmt,
             num_start: f_num_start,
             num_restart: f_num_restart,
@@ -29891,7 +31747,9 @@ impl FromXml for CTEdnProps {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-comments")]
         let mut f_pos = None;
+        #[cfg(feature = "wml-comments")]
         let mut f_num_fmt = None;
         let mut f_num_start = None;
         let mut f_num_restart = None;
@@ -29907,6 +31765,7 @@ impl FromXml for CTEdnProps {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-comments")]
                             b"pos" => {
                                 f_pos = Some(Box::new(CTEdnPos::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -29914,6 +31773,7 @@ impl FromXml for CTEdnProps {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-comments")]
                             b"numFmt" => {
                                 f_num_fmt = Some(Box::new(CTNumFmt::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -29956,6 +31816,7 @@ impl FromXml for CTEdnProps {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-comments")]
                             b"pos" => {
                                 f_pos = Some(Box::new(CTEdnPos::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -29963,6 +31824,7 @@ impl FromXml for CTEdnProps {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-comments")]
                             b"numFmt" => {
                                 f_num_fmt = Some(Box::new(CTNumFmt::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -30009,7 +31871,9 @@ impl FromXml for CTEdnProps {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-comments")]
             pos: f_pos,
+            #[cfg(feature = "wml-comments")]
             num_fmt: f_num_fmt,
             num_start: f_num_start,
             num_restart: f_num_restart,
@@ -30029,6 +31893,7 @@ impl FromXml for CTFtnDocProps {
         let mut f_num_fmt = None;
         let mut f_num_start = None;
         let mut f_num_restart = None;
+        #[cfg(feature = "wml-comments")]
         let mut f_footnote = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -30072,6 +31937,7 @@ impl FromXml for CTFtnDocProps {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-comments")]
                             b"footnote" => {
                                 f_footnote.push(CTFtnEdnSepRef::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -30128,6 +31994,7 @@ impl FromXml for CTFtnDocProps {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-comments")]
                             b"footnote" => {
                                 f_footnote.push(CTFtnEdnSepRef::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -30162,6 +32029,7 @@ impl FromXml for CTFtnDocProps {
             num_fmt: f_num_fmt,
             num_start: f_num_start,
             num_restart: f_num_restart,
+            #[cfg(feature = "wml-comments")]
             footnote: f_footnote,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -30179,6 +32047,7 @@ impl FromXml for CTEdnDocProps {
         let mut f_num_fmt = None;
         let mut f_num_start = None;
         let mut f_num_restart = None;
+        #[cfg(feature = "wml-comments")]
         let mut f_endnote = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -30222,6 +32091,7 @@ impl FromXml for CTEdnDocProps {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-comments")]
                             b"endnote" => {
                                 f_endnote.push(CTFtnEdnSepRef::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -30278,6 +32148,7 @@ impl FromXml for CTEdnDocProps {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-comments")]
                             b"endnote" => {
                                 f_endnote.push(CTFtnEdnSepRef::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -30312,6 +32183,7 @@ impl FromXml for CTEdnDocProps {
             num_fmt: f_num_fmt,
             num_start: f_num_start,
             num_restart: f_num_restart,
+            #[cfg(feature = "wml-comments")]
             endnote: f_endnote,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -30325,8 +32197,11 @@ impl FromXml for CTRecipientData {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_active = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_column: Option<Box<CTDecimalNumber>> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_unique_tag: Option<Box<CTBase64Binary>> = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -30340,6 +32215,7 @@ impl FromXml for CTRecipientData {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"active" => {
                                 f_active = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -30347,6 +32223,7 @@ impl FromXml for CTRecipientData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"column" => {
                                 f_column =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -30355,6 +32232,7 @@ impl FromXml for CTRecipientData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"uniqueTag" => {
                                 f_unique_tag =
                                     Some(Box::new(CTBase64Binary::from_xml(reader, &e, false)?));
@@ -30382,6 +32260,7 @@ impl FromXml for CTRecipientData {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"active" => {
                                 f_active = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -30389,6 +32268,7 @@ impl FromXml for CTRecipientData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"column" => {
                                 f_column =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -30397,6 +32277,7 @@ impl FromXml for CTRecipientData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"uniqueTag" => {
                                 f_unique_tag =
                                     Some(Box::new(CTBase64Binary::from_xml(reader, &e, true)?));
@@ -30428,8 +32309,11 @@ impl FromXml for CTRecipientData {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             active: f_active,
+            #[cfg(feature = "wml-settings")]
             column: f_column.ok_or_else(|| ParseError::MissingAttribute("column".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             unique_tag: f_unique_tag
                 .ok_or_else(|| ParseError::MissingAttribute("uniqueTag".to_string()))?,
             #[cfg(feature = "extra-children")]
@@ -30491,6 +32375,7 @@ impl FromXml for CTRecipients {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_recipient_data = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -30504,6 +32389,7 @@ impl FromXml for CTRecipients {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"recipientData" => {
                                 f_recipient_data
                                     .push(CTRecipientData::from_xml(reader, &e, false)?);
@@ -30531,6 +32417,7 @@ impl FromXml for CTRecipients {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"recipientData" => {
                                 f_recipient_data.push(CTRecipientData::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -30561,6 +32448,7 @@ impl FromXml for CTRecipients {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             recipient_data: f_recipient_data,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -30574,11 +32462,17 @@ impl FromXml for CTOdsoFieldMapData {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_type = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_name = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_mapped_name = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_column = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_lid = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_dynamic_address = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -30592,6 +32486,7 @@ impl FromXml for CTOdsoFieldMapData {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"type" => {
                                 f_type = Some(Box::new(CTMailMergeOdsoFMDFieldType::from_xml(
                                     reader, &e, false,
@@ -30601,6 +32496,7 @@ impl FromXml for CTOdsoFieldMapData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"name" => {
                                 f_name = Some(Box::new(CTString::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -30608,6 +32504,7 @@ impl FromXml for CTOdsoFieldMapData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"mappedName" => {
                                 f_mapped_name =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
@@ -30616,6 +32513,7 @@ impl FromXml for CTOdsoFieldMapData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"column" => {
                                 f_column =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -30624,6 +32522,7 @@ impl FromXml for CTOdsoFieldMapData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"lid" => {
                                 f_lid = Some(Box::new(CTLang::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -30631,6 +32530,7 @@ impl FromXml for CTOdsoFieldMapData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"dynamicAddress" => {
                                 f_dynamic_address =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -30658,6 +32558,7 @@ impl FromXml for CTOdsoFieldMapData {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"type" => {
                                 f_type = Some(Box::new(CTMailMergeOdsoFMDFieldType::from_xml(
                                     reader, &e, true,
@@ -30667,6 +32568,7 @@ impl FromXml for CTOdsoFieldMapData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"name" => {
                                 f_name = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -30674,6 +32576,7 @@ impl FromXml for CTOdsoFieldMapData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"mappedName" => {
                                 f_mapped_name =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
@@ -30682,6 +32585,7 @@ impl FromXml for CTOdsoFieldMapData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"column" => {
                                 f_column =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -30690,6 +32594,7 @@ impl FromXml for CTOdsoFieldMapData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"lid" => {
                                 f_lid = Some(Box::new(CTLang::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -30697,6 +32602,7 @@ impl FromXml for CTOdsoFieldMapData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"dynamicAddress" => {
                                 f_dynamic_address =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -30728,11 +32634,17 @@ impl FromXml for CTOdsoFieldMapData {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             r#type: f_type,
+            #[cfg(feature = "wml-settings")]
             name: f_name,
+            #[cfg(feature = "wml-settings")]
             mapped_name: f_mapped_name,
+            #[cfg(feature = "wml-settings")]
             column: f_column,
+            #[cfg(feature = "wml-settings")]
             lid: f_lid,
+            #[cfg(feature = "wml-settings")]
             dynamic_address: f_dynamic_address,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -30793,13 +32705,21 @@ impl FromXml for CTOdso {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_udl = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_table = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_src = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_col_delim = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_type = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_f_hdr = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_field_map_data = Vec::new();
+        #[cfg(feature = "wml-settings")]
         let mut f_recipient_data = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -30813,6 +32733,7 @@ impl FromXml for CTOdso {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"udl" => {
                                 f_udl = Some(Box::new(CTString::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -30820,6 +32741,7 @@ impl FromXml for CTOdso {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"table" => {
                                 f_table = Some(Box::new(CTString::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -30827,6 +32749,7 @@ impl FromXml for CTOdso {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"src" => {
                                 f_src = Some(Box::new(CTRel::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -30834,6 +32757,7 @@ impl FromXml for CTOdso {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"colDelim" => {
                                 f_col_delim =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -30842,6 +32766,7 @@ impl FromXml for CTOdso {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"type" => {
                                 f_type = Some(Box::new(CTMailMergeSourceType::from_xml(
                                     reader, &e, false,
@@ -30851,6 +32776,7 @@ impl FromXml for CTOdso {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"fHdr" => {
                                 f_f_hdr = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -30858,6 +32784,7 @@ impl FromXml for CTOdso {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"fieldMapData" => {
                                 f_field_map_data
                                     .push(CTOdsoFieldMapData::from_xml(reader, &e, false)?);
@@ -30866,6 +32793,7 @@ impl FromXml for CTOdso {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"recipientData" => {
                                 f_recipient_data.push(CTRel::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -30892,6 +32820,7 @@ impl FromXml for CTOdso {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"udl" => {
                                 f_udl = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -30899,6 +32828,7 @@ impl FromXml for CTOdso {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"table" => {
                                 f_table = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -30906,6 +32836,7 @@ impl FromXml for CTOdso {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"src" => {
                                 f_src = Some(Box::new(CTRel::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -30913,6 +32844,7 @@ impl FromXml for CTOdso {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"colDelim" => {
                                 f_col_delim =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -30921,6 +32853,7 @@ impl FromXml for CTOdso {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"type" => {
                                 f_type = Some(Box::new(CTMailMergeSourceType::from_xml(
                                     reader, &e, true,
@@ -30930,6 +32863,7 @@ impl FromXml for CTOdso {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"fHdr" => {
                                 f_f_hdr = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -30937,6 +32871,7 @@ impl FromXml for CTOdso {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"fieldMapData" => {
                                 f_field_map_data
                                     .push(CTOdsoFieldMapData::from_xml(reader, &e, true)?);
@@ -30945,6 +32880,7 @@ impl FromXml for CTOdso {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"recipientData" => {
                                 f_recipient_data.push(CTRel::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -30975,13 +32911,21 @@ impl FromXml for CTOdso {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             udl: f_udl,
+            #[cfg(feature = "wml-settings")]
             table: f_table,
+            #[cfg(feature = "wml-settings")]
             src: f_src,
+            #[cfg(feature = "wml-settings")]
             col_delim: f_col_delim,
+            #[cfg(feature = "wml-settings")]
             r#type: f_type,
+            #[cfg(feature = "wml-settings")]
             f_hdr: f_f_hdr,
+            #[cfg(feature = "wml-settings")]
             field_map_data: f_field_map_data,
+            #[cfg(feature = "wml-settings")]
             recipient_data: f_recipient_data,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -30995,21 +32939,37 @@ impl FromXml for CTMailMerge {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_main_document_type: Option<Box<CTMailMergeDocType>> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_link_to_query = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_data_type: Option<Box<CTMailMergeDataType>> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_connect_string = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_query = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_data_source = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_header_source = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_suppress_blank_lines = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_destination = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_address_field_name = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_mail_subject = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_mail_as_attachment = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_view_merged_data = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_active_record = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_check_errors = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_odso = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -31023,6 +32983,7 @@ impl FromXml for CTMailMerge {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"mainDocumentType" => {
                                 f_main_document_type = Some(Box::new(
                                     CTMailMergeDocType::from_xml(reader, &e, false)?,
@@ -31032,6 +32993,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"linkToQuery" => {
                                 f_link_to_query =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31040,6 +33002,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"dataType" => {
                                 f_data_type = Some(Box::new(CTMailMergeDataType::from_xml(
                                     reader, &e, false,
@@ -31049,6 +33012,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"connectString" => {
                                 f_connect_string =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
@@ -31057,6 +33021,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"query" => {
                                 f_query = Some(Box::new(CTString::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -31064,6 +33029,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"dataSource" => {
                                 f_data_source = Some(Box::new(CTRel::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -31071,6 +33037,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"headerSource" => {
                                 f_header_source =
                                     Some(Box::new(CTRel::from_xml(reader, &e, false)?));
@@ -31079,6 +33046,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotSuppressBlankLines" => {
                                 f_do_not_suppress_blank_lines =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31087,6 +33055,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"destination" => {
                                 f_destination =
                                     Some(Box::new(CTMailMergeDest::from_xml(reader, &e, false)?));
@@ -31095,6 +33064,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"addressFieldName" => {
                                 f_address_field_name =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
@@ -31103,6 +33073,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"mailSubject" => {
                                 f_mail_subject =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
@@ -31111,6 +33082,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"mailAsAttachment" => {
                                 f_mail_as_attachment =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31119,6 +33091,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"viewMergedData" => {
                                 f_view_merged_data =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31127,6 +33100,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"activeRecord" => {
                                 f_active_record =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -31135,6 +33109,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"checkErrors" => {
                                 f_check_errors =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -31143,6 +33118,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"odso" => {
                                 f_odso = Some(Box::new(CTOdso::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -31169,6 +33145,7 @@ impl FromXml for CTMailMerge {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"mainDocumentType" => {
                                 f_main_document_type =
                                     Some(Box::new(CTMailMergeDocType::from_xml(reader, &e, true)?));
@@ -31177,6 +33154,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"linkToQuery" => {
                                 f_link_to_query =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -31185,6 +33163,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"dataType" => {
                                 f_data_type = Some(Box::new(CTMailMergeDataType::from_xml(
                                     reader, &e, true,
@@ -31194,6 +33173,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"connectString" => {
                                 f_connect_string =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
@@ -31202,6 +33182,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"query" => {
                                 f_query = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -31209,6 +33190,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"dataSource" => {
                                 f_data_source = Some(Box::new(CTRel::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -31216,6 +33198,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"headerSource" => {
                                 f_header_source =
                                     Some(Box::new(CTRel::from_xml(reader, &e, true)?));
@@ -31224,6 +33207,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotSuppressBlankLines" => {
                                 f_do_not_suppress_blank_lines =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -31232,6 +33216,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"destination" => {
                                 f_destination =
                                     Some(Box::new(CTMailMergeDest::from_xml(reader, &e, true)?));
@@ -31240,6 +33225,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"addressFieldName" => {
                                 f_address_field_name =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
@@ -31248,6 +33234,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"mailSubject" => {
                                 f_mail_subject =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
@@ -31256,6 +33243,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"mailAsAttachment" => {
                                 f_mail_as_attachment =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -31264,6 +33252,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"viewMergedData" => {
                                 f_view_merged_data =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -31272,6 +33261,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"activeRecord" => {
                                 f_active_record =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -31280,6 +33270,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"checkErrors" => {
                                 f_check_errors =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -31288,6 +33279,7 @@ impl FromXml for CTMailMerge {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"odso" => {
                                 f_odso = Some(Box::new(CTOdso::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -31318,23 +33310,39 @@ impl FromXml for CTMailMerge {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             main_document_type: f_main_document_type
                 .ok_or_else(|| ParseError::MissingAttribute("mainDocumentType".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             link_to_query: f_link_to_query,
+            #[cfg(feature = "wml-settings")]
             data_type: f_data_type
                 .ok_or_else(|| ParseError::MissingAttribute("dataType".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             connect_string: f_connect_string,
+            #[cfg(feature = "wml-settings")]
             query: f_query,
+            #[cfg(feature = "wml-settings")]
             data_source: f_data_source,
+            #[cfg(feature = "wml-settings")]
             header_source: f_header_source,
+            #[cfg(feature = "wml-settings")]
             do_not_suppress_blank_lines: f_do_not_suppress_blank_lines,
+            #[cfg(feature = "wml-settings")]
             destination: f_destination,
+            #[cfg(feature = "wml-settings")]
             address_field_name: f_address_field_name,
+            #[cfg(feature = "wml-settings")]
             mail_subject: f_mail_subject,
+            #[cfg(feature = "wml-settings")]
             mail_as_attachment: f_mail_as_attachment,
+            #[cfg(feature = "wml-settings")]
             view_merged_data: f_view_merged_data,
+            #[cfg(feature = "wml-settings")]
             active_record: f_active_record,
+            #[cfg(feature = "wml-settings")]
             check_errors: f_check_errors,
+            #[cfg(feature = "wml-settings")]
             odso: f_odso,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -31395,71 +33403,137 @@ impl FromXml for Compatibility {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_use_single_borderfor_contiguous_cells = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_wp_justification = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_no_tab_hang_ind = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_no_leading = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_space_for_u_l = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_no_column_balance = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_balance_single_byte_double_byte_width = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_no_extra_line_spacing = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_leave_backslash_alone = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_ul_trail_space = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_expand_shift_return = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_spacing_in_whole_points = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_line_wrap_like_word6 = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_print_body_text_before_header = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_print_col_black = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_wp_space_width = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_show_breaks_in_frames = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_sub_font_by_size = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_suppress_bottom_spacing = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_suppress_top_spacing = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_suppress_spacing_at_top_of_page = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_suppress_top_spacing_w_p = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_suppress_sp_bf_after_pg_brk = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_swap_borders_facing_pages = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_conv_mail_merge_esc = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_truncate_font_heights_like_w_p6 = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_mw_small_caps = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_use_printer_metrics = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_suppress_paragraph_borders = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_wrap_trail_spaces = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_footnote_layout_like_w_w8 = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_shape_layout_like_w_w8 = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_align_tables_row_by_row = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_forget_last_tab_alignment = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_adjust_line_height_in_table = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_auto_space_like_word95 = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_no_space_raise_lower = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_use_h_t_m_l_paragraph_auto_spacing = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_layout_raw_table_width = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_layout_table_rows_apart = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_use_word97_line_break_rules = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_break_wrapped_tables = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_snap_to_grid_in_cell = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_select_fld_with_first_or_last_char = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_apply_breaking_rules = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_wrap_text_with_punct = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_use_east_asian_break_rules = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_use_word2002_table_style_rules = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_grow_autofit = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_use_f_e_layout = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_use_normal_style_for_list = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_use_indent_as_numbering_tab_stop = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_use_alt_kinsoku_line_break_rules = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_allow_space_of_same_style_in_table = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_suppress_indentation = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_autofit_constrained_tables = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_autofit_to_first_fixed_width_cell = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_underline_tab_in_num_list = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_display_hangul_fixed_width = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_split_pg_break_and_para_mark = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_vert_align_cell_with_sp = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_break_constrained_forced_table = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_vert_align_in_txbx = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_use_ansi_kerning_pairs = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_cached_col_balance = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_compat_setting = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -31473,6 +33547,7 @@ impl FromXml for Compatibility {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"useSingleBorderforContiguousCells" => {
                                 f_use_single_borderfor_contiguous_cells =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31481,6 +33556,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"wpJustification" => {
                                 f_wp_justification =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31489,6 +33565,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"noTabHangInd" => {
                                 f_no_tab_hang_ind =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31497,6 +33574,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"noLeading" => {
                                 f_no_leading =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31505,6 +33583,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"spaceForUL" => {
                                 f_space_for_u_l =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31513,6 +33592,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"noColumnBalance" => {
                                 f_no_column_balance =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31521,6 +33601,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"balanceSingleByteDoubleByteWidth" => {
                                 f_balance_single_byte_double_byte_width =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31529,6 +33610,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"noExtraLineSpacing" => {
                                 f_no_extra_line_spacing =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31537,6 +33619,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotLeaveBackslashAlone" => {
                                 f_do_not_leave_backslash_alone =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31545,6 +33628,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"ulTrailSpace" => {
                                 f_ul_trail_space =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31553,6 +33637,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotExpandShiftReturn" => {
                                 f_do_not_expand_shift_return =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31561,6 +33646,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"spacingInWholePoints" => {
                                 f_spacing_in_whole_points =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31569,6 +33655,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"lineWrapLikeWord6" => {
                                 f_line_wrap_like_word6 =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31577,6 +33664,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"printBodyTextBeforeHeader" => {
                                 f_print_body_text_before_header =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31585,6 +33673,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"printColBlack" => {
                                 f_print_col_black =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31593,6 +33682,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"wpSpaceWidth" => {
                                 f_wp_space_width =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31601,6 +33691,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"showBreaksInFrames" => {
                                 f_show_breaks_in_frames =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31609,6 +33700,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"subFontBySize" => {
                                 f_sub_font_by_size =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31617,6 +33709,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"suppressBottomSpacing" => {
                                 f_suppress_bottom_spacing =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31625,6 +33718,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"suppressTopSpacing" => {
                                 f_suppress_top_spacing =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31633,6 +33727,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"suppressSpacingAtTopOfPage" => {
                                 f_suppress_spacing_at_top_of_page =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31641,6 +33736,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"suppressTopSpacingWP" => {
                                 f_suppress_top_spacing_w_p =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31649,6 +33745,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"suppressSpBfAfterPgBrk" => {
                                 f_suppress_sp_bf_after_pg_brk =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31657,6 +33754,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"swapBordersFacingPages" => {
                                 f_swap_borders_facing_pages =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31665,6 +33763,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"convMailMergeEsc" => {
                                 f_conv_mail_merge_esc =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31673,6 +33772,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"truncateFontHeightsLikeWP6" => {
                                 f_truncate_font_heights_like_w_p6 =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31681,6 +33781,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"mwSmallCaps" => {
                                 f_mw_small_caps =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31689,6 +33790,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"usePrinterMetrics" => {
                                 f_use_printer_metrics =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31697,6 +33799,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotSuppressParagraphBorders" => {
                                 f_do_not_suppress_paragraph_borders =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31705,6 +33808,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"wrapTrailSpaces" => {
                                 f_wrap_trail_spaces =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31713,6 +33817,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"footnoteLayoutLikeWW8" => {
                                 f_footnote_layout_like_w_w8 =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31721,6 +33826,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"shapeLayoutLikeWW8" => {
                                 f_shape_layout_like_w_w8 =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31729,6 +33835,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"alignTablesRowByRow" => {
                                 f_align_tables_row_by_row =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31737,6 +33844,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"forgetLastTabAlignment" => {
                                 f_forget_last_tab_alignment =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31745,6 +33853,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"adjustLineHeightInTable" => {
                                 f_adjust_line_height_in_table =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31753,6 +33862,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"autoSpaceLikeWord95" => {
                                 f_auto_space_like_word95 =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31761,6 +33871,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"noSpaceRaiseLower" => {
                                 f_no_space_raise_lower =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31769,6 +33880,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotUseHTMLParagraphAutoSpacing" => {
                                 f_do_not_use_h_t_m_l_paragraph_auto_spacing =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31777,6 +33889,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"layoutRawTableWidth" => {
                                 f_layout_raw_table_width =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31785,6 +33898,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"layoutTableRowsApart" => {
                                 f_layout_table_rows_apart =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31793,6 +33907,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"useWord97LineBreakRules" => {
                                 f_use_word97_line_break_rules =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31801,6 +33916,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotBreakWrappedTables" => {
                                 f_do_not_break_wrapped_tables =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31809,6 +33925,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotSnapToGridInCell" => {
                                 f_do_not_snap_to_grid_in_cell =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31817,6 +33934,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"selectFldWithFirstOrLastChar" => {
                                 f_select_fld_with_first_or_last_char =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31825,6 +33943,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"applyBreakingRules" => {
                                 f_apply_breaking_rules =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31833,6 +33952,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotWrapTextWithPunct" => {
                                 f_do_not_wrap_text_with_punct =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31841,6 +33961,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotUseEastAsianBreakRules" => {
                                 f_do_not_use_east_asian_break_rules =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31849,6 +33970,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"useWord2002TableStyleRules" => {
                                 f_use_word2002_table_style_rules =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31857,6 +33979,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"growAutofit" => {
                                 f_grow_autofit =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31865,6 +33988,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"useFELayout" => {
                                 f_use_f_e_layout =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31873,6 +33997,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"useNormalStyleForList" => {
                                 f_use_normal_style_for_list =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31881,6 +34006,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotUseIndentAsNumberingTabStop" => {
                                 f_do_not_use_indent_as_numbering_tab_stop =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31889,6 +34015,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"useAltKinsokuLineBreakRules" => {
                                 f_use_alt_kinsoku_line_break_rules =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31897,6 +34024,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"allowSpaceOfSameStyleInTable" => {
                                 f_allow_space_of_same_style_in_table =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31905,6 +34033,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotSuppressIndentation" => {
                                 f_do_not_suppress_indentation =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31913,6 +34042,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotAutofitConstrainedTables" => {
                                 f_do_not_autofit_constrained_tables =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31921,6 +34051,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"autofitToFirstFixedWidthCell" => {
                                 f_autofit_to_first_fixed_width_cell =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31929,6 +34060,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"underlineTabInNumList" => {
                                 f_underline_tab_in_num_list =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31937,6 +34069,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"displayHangulFixedWidth" => {
                                 f_display_hangul_fixed_width =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31945,6 +34078,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"splitPgBreakAndParaMark" => {
                                 f_split_pg_break_and_para_mark =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31953,6 +34087,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotVertAlignCellWithSp" => {
                                 f_do_not_vert_align_cell_with_sp =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31961,6 +34096,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotBreakConstrainedForcedTable" => {
                                 f_do_not_break_constrained_forced_table =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31969,6 +34105,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotVertAlignInTxbx" => {
                                 f_do_not_vert_align_in_txbx =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31977,6 +34114,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"useAnsiKerningPairs" => {
                                 f_use_ansi_kerning_pairs =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31985,6 +34123,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"cachedColBalance" => {
                                 f_cached_col_balance =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -31993,6 +34132,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"compatSetting" => {
                                 f_compat_setting
                                     .push(CTCompatSetting::from_xml(reader, &e, false)?);
@@ -32020,6 +34160,7 @@ impl FromXml for Compatibility {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"useSingleBorderforContiguousCells" => {
                                 f_use_single_borderfor_contiguous_cells =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32028,6 +34169,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"wpJustification" => {
                                 f_wp_justification =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32036,6 +34178,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"noTabHangInd" => {
                                 f_no_tab_hang_ind =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32044,6 +34187,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"noLeading" => {
                                 f_no_leading = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -32051,6 +34195,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"spaceForUL" => {
                                 f_space_for_u_l =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32059,6 +34204,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"noColumnBalance" => {
                                 f_no_column_balance =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32067,6 +34213,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"balanceSingleByteDoubleByteWidth" => {
                                 f_balance_single_byte_double_byte_width =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32075,6 +34222,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"noExtraLineSpacing" => {
                                 f_no_extra_line_spacing =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32083,6 +34231,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotLeaveBackslashAlone" => {
                                 f_do_not_leave_backslash_alone =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32091,6 +34240,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"ulTrailSpace" => {
                                 f_ul_trail_space =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32099,6 +34249,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotExpandShiftReturn" => {
                                 f_do_not_expand_shift_return =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32107,6 +34258,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"spacingInWholePoints" => {
                                 f_spacing_in_whole_points =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32115,6 +34267,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"lineWrapLikeWord6" => {
                                 f_line_wrap_like_word6 =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32123,6 +34276,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"printBodyTextBeforeHeader" => {
                                 f_print_body_text_before_header =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32131,6 +34285,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"printColBlack" => {
                                 f_print_col_black =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32139,6 +34294,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"wpSpaceWidth" => {
                                 f_wp_space_width =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32147,6 +34303,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"showBreaksInFrames" => {
                                 f_show_breaks_in_frames =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32155,6 +34312,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"subFontBySize" => {
                                 f_sub_font_by_size =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32163,6 +34321,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"suppressBottomSpacing" => {
                                 f_suppress_bottom_spacing =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32171,6 +34330,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"suppressTopSpacing" => {
                                 f_suppress_top_spacing =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32179,6 +34339,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"suppressSpacingAtTopOfPage" => {
                                 f_suppress_spacing_at_top_of_page =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32187,6 +34348,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"suppressTopSpacingWP" => {
                                 f_suppress_top_spacing_w_p =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32195,6 +34357,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"suppressSpBfAfterPgBrk" => {
                                 f_suppress_sp_bf_after_pg_brk =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32203,6 +34366,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"swapBordersFacingPages" => {
                                 f_swap_borders_facing_pages =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32211,6 +34375,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"convMailMergeEsc" => {
                                 f_conv_mail_merge_esc =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32219,6 +34384,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"truncateFontHeightsLikeWP6" => {
                                 f_truncate_font_heights_like_w_p6 =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32227,6 +34393,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"mwSmallCaps" => {
                                 f_mw_small_caps =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32235,6 +34402,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"usePrinterMetrics" => {
                                 f_use_printer_metrics =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32243,6 +34411,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotSuppressParagraphBorders" => {
                                 f_do_not_suppress_paragraph_borders =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32251,6 +34420,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"wrapTrailSpaces" => {
                                 f_wrap_trail_spaces =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32259,6 +34429,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"footnoteLayoutLikeWW8" => {
                                 f_footnote_layout_like_w_w8 =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32267,6 +34438,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"shapeLayoutLikeWW8" => {
                                 f_shape_layout_like_w_w8 =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32275,6 +34447,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"alignTablesRowByRow" => {
                                 f_align_tables_row_by_row =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32283,6 +34456,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"forgetLastTabAlignment" => {
                                 f_forget_last_tab_alignment =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32291,6 +34465,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"adjustLineHeightInTable" => {
                                 f_adjust_line_height_in_table =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32299,6 +34474,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"autoSpaceLikeWord95" => {
                                 f_auto_space_like_word95 =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32307,6 +34483,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"noSpaceRaiseLower" => {
                                 f_no_space_raise_lower =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32315,6 +34492,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotUseHTMLParagraphAutoSpacing" => {
                                 f_do_not_use_h_t_m_l_paragraph_auto_spacing =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32323,6 +34501,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"layoutRawTableWidth" => {
                                 f_layout_raw_table_width =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32331,6 +34510,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"layoutTableRowsApart" => {
                                 f_layout_table_rows_apart =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32339,6 +34519,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"useWord97LineBreakRules" => {
                                 f_use_word97_line_break_rules =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32347,6 +34528,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotBreakWrappedTables" => {
                                 f_do_not_break_wrapped_tables =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32355,6 +34537,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotSnapToGridInCell" => {
                                 f_do_not_snap_to_grid_in_cell =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32363,6 +34546,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"selectFldWithFirstOrLastChar" => {
                                 f_select_fld_with_first_or_last_char =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32371,6 +34555,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"applyBreakingRules" => {
                                 f_apply_breaking_rules =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32379,6 +34564,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotWrapTextWithPunct" => {
                                 f_do_not_wrap_text_with_punct =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32387,6 +34573,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotUseEastAsianBreakRules" => {
                                 f_do_not_use_east_asian_break_rules =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32395,6 +34582,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"useWord2002TableStyleRules" => {
                                 f_use_word2002_table_style_rules =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32403,6 +34591,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"growAutofit" => {
                                 f_grow_autofit =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32411,6 +34600,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"useFELayout" => {
                                 f_use_f_e_layout =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32419,6 +34609,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"useNormalStyleForList" => {
                                 f_use_normal_style_for_list =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32427,6 +34618,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotUseIndentAsNumberingTabStop" => {
                                 f_do_not_use_indent_as_numbering_tab_stop =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32435,6 +34627,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"useAltKinsokuLineBreakRules" => {
                                 f_use_alt_kinsoku_line_break_rules =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32443,6 +34636,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"allowSpaceOfSameStyleInTable" => {
                                 f_allow_space_of_same_style_in_table =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32451,6 +34645,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotSuppressIndentation" => {
                                 f_do_not_suppress_indentation =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32459,6 +34654,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotAutofitConstrainedTables" => {
                                 f_do_not_autofit_constrained_tables =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32467,6 +34663,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"autofitToFirstFixedWidthCell" => {
                                 f_autofit_to_first_fixed_width_cell =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32475,6 +34672,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"underlineTabInNumList" => {
                                 f_underline_tab_in_num_list =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32483,6 +34681,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"displayHangulFixedWidth" => {
                                 f_display_hangul_fixed_width =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32491,6 +34690,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"splitPgBreakAndParaMark" => {
                                 f_split_pg_break_and_para_mark =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32499,6 +34699,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotVertAlignCellWithSp" => {
                                 f_do_not_vert_align_cell_with_sp =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32507,6 +34708,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotBreakConstrainedForcedTable" => {
                                 f_do_not_break_constrained_forced_table =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32515,6 +34717,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotVertAlignInTxbx" => {
                                 f_do_not_vert_align_in_txbx =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32523,6 +34726,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"useAnsiKerningPairs" => {
                                 f_use_ansi_kerning_pairs =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32531,6 +34735,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"cachedColBalance" => {
                                 f_cached_col_balance =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -32539,6 +34744,7 @@ impl FromXml for Compatibility {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"compatSetting" => {
                                 f_compat_setting.push(CTCompatSetting::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -32569,71 +34775,137 @@ impl FromXml for Compatibility {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             use_single_borderfor_contiguous_cells: f_use_single_borderfor_contiguous_cells,
+            #[cfg(feature = "wml-settings")]
             wp_justification: f_wp_justification,
+            #[cfg(feature = "wml-settings")]
             no_tab_hang_ind: f_no_tab_hang_ind,
+            #[cfg(feature = "wml-settings")]
             no_leading: f_no_leading,
+            #[cfg(feature = "wml-settings")]
             space_for_u_l: f_space_for_u_l,
+            #[cfg(feature = "wml-settings")]
             no_column_balance: f_no_column_balance,
+            #[cfg(feature = "wml-settings")]
             balance_single_byte_double_byte_width: f_balance_single_byte_double_byte_width,
+            #[cfg(feature = "wml-settings")]
             no_extra_line_spacing: f_no_extra_line_spacing,
+            #[cfg(feature = "wml-settings")]
             do_not_leave_backslash_alone: f_do_not_leave_backslash_alone,
+            #[cfg(feature = "wml-settings")]
             ul_trail_space: f_ul_trail_space,
+            #[cfg(feature = "wml-settings")]
             do_not_expand_shift_return: f_do_not_expand_shift_return,
+            #[cfg(feature = "wml-settings")]
             spacing_in_whole_points: f_spacing_in_whole_points,
+            #[cfg(feature = "wml-settings")]
             line_wrap_like_word6: f_line_wrap_like_word6,
+            #[cfg(feature = "wml-settings")]
             print_body_text_before_header: f_print_body_text_before_header,
+            #[cfg(feature = "wml-settings")]
             print_col_black: f_print_col_black,
+            #[cfg(feature = "wml-settings")]
             wp_space_width: f_wp_space_width,
+            #[cfg(feature = "wml-settings")]
             show_breaks_in_frames: f_show_breaks_in_frames,
+            #[cfg(feature = "wml-settings")]
             sub_font_by_size: f_sub_font_by_size,
+            #[cfg(feature = "wml-settings")]
             suppress_bottom_spacing: f_suppress_bottom_spacing,
+            #[cfg(feature = "wml-settings")]
             suppress_top_spacing: f_suppress_top_spacing,
+            #[cfg(feature = "wml-settings")]
             suppress_spacing_at_top_of_page: f_suppress_spacing_at_top_of_page,
+            #[cfg(feature = "wml-settings")]
             suppress_top_spacing_w_p: f_suppress_top_spacing_w_p,
+            #[cfg(feature = "wml-settings")]
             suppress_sp_bf_after_pg_brk: f_suppress_sp_bf_after_pg_brk,
+            #[cfg(feature = "wml-settings")]
             swap_borders_facing_pages: f_swap_borders_facing_pages,
+            #[cfg(feature = "wml-settings")]
             conv_mail_merge_esc: f_conv_mail_merge_esc,
+            #[cfg(feature = "wml-settings")]
             truncate_font_heights_like_w_p6: f_truncate_font_heights_like_w_p6,
+            #[cfg(feature = "wml-settings")]
             mw_small_caps: f_mw_small_caps,
+            #[cfg(feature = "wml-settings")]
             use_printer_metrics: f_use_printer_metrics,
+            #[cfg(feature = "wml-settings")]
             do_not_suppress_paragraph_borders: f_do_not_suppress_paragraph_borders,
+            #[cfg(feature = "wml-settings")]
             wrap_trail_spaces: f_wrap_trail_spaces,
+            #[cfg(feature = "wml-settings")]
             footnote_layout_like_w_w8: f_footnote_layout_like_w_w8,
+            #[cfg(feature = "wml-settings")]
             shape_layout_like_w_w8: f_shape_layout_like_w_w8,
+            #[cfg(feature = "wml-settings")]
             align_tables_row_by_row: f_align_tables_row_by_row,
+            #[cfg(feature = "wml-settings")]
             forget_last_tab_alignment: f_forget_last_tab_alignment,
+            #[cfg(feature = "wml-settings")]
             adjust_line_height_in_table: f_adjust_line_height_in_table,
+            #[cfg(feature = "wml-settings")]
             auto_space_like_word95: f_auto_space_like_word95,
+            #[cfg(feature = "wml-settings")]
             no_space_raise_lower: f_no_space_raise_lower,
+            #[cfg(feature = "wml-settings")]
             do_not_use_h_t_m_l_paragraph_auto_spacing: f_do_not_use_h_t_m_l_paragraph_auto_spacing,
+            #[cfg(feature = "wml-settings")]
             layout_raw_table_width: f_layout_raw_table_width,
+            #[cfg(feature = "wml-settings")]
             layout_table_rows_apart: f_layout_table_rows_apart,
+            #[cfg(feature = "wml-settings")]
             use_word97_line_break_rules: f_use_word97_line_break_rules,
+            #[cfg(feature = "wml-settings")]
             do_not_break_wrapped_tables: f_do_not_break_wrapped_tables,
+            #[cfg(feature = "wml-settings")]
             do_not_snap_to_grid_in_cell: f_do_not_snap_to_grid_in_cell,
+            #[cfg(feature = "wml-settings")]
             select_fld_with_first_or_last_char: f_select_fld_with_first_or_last_char,
+            #[cfg(feature = "wml-settings")]
             apply_breaking_rules: f_apply_breaking_rules,
+            #[cfg(feature = "wml-settings")]
             do_not_wrap_text_with_punct: f_do_not_wrap_text_with_punct,
+            #[cfg(feature = "wml-settings")]
             do_not_use_east_asian_break_rules: f_do_not_use_east_asian_break_rules,
+            #[cfg(feature = "wml-settings")]
             use_word2002_table_style_rules: f_use_word2002_table_style_rules,
+            #[cfg(feature = "wml-settings")]
             grow_autofit: f_grow_autofit,
+            #[cfg(feature = "wml-settings")]
             use_f_e_layout: f_use_f_e_layout,
+            #[cfg(feature = "wml-settings")]
             use_normal_style_for_list: f_use_normal_style_for_list,
+            #[cfg(feature = "wml-settings")]
             do_not_use_indent_as_numbering_tab_stop: f_do_not_use_indent_as_numbering_tab_stop,
+            #[cfg(feature = "wml-settings")]
             use_alt_kinsoku_line_break_rules: f_use_alt_kinsoku_line_break_rules,
+            #[cfg(feature = "wml-settings")]
             allow_space_of_same_style_in_table: f_allow_space_of_same_style_in_table,
+            #[cfg(feature = "wml-settings")]
             do_not_suppress_indentation: f_do_not_suppress_indentation,
+            #[cfg(feature = "wml-settings")]
             do_not_autofit_constrained_tables: f_do_not_autofit_constrained_tables,
+            #[cfg(feature = "wml-settings")]
             autofit_to_first_fixed_width_cell: f_autofit_to_first_fixed_width_cell,
+            #[cfg(feature = "wml-settings")]
             underline_tab_in_num_list: f_underline_tab_in_num_list,
+            #[cfg(feature = "wml-settings")]
             display_hangul_fixed_width: f_display_hangul_fixed_width,
+            #[cfg(feature = "wml-settings")]
             split_pg_break_and_para_mark: f_split_pg_break_and_para_mark,
+            #[cfg(feature = "wml-settings")]
             do_not_vert_align_cell_with_sp: f_do_not_vert_align_cell_with_sp,
+            #[cfg(feature = "wml-settings")]
             do_not_break_constrained_forced_table: f_do_not_break_constrained_forced_table,
+            #[cfg(feature = "wml-settings")]
             do_not_vert_align_in_txbx: f_do_not_vert_align_in_txbx,
+            #[cfg(feature = "wml-settings")]
             use_ansi_kerning_pairs: f_use_ansi_kerning_pairs,
+            #[cfg(feature = "wml-settings")]
             cached_col_balance: f_cached_col_balance,
+            #[cfg(feature = "wml-settings")]
             compat_setting: f_compat_setting,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -32756,6 +35028,7 @@ impl FromXml for CTDocVars {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_doc_var = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -32769,6 +35042,7 @@ impl FromXml for CTDocVars {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"docVar" => {
                                 f_doc_var.push(CTDocVar::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -32795,6 +35069,7 @@ impl FromXml for CTDocVars {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"docVar" => {
                                 f_doc_var.push(CTDocVar::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -32825,6 +35100,7 @@ impl FromXml for CTDocVars {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             doc_var: f_doc_var,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -32838,7 +35114,9 @@ impl FromXml for CTDocRsids {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid_root = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -32852,6 +35130,7 @@ impl FromXml for CTDocRsids {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"rsidRoot" => {
                                 f_rsid_root =
                                     Some(Box::new(CTLongHexNumber::from_xml(reader, &e, false)?));
@@ -32860,6 +35139,7 @@ impl FromXml for CTDocRsids {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"rsid" => {
                                 f_rsid.push(CTLongHexNumber::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -32886,6 +35166,7 @@ impl FromXml for CTDocRsids {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"rsidRoot" => {
                                 f_rsid_root =
                                     Some(Box::new(CTLongHexNumber::from_xml(reader, &e, true)?));
@@ -32894,6 +35175,7 @@ impl FromXml for CTDocRsids {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"rsid" => {
                                 f_rsid.push(CTLongHexNumber::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -32924,7 +35206,9 @@ impl FromXml for CTDocRsids {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-track-changes")]
             rsid_root: f_rsid_root,
+            #[cfg(feature = "wml-track-changes")]
             rsid: f_rsid,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -32985,7 +35269,9 @@ impl FromXml for CTSaveThroughXslt {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_id = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_solution_i_d = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -32994,9 +35280,11 @@ impl FromXml for CTSaveThroughXslt {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"id" => {
                     f_id = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"solutionID" => {
                     f_solution_i_d = Some(val.into_owned());
                 }
@@ -33023,7 +35311,9 @@ impl FromXml for CTSaveThroughXslt {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             id: f_id,
+            #[cfg(feature = "wml-settings")]
             solution_i_d: f_solution_i_d,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -33031,7 +35321,7 @@ impl FromXml for CTSaveThroughXslt {
     }
 }
 
-impl FromXml for CTRPrDefault {
+impl FromXml for RunPropertiesDefault {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -33114,7 +35404,7 @@ impl FromXml for CTRPrDefault {
     }
 }
 
-impl FromXml for CTPPrDefault {
+impl FromXml for ParagraphPropertiesDefault {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -33196,7 +35486,7 @@ impl FromXml for CTPPrDefault {
     }
 }
 
-impl FromXml for CTDocDefaults {
+impl FromXml for DocumentDefaults {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -33217,16 +35507,18 @@ impl FromXml for CTDocDefaults {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"rPrDefault" => {
-                                f_r_pr_default =
-                                    Some(Box::new(CTRPrDefault::from_xml(reader, &e, false)?));
+                                f_r_pr_default = Some(Box::new(RunPropertiesDefault::from_xml(
+                                    reader, &e, false,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"pPrDefault" => {
-                                f_p_pr_default =
-                                    Some(Box::new(CTPPrDefault::from_xml(reader, &e, false)?));
+                                f_p_pr_default = Some(Box::new(
+                                    ParagraphPropertiesDefault::from_xml(reader, &e, false)?,
+                                ));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33252,16 +35544,18 @@ impl FromXml for CTDocDefaults {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"rPrDefault" => {
-                                f_r_pr_default =
-                                    Some(Box::new(CTRPrDefault::from_xml(reader, &e, true)?));
+                                f_r_pr_default = Some(Box::new(RunPropertiesDefault::from_xml(
+                                    reader, &e, true,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"pPrDefault" => {
-                                f_p_pr_default =
-                                    Some(Box::new(CTPPrDefault::from_xml(reader, &e, true)?));
+                                f_p_pr_default = Some(Box::new(
+                                    ParagraphPropertiesDefault::from_xml(reader, &e, true)?,
+                                ));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33304,17 +35598,29 @@ impl FromXml for CTColorSchemeMapping {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_bg1 = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_t1 = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_bg2 = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_t2 = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_accent1 = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_accent2 = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_accent3 = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_accent4 = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_accent5 = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_accent6 = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_hyperlink = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_followed_hyperlink = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -33323,39 +35629,51 @@ impl FromXml for CTColorSchemeMapping {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"bg1" => {
                     f_bg1 = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"t1" => {
                     f_t1 = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"bg2" => {
                     f_bg2 = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"t2" => {
                     f_t2 = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"accent1" => {
                     f_accent1 = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"accent2" => {
                     f_accent2 = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"accent3" => {
                     f_accent3 = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"accent4" => {
                     f_accent4 = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"accent5" => {
                     f_accent5 = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"accent6" => {
                     f_accent6 = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"hyperlink" => {
                     f_hyperlink = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"followedHyperlink" => {
                     f_followed_hyperlink = val.parse().ok();
                 }
@@ -33382,17 +35700,29 @@ impl FromXml for CTColorSchemeMapping {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             bg1: f_bg1,
+            #[cfg(feature = "wml-settings")]
             t1: f_t1,
+            #[cfg(feature = "wml-settings")]
             bg2: f_bg2,
+            #[cfg(feature = "wml-settings")]
             t2: f_t2,
+            #[cfg(feature = "wml-settings")]
             accent1: f_accent1,
+            #[cfg(feature = "wml-settings")]
             accent2: f_accent2,
+            #[cfg(feature = "wml-settings")]
             accent3: f_accent3,
+            #[cfg(feature = "wml-settings")]
             accent4: f_accent4,
+            #[cfg(feature = "wml-settings")]
             accent5: f_accent5,
+            #[cfg(feature = "wml-settings")]
             accent6: f_accent6,
+            #[cfg(feature = "wml-settings")]
             hyperlink: f_hyperlink,
+            #[cfg(feature = "wml-settings")]
             followed_hyperlink: f_followed_hyperlink,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -33406,9 +35736,13 @@ impl FromXml for CTReadingModeInkLockDown {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_actual_pg: Option<OnOff> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_width: Option<STPixelsMeasure> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_height: Option<STPixelsMeasure> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_font_sz: Option<STDecimalNumberOrPercent> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -33417,15 +35751,19 @@ impl FromXml for CTReadingModeInkLockDown {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"actualPg" => {
                     f_actual_pg = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"w" => {
                     f_width = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"h" => {
                     f_height = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"fontSz" => {
                     f_font_sz = Some(val.into_owned());
                 }
@@ -33452,10 +35790,14 @@ impl FromXml for CTReadingModeInkLockDown {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             actual_pg: f_actual_pg
                 .ok_or_else(|| ParseError::MissingAttribute("actualPg".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             width: f_width.ok_or_else(|| ParseError::MissingAttribute("w".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             height: f_height.ok_or_else(|| ParseError::MissingAttribute("h".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             font_sz: f_font_sz.ok_or_else(|| ParseError::MissingAttribute("fontSz".to_string()))?,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -33469,22 +35811,39 @@ impl FromXml for CTWriteProtection {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_recommended = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_algorithm_name = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_hash_value = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_salt_value = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_spin_count = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_crypt_provider_type = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_crypt_algorithm_class = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_crypt_algorithm_type = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_crypt_algorithm_sid = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_crypt_spin_count = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_crypt_provider = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_alg_id_ext = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_alg_id_ext_source = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_crypt_provider_type_ext = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_crypt_provider_type_ext_source = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_hash = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_salt = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -33493,54 +35852,71 @@ impl FromXml for CTWriteProtection {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"recommended" => {
                     f_recommended = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"algorithmName" => {
                     f_algorithm_name = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"hashValue" => {
                     f_hash_value = decode_base64(&val);
                 }
+                #[cfg(feature = "wml-settings")]
                 b"saltValue" => {
                     f_salt_value = decode_base64(&val);
                 }
+                #[cfg(feature = "wml-settings")]
                 b"spinCount" => {
                     f_spin_count = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"cryptProviderType" => {
                     f_crypt_provider_type = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"cryptAlgorithmClass" => {
                     f_crypt_algorithm_class = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"cryptAlgorithmType" => {
                     f_crypt_algorithm_type = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"cryptAlgorithmSid" => {
                     f_crypt_algorithm_sid = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"cryptSpinCount" => {
                     f_crypt_spin_count = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"cryptProvider" => {
                     f_crypt_provider = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"algIdExt" => {
                     f_alg_id_ext = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-settings")]
                 b"algIdExtSource" => {
                     f_alg_id_ext_source = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"cryptProviderTypeExt" => {
                     f_crypt_provider_type_ext = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-settings")]
                 b"cryptProviderTypeExtSource" => {
                     f_crypt_provider_type_ext_source = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"hash" => {
                     f_hash = decode_base64(&val);
                 }
+                #[cfg(feature = "wml-settings")]
                 b"salt" => {
                     f_salt = decode_base64(&val);
                 }
@@ -33567,22 +35943,39 @@ impl FromXml for CTWriteProtection {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             recommended: f_recommended,
+            #[cfg(feature = "wml-settings")]
             algorithm_name: f_algorithm_name,
+            #[cfg(feature = "wml-settings")]
             hash_value: f_hash_value,
+            #[cfg(feature = "wml-settings")]
             salt_value: f_salt_value,
+            #[cfg(feature = "wml-settings")]
             spin_count: f_spin_count,
+            #[cfg(feature = "wml-settings")]
             crypt_provider_type: f_crypt_provider_type,
+            #[cfg(feature = "wml-settings")]
             crypt_algorithm_class: f_crypt_algorithm_class,
+            #[cfg(feature = "wml-settings")]
             crypt_algorithm_type: f_crypt_algorithm_type,
+            #[cfg(feature = "wml-settings")]
             crypt_algorithm_sid: f_crypt_algorithm_sid,
+            #[cfg(feature = "wml-settings")]
             crypt_spin_count: f_crypt_spin_count,
+            #[cfg(feature = "wml-settings")]
             crypt_provider: f_crypt_provider,
+            #[cfg(feature = "wml-settings")]
             alg_id_ext: f_alg_id_ext,
+            #[cfg(feature = "wml-settings")]
             alg_id_ext_source: f_alg_id_ext_source,
+            #[cfg(feature = "wml-settings")]
             crypt_provider_type_ext: f_crypt_provider_type_ext,
+            #[cfg(feature = "wml-settings")]
             crypt_provider_type_ext_source: f_crypt_provider_type_ext_source,
+            #[cfg(feature = "wml-settings")]
             hash: f_hash,
+            #[cfg(feature = "wml-settings")]
             salt: f_salt,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -33602,32 +35995,57 @@ impl FromXml for Settings {
         let mut f_view = None;
         #[cfg(feature = "wml-settings")]
         let mut f_zoom = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_remove_personal_information = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_remove_date_and_time = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_display_page_boundaries = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_display_background_shape = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_print_post_script_over_text = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_print_fractional_character_width = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_print_forms_data = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_embed_true_type_fonts = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_embed_system_fonts = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_save_subset_fonts = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_save_forms_data = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_mirror_margins = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_align_borders_and_edges = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_borders_do_not_surround_header = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_borders_do_not_surround_footer = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_gutter_at_top = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_hide_spelling_errors = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_hide_grammatical_errors = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_active_writing_style = Vec::new();
+        #[cfg(feature = "wml-settings")]
         let mut f_proof_state = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_forms_design = None;
         #[cfg(feature = "wml-settings")]
         let mut f_attached_template = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_link_styles = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_style_pane_format_filter = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_style_pane_sort_method = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_document_type = None;
         #[cfg(feature = "wml-settings")]
         let mut f_mail_merge = None;
@@ -33635,56 +36053,101 @@ impl FromXml for Settings {
         let mut f_revision_view = None;
         #[cfg(feature = "wml-settings")]
         let mut f_track_revisions = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_do_not_track_moves = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_do_not_track_formatting = None;
         #[cfg(feature = "wml-settings")]
         let mut f_document_protection = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_auto_format_override = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_style_lock_theme = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_style_lock_q_f_set = None;
         #[cfg(feature = "wml-settings")]
         let mut f_default_tab_stop = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_auto_hyphenation = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_consecutive_hyphen_limit = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_hyphenation_zone = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_hyphenate_caps = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_show_envelope = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_summary_length = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_click_and_type_style = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_default_table_style = None;
         #[cfg(feature = "wml-settings")]
         let mut f_even_and_odd_headers = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_book_fold_rev_printing = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_book_fold_printing = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_book_fold_printing_sheets = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_drawing_grid_horizontal_spacing = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_drawing_grid_vertical_spacing = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_display_horizontal_drawing_grid_every = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_display_vertical_drawing_grid_every = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_use_margins_for_drawing_grid_origin = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_drawing_grid_horizontal_origin = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_drawing_grid_vertical_origin = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_shade_form_data = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_no_punctuation_kerning = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_character_spacing_control = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_print_two_on_one = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_strict_first_and_last_chars = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_no_line_breaks_after = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_no_line_breaks_before = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_save_preview_picture = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_validate_against_schema = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_save_invalid_xml = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_ignore_mixed_content = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_always_show_placeholder_text = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_demarcate_invalid_xml = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_save_xml_data_only = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_use_x_s_l_t_when_saving = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_save_through_xslt = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_show_x_m_l_tags = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_always_merge_empty_namespace = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_update_fields = None;
+        #[cfg(feature = "wml-drawings")]
         let mut f_hdr_shape_defaults = None;
+        #[cfg(feature = "wml-comments")]
         let mut f_footnote_pr = None;
+        #[cfg(feature = "wml-comments")]
         let mut f_endnote_pr = None;
         #[cfg(feature = "wml-settings")]
         let mut f_compat = None;
@@ -33692,18 +36155,31 @@ impl FromXml for Settings {
         let mut f_doc_vars = None;
         #[cfg(feature = "wml-settings")]
         let mut f_rsids = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_attached_schema = Vec::new();
+        #[cfg(feature = "wml-settings")]
         let mut f_theme_font_lang = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_clr_scheme_mapping = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_include_subdocs_in_stats = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_auto_compress_pictures = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_force_upgrade = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_captions = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_read_mode_ink_lock_down = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_smart_tag_type = Vec::new();
+        #[cfg(feature = "wml-drawings")]
         let mut f_shape_defaults = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_embed_smart_tags = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_decimal_symbol = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_list_separator = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -33742,6 +36218,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"removePersonalInformation" => {
                                 f_remove_personal_information =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -33750,6 +36227,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"removeDateAndTime" => {
                                 f_remove_date_and_time =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -33758,6 +36236,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotDisplayPageBoundaries" => {
                                 f_do_not_display_page_boundaries =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -33766,6 +36245,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"displayBackgroundShape" => {
                                 f_display_background_shape =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -33774,6 +36254,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"printPostScriptOverText" => {
                                 f_print_post_script_over_text =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -33782,6 +36263,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"printFractionalCharacterWidth" => {
                                 f_print_fractional_character_width =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -33790,6 +36272,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"printFormsData" => {
                                 f_print_forms_data =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -33798,6 +36281,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"embedTrueTypeFonts" => {
                                 f_embed_true_type_fonts =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -33806,6 +36290,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"embedSystemFonts" => {
                                 f_embed_system_fonts =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -33814,6 +36299,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"saveSubsetFonts" => {
                                 f_save_subset_fonts =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -33822,6 +36308,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"saveFormsData" => {
                                 f_save_forms_data =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -33830,6 +36317,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"mirrorMargins" => {
                                 f_mirror_margins =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -33838,6 +36326,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"alignBordersAndEdges" => {
                                 f_align_borders_and_edges =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -33846,6 +36335,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"bordersDoNotSurroundHeader" => {
                                 f_borders_do_not_surround_header =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -33854,6 +36344,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"bordersDoNotSurroundFooter" => {
                                 f_borders_do_not_surround_footer =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -33862,6 +36353,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"gutterAtTop" => {
                                 f_gutter_at_top =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -33870,6 +36362,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"hideSpellingErrors" => {
                                 f_hide_spelling_errors =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -33878,6 +36371,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"hideGrammaticalErrors" => {
                                 f_hide_grammatical_errors =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -33886,6 +36380,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"activeWritingStyle" => {
                                 f_active_writing_style
                                     .push(CTWritingStyle::from_xml(reader, &e, false)?);
@@ -33894,6 +36389,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"proofState" => {
                                 f_proof_state =
                                     Some(Box::new(CTProof::from_xml(reader, &e, false)?));
@@ -33902,6 +36398,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"formsDesign" => {
                                 f_forms_design =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -33919,6 +36416,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"linkStyles" => {
                                 f_link_styles =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -33927,6 +36425,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"stylePaneFormatFilter" => {
                                 f_style_pane_format_filter =
                                     Some(Box::new(CTStylePaneFilter::from_xml(reader, &e, false)?));
@@ -33935,6 +36434,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"stylePaneSortMethod" => {
                                 f_style_pane_sort_method =
                                     Some(Box::new(CTStyleSort::from_xml(reader, &e, false)?));
@@ -33943,6 +36443,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"documentType" => {
                                 f_document_type =
                                     Some(Box::new(CTDocType::from_xml(reader, &e, false)?));
@@ -33979,6 +36480,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"doNotTrackMoves" => {
                                 f_do_not_track_moves =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -33987,6 +36489,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"doNotTrackFormatting" => {
                                 f_do_not_track_formatting =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34004,6 +36507,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"autoFormatOverride" => {
                                 f_auto_format_override =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34012,6 +36516,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"styleLockTheme" => {
                                 f_style_lock_theme =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34020,6 +36525,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"styleLockQFSet" => {
                                 f_style_lock_q_f_set =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34037,6 +36543,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"autoHyphenation" => {
                                 f_auto_hyphenation =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34045,6 +36552,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"consecutiveHyphenLimit" => {
                                 f_consecutive_hyphen_limit =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -34053,6 +36561,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"hyphenationZone" => {
                                 f_hyphenation_zone =
                                     Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, false)?));
@@ -34061,6 +36570,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotHyphenateCaps" => {
                                 f_do_not_hyphenate_caps =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34069,6 +36579,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"showEnvelope" => {
                                 f_show_envelope =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34077,6 +36588,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"summaryLength" => {
                                 f_summary_length = Some(Box::new(
                                     CTDecimalNumberOrPrecent::from_xml(reader, &e, false)?,
@@ -34086,6 +36598,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"clickAndTypeStyle" => {
                                 f_click_and_type_style =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
@@ -34094,6 +36607,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"defaultTableStyle" => {
                                 f_default_table_style =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
@@ -34111,6 +36625,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"bookFoldRevPrinting" => {
                                 f_book_fold_rev_printing =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34119,6 +36634,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"bookFoldPrinting" => {
                                 f_book_fold_printing =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34127,6 +36643,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"bookFoldPrintingSheets" => {
                                 f_book_fold_printing_sheets =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -34135,6 +36652,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"drawingGridHorizontalSpacing" => {
                                 f_drawing_grid_horizontal_spacing =
                                     Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, false)?));
@@ -34143,6 +36661,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"drawingGridVerticalSpacing" => {
                                 f_drawing_grid_vertical_spacing =
                                     Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, false)?));
@@ -34151,6 +36670,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"displayHorizontalDrawingGridEvery" => {
                                 f_display_horizontal_drawing_grid_every =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -34159,6 +36679,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"displayVerticalDrawingGridEvery" => {
                                 f_display_vertical_drawing_grid_every =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -34167,6 +36688,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotUseMarginsForDrawingGridOrigin" => {
                                 f_do_not_use_margins_for_drawing_grid_origin =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34175,6 +36697,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"drawingGridHorizontalOrigin" => {
                                 f_drawing_grid_horizontal_origin =
                                     Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, false)?));
@@ -34183,6 +36706,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"drawingGridVerticalOrigin" => {
                                 f_drawing_grid_vertical_origin =
                                     Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, false)?));
@@ -34191,6 +36715,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotShadeFormData" => {
                                 f_do_not_shade_form_data =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34199,6 +36724,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"noPunctuationKerning" => {
                                 f_no_punctuation_kerning =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34207,6 +36733,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"characterSpacingControl" => {
                                 f_character_spacing_control = Some(Box::new(
                                     CTCharacterSpacing::from_xml(reader, &e, false)?,
@@ -34216,6 +36743,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"printTwoOnOne" => {
                                 f_print_two_on_one =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34224,6 +36752,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"strictFirstAndLastChars" => {
                                 f_strict_first_and_last_chars =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34232,6 +36761,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"noLineBreaksAfter" => {
                                 f_no_line_breaks_after =
                                     Some(Box::new(CTKinsoku::from_xml(reader, &e, false)?));
@@ -34240,6 +36770,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"noLineBreaksBefore" => {
                                 f_no_line_breaks_before =
                                     Some(Box::new(CTKinsoku::from_xml(reader, &e, false)?));
@@ -34248,6 +36779,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"savePreviewPicture" => {
                                 f_save_preview_picture =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34256,6 +36788,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotValidateAgainstSchema" => {
                                 f_do_not_validate_against_schema =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34264,6 +36797,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"saveInvalidXml" => {
                                 f_save_invalid_xml =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34272,6 +36806,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"ignoreMixedContent" => {
                                 f_ignore_mixed_content =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34280,6 +36815,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"alwaysShowPlaceholderText" => {
                                 f_always_show_placeholder_text =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34288,6 +36824,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotDemarcateInvalidXml" => {
                                 f_do_not_demarcate_invalid_xml =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34296,6 +36833,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"saveXmlDataOnly" => {
                                 f_save_xml_data_only =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34304,6 +36842,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"useXSLTWhenSaving" => {
                                 f_use_x_s_l_t_when_saving =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34312,6 +36851,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"saveThroughXslt" => {
                                 f_save_through_xslt =
                                     Some(Box::new(CTSaveThroughXslt::from_xml(reader, &e, false)?));
@@ -34320,6 +36860,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"showXMLTags" => {
                                 f_show_x_m_l_tags =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34328,6 +36869,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"alwaysMergeEmptyNamespace" => {
                                 f_always_merge_empty_namespace =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34336,6 +36878,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"updateFields" => {
                                 f_update_fields =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34344,6 +36887,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-drawings")]
                             b"hdrShapeDefaults" => {
                                 f_hdr_shape_defaults =
                                     Some(Box::new(CTShapeDefaults::from_xml(reader, &e, false)?));
@@ -34352,6 +36896,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-comments")]
                             b"footnotePr" => {
                                 f_footnote_pr =
                                     Some(Box::new(CTFtnDocProps::from_xml(reader, &e, false)?));
@@ -34360,6 +36905,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-comments")]
                             b"endnotePr" => {
                                 f_endnote_pr =
                                     Some(Box::new(CTEdnDocProps::from_xml(reader, &e, false)?));
@@ -34394,6 +36940,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"attachedSchema" => {
                                 f_attached_schema.push(CTString::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -34401,6 +36948,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"themeFontLang" => {
                                 f_theme_font_lang =
                                     Some(Box::new(CTLanguage::from_xml(reader, &e, false)?));
@@ -34409,6 +36957,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"clrSchemeMapping" => {
                                 f_clr_scheme_mapping = Some(Box::new(
                                     CTColorSchemeMapping::from_xml(reader, &e, false)?,
@@ -34418,6 +36967,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotIncludeSubdocsInStats" => {
                                 f_do_not_include_subdocs_in_stats =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34426,6 +36976,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotAutoCompressPictures" => {
                                 f_do_not_auto_compress_pictures =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34434,6 +36985,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"forceUpgrade" => {
                                 f_force_upgrade =
                                     Some(Box::new(CTEmpty::from_xml(reader, &e, false)?));
@@ -34442,6 +36994,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"captions" => {
                                 f_captions =
                                     Some(Box::new(CTCaptions::from_xml(reader, &e, false)?));
@@ -34450,6 +37003,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"readModeInkLockDown" => {
                                 f_read_mode_ink_lock_down = Some(Box::new(
                                     CTReadingModeInkLockDown::from_xml(reader, &e, false)?,
@@ -34459,6 +37013,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"smartTagType" => {
                                 f_smart_tag_type.push(CTSmartTagType::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -34466,6 +37021,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-drawings")]
                             b"shapeDefaults" => {
                                 f_shape_defaults =
                                     Some(Box::new(CTShapeDefaults::from_xml(reader, &e, false)?));
@@ -34474,6 +37030,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotEmbedSmartTags" => {
                                 f_do_not_embed_smart_tags =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -34482,6 +37039,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"decimalSymbol" => {
                                 f_decimal_symbol =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
@@ -34490,6 +37048,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"listSeparator" => {
                                 f_list_separator =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
@@ -34542,6 +37101,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"removePersonalInformation" => {
                                 f_remove_personal_information =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34550,6 +37110,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"removeDateAndTime" => {
                                 f_remove_date_and_time =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34558,6 +37119,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotDisplayPageBoundaries" => {
                                 f_do_not_display_page_boundaries =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34566,6 +37128,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"displayBackgroundShape" => {
                                 f_display_background_shape =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34574,6 +37137,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"printPostScriptOverText" => {
                                 f_print_post_script_over_text =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34582,6 +37146,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"printFractionalCharacterWidth" => {
                                 f_print_fractional_character_width =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34590,6 +37155,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"printFormsData" => {
                                 f_print_forms_data =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34598,6 +37164,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"embedTrueTypeFonts" => {
                                 f_embed_true_type_fonts =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34606,6 +37173,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"embedSystemFonts" => {
                                 f_embed_system_fonts =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34614,6 +37182,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"saveSubsetFonts" => {
                                 f_save_subset_fonts =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34622,6 +37191,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"saveFormsData" => {
                                 f_save_forms_data =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34630,6 +37200,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"mirrorMargins" => {
                                 f_mirror_margins =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34638,6 +37209,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"alignBordersAndEdges" => {
                                 f_align_borders_and_edges =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34646,6 +37218,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"bordersDoNotSurroundHeader" => {
                                 f_borders_do_not_surround_header =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34654,6 +37227,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"bordersDoNotSurroundFooter" => {
                                 f_borders_do_not_surround_footer =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34662,6 +37236,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"gutterAtTop" => {
                                 f_gutter_at_top =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34670,6 +37245,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"hideSpellingErrors" => {
                                 f_hide_spelling_errors =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34678,6 +37254,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"hideGrammaticalErrors" => {
                                 f_hide_grammatical_errors =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34686,6 +37263,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"activeWritingStyle" => {
                                 f_active_writing_style
                                     .push(CTWritingStyle::from_xml(reader, &e, true)?);
@@ -34694,6 +37272,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"proofState" => {
                                 f_proof_state =
                                     Some(Box::new(CTProof::from_xml(reader, &e, true)?));
@@ -34702,6 +37281,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"formsDesign" => {
                                 f_forms_design =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34719,6 +37299,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"linkStyles" => {
                                 f_link_styles =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34727,6 +37308,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"stylePaneFormatFilter" => {
                                 f_style_pane_format_filter =
                                     Some(Box::new(CTStylePaneFilter::from_xml(reader, &e, true)?));
@@ -34735,6 +37317,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"stylePaneSortMethod" => {
                                 f_style_pane_sort_method =
                                     Some(Box::new(CTStyleSort::from_xml(reader, &e, true)?));
@@ -34743,6 +37326,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"documentType" => {
                                 f_document_type =
                                     Some(Box::new(CTDocType::from_xml(reader, &e, true)?));
@@ -34778,6 +37362,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"doNotTrackMoves" => {
                                 f_do_not_track_moves =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34786,6 +37371,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"doNotTrackFormatting" => {
                                 f_do_not_track_formatting =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34803,6 +37389,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"autoFormatOverride" => {
                                 f_auto_format_override =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34811,6 +37398,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"styleLockTheme" => {
                                 f_style_lock_theme =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34819,6 +37407,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"styleLockQFSet" => {
                                 f_style_lock_q_f_set =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34836,6 +37425,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"autoHyphenation" => {
                                 f_auto_hyphenation =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34844,6 +37434,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"consecutiveHyphenLimit" => {
                                 f_consecutive_hyphen_limit =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -34852,6 +37443,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"hyphenationZone" => {
                                 f_hyphenation_zone =
                                     Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, true)?));
@@ -34860,6 +37452,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotHyphenateCaps" => {
                                 f_do_not_hyphenate_caps =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34868,6 +37461,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"showEnvelope" => {
                                 f_show_envelope =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34876,6 +37470,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"summaryLength" => {
                                 f_summary_length = Some(Box::new(
                                     CTDecimalNumberOrPrecent::from_xml(reader, &e, true)?,
@@ -34885,6 +37480,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"clickAndTypeStyle" => {
                                 f_click_and_type_style =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
@@ -34893,6 +37489,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"defaultTableStyle" => {
                                 f_default_table_style =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
@@ -34910,6 +37507,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"bookFoldRevPrinting" => {
                                 f_book_fold_rev_printing =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34918,6 +37516,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"bookFoldPrinting" => {
                                 f_book_fold_printing =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34926,6 +37525,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"bookFoldPrintingSheets" => {
                                 f_book_fold_printing_sheets =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -34934,6 +37534,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"drawingGridHorizontalSpacing" => {
                                 f_drawing_grid_horizontal_spacing =
                                     Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, true)?));
@@ -34942,6 +37543,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"drawingGridVerticalSpacing" => {
                                 f_drawing_grid_vertical_spacing =
                                     Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, true)?));
@@ -34950,6 +37552,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"displayHorizontalDrawingGridEvery" => {
                                 f_display_horizontal_drawing_grid_every =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -34958,6 +37561,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"displayVerticalDrawingGridEvery" => {
                                 f_display_vertical_drawing_grid_every =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -34966,6 +37570,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotUseMarginsForDrawingGridOrigin" => {
                                 f_do_not_use_margins_for_drawing_grid_origin =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34974,6 +37579,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"drawingGridHorizontalOrigin" => {
                                 f_drawing_grid_horizontal_origin =
                                     Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, true)?));
@@ -34982,6 +37588,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"drawingGridVerticalOrigin" => {
                                 f_drawing_grid_vertical_origin =
                                     Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, true)?));
@@ -34990,6 +37597,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotShadeFormData" => {
                                 f_do_not_shade_form_data =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -34998,6 +37606,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"noPunctuationKerning" => {
                                 f_no_punctuation_kerning =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35006,6 +37615,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"characterSpacingControl" => {
                                 f_character_spacing_control =
                                     Some(Box::new(CTCharacterSpacing::from_xml(reader, &e, true)?));
@@ -35014,6 +37624,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"printTwoOnOne" => {
                                 f_print_two_on_one =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35022,6 +37633,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"strictFirstAndLastChars" => {
                                 f_strict_first_and_last_chars =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35030,6 +37642,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"noLineBreaksAfter" => {
                                 f_no_line_breaks_after =
                                     Some(Box::new(CTKinsoku::from_xml(reader, &e, true)?));
@@ -35038,6 +37651,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"noLineBreaksBefore" => {
                                 f_no_line_breaks_before =
                                     Some(Box::new(CTKinsoku::from_xml(reader, &e, true)?));
@@ -35046,6 +37660,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"savePreviewPicture" => {
                                 f_save_preview_picture =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35054,6 +37669,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotValidateAgainstSchema" => {
                                 f_do_not_validate_against_schema =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35062,6 +37678,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"saveInvalidXml" => {
                                 f_save_invalid_xml =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35070,6 +37687,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"ignoreMixedContent" => {
                                 f_ignore_mixed_content =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35078,6 +37696,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"alwaysShowPlaceholderText" => {
                                 f_always_show_placeholder_text =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35086,6 +37705,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotDemarcateInvalidXml" => {
                                 f_do_not_demarcate_invalid_xml =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35094,6 +37714,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"saveXmlDataOnly" => {
                                 f_save_xml_data_only =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35102,6 +37723,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"useXSLTWhenSaving" => {
                                 f_use_x_s_l_t_when_saving =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35110,6 +37732,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"saveThroughXslt" => {
                                 f_save_through_xslt =
                                     Some(Box::new(CTSaveThroughXslt::from_xml(reader, &e, true)?));
@@ -35118,6 +37741,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"showXMLTags" => {
                                 f_show_x_m_l_tags =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35126,6 +37750,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"alwaysMergeEmptyNamespace" => {
                                 f_always_merge_empty_namespace =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35134,6 +37759,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"updateFields" => {
                                 f_update_fields =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35142,6 +37768,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-drawings")]
                             b"hdrShapeDefaults" => {
                                 f_hdr_shape_defaults =
                                     Some(Box::new(CTShapeDefaults::from_xml(reader, &e, true)?));
@@ -35150,6 +37777,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-comments")]
                             b"footnotePr" => {
                                 f_footnote_pr =
                                     Some(Box::new(CTFtnDocProps::from_xml(reader, &e, true)?));
@@ -35158,6 +37786,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-comments")]
                             b"endnotePr" => {
                                 f_endnote_pr =
                                     Some(Box::new(CTEdnDocProps::from_xml(reader, &e, true)?));
@@ -35191,6 +37820,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"attachedSchema" => {
                                 f_attached_schema.push(CTString::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -35198,6 +37828,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"themeFontLang" => {
                                 f_theme_font_lang =
                                     Some(Box::new(CTLanguage::from_xml(reader, &e, true)?));
@@ -35206,6 +37837,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"clrSchemeMapping" => {
                                 f_clr_scheme_mapping = Some(Box::new(
                                     CTColorSchemeMapping::from_xml(reader, &e, true)?,
@@ -35215,6 +37847,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotIncludeSubdocsInStats" => {
                                 f_do_not_include_subdocs_in_stats =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35223,6 +37856,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotAutoCompressPictures" => {
                                 f_do_not_auto_compress_pictures =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35231,6 +37865,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"forceUpgrade" => {
                                 f_force_upgrade =
                                     Some(Box::new(CTEmpty::from_xml(reader, &e, true)?));
@@ -35239,6 +37874,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"captions" => {
                                 f_captions =
                                     Some(Box::new(CTCaptions::from_xml(reader, &e, true)?));
@@ -35247,6 +37883,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"readModeInkLockDown" => {
                                 f_read_mode_ink_lock_down = Some(Box::new(
                                     CTReadingModeInkLockDown::from_xml(reader, &e, true)?,
@@ -35256,6 +37893,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"smartTagType" => {
                                 f_smart_tag_type.push(CTSmartTagType::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -35263,6 +37901,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-drawings")]
                             b"shapeDefaults" => {
                                 f_shape_defaults =
                                     Some(Box::new(CTShapeDefaults::from_xml(reader, &e, true)?));
@@ -35271,6 +37910,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotEmbedSmartTags" => {
                                 f_do_not_embed_smart_tags =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35279,6 +37919,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"decimalSymbol" => {
                                 f_decimal_symbol =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
@@ -35287,6 +37928,7 @@ impl FromXml for Settings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"listSeparator" => {
                                 f_list_separator =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
@@ -35324,32 +37966,57 @@ impl FromXml for Settings {
             view: f_view,
             #[cfg(feature = "wml-settings")]
             zoom: f_zoom,
+            #[cfg(feature = "wml-settings")]
             remove_personal_information: f_remove_personal_information,
+            #[cfg(feature = "wml-settings")]
             remove_date_and_time: f_remove_date_and_time,
+            #[cfg(feature = "wml-settings")]
             do_not_display_page_boundaries: f_do_not_display_page_boundaries,
+            #[cfg(feature = "wml-settings")]
             display_background_shape: f_display_background_shape,
+            #[cfg(feature = "wml-settings")]
             print_post_script_over_text: f_print_post_script_over_text,
+            #[cfg(feature = "wml-settings")]
             print_fractional_character_width: f_print_fractional_character_width,
+            #[cfg(feature = "wml-settings")]
             print_forms_data: f_print_forms_data,
+            #[cfg(feature = "wml-settings")]
             embed_true_type_fonts: f_embed_true_type_fonts,
+            #[cfg(feature = "wml-settings")]
             embed_system_fonts: f_embed_system_fonts,
+            #[cfg(feature = "wml-settings")]
             save_subset_fonts: f_save_subset_fonts,
+            #[cfg(feature = "wml-settings")]
             save_forms_data: f_save_forms_data,
+            #[cfg(feature = "wml-settings")]
             mirror_margins: f_mirror_margins,
+            #[cfg(feature = "wml-settings")]
             align_borders_and_edges: f_align_borders_and_edges,
+            #[cfg(feature = "wml-settings")]
             borders_do_not_surround_header: f_borders_do_not_surround_header,
+            #[cfg(feature = "wml-settings")]
             borders_do_not_surround_footer: f_borders_do_not_surround_footer,
+            #[cfg(feature = "wml-settings")]
             gutter_at_top: f_gutter_at_top,
+            #[cfg(feature = "wml-settings")]
             hide_spelling_errors: f_hide_spelling_errors,
+            #[cfg(feature = "wml-settings")]
             hide_grammatical_errors: f_hide_grammatical_errors,
+            #[cfg(feature = "wml-settings")]
             active_writing_style: f_active_writing_style,
+            #[cfg(feature = "wml-settings")]
             proof_state: f_proof_state,
+            #[cfg(feature = "wml-settings")]
             forms_design: f_forms_design,
             #[cfg(feature = "wml-settings")]
             attached_template: f_attached_template,
+            #[cfg(feature = "wml-settings")]
             link_styles: f_link_styles,
+            #[cfg(feature = "wml-settings")]
             style_pane_format_filter: f_style_pane_format_filter,
+            #[cfg(feature = "wml-settings")]
             style_pane_sort_method: f_style_pane_sort_method,
+            #[cfg(feature = "wml-settings")]
             document_type: f_document_type,
             #[cfg(feature = "wml-settings")]
             mail_merge: f_mail_merge,
@@ -35357,57 +38024,102 @@ impl FromXml for Settings {
             revision_view: f_revision_view,
             #[cfg(feature = "wml-settings")]
             track_revisions: f_track_revisions,
+            #[cfg(feature = "wml-track-changes")]
             do_not_track_moves: f_do_not_track_moves,
+            #[cfg(feature = "wml-track-changes")]
             do_not_track_formatting: f_do_not_track_formatting,
             #[cfg(feature = "wml-settings")]
             document_protection: f_document_protection,
+            #[cfg(feature = "wml-settings")]
             auto_format_override: f_auto_format_override,
+            #[cfg(feature = "wml-settings")]
             style_lock_theme: f_style_lock_theme,
+            #[cfg(feature = "wml-settings")]
             style_lock_q_f_set: f_style_lock_q_f_set,
             #[cfg(feature = "wml-settings")]
             default_tab_stop: f_default_tab_stop,
+            #[cfg(feature = "wml-settings")]
             auto_hyphenation: f_auto_hyphenation,
+            #[cfg(feature = "wml-settings")]
             consecutive_hyphen_limit: f_consecutive_hyphen_limit,
+            #[cfg(feature = "wml-settings")]
             hyphenation_zone: f_hyphenation_zone,
+            #[cfg(feature = "wml-settings")]
             do_not_hyphenate_caps: f_do_not_hyphenate_caps,
+            #[cfg(feature = "wml-settings")]
             show_envelope: f_show_envelope,
+            #[cfg(feature = "wml-settings")]
             summary_length: f_summary_length,
+            #[cfg(feature = "wml-settings")]
             click_and_type_style: f_click_and_type_style,
+            #[cfg(feature = "wml-settings")]
             default_table_style: f_default_table_style,
             #[cfg(feature = "wml-settings")]
             even_and_odd_headers: f_even_and_odd_headers,
+            #[cfg(feature = "wml-settings")]
             book_fold_rev_printing: f_book_fold_rev_printing,
+            #[cfg(feature = "wml-settings")]
             book_fold_printing: f_book_fold_printing,
+            #[cfg(feature = "wml-settings")]
             book_fold_printing_sheets: f_book_fold_printing_sheets,
+            #[cfg(feature = "wml-settings")]
             drawing_grid_horizontal_spacing: f_drawing_grid_horizontal_spacing,
+            #[cfg(feature = "wml-settings")]
             drawing_grid_vertical_spacing: f_drawing_grid_vertical_spacing,
+            #[cfg(feature = "wml-settings")]
             display_horizontal_drawing_grid_every: f_display_horizontal_drawing_grid_every,
+            #[cfg(feature = "wml-settings")]
             display_vertical_drawing_grid_every: f_display_vertical_drawing_grid_every,
+            #[cfg(feature = "wml-settings")]
             do_not_use_margins_for_drawing_grid_origin:
                 f_do_not_use_margins_for_drawing_grid_origin,
+            #[cfg(feature = "wml-settings")]
             drawing_grid_horizontal_origin: f_drawing_grid_horizontal_origin,
+            #[cfg(feature = "wml-settings")]
             drawing_grid_vertical_origin: f_drawing_grid_vertical_origin,
+            #[cfg(feature = "wml-settings")]
             do_not_shade_form_data: f_do_not_shade_form_data,
+            #[cfg(feature = "wml-settings")]
             no_punctuation_kerning: f_no_punctuation_kerning,
+            #[cfg(feature = "wml-settings")]
             character_spacing_control: f_character_spacing_control,
+            #[cfg(feature = "wml-settings")]
             print_two_on_one: f_print_two_on_one,
+            #[cfg(feature = "wml-settings")]
             strict_first_and_last_chars: f_strict_first_and_last_chars,
+            #[cfg(feature = "wml-settings")]
             no_line_breaks_after: f_no_line_breaks_after,
+            #[cfg(feature = "wml-settings")]
             no_line_breaks_before: f_no_line_breaks_before,
+            #[cfg(feature = "wml-settings")]
             save_preview_picture: f_save_preview_picture,
+            #[cfg(feature = "wml-settings")]
             do_not_validate_against_schema: f_do_not_validate_against_schema,
+            #[cfg(feature = "wml-settings")]
             save_invalid_xml: f_save_invalid_xml,
+            #[cfg(feature = "wml-settings")]
             ignore_mixed_content: f_ignore_mixed_content,
+            #[cfg(feature = "wml-settings")]
             always_show_placeholder_text: f_always_show_placeholder_text,
+            #[cfg(feature = "wml-settings")]
             do_not_demarcate_invalid_xml: f_do_not_demarcate_invalid_xml,
+            #[cfg(feature = "wml-settings")]
             save_xml_data_only: f_save_xml_data_only,
+            #[cfg(feature = "wml-settings")]
             use_x_s_l_t_when_saving: f_use_x_s_l_t_when_saving,
+            #[cfg(feature = "wml-settings")]
             save_through_xslt: f_save_through_xslt,
+            #[cfg(feature = "wml-settings")]
             show_x_m_l_tags: f_show_x_m_l_tags,
+            #[cfg(feature = "wml-settings")]
             always_merge_empty_namespace: f_always_merge_empty_namespace,
+            #[cfg(feature = "wml-settings")]
             update_fields: f_update_fields,
+            #[cfg(feature = "wml-drawings")]
             hdr_shape_defaults: f_hdr_shape_defaults,
+            #[cfg(feature = "wml-comments")]
             footnote_pr: f_footnote_pr,
+            #[cfg(feature = "wml-comments")]
             endnote_pr: f_endnote_pr,
             #[cfg(feature = "wml-settings")]
             compat: f_compat,
@@ -35415,18 +38127,31 @@ impl FromXml for Settings {
             doc_vars: f_doc_vars,
             #[cfg(feature = "wml-settings")]
             rsids: f_rsids,
+            #[cfg(feature = "wml-settings")]
             attached_schema: f_attached_schema,
+            #[cfg(feature = "wml-settings")]
             theme_font_lang: f_theme_font_lang,
+            #[cfg(feature = "wml-settings")]
             clr_scheme_mapping: f_clr_scheme_mapping,
+            #[cfg(feature = "wml-settings")]
             do_not_include_subdocs_in_stats: f_do_not_include_subdocs_in_stats,
+            #[cfg(feature = "wml-settings")]
             do_not_auto_compress_pictures: f_do_not_auto_compress_pictures,
+            #[cfg(feature = "wml-settings")]
             force_upgrade: f_force_upgrade,
+            #[cfg(feature = "wml-settings")]
             captions: f_captions,
+            #[cfg(feature = "wml-settings")]
             read_mode_ink_lock_down: f_read_mode_ink_lock_down,
+            #[cfg(feature = "wml-settings")]
             smart_tag_type: f_smart_tag_type,
+            #[cfg(feature = "wml-drawings")]
             shape_defaults: f_shape_defaults,
+            #[cfg(feature = "wml-settings")]
             do_not_embed_smart_tags: f_do_not_embed_smart_tags,
+            #[cfg(feature = "wml-settings")]
             decimal_symbol: f_decimal_symbol,
+            #[cfg(feature = "wml-settings")]
             list_separator: f_list_separator,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -35487,21 +38212,37 @@ impl FromXml for CTStylePaneFilter {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_all_styles = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_custom_styles = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_latent_styles = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_styles_in_use = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_heading_styles = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_numbering_styles = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_table_styles = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_direct_formatting_on_runs = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_direct_formatting_on_paragraphs = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_direct_formatting_on_numbering = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_direct_formatting_on_tables = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_clear_formatting = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_top3_heading_styles = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_visible_styles = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_alternate_style_names = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_value = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -35510,51 +38251,67 @@ impl FromXml for CTStylePaneFilter {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"allStyles" => {
                     f_all_styles = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"customStyles" => {
                     f_custom_styles = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"latentStyles" => {
                     f_latent_styles = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"stylesInUse" => {
                     f_styles_in_use = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"headingStyles" => {
                     f_heading_styles = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"numberingStyles" => {
                     f_numbering_styles = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"tableStyles" => {
                     f_table_styles = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"directFormattingOnRuns" => {
                     f_direct_formatting_on_runs = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"directFormattingOnParagraphs" => {
                     f_direct_formatting_on_paragraphs = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"directFormattingOnNumbering" => {
                     f_direct_formatting_on_numbering = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"directFormattingOnTables" => {
                     f_direct_formatting_on_tables = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"clearFormatting" => {
                     f_clear_formatting = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"top3HeadingStyles" => {
                     f_top3_heading_styles = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"visibleStyles" => {
                     f_visible_styles = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"alternateStyleNames" => {
                     f_alternate_style_names = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"val" => {
                     f_value = decode_hex(&val);
                 }
@@ -35581,21 +38338,37 @@ impl FromXml for CTStylePaneFilter {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             all_styles: f_all_styles,
+            #[cfg(feature = "wml-settings")]
             custom_styles: f_custom_styles,
+            #[cfg(feature = "wml-settings")]
             latent_styles: f_latent_styles,
+            #[cfg(feature = "wml-settings")]
             styles_in_use: f_styles_in_use,
+            #[cfg(feature = "wml-settings")]
             heading_styles: f_heading_styles,
+            #[cfg(feature = "wml-settings")]
             numbering_styles: f_numbering_styles,
+            #[cfg(feature = "wml-settings")]
             table_styles: f_table_styles,
+            #[cfg(feature = "wml-settings")]
             direct_formatting_on_runs: f_direct_formatting_on_runs,
+            #[cfg(feature = "wml-settings")]
             direct_formatting_on_paragraphs: f_direct_formatting_on_paragraphs,
+            #[cfg(feature = "wml-settings")]
             direct_formatting_on_numbering: f_direct_formatting_on_numbering,
+            #[cfg(feature = "wml-settings")]
             direct_formatting_on_tables: f_direct_formatting_on_tables,
+            #[cfg(feature = "wml-settings")]
             clear_formatting: f_clear_formatting,
+            #[cfg(feature = "wml-settings")]
             top3_heading_styles: f_top3_heading_styles,
+            #[cfg(feature = "wml-settings")]
             visible_styles: f_visible_styles,
+            #[cfg(feature = "wml-settings")]
             alternate_style_names: f_alternate_style_names,
+            #[cfg(feature = "wml-settings")]
             value: f_value,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -35609,18 +38382,31 @@ impl FromXml for CTWebSettings {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_frameset = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_divs = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_encoding = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_optimize_for_browser = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_rely_on_v_m_l = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_allow_p_n_g = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_rely_on_c_s_s = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_save_as_single_file = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_organize_in_folder = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_do_not_use_long_file_names = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_pixels_per_inch = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_target_screen_sz = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_save_smart_tags_as_xml = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -35634,6 +38420,7 @@ impl FromXml for CTWebSettings {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"frameset" => {
                                 f_frameset =
                                     Some(Box::new(CTFrameset::from_xml(reader, &e, false)?));
@@ -35642,6 +38429,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"divs" => {
                                 f_divs = Some(Box::new(CTDivs::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -35649,6 +38437,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"encoding" => {
                                 f_encoding = Some(Box::new(CTString::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -35656,6 +38445,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"optimizeForBrowser" => {
                                 f_optimize_for_browser = Some(Box::new(
                                     CTOptimizeForBrowser::from_xml(reader, &e, false)?,
@@ -35665,6 +38455,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"relyOnVML" => {
                                 f_rely_on_v_m_l =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -35673,6 +38464,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"allowPNG" => {
                                 f_allow_p_n_g =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -35681,6 +38473,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotRelyOnCSS" => {
                                 f_do_not_rely_on_c_s_s =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -35689,6 +38482,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotSaveAsSingleFile" => {
                                 f_do_not_save_as_single_file =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -35697,6 +38491,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotOrganizeInFolder" => {
                                 f_do_not_organize_in_folder =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -35705,6 +38500,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotUseLongFileNames" => {
                                 f_do_not_use_long_file_names =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -35713,6 +38509,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"pixelsPerInch" => {
                                 f_pixels_per_inch =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -35721,6 +38518,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"targetScreenSz" => {
                                 f_target_screen_sz =
                                     Some(Box::new(CTTargetScreenSz::from_xml(reader, &e, false)?));
@@ -35729,6 +38527,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"saveSmartTagsAsXml" => {
                                 f_save_smart_tags_as_xml =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -35756,6 +38555,7 @@ impl FromXml for CTWebSettings {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"frameset" => {
                                 f_frameset =
                                     Some(Box::new(CTFrameset::from_xml(reader, &e, true)?));
@@ -35764,6 +38564,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"divs" => {
                                 f_divs = Some(Box::new(CTDivs::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -35771,6 +38572,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"encoding" => {
                                 f_encoding = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -35778,6 +38580,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"optimizeForBrowser" => {
                                 f_optimize_for_browser = Some(Box::new(
                                     CTOptimizeForBrowser::from_xml(reader, &e, true)?,
@@ -35787,6 +38590,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"relyOnVML" => {
                                 f_rely_on_v_m_l =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35795,6 +38599,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"allowPNG" => {
                                 f_allow_p_n_g =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35803,6 +38608,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotRelyOnCSS" => {
                                 f_do_not_rely_on_c_s_s =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35811,6 +38617,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotSaveAsSingleFile" => {
                                 f_do_not_save_as_single_file =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35819,6 +38626,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotOrganizeInFolder" => {
                                 f_do_not_organize_in_folder =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35827,6 +38635,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"doNotUseLongFileNames" => {
                                 f_do_not_use_long_file_names =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35835,6 +38644,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"pixelsPerInch" => {
                                 f_pixels_per_inch =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -35843,6 +38653,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"targetScreenSz" => {
                                 f_target_screen_sz =
                                     Some(Box::new(CTTargetScreenSz::from_xml(reader, &e, true)?));
@@ -35851,6 +38662,7 @@ impl FromXml for CTWebSettings {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"saveSmartTagsAsXml" => {
                                 f_save_smart_tags_as_xml =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -35882,18 +38694,31 @@ impl FromXml for CTWebSettings {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             frameset: f_frameset,
+            #[cfg(feature = "wml-settings")]
             divs: f_divs,
+            #[cfg(feature = "wml-settings")]
             encoding: f_encoding,
+            #[cfg(feature = "wml-settings")]
             optimize_for_browser: f_optimize_for_browser,
+            #[cfg(feature = "wml-settings")]
             rely_on_v_m_l: f_rely_on_v_m_l,
+            #[cfg(feature = "wml-settings")]
             allow_p_n_g: f_allow_p_n_g,
+            #[cfg(feature = "wml-settings")]
             do_not_rely_on_c_s_s: f_do_not_rely_on_c_s_s,
+            #[cfg(feature = "wml-settings")]
             do_not_save_as_single_file: f_do_not_save_as_single_file,
+            #[cfg(feature = "wml-settings")]
             do_not_organize_in_folder: f_do_not_organize_in_folder,
+            #[cfg(feature = "wml-settings")]
             do_not_use_long_file_names: f_do_not_use_long_file_names,
+            #[cfg(feature = "wml-settings")]
             pixels_per_inch: f_pixels_per_inch,
+            #[cfg(feature = "wml-settings")]
             target_screen_sz: f_target_screen_sz,
+            #[cfg(feature = "wml-settings")]
             save_smart_tags_as_xml: f_save_smart_tags_as_xml,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -35955,6 +38780,7 @@ impl FromXml for CTOptimizeForBrowser {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_target = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -35966,6 +38792,7 @@ impl FromXml for CTOptimizeForBrowser {
                 b"val" => {
                     f_value = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"target" => {
                     f_target = Some(val.into_owned());
                 }
@@ -35993,6 +38820,7 @@ impl FromXml for CTOptimizeForBrowser {
 
         Ok(Self {
             value: f_value,
+            #[cfg(feature = "wml-settings")]
             target: f_target,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -36006,15 +38834,25 @@ impl FromXml for CTFrame {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_size = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_name = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_title = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_long_desc = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_source_file_name = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_mar_w = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_mar_h = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_scrollbar = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_no_resize_allowed = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_linked_to_file = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -36028,6 +38866,7 @@ impl FromXml for CTFrame {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"sz" => {
                                 f_size = Some(Box::new(CTString::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -36035,6 +38874,7 @@ impl FromXml for CTFrame {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"name" => {
                                 f_name = Some(Box::new(CTString::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -36042,6 +38882,7 @@ impl FromXml for CTFrame {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"title" => {
                                 f_title = Some(Box::new(CTString::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -36049,6 +38890,7 @@ impl FromXml for CTFrame {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"longDesc" => {
                                 f_long_desc = Some(Box::new(CTRel::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -36056,6 +38898,7 @@ impl FromXml for CTFrame {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"sourceFileName" => {
                                 f_source_file_name =
                                     Some(Box::new(CTRel::from_xml(reader, &e, false)?));
@@ -36064,6 +38907,7 @@ impl FromXml for CTFrame {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"marW" => {
                                 f_mar_w =
                                     Some(Box::new(CTPixelsMeasure::from_xml(reader, &e, false)?));
@@ -36072,6 +38916,7 @@ impl FromXml for CTFrame {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"marH" => {
                                 f_mar_h =
                                     Some(Box::new(CTPixelsMeasure::from_xml(reader, &e, false)?));
@@ -36080,6 +38925,7 @@ impl FromXml for CTFrame {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"scrollbar" => {
                                 f_scrollbar =
                                     Some(Box::new(CTFrameScrollbar::from_xml(reader, &e, false)?));
@@ -36088,6 +38934,7 @@ impl FromXml for CTFrame {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"noResizeAllowed" => {
                                 f_no_resize_allowed =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -36096,6 +38943,7 @@ impl FromXml for CTFrame {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"linkedToFile" => {
                                 f_linked_to_file =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -36123,6 +38971,7 @@ impl FromXml for CTFrame {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"sz" => {
                                 f_size = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -36130,6 +38979,7 @@ impl FromXml for CTFrame {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"name" => {
                                 f_name = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -36137,6 +38987,7 @@ impl FromXml for CTFrame {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"title" => {
                                 f_title = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -36144,6 +38995,7 @@ impl FromXml for CTFrame {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"longDesc" => {
                                 f_long_desc = Some(Box::new(CTRel::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -36151,6 +39003,7 @@ impl FromXml for CTFrame {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"sourceFileName" => {
                                 f_source_file_name =
                                     Some(Box::new(CTRel::from_xml(reader, &e, true)?));
@@ -36159,6 +39012,7 @@ impl FromXml for CTFrame {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"marW" => {
                                 f_mar_w =
                                     Some(Box::new(CTPixelsMeasure::from_xml(reader, &e, true)?));
@@ -36167,6 +39021,7 @@ impl FromXml for CTFrame {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"marH" => {
                                 f_mar_h =
                                     Some(Box::new(CTPixelsMeasure::from_xml(reader, &e, true)?));
@@ -36175,6 +39030,7 @@ impl FromXml for CTFrame {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"scrollbar" => {
                                 f_scrollbar =
                                     Some(Box::new(CTFrameScrollbar::from_xml(reader, &e, true)?));
@@ -36183,6 +39039,7 @@ impl FromXml for CTFrame {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"noResizeAllowed" => {
                                 f_no_resize_allowed =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -36191,6 +39048,7 @@ impl FromXml for CTFrame {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"linkedToFile" => {
                                 f_linked_to_file =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -36222,15 +39080,25 @@ impl FromXml for CTFrame {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             size: f_size,
+            #[cfg(feature = "wml-settings")]
             name: f_name,
+            #[cfg(feature = "wml-settings")]
             title: f_title,
+            #[cfg(feature = "wml-settings")]
             long_desc: f_long_desc,
+            #[cfg(feature = "wml-settings")]
             source_file_name: f_source_file_name,
+            #[cfg(feature = "wml-settings")]
             mar_w: f_mar_w,
+            #[cfg(feature = "wml-settings")]
             mar_h: f_mar_h,
+            #[cfg(feature = "wml-settings")]
             scrollbar: f_scrollbar,
+            #[cfg(feature = "wml-settings")]
             no_resize_allowed: f_no_resize_allowed,
+            #[cfg(feature = "wml-settings")]
             linked_to_file: f_linked_to_file,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -36291,9 +39159,13 @@ impl FromXml for CTFramesetSplitbar {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_width = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_color = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_no_border = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_flat_borders = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -36307,6 +39179,7 @@ impl FromXml for CTFramesetSplitbar {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"w" => {
                                 f_width =
                                     Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, false)?));
@@ -36315,6 +39188,7 @@ impl FromXml for CTFramesetSplitbar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"color" => {
                                 f_color = Some(Box::new(CTColor::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -36322,6 +39196,7 @@ impl FromXml for CTFramesetSplitbar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"noBorder" => {
                                 f_no_border = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -36329,6 +39204,7 @@ impl FromXml for CTFramesetSplitbar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"flatBorders" => {
                                 f_flat_borders =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -36356,6 +39232,7 @@ impl FromXml for CTFramesetSplitbar {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"w" => {
                                 f_width =
                                     Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, true)?));
@@ -36364,6 +39241,7 @@ impl FromXml for CTFramesetSplitbar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"color" => {
                                 f_color = Some(Box::new(CTColor::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -36371,6 +39249,7 @@ impl FromXml for CTFramesetSplitbar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"noBorder" => {
                                 f_no_border = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -36378,6 +39257,7 @@ impl FromXml for CTFramesetSplitbar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"flatBorders" => {
                                 f_flat_borders =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -36409,9 +39289,13 @@ impl FromXml for CTFramesetSplitbar {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             width: f_width,
+            #[cfg(feature = "wml-settings")]
             color: f_color,
+            #[cfg(feature = "wml-settings")]
             no_border: f_no_border,
+            #[cfg(feature = "wml-settings")]
             flat_borders: f_flat_borders,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -36425,9 +39309,13 @@ impl FromXml for CTFrameset {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_size = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_frameset_splitbar = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_frame_layout = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_title = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -36441,6 +39329,7 @@ impl FromXml for CTFrameset {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"sz" => {
                                 f_size = Some(Box::new(CTString::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -36448,6 +39337,7 @@ impl FromXml for CTFrameset {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"framesetSplitbar" => {
                                 f_frameset_splitbar = Some(Box::new(CTFramesetSplitbar::from_xml(
                                     reader, &e, false,
@@ -36457,6 +39347,7 @@ impl FromXml for CTFrameset {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"frameLayout" => {
                                 f_frame_layout =
                                     Some(Box::new(CTFrameLayout::from_xml(reader, &e, false)?));
@@ -36465,6 +39356,7 @@ impl FromXml for CTFrameset {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"title" => {
                                 f_title = Some(Box::new(CTString::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -36491,6 +39383,7 @@ impl FromXml for CTFrameset {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"sz" => {
                                 f_size = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -36498,6 +39391,7 @@ impl FromXml for CTFrameset {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"framesetSplitbar" => {
                                 f_frameset_splitbar =
                                     Some(Box::new(CTFramesetSplitbar::from_xml(reader, &e, true)?));
@@ -36506,6 +39400,7 @@ impl FromXml for CTFrameset {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"frameLayout" => {
                                 f_frame_layout =
                                     Some(Box::new(CTFrameLayout::from_xml(reader, &e, true)?));
@@ -36514,6 +39409,7 @@ impl FromXml for CTFrameset {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"title" => {
                                 f_title = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -36544,9 +39440,13 @@ impl FromXml for CTFrameset {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             size: f_size,
+            #[cfg(feature = "wml-settings")]
             frameset_splitbar: f_frameset_splitbar,
+            #[cfg(feature = "wml-settings")]
             frame_layout: f_frame_layout,
+            #[cfg(feature = "wml-settings")]
             title: f_title,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -36561,7 +39461,9 @@ impl FromXml for CTNumPicBullet {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_num_pic_bullet_id: Option<STDecimalNumber> = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_pict = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_drawing = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -36594,6 +39496,7 @@ impl FromXml for CTNumPicBullet {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-numbering")]
                             b"pict" => {
                                 f_pict = Some(Box::new(CTPicture::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -36601,6 +39504,7 @@ impl FromXml for CTNumPicBullet {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"drawing" => {
                                 f_drawing = Some(Box::new(CTDrawing::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -36627,6 +39531,7 @@ impl FromXml for CTNumPicBullet {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-numbering")]
                             b"pict" => {
                                 f_pict = Some(Box::new(CTPicture::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -36634,6 +39539,7 @@ impl FromXml for CTNumPicBullet {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"drawing" => {
                                 f_drawing = Some(Box::new(CTDrawing::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -36666,7 +39572,9 @@ impl FromXml for CTNumPicBullet {
         Ok(Self {
             num_pic_bullet_id: f_num_pic_bullet_id
                 .ok_or_else(|| ParseError::MissingAttribute("numPicBulletId".to_string()))?,
+            #[cfg(feature = "wml-numbering")]
             pict: f_pict,
+            #[cfg(feature = "wml-numbering")]
             drawing: f_drawing,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -36730,6 +39638,7 @@ impl FromXml for CTLevelText {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_null = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -36741,6 +39650,7 @@ impl FromXml for CTLevelText {
                 b"val" => {
                     f_value = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-numbering")]
                 b"null" => {
                     f_null = Some(val.into_owned());
                 }
@@ -36768,6 +39678,7 @@ impl FromXml for CTLevelText {
 
         Ok(Self {
             value: f_value,
+            #[cfg(feature = "wml-numbering")]
             null: f_null,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -36781,8 +39692,11 @@ impl FromXml for CTLvlLegacy {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-numbering")]
         let mut f_legacy = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_legacy_space = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_legacy_indent = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -36791,12 +39705,15 @@ impl FromXml for CTLvlLegacy {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-numbering")]
                 b"legacy" => {
                     f_legacy = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-numbering")]
                 b"legacySpace" => {
                     f_legacy_space = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-numbering")]
                 b"legacyIndent" => {
                     f_legacy_indent = Some(val.into_owned());
                 }
@@ -36823,8 +39740,11 @@ impl FromXml for CTLvlLegacy {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-numbering")]
             legacy: f_legacy,
+            #[cfg(feature = "wml-numbering")]
             legacy_space: f_legacy_space,
+            #[cfg(feature = "wml-numbering")]
             legacy_indent: f_legacy_indent,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -36839,19 +39759,33 @@ impl FromXml for Level {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_ilvl: Option<STDecimalNumber> = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_tplc = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_tentative = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_start = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_num_fmt = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_lvl_restart = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_paragraph_style = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_is_lgl = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_suff = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_lvl_text = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_lvl_pic_bullet_id = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_legacy = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_lvl_jc = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_p_pr = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_r_pr = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -36867,9 +39801,11 @@ impl FromXml for Level {
                 b"ilvl" => {
                     f_ilvl = val.parse().ok();
                 }
+                #[cfg(feature = "wml-numbering")]
                 b"tplc" => {
                     f_tplc = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-numbering")]
                 b"tentative" => {
                     f_tentative = Some(val.into_owned());
                 }
@@ -36890,6 +39826,7 @@ impl FromXml for Level {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-numbering")]
                             b"start" => {
                                 f_start =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -36898,6 +39835,7 @@ impl FromXml for Level {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"numFmt" => {
                                 f_num_fmt = Some(Box::new(CTNumFmt::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -36905,6 +39843,7 @@ impl FromXml for Level {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"lvlRestart" => {
                                 f_lvl_restart =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -36913,6 +39852,7 @@ impl FromXml for Level {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"pStyle" => {
                                 f_paragraph_style =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
@@ -36921,6 +39861,7 @@ impl FromXml for Level {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"isLgl" => {
                                 f_is_lgl = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -36928,6 +39869,7 @@ impl FromXml for Level {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"suff" => {
                                 f_suff =
                                     Some(Box::new(CTLevelSuffix::from_xml(reader, &e, false)?));
@@ -36936,6 +39878,7 @@ impl FromXml for Level {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"lvlText" => {
                                 f_lvl_text =
                                     Some(Box::new(CTLevelText::from_xml(reader, &e, false)?));
@@ -36944,6 +39887,7 @@ impl FromXml for Level {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"lvlPicBulletId" => {
                                 f_lvl_pic_bullet_id =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -36952,6 +39896,7 @@ impl FromXml for Level {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"legacy" => {
                                 f_legacy =
                                     Some(Box::new(CTLvlLegacy::from_xml(reader, &e, false)?));
@@ -36960,6 +39905,7 @@ impl FromXml for Level {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"lvlJc" => {
                                 f_lvl_jc = Some(Box::new(CTJc::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -36967,6 +39913,7 @@ impl FromXml for Level {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"pPr" => {
                                 f_p_pr = Some(Box::new(CTPPrGeneral::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -36974,6 +39921,7 @@ impl FromXml for Level {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"rPr" => {
                                 f_r_pr =
                                     Some(Box::new(RunProperties::from_xml(reader, &e, false)?));
@@ -37001,6 +39949,7 @@ impl FromXml for Level {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-numbering")]
                             b"start" => {
                                 f_start =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -37009,6 +39958,7 @@ impl FromXml for Level {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"numFmt" => {
                                 f_num_fmt = Some(Box::new(CTNumFmt::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -37016,6 +39966,7 @@ impl FromXml for Level {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"lvlRestart" => {
                                 f_lvl_restart =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -37024,6 +39975,7 @@ impl FromXml for Level {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"pStyle" => {
                                 f_paragraph_style =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
@@ -37032,6 +39984,7 @@ impl FromXml for Level {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"isLgl" => {
                                 f_is_lgl = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -37039,6 +39992,7 @@ impl FromXml for Level {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"suff" => {
                                 f_suff = Some(Box::new(CTLevelSuffix::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -37046,6 +40000,7 @@ impl FromXml for Level {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"lvlText" => {
                                 f_lvl_text =
                                     Some(Box::new(CTLevelText::from_xml(reader, &e, true)?));
@@ -37054,6 +40009,7 @@ impl FromXml for Level {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"lvlPicBulletId" => {
                                 f_lvl_pic_bullet_id =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -37062,6 +40018,7 @@ impl FromXml for Level {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"legacy" => {
                                 f_legacy = Some(Box::new(CTLvlLegacy::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -37069,6 +40026,7 @@ impl FromXml for Level {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"lvlJc" => {
                                 f_lvl_jc = Some(Box::new(CTJc::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -37076,6 +40034,7 @@ impl FromXml for Level {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"pPr" => {
                                 f_p_pr = Some(Box::new(CTPPrGeneral::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -37083,6 +40042,7 @@ impl FromXml for Level {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"rPr" => {
                                 f_r_pr = Some(Box::new(RunProperties::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -37114,19 +40074,33 @@ impl FromXml for Level {
 
         Ok(Self {
             ilvl: f_ilvl.ok_or_else(|| ParseError::MissingAttribute("ilvl".to_string()))?,
+            #[cfg(feature = "wml-numbering")]
             tplc: f_tplc,
+            #[cfg(feature = "wml-numbering")]
             tentative: f_tentative,
+            #[cfg(feature = "wml-numbering")]
             start: f_start,
+            #[cfg(feature = "wml-numbering")]
             num_fmt: f_num_fmt,
+            #[cfg(feature = "wml-numbering")]
             lvl_restart: f_lvl_restart,
+            #[cfg(feature = "wml-numbering")]
             paragraph_style: f_paragraph_style,
+            #[cfg(feature = "wml-numbering")]
             is_lgl: f_is_lgl,
+            #[cfg(feature = "wml-numbering")]
             suff: f_suff,
+            #[cfg(feature = "wml-numbering")]
             lvl_text: f_lvl_text,
+            #[cfg(feature = "wml-numbering")]
             lvl_pic_bullet_id: f_lvl_pic_bullet_id,
+            #[cfg(feature = "wml-numbering")]
             legacy: f_legacy,
+            #[cfg(feature = "wml-numbering")]
             lvl_jc: f_lvl_jc,
+            #[cfg(feature = "wml-numbering")]
             p_pr: f_p_pr,
+            #[cfg(feature = "wml-numbering")]
             r_pr: f_r_pr,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -37190,11 +40164,17 @@ impl FromXml for AbstractNumbering {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_abstract_num_id: Option<STDecimalNumber> = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_nsid = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_multi_level_type = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_tmpl = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_name = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_style_link = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_num_style_link = None;
         let mut f_lvl = Vec::new();
         #[cfg(feature = "extra-attrs")]
@@ -37228,6 +40208,7 @@ impl FromXml for AbstractNumbering {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-numbering")]
                             b"nsid" => {
                                 f_nsid =
                                     Some(Box::new(CTLongHexNumber::from_xml(reader, &e, false)?));
@@ -37236,6 +40217,7 @@ impl FromXml for AbstractNumbering {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"multiLevelType" => {
                                 f_multi_level_type =
                                     Some(Box::new(CTMultiLevelType::from_xml(reader, &e, false)?));
@@ -37244,6 +40226,7 @@ impl FromXml for AbstractNumbering {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"tmpl" => {
                                 f_tmpl =
                                     Some(Box::new(CTLongHexNumber::from_xml(reader, &e, false)?));
@@ -37252,6 +40235,7 @@ impl FromXml for AbstractNumbering {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"name" => {
                                 f_name = Some(Box::new(CTString::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -37259,6 +40243,7 @@ impl FromXml for AbstractNumbering {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"styleLink" => {
                                 f_style_link =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
@@ -37267,6 +40252,7 @@ impl FromXml for AbstractNumbering {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"numStyleLink" => {
                                 f_num_style_link =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
@@ -37301,6 +40287,7 @@ impl FromXml for AbstractNumbering {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-numbering")]
                             b"nsid" => {
                                 f_nsid =
                                     Some(Box::new(CTLongHexNumber::from_xml(reader, &e, true)?));
@@ -37309,6 +40296,7 @@ impl FromXml for AbstractNumbering {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"multiLevelType" => {
                                 f_multi_level_type =
                                     Some(Box::new(CTMultiLevelType::from_xml(reader, &e, true)?));
@@ -37317,6 +40305,7 @@ impl FromXml for AbstractNumbering {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"tmpl" => {
                                 f_tmpl =
                                     Some(Box::new(CTLongHexNumber::from_xml(reader, &e, true)?));
@@ -37325,6 +40314,7 @@ impl FromXml for AbstractNumbering {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"name" => {
                                 f_name = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -37332,6 +40322,7 @@ impl FromXml for AbstractNumbering {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"styleLink" => {
                                 f_style_link =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
@@ -37340,6 +40331,7 @@ impl FromXml for AbstractNumbering {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"numStyleLink" => {
                                 f_num_style_link =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
@@ -37380,11 +40372,17 @@ impl FromXml for AbstractNumbering {
         Ok(Self {
             abstract_num_id: f_abstract_num_id
                 .ok_or_else(|| ParseError::MissingAttribute("abstractNumId".to_string()))?,
+            #[cfg(feature = "wml-numbering")]
             nsid: f_nsid,
+            #[cfg(feature = "wml-numbering")]
             multi_level_type: f_multi_level_type,
+            #[cfg(feature = "wml-numbering")]
             tmpl: f_tmpl,
+            #[cfg(feature = "wml-numbering")]
             name: f_name,
+            #[cfg(feature = "wml-numbering")]
             style_link: f_style_link,
+            #[cfg(feature = "wml-numbering")]
             num_style_link: f_num_style_link,
             lvl: f_lvl,
             #[cfg(feature = "extra-attrs")]
@@ -37402,7 +40400,9 @@ impl FromXml for CTNumLvl {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_ilvl: Option<STDecimalNumber> = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_start_override = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_lvl = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -37435,6 +40435,7 @@ impl FromXml for CTNumLvl {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-numbering")]
                             b"startOverride" => {
                                 f_start_override =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -37443,6 +40444,7 @@ impl FromXml for CTNumLvl {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"lvl" => {
                                 f_lvl = Some(Box::new(Level::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -37469,6 +40471,7 @@ impl FromXml for CTNumLvl {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-numbering")]
                             b"startOverride" => {
                                 f_start_override =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -37477,6 +40480,7 @@ impl FromXml for CTNumLvl {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"lvl" => {
                                 f_lvl = Some(Box::new(Level::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -37508,7 +40512,9 @@ impl FromXml for CTNumLvl {
 
         Ok(Self {
             ilvl: f_ilvl.ok_or_else(|| ParseError::MissingAttribute("ilvl".to_string()))?,
+            #[cfg(feature = "wml-numbering")]
             start_override: f_start_override,
+            #[cfg(feature = "wml-numbering")]
             lvl: f_lvl,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -37526,6 +40532,7 @@ impl FromXml for NumberingInstance {
     ) -> Result<Self, ParseError> {
         let mut f_num_id: Option<STDecimalNumber> = None;
         let mut f_abstract_num_id: Option<Box<CTDecimalNumber>> = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_lvl_override = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -37566,6 +40573,7 @@ impl FromXml for NumberingInstance {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"lvlOverride" => {
                                 f_lvl_override.push(CTNumLvl::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -37600,6 +40608,7 @@ impl FromXml for NumberingInstance {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"lvlOverride" => {
                                 f_lvl_override.push(CTNumLvl::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -37633,6 +40642,7 @@ impl FromXml for NumberingInstance {
             num_id: f_num_id.ok_or_else(|| ParseError::MissingAttribute("numId".to_string()))?,
             abstract_num_id: f_abstract_num_id
                 .ok_or_else(|| ParseError::MissingAttribute("abstractNumId".to_string()))?,
+            #[cfg(feature = "wml-numbering")]
             lvl_override: f_lvl_override,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -37783,17 +40793,22 @@ impl FromXml for Numbering {
     }
 }
 
-impl FromXml for CTTblStylePr {
+impl FromXml for TableStyleProperties {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_type: Option<STTblStyleOverrideType> = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_p_pr = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_r_pr = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_table_properties = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_row_properties = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_cell_properties = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -37826,6 +40841,7 @@ impl FromXml for CTTblStylePr {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"pPr" => {
                                 f_p_pr = Some(Box::new(CTPPrGeneral::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -37833,6 +40849,7 @@ impl FromXml for CTTblStylePr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"rPr" => {
                                 f_r_pr =
                                     Some(Box::new(RunProperties::from_xml(reader, &e, false)?));
@@ -37841,6 +40858,7 @@ impl FromXml for CTTblStylePr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"tblPr" => {
                                 f_table_properties =
                                     Some(Box::new(CTTblPrBase::from_xml(reader, &e, false)?));
@@ -37849,6 +40867,7 @@ impl FromXml for CTTblStylePr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"trPr" => {
                                 f_row_properties = Some(Box::new(TableRowProperties::from_xml(
                                     reader, &e, false,
@@ -37858,6 +40877,7 @@ impl FromXml for CTTblStylePr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"tcPr" => {
                                 f_cell_properties = Some(Box::new(TableCellProperties::from_xml(
                                     reader, &e, false,
@@ -37886,6 +40906,7 @@ impl FromXml for CTTblStylePr {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"pPr" => {
                                 f_p_pr = Some(Box::new(CTPPrGeneral::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -37893,6 +40914,7 @@ impl FromXml for CTTblStylePr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"rPr" => {
                                 f_r_pr = Some(Box::new(RunProperties::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -37900,6 +40922,7 @@ impl FromXml for CTTblStylePr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"tblPr" => {
                                 f_table_properties =
                                     Some(Box::new(CTTblPrBase::from_xml(reader, &e, true)?));
@@ -37908,6 +40931,7 @@ impl FromXml for CTTblStylePr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"trPr" => {
                                 f_row_properties =
                                     Some(Box::new(TableRowProperties::from_xml(reader, &e, true)?));
@@ -37916,6 +40940,7 @@ impl FromXml for CTTblStylePr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"tcPr" => {
                                 f_cell_properties = Some(Box::new(TableCellProperties::from_xml(
                                     reader, &e, true,
@@ -37949,10 +40974,15 @@ impl FromXml for CTTblStylePr {
 
         Ok(Self {
             r#type: f_type.ok_or_else(|| ParseError::MissingAttribute("type".to_string()))?,
+            #[cfg(feature = "wml-styling")]
             p_pr: f_p_pr,
+            #[cfg(feature = "wml-styling")]
             r_pr: f_r_pr,
+            #[cfg(feature = "wml-styling")]
             table_properties: f_table_properties,
+            #[cfg(feature = "wml-styling")]
             row_properties: f_row_properties,
+            #[cfg(feature = "wml-styling")]
             cell_properties: f_cell_properties,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -37991,10 +41021,15 @@ impl FromXml for Style {
         let mut f_unhide_when_used = None;
         #[cfg(feature = "wml-styling")]
         let mut f_q_format = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_locked = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_personal = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_personal_compose = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_personal_reply = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_rsid = None;
         #[cfg(feature = "wml-styling")]
         let mut f_p_pr = None;
@@ -38137,6 +41172,7 @@ impl FromXml for Style {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"locked" => {
                                 f_locked = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -38144,6 +41180,7 @@ impl FromXml for Style {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"personal" => {
                                 f_personal = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -38151,6 +41188,7 @@ impl FromXml for Style {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"personalCompose" => {
                                 f_personal_compose =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -38159,6 +41197,7 @@ impl FromXml for Style {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"personalReply" => {
                                 f_personal_reply =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -38167,6 +41206,7 @@ impl FromXml for Style {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"rsid" => {
                                 f_rsid =
                                     Some(Box::new(CTLongHexNumber::from_xml(reader, &e, false)?));
@@ -38223,7 +41263,8 @@ impl FromXml for Style {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"tblStylePr" => {
-                                f_tbl_style_pr.push(CTTblStylePr::from_xml(reader, &e, false)?);
+                                f_tbl_style_pr
+                                    .push(TableStyleProperties::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38337,6 +41378,7 @@ impl FromXml for Style {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"locked" => {
                                 f_locked = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -38344,6 +41386,7 @@ impl FromXml for Style {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"personal" => {
                                 f_personal = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -38351,6 +41394,7 @@ impl FromXml for Style {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"personalCompose" => {
                                 f_personal_compose =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -38359,6 +41403,7 @@ impl FromXml for Style {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"personalReply" => {
                                 f_personal_reply =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -38367,6 +41412,7 @@ impl FromXml for Style {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"rsid" => {
                                 f_rsid =
                                     Some(Box::new(CTLongHexNumber::from_xml(reader, &e, true)?));
@@ -38421,7 +41467,8 @@ impl FromXml for Style {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"tblStylePr" => {
-                                f_tbl_style_pr.push(CTTblStylePr::from_xml(reader, &e, true)?);
+                                f_tbl_style_pr
+                                    .push(TableStyleProperties::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38473,10 +41520,15 @@ impl FromXml for Style {
             unhide_when_used: f_unhide_when_used,
             #[cfg(feature = "wml-styling")]
             q_format: f_q_format,
+            #[cfg(feature = "wml-settings")]
             locked: f_locked,
+            #[cfg(feature = "wml-settings")]
             personal: f_personal,
+            #[cfg(feature = "wml-settings")]
             personal_compose: f_personal_compose,
+            #[cfg(feature = "wml-settings")]
             personal_reply: f_personal_reply,
+            #[cfg(feature = "wml-track-changes")]
             rsid: f_rsid,
             #[cfg(feature = "wml-styling")]
             p_pr: f_p_pr,
@@ -38498,17 +41550,22 @@ impl FromXml for Style {
     }
 }
 
-impl FromXml for CTLsdException {
+impl FromXml for LatentStyleException {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_name: Option<STString> = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_locked = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_ui_priority = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_semi_hidden = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_unhide_when_used = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_q_format = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -38520,18 +41577,23 @@ impl FromXml for CTLsdException {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"locked" => {
                     f_locked = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"uiPriority" => {
                     f_ui_priority = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"semiHidden" => {
                     f_semi_hidden = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"unhideWhenUsed" => {
                     f_unhide_when_used = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"qFormat" => {
                     f_q_format = Some(val.into_owned());
                 }
@@ -38559,10 +41621,15 @@ impl FromXml for CTLsdException {
 
         Ok(Self {
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            #[cfg(feature = "wml-styling")]
             locked: f_locked,
+            #[cfg(feature = "wml-styling")]
             ui_priority: f_ui_priority,
+            #[cfg(feature = "wml-styling")]
             semi_hidden: f_semi_hidden,
+            #[cfg(feature = "wml-styling")]
             unhide_when_used: f_unhide_when_used,
+            #[cfg(feature = "wml-styling")]
             q_format: f_q_format,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -38570,17 +41637,23 @@ impl FromXml for CTLsdException {
     }
 }
 
-impl FromXml for CTLatentStyles {
+impl FromXml for LatentStyles {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_def_locked_state = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_def_u_i_priority = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_def_semi_hidden = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_def_unhide_when_used = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_def_q_format = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_count = None;
         let mut f_lsd_exception = Vec::new();
         #[cfg(feature = "extra-attrs")]
@@ -38594,21 +41667,27 @@ impl FromXml for CTLatentStyles {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-styling")]
                 b"defLockedState" => {
                     f_def_locked_state = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"defUIPriority" => {
                     f_def_u_i_priority = val.parse().ok();
                 }
+                #[cfg(feature = "wml-styling")]
                 b"defSemiHidden" => {
                     f_def_semi_hidden = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"defUnhideWhenUsed" => {
                     f_def_unhide_when_used = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"defQFormat" => {
                     f_def_q_format = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"count" => {
                     f_count = val.parse().ok();
                 }
@@ -38630,7 +41709,8 @@ impl FromXml for CTLatentStyles {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"lsdException" => {
-                                f_lsd_exception.push(CTLsdException::from_xml(reader, &e, false)?);
+                                f_lsd_exception
+                                    .push(LatentStyleException::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38656,7 +41736,8 @@ impl FromXml for CTLatentStyles {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"lsdException" => {
-                                f_lsd_exception.push(CTLsdException::from_xml(reader, &e, true)?);
+                                f_lsd_exception
+                                    .push(LatentStyleException::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38685,11 +41766,17 @@ impl FromXml for CTLatentStyles {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             def_locked_state: f_def_locked_state,
+            #[cfg(feature = "wml-styling")]
             def_u_i_priority: f_def_u_i_priority,
+            #[cfg(feature = "wml-styling")]
             def_semi_hidden: f_def_semi_hidden,
+            #[cfg(feature = "wml-styling")]
             def_unhide_when_used: f_def_unhide_when_used,
+            #[cfg(feature = "wml-styling")]
             def_q_format: f_def_q_format,
+            #[cfg(feature = "wml-styling")]
             count: f_count,
             lsd_exception: f_lsd_exception,
             #[cfg(feature = "extra-attrs")]
@@ -38707,6 +41794,7 @@ impl FromXml for Styles {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_doc_defaults = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_latent_styles = None;
         let mut f_style = Vec::new();
         #[cfg(feature = "extra-children")]
@@ -38723,15 +41811,16 @@ impl FromXml for Styles {
                         match e.local_name().as_ref() {
                             b"docDefaults" => {
                                 f_doc_defaults =
-                                    Some(Box::new(CTDocDefaults::from_xml(reader, &e, false)?));
+                                    Some(Box::new(DocumentDefaults::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"latentStyles" => {
                                 f_latent_styles =
-                                    Some(Box::new(CTLatentStyles::from_xml(reader, &e, false)?));
+                                    Some(Box::new(LatentStyles::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38765,15 +41854,16 @@ impl FromXml for Styles {
                         match e.local_name().as_ref() {
                             b"docDefaults" => {
                                 f_doc_defaults =
-                                    Some(Box::new(CTDocDefaults::from_xml(reader, &e, true)?));
+                                    Some(Box::new(DocumentDefaults::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"latentStyles" => {
                                 f_latent_styles =
-                                    Some(Box::new(CTLatentStyles::from_xml(reader, &e, true)?));
+                                    Some(Box::new(LatentStyles::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38810,6 +41900,7 @@ impl FromXml for Styles {
 
         Ok(Self {
             doc_defaults: f_doc_defaults,
+            #[cfg(feature = "wml-styling")]
             latent_styles: f_latent_styles,
             style: f_style,
             #[cfg(feature = "extra-children")]
@@ -38965,11 +42056,17 @@ impl FromXml for CTFontSig {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_usb0: Option<STLongHexNumber> = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_usb1: Option<STLongHexNumber> = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_usb2: Option<STLongHexNumber> = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_usb3: Option<STLongHexNumber> = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_csb0: Option<STLongHexNumber> = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_csb1: Option<STLongHexNumber> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -38978,21 +42075,27 @@ impl FromXml for CTFontSig {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-styling")]
                 b"usb0" => {
                     f_usb0 = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-styling")]
                 b"usb1" => {
                     f_usb1 = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-styling")]
                 b"usb2" => {
                     f_usb2 = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-styling")]
                 b"usb3" => {
                     f_usb3 = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-styling")]
                 b"csb0" => {
                     f_csb0 = decode_hex(&val);
                 }
+                #[cfg(feature = "wml-styling")]
                 b"csb1" => {
                     f_csb1 = decode_hex(&val);
                 }
@@ -39019,11 +42122,17 @@ impl FromXml for CTFontSig {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             usb0: f_usb0.ok_or_else(|| ParseError::MissingAttribute("usb0".to_string()))?,
+            #[cfg(feature = "wml-styling")]
             usb1: f_usb1.ok_or_else(|| ParseError::MissingAttribute("usb1".to_string()))?,
+            #[cfg(feature = "wml-styling")]
             usb2: f_usb2.ok_or_else(|| ParseError::MissingAttribute("usb2".to_string()))?,
+            #[cfg(feature = "wml-styling")]
             usb3: f_usb3.ok_or_else(|| ParseError::MissingAttribute("usb3".to_string()))?,
+            #[cfg(feature = "wml-styling")]
             csb0: f_csb0.ok_or_else(|| ParseError::MissingAttribute("csb0".to_string()))?,
+            #[cfg(feature = "wml-styling")]
             csb1: f_csb1.ok_or_else(|| ParseError::MissingAttribute("csb1".to_string()))?,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -39037,8 +42146,11 @@ impl FromXml for CTFontRel {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_id: Option<STRelationshipId> = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_font_key = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_subsetted = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -39047,12 +42159,15 @@ impl FromXml for CTFontRel {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-styling")]
                 b"id" => {
                     f_id = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"fontKey" => {
                     f_font_key = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-styling")]
                 b"subsetted" => {
                     f_subsetted = Some(val.into_owned());
                 }
@@ -39079,8 +42194,11 @@ impl FromXml for CTFontRel {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            #[cfg(feature = "wml-styling")]
             font_key: f_font_key,
+            #[cfg(feature = "wml-styling")]
             subsetted: f_subsetted,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -39095,16 +42213,27 @@ impl FromXml for Font {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_name: Option<STString> = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_alt_name = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_panose1 = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_charset = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_family = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_not_true_type = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_pitch = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_sig = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_embed_regular = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_embed_bold = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_embed_italic = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_embed_bold_italic = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -39137,6 +42266,7 @@ impl FromXml for Font {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"altName" => {
                                 f_alt_name = Some(Box::new(CTString::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -39144,6 +42274,7 @@ impl FromXml for Font {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"panose1" => {
                                 f_panose1 = Some(Box::new(CTPanose::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -39151,6 +42282,7 @@ impl FromXml for Font {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"charset" => {
                                 f_charset = Some(Box::new(CTCharset::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -39158,6 +42290,7 @@ impl FromXml for Font {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"family" => {
                                 f_family =
                                     Some(Box::new(CTFontFamily::from_xml(reader, &e, false)?));
@@ -39166,6 +42299,7 @@ impl FromXml for Font {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"notTrueType" => {
                                 f_not_true_type =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -39174,6 +42308,7 @@ impl FromXml for Font {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"pitch" => {
                                 f_pitch = Some(Box::new(CTPitch::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -39181,6 +42316,7 @@ impl FromXml for Font {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"sig" => {
                                 f_sig = Some(Box::new(CTFontSig::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -39188,6 +42324,7 @@ impl FromXml for Font {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"embedRegular" => {
                                 f_embed_regular =
                                     Some(Box::new(CTFontRel::from_xml(reader, &e, false)?));
@@ -39196,6 +42333,7 @@ impl FromXml for Font {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"embedBold" => {
                                 f_embed_bold =
                                     Some(Box::new(CTFontRel::from_xml(reader, &e, false)?));
@@ -39204,6 +42342,7 @@ impl FromXml for Font {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"embedItalic" => {
                                 f_embed_italic =
                                     Some(Box::new(CTFontRel::from_xml(reader, &e, false)?));
@@ -39212,6 +42351,7 @@ impl FromXml for Font {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"embedBoldItalic" => {
                                 f_embed_bold_italic =
                                     Some(Box::new(CTFontRel::from_xml(reader, &e, false)?));
@@ -39239,6 +42379,7 @@ impl FromXml for Font {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"altName" => {
                                 f_alt_name = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -39246,6 +42387,7 @@ impl FromXml for Font {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"panose1" => {
                                 f_panose1 = Some(Box::new(CTPanose::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -39253,6 +42395,7 @@ impl FromXml for Font {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"charset" => {
                                 f_charset = Some(Box::new(CTCharset::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -39260,6 +42403,7 @@ impl FromXml for Font {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"family" => {
                                 f_family =
                                     Some(Box::new(CTFontFamily::from_xml(reader, &e, true)?));
@@ -39268,6 +42412,7 @@ impl FromXml for Font {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"notTrueType" => {
                                 f_not_true_type =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -39276,6 +42421,7 @@ impl FromXml for Font {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"pitch" => {
                                 f_pitch = Some(Box::new(CTPitch::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -39283,6 +42429,7 @@ impl FromXml for Font {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"sig" => {
                                 f_sig = Some(Box::new(CTFontSig::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -39290,6 +42437,7 @@ impl FromXml for Font {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"embedRegular" => {
                                 f_embed_regular =
                                     Some(Box::new(CTFontRel::from_xml(reader, &e, true)?));
@@ -39298,6 +42446,7 @@ impl FromXml for Font {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"embedBold" => {
                                 f_embed_bold =
                                     Some(Box::new(CTFontRel::from_xml(reader, &e, true)?));
@@ -39306,6 +42455,7 @@ impl FromXml for Font {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"embedItalic" => {
                                 f_embed_italic =
                                     Some(Box::new(CTFontRel::from_xml(reader, &e, true)?));
@@ -39314,6 +42464,7 @@ impl FromXml for Font {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"embedBoldItalic" => {
                                 f_embed_bold_italic =
                                     Some(Box::new(CTFontRel::from_xml(reader, &e, true)?));
@@ -39346,16 +42497,27 @@ impl FromXml for Font {
 
         Ok(Self {
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            #[cfg(feature = "wml-styling")]
             alt_name: f_alt_name,
+            #[cfg(feature = "wml-styling")]
             panose1: f_panose1,
+            #[cfg(feature = "wml-styling")]
             charset: f_charset,
+            #[cfg(feature = "wml-styling")]
             family: f_family,
+            #[cfg(feature = "wml-styling")]
             not_true_type: f_not_true_type,
+            #[cfg(feature = "wml-styling")]
             pitch: f_pitch,
+            #[cfg(feature = "wml-styling")]
             sig: f_sig,
+            #[cfg(feature = "wml-styling")]
             embed_regular: f_embed_regular,
+            #[cfg(feature = "wml-styling")]
             embed_bold: f_embed_bold,
+            #[cfg(feature = "wml-styling")]
             embed_italic: f_embed_italic,
+            #[cfg(feature = "wml-styling")]
             embed_bold_italic: f_embed_bold_italic,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -39453,9 +42615,13 @@ impl FromXml for CTDivBdr {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_top = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_left = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_bottom = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_right = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -39469,6 +42635,7 @@ impl FromXml for CTDivBdr {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"top" => {
                                 f_top = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -39476,6 +42643,7 @@ impl FromXml for CTDivBdr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"left" => {
                                 f_left = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -39483,6 +42651,7 @@ impl FromXml for CTDivBdr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"bottom" => {
                                 f_bottom = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -39490,6 +42659,7 @@ impl FromXml for CTDivBdr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"right" => {
                                 f_right = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -39516,6 +42686,7 @@ impl FromXml for CTDivBdr {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"top" => {
                                 f_top = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -39523,6 +42694,7 @@ impl FromXml for CTDivBdr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"left" => {
                                 f_left = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -39530,6 +42702,7 @@ impl FromXml for CTDivBdr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"bottom" => {
                                 f_bottom = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -39537,6 +42710,7 @@ impl FromXml for CTDivBdr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"right" => {
                                 f_right = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -39567,9 +42741,13 @@ impl FromXml for CTDivBdr {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             top: f_top,
+            #[cfg(feature = "wml-settings")]
             left: f_left,
+            #[cfg(feature = "wml-settings")]
             bottom: f_bottom,
+            #[cfg(feature = "wml-settings")]
             right: f_right,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -39583,14 +42761,23 @@ impl FromXml for CTDiv {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_id: Option<STDecimalNumber> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_block_quote = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_body_div = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_mar_left: Option<Box<CTSignedTwipsMeasure>> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_mar_right: Option<Box<CTSignedTwipsMeasure>> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_mar_top: Option<Box<CTSignedTwipsMeasure>> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_mar_bottom: Option<Box<CTSignedTwipsMeasure>> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_div_bdr = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_divs_child = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -39603,6 +42790,7 @@ impl FromXml for CTDiv {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"id" => {
                     f_id = val.parse().ok();
                 }
@@ -39623,6 +42811,7 @@ impl FromXml for CTDiv {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"blockQuote" => {
                                 f_block_quote =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -39631,6 +42820,7 @@ impl FromXml for CTDiv {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"bodyDiv" => {
                                 f_body_div = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -39638,6 +42828,7 @@ impl FromXml for CTDiv {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"marLeft" => {
                                 f_mar_left = Some(Box::new(CTSignedTwipsMeasure::from_xml(
                                     reader, &e, false,
@@ -39647,6 +42838,7 @@ impl FromXml for CTDiv {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"marRight" => {
                                 f_mar_right = Some(Box::new(CTSignedTwipsMeasure::from_xml(
                                     reader, &e, false,
@@ -39656,6 +42848,7 @@ impl FromXml for CTDiv {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"marTop" => {
                                 f_mar_top = Some(Box::new(CTSignedTwipsMeasure::from_xml(
                                     reader, &e, false,
@@ -39665,6 +42858,7 @@ impl FromXml for CTDiv {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"marBottom" => {
                                 f_mar_bottom = Some(Box::new(CTSignedTwipsMeasure::from_xml(
                                     reader, &e, false,
@@ -39674,6 +42868,7 @@ impl FromXml for CTDiv {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"divBdr" => {
                                 f_div_bdr = Some(Box::new(CTDivBdr::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -39681,6 +42876,7 @@ impl FromXml for CTDiv {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"divsChild" => {
                                 f_divs_child.push(CTDivs::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -39707,6 +42903,7 @@ impl FromXml for CTDiv {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"blockQuote" => {
                                 f_block_quote =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -39715,6 +42912,7 @@ impl FromXml for CTDiv {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"bodyDiv" => {
                                 f_body_div = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -39722,6 +42920,7 @@ impl FromXml for CTDiv {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"marLeft" => {
                                 f_mar_left = Some(Box::new(CTSignedTwipsMeasure::from_xml(
                                     reader, &e, true,
@@ -39731,6 +42930,7 @@ impl FromXml for CTDiv {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"marRight" => {
                                 f_mar_right = Some(Box::new(CTSignedTwipsMeasure::from_xml(
                                     reader, &e, true,
@@ -39740,6 +42940,7 @@ impl FromXml for CTDiv {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"marTop" => {
                                 f_mar_top = Some(Box::new(CTSignedTwipsMeasure::from_xml(
                                     reader, &e, true,
@@ -39749,6 +42950,7 @@ impl FromXml for CTDiv {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"marBottom" => {
                                 f_mar_bottom = Some(Box::new(CTSignedTwipsMeasure::from_xml(
                                     reader, &e, true,
@@ -39758,6 +42960,7 @@ impl FromXml for CTDiv {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"divBdr" => {
                                 f_div_bdr = Some(Box::new(CTDivBdr::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -39765,6 +42968,7 @@ impl FromXml for CTDiv {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"divsChild" => {
                                 f_divs_child.push(CTDivs::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -39795,17 +42999,26 @@ impl FromXml for CTDiv {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             block_quote: f_block_quote,
+            #[cfg(feature = "wml-settings")]
             body_div: f_body_div,
+            #[cfg(feature = "wml-settings")]
             mar_left: f_mar_left
                 .ok_or_else(|| ParseError::MissingAttribute("marLeft".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             mar_right: f_mar_right
                 .ok_or_else(|| ParseError::MissingAttribute("marRight".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             mar_top: f_mar_top.ok_or_else(|| ParseError::MissingAttribute("marTop".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             mar_bottom: f_mar_bottom
                 .ok_or_else(|| ParseError::MissingAttribute("marBottom".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             div_bdr: f_div_bdr,
+            #[cfg(feature = "wml-settings")]
             divs_child: f_divs_child,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -39821,6 +43034,7 @@ impl FromXml for CTDivs {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_div = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -39834,6 +43048,7 @@ impl FromXml for CTDivs {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"div" => {
                                 f_div.push(CTDiv::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -39860,6 +43075,7 @@ impl FromXml for CTDivs {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"div" => {
                                 f_div.push(CTDiv::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -39890,6 +43106,7 @@ impl FromXml for CTDivs {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             div: f_div,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -40909,8 +44126,11 @@ impl FromXml for CTSmartTagType {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_namespaceuri = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_name = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_url = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -40919,12 +44139,15 @@ impl FromXml for CTSmartTagType {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"namespaceuri" => {
                     f_namespaceuri = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"url" => {
                     f_url = Some(val.into_owned());
                 }
@@ -40951,8 +44174,11 @@ impl FromXml for CTSmartTagType {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             namespaceuri: f_namespaceuri,
+            #[cfg(feature = "wml-settings")]
             name: f_name,
+            #[cfg(feature = "wml-settings")]
             url: f_url,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -41013,6 +44239,7 @@ impl FromXml for CTDocPartBehaviors {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_behavior = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -41026,6 +44253,7 @@ impl FromXml for CTDocPartBehaviors {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"behavior" => {
                                 f_behavior.push(CTDocPartBehavior::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -41052,6 +44280,7 @@ impl FromXml for CTDocPartBehaviors {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"behavior" => {
                                 f_behavior.push(CTDocPartBehavior::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -41082,6 +44311,7 @@ impl FromXml for CTDocPartBehaviors {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             behavior: f_behavior,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -41142,7 +44372,9 @@ impl FromXml for CTDocPartTypes {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_all = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_type = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -41155,6 +44387,7 @@ impl FromXml for CTDocPartTypes {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"all" => {
                     f_all = Some(val.into_owned());
                 }
@@ -41175,6 +44408,7 @@ impl FromXml for CTDocPartTypes {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"type" => {
                                 f_type.push(CTDocPartType::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -41201,6 +44435,7 @@ impl FromXml for CTDocPartTypes {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"type" => {
                                 f_type.push(CTDocPartType::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -41231,7 +44466,9 @@ impl FromXml for CTDocPartTypes {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             all: f_all,
+            #[cfg(feature = "wml-settings")]
             r#type: f_type,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -41295,6 +44532,7 @@ impl FromXml for CTDocPartCategory {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_name: Option<Box<CTString>> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_gallery: Option<Box<CTDocPartGallery>> = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -41315,6 +44553,7 @@ impl FromXml for CTDocPartCategory {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"gallery" => {
                                 f_gallery =
                                     Some(Box::new(CTDocPartGallery::from_xml(reader, &e, false)?));
@@ -41349,6 +44588,7 @@ impl FromXml for CTDocPartCategory {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"gallery" => {
                                 f_gallery =
                                     Some(Box::new(CTDocPartGallery::from_xml(reader, &e, true)?));
@@ -41381,6 +44621,7 @@ impl FromXml for CTDocPartCategory {
 
         Ok(Self {
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             gallery: f_gallery
                 .ok_or_else(|| ParseError::MissingAttribute("gallery".to_string()))?,
             #[cfg(feature = "extra-children")]
@@ -41396,6 +44637,7 @@ impl FromXml for CTDocPartName {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<STString> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_decorated = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -41407,6 +44649,7 @@ impl FromXml for CTDocPartName {
                 b"val" => {
                     f_value = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"decorated" => {
                     f_decorated = Some(val.into_owned());
                 }
@@ -41434,6 +44677,7 @@ impl FromXml for CTDocPartName {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             decorated: f_decorated,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -41447,12 +44691,19 @@ impl FromXml for CTDocPartPr {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_name: Option<Box<CTDocPartName>> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_style = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_category = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_types = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_behaviors = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_description = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_guid = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -41466,6 +44717,7 @@ impl FromXml for CTDocPartPr {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"name" => {
                                 f_name =
                                     Some(Box::new(CTDocPartName::from_xml(reader, &e, false)?));
@@ -41474,6 +44726,7 @@ impl FromXml for CTDocPartPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"style" => {
                                 f_style = Some(Box::new(CTString::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -41481,6 +44734,7 @@ impl FromXml for CTDocPartPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"category" => {
                                 f_category =
                                     Some(Box::new(CTDocPartCategory::from_xml(reader, &e, false)?));
@@ -41489,6 +44743,7 @@ impl FromXml for CTDocPartPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"types" => {
                                 f_types =
                                     Some(Box::new(CTDocPartTypes::from_xml(reader, &e, false)?));
@@ -41497,6 +44752,7 @@ impl FromXml for CTDocPartPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"behaviors" => {
                                 f_behaviors = Some(Box::new(CTDocPartBehaviors::from_xml(
                                     reader, &e, false,
@@ -41506,6 +44762,7 @@ impl FromXml for CTDocPartPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"description" => {
                                 f_description =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
@@ -41514,6 +44771,7 @@ impl FromXml for CTDocPartPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"guid" => {
                                 f_guid = Some(Box::new(CTGuid::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -41540,6 +44798,7 @@ impl FromXml for CTDocPartPr {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"name" => {
                                 f_name = Some(Box::new(CTDocPartName::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -41547,6 +44806,7 @@ impl FromXml for CTDocPartPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"style" => {
                                 f_style = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -41554,6 +44814,7 @@ impl FromXml for CTDocPartPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"category" => {
                                 f_category =
                                     Some(Box::new(CTDocPartCategory::from_xml(reader, &e, true)?));
@@ -41562,6 +44823,7 @@ impl FromXml for CTDocPartPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"types" => {
                                 f_types =
                                     Some(Box::new(CTDocPartTypes::from_xml(reader, &e, true)?));
@@ -41570,6 +44832,7 @@ impl FromXml for CTDocPartPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"behaviors" => {
                                 f_behaviors =
                                     Some(Box::new(CTDocPartBehaviors::from_xml(reader, &e, true)?));
@@ -41578,6 +44841,7 @@ impl FromXml for CTDocPartPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"description" => {
                                 f_description =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
@@ -41586,6 +44850,7 @@ impl FromXml for CTDocPartPr {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"guid" => {
                                 f_guid = Some(Box::new(CTGuid::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -41616,12 +44881,19 @@ impl FromXml for CTDocPartPr {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             style: f_style,
+            #[cfg(feature = "wml-settings")]
             category: f_category,
+            #[cfg(feature = "wml-settings")]
             types: f_types,
+            #[cfg(feature = "wml-settings")]
             behaviors: f_behaviors,
+            #[cfg(feature = "wml-settings")]
             description: f_description,
+            #[cfg(feature = "wml-settings")]
             guid: f_guid,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -41635,7 +44907,9 @@ impl FromXml for CTDocPart {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_doc_part_pr = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_doc_part_body = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -41649,6 +44923,7 @@ impl FromXml for CTDocPart {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"docPartPr" => {
                                 f_doc_part_pr =
                                     Some(Box::new(CTDocPartPr::from_xml(reader, &e, false)?));
@@ -41657,6 +44932,7 @@ impl FromXml for CTDocPart {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"docPartBody" => {
                                 f_doc_part_body =
                                     Some(Box::new(Body::from_xml(reader, &e, false)?));
@@ -41684,6 +44960,7 @@ impl FromXml for CTDocPart {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"docPartPr" => {
                                 f_doc_part_pr =
                                     Some(Box::new(CTDocPartPr::from_xml(reader, &e, true)?));
@@ -41692,6 +44969,7 @@ impl FromXml for CTDocPart {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"docPartBody" => {
                                 f_doc_part_body = Some(Box::new(Body::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -41722,7 +45000,9 @@ impl FromXml for CTDocPart {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             doc_part_pr: f_doc_part_pr,
+            #[cfg(feature = "wml-settings")]
             doc_part_body: f_doc_part_body,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -41736,6 +45016,7 @@ impl FromXml for CTDocParts {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_doc_part = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -41749,6 +45030,7 @@ impl FromXml for CTDocParts {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"docPart" => {
                                 f_doc_part.push(CTDocPart::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -41775,6 +45057,7 @@ impl FromXml for CTDocParts {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"docPart" => {
                                 f_doc_part.push(CTDocPart::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -41805,6 +45088,7 @@ impl FromXml for CTDocParts {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             doc_part: f_doc_part,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -41818,12 +45102,19 @@ impl FromXml for CTCaption {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_name: Option<STString> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_pos = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_chap_num = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_heading = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_no_label = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_num_fmt = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_sep = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -41832,24 +45123,31 @@ impl FromXml for CTCaption {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"pos" => {
                     f_pos = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"chapNum" => {
                     f_chap_num = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"heading" => {
                     f_heading = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"noLabel" => {
                     f_no_label = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"numFmt" => {
                     f_num_fmt = val.parse().ok();
                 }
+                #[cfg(feature = "wml-settings")]
                 b"sep" => {
                     f_sep = val.parse().ok();
                 }
@@ -41876,12 +45174,19 @@ impl FromXml for CTCaption {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             pos: f_pos,
+            #[cfg(feature = "wml-settings")]
             chap_num: f_chap_num,
+            #[cfg(feature = "wml-settings")]
             heading: f_heading,
+            #[cfg(feature = "wml-settings")]
             no_label: f_no_label,
+            #[cfg(feature = "wml-settings")]
             num_fmt: f_num_fmt,
+            #[cfg(feature = "wml-settings")]
             sep: f_sep,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -41895,7 +45200,9 @@ impl FromXml for CTAutoCaption {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_name: Option<STString> = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_caption: Option<STString> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -41904,9 +45211,11 @@ impl FromXml for CTAutoCaption {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "wml-settings")]
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
+                #[cfg(feature = "wml-settings")]
                 b"caption" => {
                     f_caption = Some(val.into_owned());
                 }
@@ -41933,7 +45242,9 @@ impl FromXml for CTAutoCaption {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            #[cfg(feature = "wml-settings")]
             caption: f_caption
                 .ok_or_else(|| ParseError::MissingAttribute("caption".to_string()))?,
             #[cfg(feature = "extra-attrs")]
@@ -41948,6 +45259,7 @@ impl FromXml for CTAutoCaptions {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_auto_caption = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -41961,6 +45273,7 @@ impl FromXml for CTAutoCaptions {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"autoCaption" => {
                                 f_auto_caption.push(CTAutoCaption::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -41987,6 +45300,7 @@ impl FromXml for CTAutoCaptions {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"autoCaption" => {
                                 f_auto_caption.push(CTAutoCaption::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -42017,6 +45331,7 @@ impl FromXml for CTAutoCaptions {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             auto_caption: f_auto_caption,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -42030,7 +45345,9 @@ impl FromXml for CTCaptions {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_caption = Vec::new();
+        #[cfg(feature = "wml-settings")]
         let mut f_auto_captions = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -42044,6 +45361,7 @@ impl FromXml for CTCaptions {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"caption" => {
                                 f_caption.push(CTCaption::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -42051,6 +45369,7 @@ impl FromXml for CTCaptions {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"autoCaptions" => {
                                 f_auto_captions =
                                     Some(Box::new(CTAutoCaptions::from_xml(reader, &e, false)?));
@@ -42078,6 +45397,7 @@ impl FromXml for CTCaptions {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"caption" => {
                                 f_caption.push(CTCaption::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -42085,6 +45405,7 @@ impl FromXml for CTCaptions {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"autoCaptions" => {
                                 f_auto_captions =
                                     Some(Box::new(CTAutoCaptions::from_xml(reader, &e, true)?));
@@ -42116,7 +45437,9 @@ impl FromXml for CTCaptions {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             caption: f_caption,
+            #[cfg(feature = "wml-settings")]
             auto_captions: f_auto_captions,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -42130,6 +45453,7 @@ impl FromXml for CTDocumentBase {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_background = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -42143,6 +45467,7 @@ impl FromXml for CTDocumentBase {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"background" => {
                                 f_background =
                                     Some(Box::new(CTBackground::from_xml(reader, &e, false)?));
@@ -42170,6 +45495,7 @@ impl FromXml for CTDocumentBase {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"background" => {
                                 f_background =
                                     Some(Box::new(CTBackground::from_xml(reader, &e, true)?));
@@ -42201,6 +45527,7 @@ impl FromXml for CTDocumentBase {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             background: f_background,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -42342,6 +45669,7 @@ impl FromXml for CTGlossaryDocument {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_background = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_doc_parts = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -42363,6 +45691,7 @@ impl FromXml for CTGlossaryDocument {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"docParts" => {
                                 f_doc_parts =
                                     Some(Box::new(CTDocParts::from_xml(reader, &e, false)?));
@@ -42398,6 +45727,7 @@ impl FromXml for CTGlossaryDocument {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"docParts" => {
                                 f_doc_parts =
                                     Some(Box::new(CTDocParts::from_xml(reader, &e, true)?));
@@ -42430,6 +45760,7 @@ impl FromXml for CTGlossaryDocument {
 
         Ok(Self {
             background: f_background,
+            #[cfg(feature = "wml-settings")]
             doc_parts: f_doc_parts,
             #[cfg(feature = "extra-children")]
             extra_children,

@@ -158,10 +158,11 @@ impl FeatureMappings {
 
     /// Get feature tags for a specific element's attribute/child.
     /// Returns None if no mapping exists (meaning it's always included).
+    /// Supports `*` wildcard as a fallback for fields not explicitly listed.
     pub fn get_tags(&self, module: &str, element: &str, field: &str) -> Option<&[String]> {
         self.for_module(module)
             .get(element)
-            .and_then(|elem| elem.get(field))
+            .and_then(|elem| elem.get(field).or_else(|| elem.get("*")))
             .map(|v| v.as_slice())
     }
 
@@ -1371,7 +1372,7 @@ fn strip_namespace_prefix(name: &str) -> &str {
     name
 }
 
-fn to_pascal_case(s: &str) -> String {
+pub(crate) fn to_pascal_case(s: &str) -> String {
     let mut result = String::new();
     let mut capitalize_next = true;
 
