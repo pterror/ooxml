@@ -59,6 +59,8 @@ After editing multiple files, run the full check once — not after each edit. F
 ~/git/rhizone/normalize/target/debug/normalize view <dir>     # directory structure
 ```
 
+**Always commit when work is complete.** After finishing a task and verifying it passes `cargo clippy` and `cargo test`, create a commit before moving on. Don't leave working changes uncommitted.
+
 ## Commit Convention
 
 Use conventional commits: `type(scope): message`

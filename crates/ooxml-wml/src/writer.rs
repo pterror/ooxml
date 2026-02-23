@@ -708,6 +708,8 @@ pub struct DocumentBuilder {
     hyperlinks: HashMap<String, PendingHyperlink>,
     /// Numbering definitions, keyed by num_id.
     numberings: HashMap<u32, PendingNumbering>,
+    /// Styles to write to word/styles.xml, if any.
+    styles: Option<types::Styles>,
     /// Pending headers, keyed by rel_id.
     headers: HashMap<String, PendingHeader>,
     /// Pending footers, keyed by rel_id.
@@ -763,6 +765,7 @@ impl DocumentBuilder {
             images: HashMap::new(),
             hyperlinks: HashMap::new(),
             numberings: HashMap::new(),
+            styles: None,
             headers: HashMap::new(),
             footers: HashMap::new(),
             footnotes: HashMap::new(),
@@ -841,6 +844,31 @@ impl DocumentBuilder {
         );
 
         num_id
+    }
+
+    /// Set the full styles for the document.
+    ///
+    /// Replaces any previously set styles. The styles will be written to
+    /// `word/styles.xml` when the document is saved.
+    ///
+    /// ECMA-376 Part 1, Section 17.7 (Styles).
+    pub fn set_styles(&mut self, styles: types::Styles) -> &mut Self {
+        self.styles = Some(styles);
+        self
+    }
+
+    /// Add a single style definition.
+    ///
+    /// Creates the styles container if it doesn't exist yet. The style will be
+    /// written to `word/styles.xml` when the document is saved.
+    ///
+    /// ECMA-376 Part 1, Section 17.7.4.17 (style).
+    pub fn add_style(&mut self, style: types::Style) -> &mut Self {
+        self.styles
+            .get_or_insert_with(types::Styles::default)
+            .style
+            .push(style);
+        self
     }
 
     /// Add a header and return a builder for its content.
@@ -1220,6 +1248,24 @@ impl DocumentBuilder {
                 &comments_rel_id,
                 rel_type::COMMENTS,
                 "comments.xml",
+            ));
+        }
+
+        // Write styles.xml if we have style definitions
+        if let Some(ref styles) = self.styles {
+            let styles_xml = serialize_with_namespaces(styles, "w:styles")?;
+            pkg.add_part(
+                "word/styles.xml",
+                content_type::WORDPROCESSING_STYLES,
+                &styles_xml,
+            )?;
+
+            let styles_rel_id = format!("rId{}", self.next_rel_id);
+            self.next_rel_id += 1;
+            doc_rels.add(Relationship::new(
+                &styles_rel_id,
+                rel_type::STYLES,
+                "styles.xml",
             ));
         }
 
@@ -2144,5 +2190,40 @@ mod tests {
 
         assert_eq!(doc.body().paragraphs().len(), 1);
         assert_eq!(doc.text(), "Test content");
+    }
+
+    #[test]
+    fn test_styles_written_and_readable() {
+        use crate::Document;
+        use std::io::Cursor;
+
+        // Build a document with a custom paragraph style.
+        let mut builder = DocumentBuilder::new();
+        builder.add_paragraph("Styled content");
+
+        // Define a simple paragraph style.
+        let style = types::Style {
+            r#type: Some(types::STStyleType::Paragraph),
+            style_id: Some("MyHeading".to_string()),
+            name: Some(Box::new(types::CTString {
+                value: "My Heading".to_string(),
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: std::collections::HashMap::new(),
+            })),
+            ..Default::default()
+        };
+        builder.add_style(style);
+
+        // Write to memory
+        let mut buffer = Cursor::new(Vec::new());
+        builder.write(&mut buffer).unwrap();
+
+        // Read it back and check that styles were preserved
+        buffer.set_position(0);
+        let doc = Document::from_reader(buffer).unwrap();
+
+        let styles = doc.styles();
+        assert_eq!(styles.style.len(), 1);
+        assert_eq!(styles.style[0].style_id.as_deref(), Some("MyHeading"));
     }
 }

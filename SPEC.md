@@ -64,7 +64,7 @@ See [ECOSYSTEM.md](ECOSYSTEM.md) for details on fixtures and specs.
 - [x] Hyperlinks (internal and external)
 - [x] Images (inline, embedded in word/media/)
 - [x] Styles (styles.xml) - read and apply
-- [ ] Styles (styles.xml) - write
+- [x] Styles (styles.xml) - write
 - [x] Page breaks
 - [x] Section breaks
 - [x] Document settings (word/settings.xml)
