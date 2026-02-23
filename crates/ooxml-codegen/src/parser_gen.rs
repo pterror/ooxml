@@ -5,7 +5,7 @@
 
 use crate::ast::{Pattern, QName, Schema};
 use crate::codegen::CodegenConfig;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fmt::Write;
 
 /// Generate parser code for all types in the schema.
@@ -34,6 +34,8 @@ struct ParserGenerator<'a> {
     config: &'a CodegenConfig,
     output: String,
     definitions: HashMap<&'a str, &'a Pattern>,
+    /// Track generated Rust type names to avoid duplicate impl blocks from merged schemas.
+    generated_names: HashSet<String>,
 }
 
 impl<'a> ParserGenerator<'a> {
@@ -49,6 +51,7 @@ impl<'a> ParserGenerator<'a> {
             config,
             output: String::new(),
             definitions,
+            generated_names: HashSet::new(),
         }
     }
 
@@ -60,6 +63,11 @@ impl<'a> ParserGenerator<'a> {
             if !def.name.contains("_ST_") && !self.is_simple_type(&def.pattern) {
                 // Skip inline attribute references (like r_id) - they're inlined into parent types
                 if self.is_inline_attribute_ref(&def.name, &def.pattern) {
+                    continue;
+                }
+                // Deduplicate by Rust type name to avoid duplicate impl blocks from merged schemas.
+                let rust_name = self.to_rust_type_name(&def.name);
+                if !self.generated_names.insert(rust_name) {
                     continue;
                 }
                 if def.name.contains("_EG_") && self.is_element_choice(&def.pattern) {

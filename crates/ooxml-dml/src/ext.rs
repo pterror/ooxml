@@ -309,6 +309,231 @@ impl TableCellExt for CTTableCell {
     }
 }
 
+/// The kind of chart contained in a plot area.
+///
+/// Corresponds to the chart element types defined in ECMA-376 §21.2.
+#[cfg(feature = "dml-charts")]
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ChartKind {
+    /// Bar or column chart (CT_BarChart).
+    Bar,
+    /// 3D bar chart (CT_Bar3DChart).
+    Bar3D,
+    /// Line chart (CT_LineChart).
+    Line,
+    /// 3D line chart (CT_Line3DChart).
+    Line3D,
+    /// Pie chart (CT_PieChart).
+    Pie,
+    /// 3D pie chart (CT_Pie3DChart).
+    Pie3D,
+    /// Scatter / XY chart (CT_ScatterChart).
+    Scatter,
+    /// Area chart (CT_AreaChart).
+    Area,
+    /// 3D area chart (CT_Area3DChart).
+    Area3D,
+    /// Bubble chart (CT_BubbleChart).
+    Bubble,
+    /// Doughnut chart (CT_DoughnutChart).
+    Doughnut,
+    /// Radar / spider chart (CT_RadarChart).
+    Radar,
+    /// Stock chart (CT_StockChart).
+    Stock,
+    /// Surface chart (CT_SurfaceChart).
+    Surface,
+    /// 3D surface chart (CT_Surface3DChart).
+    Surface3D,
+    /// Pie-of-pie or bar-of-pie chart (CT_OfPieChart).
+    OfPie,
+}
+
+/// Extension trait for [`ChartSpace`] (the root element of a chart part).
+///
+/// Corresponds to ECMA-376 §21.2.2.29 (CT_ChartSpace).
+#[cfg(feature = "dml-charts")]
+pub trait ChartSpaceExt {
+    /// The inner chart definition.
+    fn chart(&self) -> &crate::types::Chart;
+
+    /// All chart kinds present in this chart space's plot area.
+    ///
+    /// A chart space can contain multiple chart types (e.g. a combined bar+line chart).
+    fn chart_types(&self) -> Vec<ChartKind>;
+
+    /// The chart title text, if the title contains rich text content.
+    ///
+    /// Returns `None` if there is no title, or if the title references an external
+    /// cell range rather than inline text.
+    fn title_text(&self) -> Option<String>;
+}
+
+#[cfg(feature = "dml-charts")]
+impl ChartSpaceExt for crate::types::ChartSpace {
+    fn chart(&self) -> &crate::types::Chart {
+        &self.chart
+    }
+
+    fn chart_types(&self) -> Vec<ChartKind> {
+        self.chart.chart_types()
+    }
+
+    fn title_text(&self) -> Option<String> {
+        self.chart.title_text()
+    }
+}
+
+/// Extension trait for [`Chart`] providing convenience access to chart content.
+///
+/// Corresponds to ECMA-376 §21.2.2.27 (CT_Chart).
+#[cfg(feature = "dml-charts")]
+pub trait ChartExt {
+    /// The plot area containing the chart series and axes.
+    fn plot_area(&self) -> &crate::types::PlotArea;
+
+    /// The chart legend, if present.
+    fn legend(&self) -> Option<&crate::types::Legend>;
+
+    /// All chart kinds present in this chart's plot area.
+    fn chart_types(&self) -> Vec<ChartKind>;
+
+    /// The chart title text, if the title contains rich text content.
+    fn title_text(&self) -> Option<String>;
+}
+
+#[cfg(feature = "dml-charts")]
+impl ChartExt for crate::types::Chart {
+    fn plot_area(&self) -> &crate::types::PlotArea {
+        &self.plot_area
+    }
+
+    fn legend(&self) -> Option<&crate::types::Legend> {
+        self.legend.as_deref()
+    }
+
+    fn chart_types(&self) -> Vec<ChartKind> {
+        self.plot_area.chart_types()
+    }
+
+    fn title_text(&self) -> Option<String> {
+        self.title.as_deref().and_then(|t| t.title_text())
+    }
+}
+
+/// Extension trait for [`PlotArea`] providing access to contained chart types.
+///
+/// Corresponds to ECMA-376 §21.2.2.145 (CT_PlotArea).
+#[cfg(feature = "dml-charts")]
+pub trait PlotAreaExt {
+    /// All chart kinds present in this plot area.
+    ///
+    /// Returns one entry per chart type present. A combined chart (e.g. bar + line)
+    /// returns multiple entries in the order they appear in the XML.
+    fn chart_types(&self) -> Vec<ChartKind>;
+}
+
+#[cfg(feature = "dml-charts")]
+impl PlotAreaExt for crate::types::PlotArea {
+    fn chart_types(&self) -> Vec<ChartKind> {
+        let mut kinds = Vec::new();
+        if !self.bar_chart.is_empty() {
+            kinds.push(ChartKind::Bar);
+        }
+        if !self.bar3_d_chart.is_empty() {
+            kinds.push(ChartKind::Bar3D);
+        }
+        if !self.line_chart.is_empty() {
+            kinds.push(ChartKind::Line);
+        }
+        if !self.line3_d_chart.is_empty() {
+            kinds.push(ChartKind::Line3D);
+        }
+        if !self.pie_chart.is_empty() {
+            kinds.push(ChartKind::Pie);
+        }
+        if !self.pie3_d_chart.is_empty() {
+            kinds.push(ChartKind::Pie3D);
+        }
+        if !self.scatter_chart.is_empty() {
+            kinds.push(ChartKind::Scatter);
+        }
+        if !self.area_chart.is_empty() {
+            kinds.push(ChartKind::Area);
+        }
+        if !self.area3_d_chart.is_empty() {
+            kinds.push(ChartKind::Area3D);
+        }
+        if !self.bubble_chart.is_empty() {
+            kinds.push(ChartKind::Bubble);
+        }
+        if !self.doughnut_chart.is_empty() {
+            kinds.push(ChartKind::Doughnut);
+        }
+        if !self.radar_chart.is_empty() {
+            kinds.push(ChartKind::Radar);
+        }
+        if !self.stock_chart.is_empty() {
+            kinds.push(ChartKind::Stock);
+        }
+        if !self.surface_chart.is_empty() {
+            kinds.push(ChartKind::Surface);
+        }
+        if !self.surface3_d_chart.is_empty() {
+            kinds.push(ChartKind::Surface3D);
+        }
+        if !self.of_pie_chart.is_empty() {
+            kinds.push(ChartKind::OfPie);
+        }
+        kinds
+    }
+}
+
+/// Extension trait for [`ChartTitle`] providing text extraction.
+///
+/// Corresponds to ECMA-376 §21.2.2.210 (CT_Title).
+#[cfg(feature = "dml-charts")]
+pub trait ChartTitleExt {
+    /// Extract the title text if it is stored as inline rich text.
+    ///
+    /// Returns `None` if:
+    /// - There is no `tx` child element.
+    /// - The `tx` element references a cell range (via `strRef`) rather than inline text.
+    fn title_text(&self) -> Option<String>;
+}
+
+#[cfg(all(feature = "dml-charts", feature = "dml-text"))]
+impl ChartTitleExt for crate::types::ChartTitle {
+    fn title_text(&self) -> Option<String> {
+        self.tx.as_deref().and_then(|tx| {
+            tx.rich.as_deref().map(|body| {
+                body.p
+                    .iter()
+                    .map(|p| {
+                        p.text_run
+                            .iter()
+                            .filter_map(|tr| match tr {
+                                EGTextRun::R(run) => Some(run.t.as_str()),
+                                EGTextRun::Br(_) => Some("\n"),
+                                EGTextRun::Fld(fld) => fld.t.as_deref(),
+                            })
+                            .collect::<String>()
+                    })
+                    .collect::<Vec<_>>()
+                    .join("\n")
+            })
+        })
+    }
+}
+
+// When dml-text is not enabled, provide a fallback that always returns None.
+#[cfg(all(feature = "dml-charts", not(feature = "dml-text")))]
+impl ChartTitleExt for crate::types::ChartTitle {
+    fn title_text(&self) -> Option<String> {
+        None
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -517,5 +742,209 @@ mod tests {
         assert!(cell.has_col_span());
         assert!(cell.is_h_merge());
         assert!(!cell.is_v_merge());
+    }
+
+    // -------------------------------------------------------------------------
+    // Chart extension trait tests
+    // -------------------------------------------------------------------------
+
+    #[cfg(feature = "dml-charts")]
+    fn make_chart_with_bar() -> crate::types::Chart {
+        use crate::types::*;
+        Chart {
+            #[cfg(feature = "dml-charts")]
+            title: None,
+            #[cfg(feature = "dml-charts")]
+            auto_title_deleted: None,
+            #[cfg(feature = "dml-charts")]
+            pivot_fmts: None,
+            #[cfg(feature = "dml-charts")]
+            view3_d: None,
+            #[cfg(feature = "dml-charts")]
+            floor: None,
+            #[cfg(feature = "dml-charts")]
+            side_wall: None,
+            #[cfg(feature = "dml-charts")]
+            back_wall: None,
+            #[cfg(feature = "dml-charts")]
+            plot_area: Box::new(PlotArea {
+                #[cfg(feature = "dml-charts")]
+                bar_chart: vec![BarChart {
+                    #[cfg(feature = "dml-charts")]
+                    bar_dir: Box::new(BarDirection::default()),
+                    #[cfg(feature = "dml-charts")]
+                    grouping: None,
+                    #[cfg(feature = "dml-charts")]
+                    vary_colors: None,
+                    #[cfg(feature = "dml-charts")]
+                    ser: Vec::new(),
+                    #[cfg(feature = "dml-charts")]
+                    d_lbls: None,
+                    #[cfg(feature = "dml-charts")]
+                    gap_width: None,
+                    #[cfg(feature = "dml-charts")]
+                    overlap: None,
+                    #[cfg(feature = "dml-charts")]
+                    ser_lines: Vec::new(),
+                    #[cfg(feature = "dml-charts")]
+                    ax_id: Vec::new(),
+                    #[cfg(feature = "dml-charts")]
+                    ext_lst: None,
+                    #[cfg(feature = "extra-children")]
+                    extra_children: Vec::new(),
+                }],
+                ..Default::default()
+            }),
+            #[cfg(feature = "dml-charts")]
+            legend: None,
+            #[cfg(feature = "dml-charts")]
+            plot_vis_only: None,
+            #[cfg(feature = "dml-charts")]
+            disp_blanks_as: None,
+            #[cfg(feature = "dml-charts")]
+            show_d_lbls_over_max: None,
+            #[cfg(feature = "dml-charts")]
+            ext_lst: None,
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        }
+    }
+
+    #[cfg(feature = "dml-charts")]
+    #[test]
+    fn test_chart_kind_from_bar_chart() {
+        use crate::ext::{ChartExt, ChartKind};
+        let chart = make_chart_with_bar();
+        let kinds = chart.chart_types();
+        assert_eq!(kinds, vec![ChartKind::Bar]);
+    }
+
+    #[cfg(feature = "dml-charts")]
+    #[test]
+    fn test_plot_area_empty_has_no_kinds() {
+        use crate::ext::PlotAreaExt;
+        use crate::types::PlotArea;
+        let area = PlotArea::default();
+        assert!(area.chart_types().is_empty());
+    }
+
+    #[cfg(feature = "dml-charts")]
+    #[test]
+    fn test_chart_space_delegates_to_chart() {
+        use crate::ext::{ChartKind, ChartSpaceExt};
+        use crate::types::ChartSpace;
+        let space = ChartSpace {
+            #[cfg(feature = "dml-charts")]
+            date1904: None,
+            #[cfg(feature = "dml-charts")]
+            lang: None,
+            #[cfg(feature = "dml-charts")]
+            rounded_corners: None,
+            #[cfg(feature = "dml-charts")]
+            style: None,
+            #[cfg(feature = "dml-charts")]
+            clr_map_ovr: None,
+            #[cfg(feature = "dml-charts")]
+            pivot_source: None,
+            #[cfg(feature = "dml-charts")]
+            protection: None,
+            #[cfg(feature = "dml-charts")]
+            chart: Box::new(make_chart_with_bar()),
+            #[cfg(feature = "dml-charts")]
+            sp_pr: None,
+            #[cfg(feature = "dml-charts")]
+            tx_pr: None,
+            #[cfg(feature = "dml-charts")]
+            external_data: None,
+            #[cfg(feature = "dml-charts")]
+            print_settings: None,
+            #[cfg(feature = "dml-charts")]
+            user_shapes: None,
+            #[cfg(feature = "dml-charts")]
+            ext_lst: None,
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        };
+        assert_eq!(space.chart_types(), vec![ChartKind::Bar]);
+        assert!(space.title_text().is_none());
+    }
+
+    #[cfg(all(feature = "dml-charts", feature = "dml-text"))]
+    #[test]
+    fn test_chart_title_text_rich() {
+        use crate::ext::ChartTitleExt;
+        use crate::types::*;
+
+        // Build a chart title with inline rich text
+        let title = ChartTitle {
+            #[cfg(feature = "dml-charts")]
+            tx: Some(Box::new(ChartText {
+                #[cfg(feature = "dml-charts")]
+                str_ref: None,
+                #[cfg(feature = "dml-charts")]
+                rich: Some(Box::new(TextBody {
+                    body_pr: Box::new(CTTextBodyProperties::default()),
+                    lst_style: None,
+                    p: vec![TextParagraph {
+                        #[cfg(feature = "dml-text")]
+                        p_pr: None,
+                        text_run: vec![EGTextRun::R(Box::new(TextRun {
+                            #[cfg(feature = "dml-text")]
+                            r_pr: None,
+                            #[cfg(feature = "dml-text")]
+                            t: "Sales Report".to_string(),
+                            #[cfg(feature = "extra-children")]
+                            extra_children: Vec::new(),
+                        }))],
+                        #[cfg(feature = "dml-text")]
+                        end_para_r_pr: None,
+                        #[cfg(feature = "extra-children")]
+                        extra_children: Vec::new(),
+                    }],
+                    #[cfg(feature = "extra-children")]
+                    extra_children: Vec::new(),
+                })),
+                #[cfg(feature = "extra-children")]
+                extra_children: Vec::new(),
+            })),
+            #[cfg(feature = "dml-charts")]
+            layout: None,
+            #[cfg(feature = "dml-charts")]
+            overlay: None,
+            #[cfg(feature = "dml-charts")]
+            sp_pr: None,
+            #[cfg(feature = "dml-charts")]
+            tx_pr: None,
+            #[cfg(feature = "dml-charts")]
+            ext_lst: None,
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        };
+
+        assert_eq!(title.title_text(), Some("Sales Report".to_string()));
+    }
+
+    #[cfg(feature = "dml-charts")]
+    #[test]
+    fn test_chart_title_none_when_no_tx() {
+        use crate::ext::ChartTitleExt;
+        use crate::types::ChartTitle;
+        let title = ChartTitle {
+            #[cfg(feature = "dml-charts")]
+            tx: None,
+            #[cfg(feature = "dml-charts")]
+            layout: None,
+            #[cfg(feature = "dml-charts")]
+            overlay: None,
+            #[cfg(feature = "dml-charts")]
+            sp_pr: None,
+            #[cfg(feature = "dml-charts")]
+            tx_pr: None,
+            #[cfg(feature = "dml-charts")]
+            ext_lst: None,
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        };
+        assert!(title.title_text().is_none());
     }
 }

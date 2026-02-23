@@ -18,11 +18,13 @@ fn main() {
 
     // Paths to schemas
     let dml_path = format!("{}/dml-main.rnc", spec_dir);
+    let chart_path = format!("{}/dml-chart.rnc", spec_dir);
     let shared_path = format!("{}/shared-commonSimpleTypes.rnc", spec_dir);
     let rel_path = format!("{}/shared-relationshipReference.rnc", spec_dir);
 
     // Only regenerate if schemas change
     println!("cargo::rerun-if-changed={}", dml_path);
+    println!("cargo::rerun-if-changed={}", chart_path);
     println!("cargo::rerun-if-changed={}", shared_path);
     println!("cargo::rerun-if-changed={}", rel_path);
     println!("cargo::rerun-if-changed={}", names_path);
@@ -93,6 +95,22 @@ fn main() {
         }
     }
     combined_schema.definitions.extend(dml_schema.definitions);
+
+    // Parse and merge the DML chart schema (ECMA-376 §21.2)
+    if Path::new(&chart_path).exists() {
+        let chart_input = fs::read_to_string(&chart_path).expect("failed to read dml-chart.rnc");
+        let chart_schema = parse_rnc(&chart_input).expect("failed to parse dml-chart.rnc");
+        for ns in chart_schema.namespaces {
+            if !combined_schema
+                .namespaces
+                .iter()
+                .any(|n| n.prefix == ns.prefix)
+            {
+                combined_schema.namespaces.push(ns);
+            }
+        }
+        combined_schema.definitions.extend(chart_schema.definitions);
+    }
 
     // Load name mappings if available
     let name_mappings = if Path::new(names_path).exists() {

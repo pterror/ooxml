@@ -19,6 +19,10 @@ pub mod ns {
     pub const R: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
     /// Namespace prefix: a
     pub const A: &str = "http://schemas.openxmlformats.org/drawingml/2006/main";
+    /// Namespace prefix: cdr
+    pub const CDR: &str = "http://schemas.openxmlformats.org/drawingml/2006/chartDrawing";
+    /// Namespace prefix: dchrt
+    pub const DCHRT: &str = "http://schemas.openxmlformats.org/drawingml/2006/chart";
 }
 
 pub type Language = String;
@@ -5038,6 +5042,1200 @@ impl std::str::FromStr for STTextFontAlignType {
 }
 
 pub type STTextIndentLevelType = i32;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum LayoutTargetType {
+    #[serde(rename = "inner")]
+    Inner,
+    #[serde(rename = "outer")]
+    Outer,
+}
+
+impl std::fmt::Display for LayoutTargetType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Inner => write!(f, "inner"),
+            Self::Outer => write!(f, "outer"),
+        }
+    }
+}
+
+impl std::str::FromStr for LayoutTargetType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "inner" => Ok(Self::Inner),
+            "outer" => Ok(Self::Outer),
+            _ => Err(format!("unknown LayoutTargetType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum LayoutModeType {
+    #[serde(rename = "edge")]
+    Edge,
+    #[serde(rename = "factor")]
+    Factor,
+}
+
+impl std::fmt::Display for LayoutModeType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Edge => write!(f, "edge"),
+            Self::Factor => write!(f, "factor"),
+        }
+    }
+}
+
+impl std::str::FromStr for LayoutModeType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "edge" => Ok(Self::Edge),
+            "factor" => Ok(Self::Factor),
+            _ => Err(format!("unknown LayoutModeType value: {}", s)),
+        }
+    }
+}
+
+pub type RotXValue = i8;
+
+pub type HPercentValue = String;
+
+pub type HPercentWithSymbol = String;
+
+pub type HPercentUShort = u16;
+
+pub type RotYValue = u16;
+
+pub type DepthPercentValue = String;
+
+pub type DepthPercentWithSymbol = String;
+
+pub type DepthPercentUShort = u16;
+
+pub type PerspectiveValue = u8;
+
+pub type ChartThicknessValue = String;
+
+pub type ThicknessPercentStr = String;
+
+pub type GapAmountValue = String;
+
+pub type GapAmountPercent = String;
+
+pub type GapAmountUShort = u16;
+
+pub type OverlapValue = String;
+
+pub type OverlapPercent = String;
+
+pub type OverlapByte = i8;
+
+pub type BubbleScaleValue = String;
+
+pub type BubbleScalePercent = String;
+
+pub type BubbleScaleUInt = u32;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum SizeRepresentsType {
+    #[serde(rename = "area")]
+    Area,
+    #[serde(rename = "w")]
+    W,
+}
+
+impl std::fmt::Display for SizeRepresentsType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Area => write!(f, "area"),
+            Self::W => write!(f, "w"),
+        }
+    }
+}
+
+impl std::str::FromStr for SizeRepresentsType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "area" => Ok(Self::Area),
+            "w" => Ok(Self::W),
+            _ => Err(format!("unknown SizeRepresentsType value: {}", s)),
+        }
+    }
+}
+
+pub type FirstSliceAngValue = u16;
+
+pub type HoleSizeValue = String;
+
+pub type HoleSizePercent = String;
+
+pub type HoleSizeUByte = u8;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum SplitTypeValue {
+    #[serde(rename = "auto")]
+    Auto,
+    #[serde(rename = "cust")]
+    Cust,
+    #[serde(rename = "percent")]
+    Percent,
+    #[serde(rename = "pos")]
+    Pos,
+    #[serde(rename = "val")]
+    Val,
+}
+
+impl std::fmt::Display for SplitTypeValue {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Auto => write!(f, "auto"),
+            Self::Cust => write!(f, "cust"),
+            Self::Percent => write!(f, "percent"),
+            Self::Pos => write!(f, "pos"),
+            Self::Val => write!(f, "val"),
+        }
+    }
+}
+
+impl std::str::FromStr for SplitTypeValue {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "auto" => Ok(Self::Auto),
+            "cust" => Ok(Self::Cust),
+            "percent" => Ok(Self::Percent),
+            "pos" => Ok(Self::Pos),
+            "val" => Ok(Self::Val),
+            _ => Err(format!("unknown SplitTypeValue value: {}", s)),
+        }
+    }
+}
+
+pub type SecondPieSizeValue = String;
+
+pub type SecondPieSizePercent = String;
+
+pub type SecondPieSizeUShort = u16;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum LabelAlignType {
+    #[serde(rename = "ctr")]
+    Ctr,
+    #[serde(rename = "l")]
+    L,
+    #[serde(rename = "r")]
+    R,
+}
+
+impl std::fmt::Display for LabelAlignType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Ctr => write!(f, "ctr"),
+            Self::L => write!(f, "l"),
+            Self::R => write!(f, "r"),
+        }
+    }
+}
+
+impl std::str::FromStr for LabelAlignType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "ctr" => Ok(Self::Ctr),
+            "l" => Ok(Self::L),
+            "r" => Ok(Self::R),
+            _ => Err(format!("unknown LabelAlignType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum DataLabelPositionType {
+    #[serde(rename = "bestFit")]
+    BestFit,
+    #[serde(rename = "b")]
+    B,
+    #[serde(rename = "ctr")]
+    Ctr,
+    #[serde(rename = "inBase")]
+    InBase,
+    #[serde(rename = "inEnd")]
+    InEnd,
+    #[serde(rename = "l")]
+    L,
+    #[serde(rename = "outEnd")]
+    OutEnd,
+    #[serde(rename = "r")]
+    R,
+    #[serde(rename = "t")]
+    T,
+}
+
+impl std::fmt::Display for DataLabelPositionType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::BestFit => write!(f, "bestFit"),
+            Self::B => write!(f, "b"),
+            Self::Ctr => write!(f, "ctr"),
+            Self::InBase => write!(f, "inBase"),
+            Self::InEnd => write!(f, "inEnd"),
+            Self::L => write!(f, "l"),
+            Self::OutEnd => write!(f, "outEnd"),
+            Self::R => write!(f, "r"),
+            Self::T => write!(f, "t"),
+        }
+    }
+}
+
+impl std::str::FromStr for DataLabelPositionType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "bestFit" => Ok(Self::BestFit),
+            "b" => Ok(Self::B),
+            "ctr" => Ok(Self::Ctr),
+            "inBase" => Ok(Self::InBase),
+            "inEnd" => Ok(Self::InEnd),
+            "l" => Ok(Self::L),
+            "outEnd" => Ok(Self::OutEnd),
+            "r" => Ok(Self::R),
+            "t" => Ok(Self::T),
+            _ => Err(format!("unknown DataLabelPositionType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum MarkerStyleType {
+    #[serde(rename = "circle")]
+    Circle,
+    #[serde(rename = "dash")]
+    Dash,
+    #[serde(rename = "diamond")]
+    Diamond,
+    #[serde(rename = "dot")]
+    Dot,
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "picture")]
+    Picture,
+    #[serde(rename = "plus")]
+    Plus,
+    #[serde(rename = "square")]
+    Square,
+    #[serde(rename = "star")]
+    Star,
+    #[serde(rename = "triangle")]
+    Triangle,
+    #[serde(rename = "x")]
+    X,
+    #[serde(rename = "auto")]
+    Auto,
+}
+
+impl std::fmt::Display for MarkerStyleType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Circle => write!(f, "circle"),
+            Self::Dash => write!(f, "dash"),
+            Self::Diamond => write!(f, "diamond"),
+            Self::Dot => write!(f, "dot"),
+            Self::None => write!(f, "none"),
+            Self::Picture => write!(f, "picture"),
+            Self::Plus => write!(f, "plus"),
+            Self::Square => write!(f, "square"),
+            Self::Star => write!(f, "star"),
+            Self::Triangle => write!(f, "triangle"),
+            Self::X => write!(f, "x"),
+            Self::Auto => write!(f, "auto"),
+        }
+    }
+}
+
+impl std::str::FromStr for MarkerStyleType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "circle" => Ok(Self::Circle),
+            "dash" => Ok(Self::Dash),
+            "diamond" => Ok(Self::Diamond),
+            "dot" => Ok(Self::Dot),
+            "none" => Ok(Self::None),
+            "picture" => Ok(Self::Picture),
+            "plus" => Ok(Self::Plus),
+            "square" => Ok(Self::Square),
+            "star" => Ok(Self::Star),
+            "triangle" => Ok(Self::Triangle),
+            "x" => Ok(Self::X),
+            "auto" => Ok(Self::Auto),
+            _ => Err(format!("unknown MarkerStyleType value: {}", s)),
+        }
+    }
+}
+
+pub type MarkerSizeValue = u8;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum TrendlineTypeValue {
+    #[serde(rename = "exp")]
+    Exp,
+    #[serde(rename = "linear")]
+    Linear,
+    #[serde(rename = "log")]
+    Log,
+    #[serde(rename = "movingAvg")]
+    MovingAvg,
+    #[serde(rename = "poly")]
+    Poly,
+    #[serde(rename = "power")]
+    Power,
+}
+
+impl std::fmt::Display for TrendlineTypeValue {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Exp => write!(f, "exp"),
+            Self::Linear => write!(f, "linear"),
+            Self::Log => write!(f, "log"),
+            Self::MovingAvg => write!(f, "movingAvg"),
+            Self::Poly => write!(f, "poly"),
+            Self::Power => write!(f, "power"),
+        }
+    }
+}
+
+impl std::str::FromStr for TrendlineTypeValue {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "exp" => Ok(Self::Exp),
+            "linear" => Ok(Self::Linear),
+            "log" => Ok(Self::Log),
+            "movingAvg" => Ok(Self::MovingAvg),
+            "poly" => Ok(Self::Poly),
+            "power" => Ok(Self::Power),
+            _ => Err(format!("unknown TrendlineTypeValue value: {}", s)),
+        }
+    }
+}
+
+pub type TrendlineOrderValue = u8;
+
+pub type TrendlinePeriodValue = u32;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum ErrorDirectionType {
+    #[serde(rename = "x")]
+    X,
+    #[serde(rename = "y")]
+    Y,
+}
+
+impl std::fmt::Display for ErrorDirectionType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::X => write!(f, "x"),
+            Self::Y => write!(f, "y"),
+        }
+    }
+}
+
+impl std::str::FromStr for ErrorDirectionType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "x" => Ok(Self::X),
+            "y" => Ok(Self::Y),
+            _ => Err(format!("unknown ErrorDirectionType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum ErrorBarTypeValue {
+    #[serde(rename = "both")]
+    Both,
+    #[serde(rename = "minus")]
+    Minus,
+    #[serde(rename = "plus")]
+    Plus,
+}
+
+impl std::fmt::Display for ErrorBarTypeValue {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Both => write!(f, "both"),
+            Self::Minus => write!(f, "minus"),
+            Self::Plus => write!(f, "plus"),
+        }
+    }
+}
+
+impl std::str::FromStr for ErrorBarTypeValue {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "both" => Ok(Self::Both),
+            "minus" => Ok(Self::Minus),
+            "plus" => Ok(Self::Plus),
+            _ => Err(format!("unknown ErrorBarTypeValue value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum ErrorValueTypeValue {
+    #[serde(rename = "cust")]
+    Cust,
+    #[serde(rename = "fixedVal")]
+    FixedVal,
+    #[serde(rename = "percentage")]
+    Percentage,
+    #[serde(rename = "stdDev")]
+    StdDev,
+    #[serde(rename = "stdErr")]
+    StdErr,
+}
+
+impl std::fmt::Display for ErrorValueTypeValue {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Cust => write!(f, "cust"),
+            Self::FixedVal => write!(f, "fixedVal"),
+            Self::Percentage => write!(f, "percentage"),
+            Self::StdDev => write!(f, "stdDev"),
+            Self::StdErr => write!(f, "stdErr"),
+        }
+    }
+}
+
+impl std::str::FromStr for ErrorValueTypeValue {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "cust" => Ok(Self::Cust),
+            "fixedVal" => Ok(Self::FixedVal),
+            "percentage" => Ok(Self::Percentage),
+            "stdDev" => Ok(Self::StdDev),
+            "stdErr" => Ok(Self::StdErr),
+            _ => Err(format!("unknown ErrorValueTypeValue value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum GroupingType {
+    #[serde(rename = "percentStacked")]
+    PercentStacked,
+    #[serde(rename = "standard")]
+    Standard,
+    #[serde(rename = "stacked")]
+    Stacked,
+}
+
+impl std::fmt::Display for GroupingType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::PercentStacked => write!(f, "percentStacked"),
+            Self::Standard => write!(f, "standard"),
+            Self::Stacked => write!(f, "stacked"),
+        }
+    }
+}
+
+impl std::str::FromStr for GroupingType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "percentStacked" => Ok(Self::PercentStacked),
+            "standard" => Ok(Self::Standard),
+            "stacked" => Ok(Self::Stacked),
+            _ => Err(format!("unknown GroupingType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum ScatterStyleType {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "line")]
+    Line,
+    #[serde(rename = "lineMarker")]
+    LineMarker,
+    #[serde(rename = "marker")]
+    Marker,
+    #[serde(rename = "smooth")]
+    Smooth,
+    #[serde(rename = "smoothMarker")]
+    SmoothMarker,
+}
+
+impl std::fmt::Display for ScatterStyleType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::Line => write!(f, "line"),
+            Self::LineMarker => write!(f, "lineMarker"),
+            Self::Marker => write!(f, "marker"),
+            Self::Smooth => write!(f, "smooth"),
+            Self::SmoothMarker => write!(f, "smoothMarker"),
+        }
+    }
+}
+
+impl std::str::FromStr for ScatterStyleType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "line" => Ok(Self::Line),
+            "lineMarker" => Ok(Self::LineMarker),
+            "marker" => Ok(Self::Marker),
+            "smooth" => Ok(Self::Smooth),
+            "smoothMarker" => Ok(Self::SmoothMarker),
+            _ => Err(format!("unknown ScatterStyleType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum RadarStyleType {
+    #[serde(rename = "standard")]
+    Standard,
+    #[serde(rename = "marker")]
+    Marker,
+    #[serde(rename = "filled")]
+    Filled,
+}
+
+impl std::fmt::Display for RadarStyleType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Standard => write!(f, "standard"),
+            Self::Marker => write!(f, "marker"),
+            Self::Filled => write!(f, "filled"),
+        }
+    }
+}
+
+impl std::str::FromStr for RadarStyleType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "standard" => Ok(Self::Standard),
+            "marker" => Ok(Self::Marker),
+            "filled" => Ok(Self::Filled),
+            _ => Err(format!("unknown RadarStyleType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum BarGroupingType {
+    #[serde(rename = "percentStacked")]
+    PercentStacked,
+    #[serde(rename = "clustered")]
+    Clustered,
+    #[serde(rename = "standard")]
+    Standard,
+    #[serde(rename = "stacked")]
+    Stacked,
+}
+
+impl std::fmt::Display for BarGroupingType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::PercentStacked => write!(f, "percentStacked"),
+            Self::Clustered => write!(f, "clustered"),
+            Self::Standard => write!(f, "standard"),
+            Self::Stacked => write!(f, "stacked"),
+        }
+    }
+}
+
+impl std::str::FromStr for BarGroupingType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "percentStacked" => Ok(Self::PercentStacked),
+            "clustered" => Ok(Self::Clustered),
+            "standard" => Ok(Self::Standard),
+            "stacked" => Ok(Self::Stacked),
+            _ => Err(format!("unknown BarGroupingType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum BarDirectionType {
+    #[serde(rename = "bar")]
+    Bar,
+    #[serde(rename = "col")]
+    Col,
+}
+
+impl std::fmt::Display for BarDirectionType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Bar => write!(f, "bar"),
+            Self::Col => write!(f, "col"),
+        }
+    }
+}
+
+impl std::str::FromStr for BarDirectionType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "bar" => Ok(Self::Bar),
+            "col" => Ok(Self::Col),
+            _ => Err(format!("unknown BarDirectionType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum BarShapeType {
+    #[serde(rename = "cone")]
+    Cone,
+    #[serde(rename = "coneToMax")]
+    ConeToMax,
+    #[serde(rename = "box")]
+    Box,
+    #[serde(rename = "cylinder")]
+    Cylinder,
+    #[serde(rename = "pyramid")]
+    Pyramid,
+    #[serde(rename = "pyramidToMax")]
+    PyramidToMax,
+}
+
+impl std::fmt::Display for BarShapeType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Cone => write!(f, "cone"),
+            Self::ConeToMax => write!(f, "coneToMax"),
+            Self::Box => write!(f, "box"),
+            Self::Cylinder => write!(f, "cylinder"),
+            Self::Pyramid => write!(f, "pyramid"),
+            Self::PyramidToMax => write!(f, "pyramidToMax"),
+        }
+    }
+}
+
+impl std::str::FromStr for BarShapeType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "cone" => Ok(Self::Cone),
+            "coneToMax" => Ok(Self::ConeToMax),
+            "box" => Ok(Self::Box),
+            "cylinder" => Ok(Self::Cylinder),
+            "pyramid" => Ok(Self::Pyramid),
+            "pyramidToMax" => Ok(Self::PyramidToMax),
+            _ => Err(format!("unknown BarShapeType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum OfPieTypeValue {
+    #[serde(rename = "pie")]
+    Pie,
+    #[serde(rename = "bar")]
+    Bar,
+}
+
+impl std::fmt::Display for OfPieTypeValue {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Pie => write!(f, "pie"),
+            Self::Bar => write!(f, "bar"),
+        }
+    }
+}
+
+impl std::str::FromStr for OfPieTypeValue {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "pie" => Ok(Self::Pie),
+            "bar" => Ok(Self::Bar),
+            _ => Err(format!("unknown OfPieTypeValue value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum AxisPositionType {
+    #[serde(rename = "b")]
+    B,
+    #[serde(rename = "l")]
+    L,
+    #[serde(rename = "r")]
+    R,
+    #[serde(rename = "t")]
+    T,
+}
+
+impl std::fmt::Display for AxisPositionType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::B => write!(f, "b"),
+            Self::L => write!(f, "l"),
+            Self::R => write!(f, "r"),
+            Self::T => write!(f, "t"),
+        }
+    }
+}
+
+impl std::str::FromStr for AxisPositionType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "b" => Ok(Self::B),
+            "l" => Ok(Self::L),
+            "r" => Ok(Self::R),
+            "t" => Ok(Self::T),
+            _ => Err(format!("unknown AxisPositionType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum AxisCrossesType {
+    #[serde(rename = "autoZero")]
+    AutoZero,
+    #[serde(rename = "max")]
+    Max,
+    #[serde(rename = "min")]
+    Min,
+}
+
+impl std::fmt::Display for AxisCrossesType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::AutoZero => write!(f, "autoZero"),
+            Self::Max => write!(f, "max"),
+            Self::Min => write!(f, "min"),
+        }
+    }
+}
+
+impl std::str::FromStr for AxisCrossesType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "autoZero" => Ok(Self::AutoZero),
+            "max" => Ok(Self::Max),
+            "min" => Ok(Self::Min),
+            _ => Err(format!("unknown AxisCrossesType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum CrossBetweenType {
+    #[serde(rename = "between")]
+    Between,
+    #[serde(rename = "midCat")]
+    MidCat,
+}
+
+impl std::fmt::Display for CrossBetweenType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Between => write!(f, "between"),
+            Self::MidCat => write!(f, "midCat"),
+        }
+    }
+}
+
+impl std::str::FromStr for CrossBetweenType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "between" => Ok(Self::Between),
+            "midCat" => Ok(Self::MidCat),
+            _ => Err(format!("unknown CrossBetweenType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum TickMarkType {
+    #[serde(rename = "cross")]
+    Cross,
+    #[serde(rename = "in")]
+    In,
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "out")]
+    Out,
+}
+
+impl std::fmt::Display for TickMarkType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Cross => write!(f, "cross"),
+            Self::In => write!(f, "in"),
+            Self::None => write!(f, "none"),
+            Self::Out => write!(f, "out"),
+        }
+    }
+}
+
+impl std::str::FromStr for TickMarkType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "cross" => Ok(Self::Cross),
+            "in" => Ok(Self::In),
+            "none" => Ok(Self::None),
+            "out" => Ok(Self::Out),
+            _ => Err(format!("unknown TickMarkType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum TickLabelPositionType {
+    #[serde(rename = "high")]
+    High,
+    #[serde(rename = "low")]
+    Low,
+    #[serde(rename = "nextTo")]
+    NextTo,
+    #[serde(rename = "none")]
+    None,
+}
+
+impl std::fmt::Display for TickLabelPositionType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::High => write!(f, "high"),
+            Self::Low => write!(f, "low"),
+            Self::NextTo => write!(f, "nextTo"),
+            Self::None => write!(f, "none"),
+        }
+    }
+}
+
+impl std::str::FromStr for TickLabelPositionType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "high" => Ok(Self::High),
+            "low" => Ok(Self::Low),
+            "nextTo" => Ok(Self::NextTo),
+            "none" => Ok(Self::None),
+            _ => Err(format!("unknown TickLabelPositionType value: {}", s)),
+        }
+    }
+}
+
+pub type AxisSkipValue = u32;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum TimeUnitType {
+    #[serde(rename = "days")]
+    Days,
+    #[serde(rename = "months")]
+    Months,
+    #[serde(rename = "years")]
+    Years,
+}
+
+impl std::fmt::Display for TimeUnitType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Days => write!(f, "days"),
+            Self::Months => write!(f, "months"),
+            Self::Years => write!(f, "years"),
+        }
+    }
+}
+
+impl std::str::FromStr for TimeUnitType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "days" => Ok(Self::Days),
+            "months" => Ok(Self::Months),
+            "years" => Ok(Self::Years),
+            _ => Err(format!("unknown TimeUnitType value: {}", s)),
+        }
+    }
+}
+
+pub type AxisUnitValue = f64;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum BuiltInUnitType {
+    #[serde(rename = "hundreds")]
+    Hundreds,
+    #[serde(rename = "thousands")]
+    Thousands,
+    #[serde(rename = "tenThousands")]
+    TenThousands,
+    #[serde(rename = "hundredThousands")]
+    HundredThousands,
+    #[serde(rename = "millions")]
+    Millions,
+    #[serde(rename = "tenMillions")]
+    TenMillions,
+    #[serde(rename = "hundredMillions")]
+    HundredMillions,
+    #[serde(rename = "billions")]
+    Billions,
+    #[serde(rename = "trillions")]
+    Trillions,
+}
+
+impl std::fmt::Display for BuiltInUnitType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Hundreds => write!(f, "hundreds"),
+            Self::Thousands => write!(f, "thousands"),
+            Self::TenThousands => write!(f, "tenThousands"),
+            Self::HundredThousands => write!(f, "hundredThousands"),
+            Self::Millions => write!(f, "millions"),
+            Self::TenMillions => write!(f, "tenMillions"),
+            Self::HundredMillions => write!(f, "hundredMillions"),
+            Self::Billions => write!(f, "billions"),
+            Self::Trillions => write!(f, "trillions"),
+        }
+    }
+}
+
+impl std::str::FromStr for BuiltInUnitType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "hundreds" => Ok(Self::Hundreds),
+            "thousands" => Ok(Self::Thousands),
+            "tenThousands" => Ok(Self::TenThousands),
+            "hundredThousands" => Ok(Self::HundredThousands),
+            "millions" => Ok(Self::Millions),
+            "tenMillions" => Ok(Self::TenMillions),
+            "hundredMillions" => Ok(Self::HundredMillions),
+            "billions" => Ok(Self::Billions),
+            "trillions" => Ok(Self::Trillions),
+            _ => Err(format!("unknown BuiltInUnitType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum PictureFormatType {
+    #[serde(rename = "stretch")]
+    Stretch,
+    #[serde(rename = "stack")]
+    Stack,
+    #[serde(rename = "stackScale")]
+    StackScale,
+}
+
+impl std::fmt::Display for PictureFormatType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Stretch => write!(f, "stretch"),
+            Self::Stack => write!(f, "stack"),
+            Self::StackScale => write!(f, "stackScale"),
+        }
+    }
+}
+
+impl std::str::FromStr for PictureFormatType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "stretch" => Ok(Self::Stretch),
+            "stack" => Ok(Self::Stack),
+            "stackScale" => Ok(Self::StackScale),
+            _ => Err(format!("unknown PictureFormatType value: {}", s)),
+        }
+    }
+}
+
+pub type PictureStackUnitValue = f64;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum AxisOrientationType {
+    #[serde(rename = "maxMin")]
+    MaxMin,
+    #[serde(rename = "minMax")]
+    MinMax,
+}
+
+impl std::fmt::Display for AxisOrientationType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::MaxMin => write!(f, "maxMin"),
+            Self::MinMax => write!(f, "minMax"),
+        }
+    }
+}
+
+impl std::str::FromStr for AxisOrientationType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "maxMin" => Ok(Self::MaxMin),
+            "minMax" => Ok(Self::MinMax),
+            _ => Err(format!("unknown AxisOrientationType value: {}", s)),
+        }
+    }
+}
+
+pub type LogBaseValue = f64;
+
+pub type LabelOffsetValue = String;
+
+pub type LabelOffsetPercent = String;
+
+pub type LabelOffsetUShort = u16;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum LegendPositionType {
+    #[serde(rename = "b")]
+    B,
+    #[serde(rename = "tr")]
+    Tr,
+    #[serde(rename = "l")]
+    L,
+    #[serde(rename = "r")]
+    R,
+    #[serde(rename = "t")]
+    T,
+}
+
+impl std::fmt::Display for LegendPositionType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::B => write!(f, "b"),
+            Self::Tr => write!(f, "tr"),
+            Self::L => write!(f, "l"),
+            Self::R => write!(f, "r"),
+            Self::T => write!(f, "t"),
+        }
+    }
+}
+
+impl std::str::FromStr for LegendPositionType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "b" => Ok(Self::B),
+            "tr" => Ok(Self::Tr),
+            "l" => Ok(Self::L),
+            "r" => Ok(Self::R),
+            "t" => Ok(Self::T),
+            _ => Err(format!("unknown LegendPositionType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum DisplayBlanksAsType {
+    #[serde(rename = "span")]
+    Span,
+    #[serde(rename = "gap")]
+    Gap,
+    #[serde(rename = "zero")]
+    Zero,
+}
+
+impl std::fmt::Display for DisplayBlanksAsType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Span => write!(f, "span"),
+            Self::Gap => write!(f, "gap"),
+            Self::Zero => write!(f, "zero"),
+        }
+    }
+}
+
+impl std::str::FromStr for DisplayBlanksAsType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "span" => Ok(Self::Span),
+            "gap" => Ok(Self::Gap),
+            "zero" => Ok(Self::Zero),
+            _ => Err(format!("unknown DisplayBlanksAsType value: {}", s)),
+        }
+    }
+}
+
+pub type ChartStyleValue = u8;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum ChartPageOrientation {
+    #[serde(rename = "default")]
+    Default,
+    #[serde(rename = "portrait")]
+    Portrait,
+    #[serde(rename = "landscape")]
+    Landscape,
+}
+
+impl std::fmt::Display for ChartPageOrientation {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Default => write!(f, "default"),
+            Self::Portrait => write!(f, "portrait"),
+            Self::Landscape => write!(f, "landscape"),
+        }
+    }
+}
+
+impl std::str::FromStr for ChartPageOrientation {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "default" => Ok(Self::Default),
+            "portrait" => Ok(Self::Portrait),
+            "landscape" => Ok(Self::Landscape),
+            _ => Err(format!("unknown ChartPageOrientation value: {}", s)),
+        }
+    }
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum EGMedia {
@@ -10931,3 +12129,4184 @@ pub struct TextRun {
     #[cfg(feature = "extra-children")]
     pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDouble {
+    #[serde(rename = "@val")]
+    pub value: f64,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTUnsignedInt {
+    #[serde(rename = "@val")]
+    pub value: u32,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ChartRelId {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@r:id")]
+    pub id: STRelationshipId,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ChartExtension {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@uri")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub uri: Option<String>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+pub type CTExtensionAny = String;
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ChartExtensionList {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "ext")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub extents: Vec<ChartExtension>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NumericValue {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@idx")]
+    pub idx: u32,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@formatCode")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub format_code: Option<XmlString>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "v")]
+    pub v: XmlString,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct NumericData {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "formatCode")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub format_code: Option<XmlString>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "ptCount")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pt_count: Option<Box<CTUnsignedInt>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "pt")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub pt: Vec<NumericValue>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NumericReference {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "f")]
+    pub f: String,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "numCache")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub num_cache: Option<Box<NumericData>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct NumericDataSource {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "numRef")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub num_ref: Option<Box<NumericReference>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "numLit")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub num_lit: Option<Box<NumericData>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StringValue {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@idx")]
+    pub idx: u32,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "v")]
+    pub v: XmlString,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct StringData {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "ptCount")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pt_count: Option<Box<CTUnsignedInt>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "pt")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub pt: Vec<StringValue>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StringReference {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "f")]
+    pub f: String,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "strCache")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub str_cache: Option<Box<StringData>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ChartText {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "strRef")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub str_ref: Option<Box<StringReference>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "rich")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rich: Option<Box<TextBody>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TextLanguageId {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    pub value: Language,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct MultiLevelStrLevel {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "pt")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub pt: Vec<StringValue>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct MultiLevelStrData {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "ptCount")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pt_count: Option<Box<CTUnsignedInt>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "lvl")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub lvl: Vec<MultiLevelStrLevel>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MultiLevelStrRef {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "f")]
+    pub f: String,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "multiLvlStrCache")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub multi_lvl_str_cache: Option<Box<MultiLevelStrData>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct AxisDataSource {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "multiLvlStrRef")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub multi_lvl_str_ref: Option<Box<MultiLevelStrRef>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "numRef")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub num_ref: Option<Box<NumericReference>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "numLit")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub num_lit: Option<Box<NumericData>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "strRef")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub str_ref: Option<Box<StringReference>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "strLit")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub str_lit: Option<Box<StringData>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct SeriesText {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "strRef")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub str_ref: Option<Box<StringReference>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "v")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub v: Option<XmlString>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct LayoutTarget {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<LayoutTargetType>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct LayoutMode {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<LayoutModeType>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ManualLayout {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "layoutTarget")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub layout_target: Option<Box<LayoutTarget>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "xMode")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub x_mode: Option<Box<LayoutMode>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "yMode")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub y_mode: Option<Box<LayoutMode>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "wMode")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub w_mode: Option<Box<LayoutMode>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "hMode")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub h_mode: Option<Box<LayoutMode>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "x")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub x: Option<Box<CTDouble>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "y")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub y: Option<Box<CTDouble>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "w")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub width: Option<Box<CTDouble>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "h")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub height: Option<Box<CTDouble>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ChartLayout {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "manualLayout")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub manual_layout: Option<Box<ManualLayout>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ChartTitle {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "tx")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx: Option<Box<ChartText>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "layout")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub layout: Option<Box<ChartLayout>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "overlay")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub overlay: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "txPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_pr: Option<Box<TextBody>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct RotX {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<RotXValue>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct HPercent {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<HPercentValue>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct RotY {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<RotYValue>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DepthPercent {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<DepthPercentValue>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct Perspective {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<PerspectiveValue>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct View3D {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "rotX")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rot_x: Option<Box<RotX>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "hPercent")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub h_percent: Option<Box<HPercent>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "rotY")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rot_y: Option<Box<RotY>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "depthPercent")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub depth_percent: Option<Box<DepthPercent>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "rAngAx")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub r_ang_ax: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "perspective")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub perspective: Option<Box<Perspective>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ChartSurface {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "thickness")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub thickness: Option<Box<ChartThickness>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "pictureOptions")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub picture_options: Option<Box<PictureOptions>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ChartThickness {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    pub value: ChartThicknessValue,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DataTable {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "showHorzBorder")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_horz_border: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "showVertBorder")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_vert_border: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "showOutline")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_outline: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "showKeys")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_keys: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "txPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_pr: Option<Box<TextBody>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct GapAmount {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<GapAmountValue>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct OverlapAmount {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<OverlapValue>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct BubbleScale {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<BubbleScaleValue>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct SizeRepresents {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<SizeRepresentsType>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct FirstSliceAngle {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<FirstSliceAngValue>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct HoleSize {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<HoleSizeValue>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct SplitType {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<SplitTypeValue>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CustomSplit {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "secondPiePt")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub second_pie_pt: Vec<CTUnsignedInt>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct SecondPieSize {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<SecondPieSizeValue>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ChartNumFmt {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@formatCode")]
+    pub format_code: XmlString,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@sourceLinked")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub source_linked: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LabelAlignment {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    pub value: LabelAlignType,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DataLabelPosition {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    pub value: DataLabelPositionType,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct EGDLblShared {
+    #[serde(rename = "numFmt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub num_fmt: Option<Box<ChartNumFmt>>,
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[serde(rename = "txPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_pr: Option<Box<TextBody>>,
+    #[serde(rename = "dLblPos")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbl_pos: Option<Box<DataLabelPosition>>,
+    #[serde(rename = "showLegendKey")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_legend_key: Option<Box<CTBoolean>>,
+    #[serde(rename = "showVal")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_val: Option<Box<CTBoolean>>,
+    #[serde(rename = "showCatName")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_cat_name: Option<Box<CTBoolean>>,
+    #[serde(rename = "showSerName")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_ser_name: Option<Box<CTBoolean>>,
+    #[serde(rename = "showPercent")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_percent: Option<Box<CTBoolean>>,
+    #[serde(rename = "showBubbleSize")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_bubble_size: Option<Box<CTBoolean>>,
+    #[serde(rename = "separator")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub separator: Option<String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DchrtGroupDLbl {
+    #[serde(rename = "layout")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub layout: Option<Box<ChartLayout>>,
+    #[serde(rename = "tx")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx: Option<Box<ChartText>>,
+    #[serde(rename = "numFmt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub num_fmt: Option<Box<ChartNumFmt>>,
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[serde(rename = "txPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_pr: Option<Box<TextBody>>,
+    #[serde(rename = "dLblPos")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbl_pos: Option<Box<DataLabelPosition>>,
+    #[serde(rename = "showLegendKey")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_legend_key: Option<Box<CTBoolean>>,
+    #[serde(rename = "showVal")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_val: Option<Box<CTBoolean>>,
+    #[serde(rename = "showCatName")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_cat_name: Option<Box<CTBoolean>>,
+    #[serde(rename = "showSerName")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_ser_name: Option<Box<CTBoolean>>,
+    #[serde(rename = "showPercent")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_percent: Option<Box<CTBoolean>>,
+    #[serde(rename = "showBubbleSize")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_bubble_size: Option<Box<CTBoolean>>,
+    #[serde(rename = "separator")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub separator: Option<String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DataLabel {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "idx")]
+    pub idx: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "delete")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub delete: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "layout")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub layout: Option<Box<ChartLayout>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "tx")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx: Option<Box<ChartText>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "numFmt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub num_fmt: Option<Box<ChartNumFmt>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "txPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_pr: Option<Box<TextBody>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLblPos")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbl_pos: Option<Box<DataLabelPosition>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "showLegendKey")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_legend_key: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "showVal")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_val: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "showCatName")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_cat_name: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "showSerName")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_ser_name: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "showPercent")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_percent: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "showBubbleSize")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_bubble_size: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "separator")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub separator: Option<String>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DchrtGroupDLbls {
+    #[serde(rename = "numFmt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub num_fmt: Option<Box<ChartNumFmt>>,
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[serde(rename = "txPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_pr: Option<Box<TextBody>>,
+    #[serde(rename = "dLblPos")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbl_pos: Option<Box<DataLabelPosition>>,
+    #[serde(rename = "showLegendKey")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_legend_key: Option<Box<CTBoolean>>,
+    #[serde(rename = "showVal")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_val: Option<Box<CTBoolean>>,
+    #[serde(rename = "showCatName")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_cat_name: Option<Box<CTBoolean>>,
+    #[serde(rename = "showSerName")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_ser_name: Option<Box<CTBoolean>>,
+    #[serde(rename = "showPercent")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_percent: Option<Box<CTBoolean>>,
+    #[serde(rename = "showBubbleSize")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_bubble_size: Option<Box<CTBoolean>>,
+    #[serde(rename = "separator")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub separator: Option<String>,
+    #[serde(rename = "showLeaderLines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_leader_lines: Option<Box<CTBoolean>>,
+    #[serde(rename = "leaderLines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub leader_lines: Option<Box<ChartLines>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DataLabels {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbl")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub d_lbl: Vec<DataLabel>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "delete")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub delete: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "numFmt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub num_fmt: Option<Box<ChartNumFmt>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "txPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_pr: Option<Box<TextBody>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLblPos")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbl_pos: Option<Box<DataLabelPosition>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "showLegendKey")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_legend_key: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "showVal")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_val: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "showCatName")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_cat_name: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "showSerName")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_ser_name: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "showPercent")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_percent: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "showBubbleSize")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_bubble_size: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "separator")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub separator: Option<String>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "showLeaderLines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_leader_lines: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "leaderLines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub leader_lines: Option<Box<ChartLines>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ChartMarkerStyle {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    pub value: MarkerStyleType,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ChartMarkerSize {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<MarkerSizeValue>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ChartMarker {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "symbol")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub symbol: Option<Box<ChartMarkerStyle>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "size")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub size: Option<Box<ChartMarkerSize>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DataPoint {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "idx")]
+    pub idx: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "invertIfNegative")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub invert_if_negative: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "marker")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub marker: Option<Box<ChartMarker>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "bubble3D")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bubble3_d: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "explosion")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub explosion: Option<Box<CTUnsignedInt>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "pictureOptions")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub picture_options: Option<Box<PictureOptions>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct TrendlineType {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<TrendlineTypeValue>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct TrendlineOrder {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<TrendlineOrderValue>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct TrendlinePeriod {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<TrendlinePeriodValue>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct TrendlineLabel {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "layout")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub layout: Option<Box<ChartLayout>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "tx")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx: Option<Box<ChartText>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "numFmt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub num_fmt: Option<Box<ChartNumFmt>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "txPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_pr: Option<Box<TextBody>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Trendline {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "name")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "trendlineType")]
+    pub trendline_type: Box<TrendlineType>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "order")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub order: Option<Box<TrendlineOrder>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "period")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub period: Option<Box<TrendlinePeriod>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "forward")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub forward: Option<Box<CTDouble>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "backward")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub backward: Option<Box<CTDouble>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "intercept")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub intercept: Option<Box<CTDouble>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dispRSqr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub disp_r_sqr: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dispEq")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub disp_eq: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "trendlineLbl")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub trendline_lbl: Option<Box<TrendlineLabel>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ErrorDirection {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    pub value: ErrorDirectionType,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ErrorBarType {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<ErrorBarTypeValue>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ErrorValueType {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<ErrorValueTypeValue>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ErrorBars {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "errDir")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub err_dir: Option<Box<ErrorDirection>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "errBarType")]
+    pub err_bar_type: Box<ErrorBarType>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "errValType")]
+    pub err_val_type: Box<ErrorValueType>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "noEndCap")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub no_end_cap: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "plus")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub plus: Option<Box<NumericDataSource>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "minus")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub minus: Option<Box<NumericDataSource>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<Box<CTDouble>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct UpDownBar {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct UpDownBars {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "gapWidth")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub gap_width: Option<Box<GapAmount>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "upBars")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub up_bars: Option<Box<UpDownBar>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "downBars")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub down_bars: Option<Box<UpDownBar>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EGSerShared {
+    #[serde(rename = "idx")]
+    pub idx: Box<CTUnsignedInt>,
+    #[serde(rename = "order")]
+    pub order: Box<CTUnsignedInt>,
+    #[serde(rename = "tx")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx: Option<Box<SeriesText>>,
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LineSeries {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "idx")]
+    pub idx: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "order")]
+    pub order: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "tx")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx: Option<Box<SeriesText>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "marker")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub marker: Option<Box<ChartMarker>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dPt")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub d_pt: Vec<DataPoint>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "trendline")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub trendline: Vec<Trendline>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "errBars")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub err_bars: Option<Box<ErrorBars>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "cat")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cat: Option<Box<AxisDataSource>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<Box<NumericDataSource>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "smooth")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub smooth: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ScatterSeries {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "idx")]
+    pub idx: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "order")]
+    pub order: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "tx")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx: Option<Box<SeriesText>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "marker")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub marker: Option<Box<ChartMarker>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dPt")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub d_pt: Vec<DataPoint>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "trendline")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub trendline: Vec<Trendline>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "errBars")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub err_bars: Vec<ErrorBars>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "xVal")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub x_val: Option<Box<AxisDataSource>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "yVal")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub y_val: Option<Box<NumericDataSource>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "smooth")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub smooth: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RadarSeries {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "idx")]
+    pub idx: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "order")]
+    pub order: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "tx")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx: Option<Box<SeriesText>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "marker")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub marker: Option<Box<ChartMarker>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dPt")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub d_pt: Vec<DataPoint>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "cat")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cat: Option<Box<AxisDataSource>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<Box<NumericDataSource>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BarSeries {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "idx")]
+    pub idx: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "order")]
+    pub order: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "tx")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx: Option<Box<SeriesText>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "invertIfNegative")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub invert_if_negative: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "pictureOptions")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub picture_options: Option<Box<PictureOptions>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dPt")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub d_pt: Vec<DataPoint>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "trendline")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub trendline: Vec<Trendline>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "errBars")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub err_bars: Option<Box<ErrorBars>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "cat")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cat: Option<Box<AxisDataSource>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<Box<NumericDataSource>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "shape")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub shape: Option<Box<BarShape>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AreaSeries {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "idx")]
+    pub idx: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "order")]
+    pub order: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "tx")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx: Option<Box<SeriesText>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "pictureOptions")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub picture_options: Option<Box<PictureOptions>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dPt")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub d_pt: Vec<DataPoint>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "trendline")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub trendline: Vec<Trendline>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "errBars")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub err_bars: Vec<ErrorBars>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "cat")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cat: Option<Box<AxisDataSource>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<Box<NumericDataSource>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PieSeries {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "idx")]
+    pub idx: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "order")]
+    pub order: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "tx")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx: Option<Box<SeriesText>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "explosion")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub explosion: Option<Box<CTUnsignedInt>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dPt")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub d_pt: Vec<DataPoint>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "cat")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cat: Option<Box<AxisDataSource>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<Box<NumericDataSource>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BubbleSeries {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "idx")]
+    pub idx: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "order")]
+    pub order: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "tx")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx: Option<Box<SeriesText>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "invertIfNegative")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub invert_if_negative: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dPt")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub d_pt: Vec<DataPoint>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "trendline")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub trendline: Vec<Trendline>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "errBars")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub err_bars: Vec<ErrorBars>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "xVal")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub x_val: Option<Box<AxisDataSource>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "yVal")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub y_val: Option<Box<NumericDataSource>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "bubbleSize")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bubble_size: Option<Box<NumericDataSource>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "bubble3D")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bubble3_d: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SurfaceSeries {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "idx")]
+    pub idx: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "order")]
+    pub order: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "tx")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx: Option<Box<SeriesText>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "cat")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cat: Option<Box<AxisDataSource>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<Box<NumericDataSource>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ChartGrouping {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<GroupingType>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ChartLines {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EGLineChartShared {
+    #[serde(rename = "grouping")]
+    pub grouping: Box<ChartGrouping>,
+    #[serde(rename = "varyColors")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vary_colors: Option<Box<CTBoolean>>,
+    #[serde(rename = "ser")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser: Vec<LineSeries>,
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[serde(rename = "dropLines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub drop_lines: Option<Box<ChartLines>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LineChart {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "grouping")]
+    pub grouping: Box<ChartGrouping>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "varyColors")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vary_colors: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "ser")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser: Vec<LineSeries>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dropLines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub drop_lines: Option<Box<ChartLines>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "hiLowLines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub hi_low_lines: Option<Box<ChartLines>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "upDownBars")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub up_down_bars: Option<Box<UpDownBars>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "marker")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub marker: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "smooth")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub smooth: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "axId")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ax_id: Vec<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Line3DChart {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "grouping")]
+    pub grouping: Box<ChartGrouping>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "varyColors")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vary_colors: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "ser")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser: Vec<LineSeries>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dropLines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub drop_lines: Option<Box<ChartLines>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "gapDepth")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub gap_depth: Option<Box<GapAmount>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "axId")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ax_id: Vec<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct StockChart {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "ser")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser: Vec<LineSeries>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dropLines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub drop_lines: Option<Box<ChartLines>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "hiLowLines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub hi_low_lines: Option<Box<ChartLines>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "upDownBars")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub up_down_bars: Option<Box<UpDownBars>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "axId")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ax_id: Vec<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ScatterStyle {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<ScatterStyleType>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ScatterChart {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "scatterStyle")]
+    pub scatter_style: Box<ScatterStyle>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "varyColors")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vary_colors: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "ser")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser: Vec<ScatterSeries>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "axId")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ax_id: Vec<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct RadarStyle {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<RadarStyleType>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RadarChart {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "radarStyle")]
+    pub radar_style: Box<RadarStyle>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "varyColors")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vary_colors: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "ser")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser: Vec<RadarSeries>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "axId")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ax_id: Vec<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct BarGrouping {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<BarGroupingType>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct BarDirection {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<BarDirectionType>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct BarShape {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<BarShapeType>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EGBarChartShared {
+    #[serde(rename = "barDir")]
+    pub bar_dir: Box<BarDirection>,
+    #[serde(rename = "grouping")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub grouping: Option<Box<BarGrouping>>,
+    #[serde(rename = "varyColors")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vary_colors: Option<Box<CTBoolean>>,
+    #[serde(rename = "ser")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser: Vec<BarSeries>,
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BarChart {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "barDir")]
+    pub bar_dir: Box<BarDirection>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "grouping")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub grouping: Option<Box<BarGrouping>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "varyColors")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vary_colors: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "ser")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser: Vec<BarSeries>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "gapWidth")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub gap_width: Option<Box<GapAmount>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "overlap")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub overlap: Option<Box<OverlapAmount>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "serLines")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser_lines: Vec<ChartLines>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "axId")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ax_id: Vec<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Bar3DChart {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "barDir")]
+    pub bar_dir: Box<BarDirection>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "grouping")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub grouping: Option<Box<BarGrouping>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "varyColors")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vary_colors: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "ser")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser: Vec<BarSeries>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "gapWidth")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub gap_width: Option<Box<GapAmount>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "gapDepth")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub gap_depth: Option<Box<GapAmount>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "shape")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub shape: Option<Box<BarShape>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "axId")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ax_id: Vec<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct EGAreaChartShared {
+    #[serde(rename = "grouping")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub grouping: Option<Box<ChartGrouping>>,
+    #[serde(rename = "varyColors")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vary_colors: Option<Box<CTBoolean>>,
+    #[serde(rename = "ser")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser: Vec<AreaSeries>,
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[serde(rename = "dropLines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub drop_lines: Option<Box<ChartLines>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct AreaChart {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "grouping")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub grouping: Option<Box<ChartGrouping>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "varyColors")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vary_colors: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "ser")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser: Vec<AreaSeries>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dropLines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub drop_lines: Option<Box<ChartLines>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "axId")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ax_id: Vec<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct Area3DChart {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "grouping")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub grouping: Option<Box<ChartGrouping>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "varyColors")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vary_colors: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "ser")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser: Vec<AreaSeries>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dropLines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub drop_lines: Option<Box<ChartLines>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "gapDepth")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub gap_depth: Option<Box<GapAmount>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "axId")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ax_id: Vec<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct EGPieChartShared {
+    #[serde(rename = "varyColors")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vary_colors: Option<Box<CTBoolean>>,
+    #[serde(rename = "ser")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser: Vec<PieSeries>,
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct PieChart {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "varyColors")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vary_colors: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "ser")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser: Vec<PieSeries>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "firstSliceAng")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub first_slice_ang: Option<Box<FirstSliceAngle>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct Pie3DChart {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "varyColors")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vary_colors: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "ser")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser: Vec<PieSeries>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DoughnutChart {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "varyColors")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vary_colors: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "ser")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser: Vec<PieSeries>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "firstSliceAng")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub first_slice_ang: Option<Box<FirstSliceAngle>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "holeSize")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub hole_size: Option<Box<HoleSize>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct OfPieType {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<OfPieTypeValue>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct OfPieChart {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "ofPieType")]
+    pub of_pie_type: Box<OfPieType>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "varyColors")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vary_colors: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "ser")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser: Vec<PieSeries>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "gapWidth")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub gap_width: Option<Box<GapAmount>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "splitType")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub split_type: Option<Box<SplitType>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "splitPos")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub split_pos: Option<Box<CTDouble>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "custSplit")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cust_split: Option<Box<CustomSplit>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "secondPieSize")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub second_pie_size: Option<Box<SecondPieSize>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "serLines")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser_lines: Vec<ChartLines>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct BubbleChart {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "varyColors")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vary_colors: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "ser")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser: Vec<BubbleSeries>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbls")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbls: Option<Box<DataLabels>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "bubble3D")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bubble3_d: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "bubbleScale")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bubble_scale: Option<Box<BubbleScale>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "showNegBubbles")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_neg_bubbles: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "sizeRepresents")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub size_represents: Option<Box<SizeRepresents>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "axId")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ax_id: Vec<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BandFormat {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "idx")]
+    pub idx: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct BandFormats {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "bandFmt")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub band_fmt: Vec<BandFormat>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct EGSurfaceChartShared {
+    #[serde(rename = "wireframe")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub wireframe: Option<Box<CTBoolean>>,
+    #[serde(rename = "ser")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser: Vec<SurfaceSeries>,
+    #[serde(rename = "bandFmts")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub band_fmts: Option<Box<BandFormats>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct SurfaceChart {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "wireframe")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub wireframe: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "ser")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser: Vec<SurfaceSeries>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "bandFmts")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub band_fmts: Option<Box<BandFormats>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "axId")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ax_id: Vec<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct Surface3DChart {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "wireframe")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub wireframe: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "ser")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser: Vec<SurfaceSeries>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "bandFmts")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub band_fmts: Option<Box<BandFormats>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "axId")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ax_id: Vec<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AxisPosition {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    pub value: AxisPositionType,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AxisCrosses {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    pub value: AxisCrossesType,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CrossBetween {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    pub value: CrossBetweenType,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct TickMark {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<TickMarkType>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct TickLabelPosition {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<TickLabelPositionType>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AxisSkip {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    pub value: AxisSkipValue,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct TimeUnit {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<TimeUnitType>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AxisUnit {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    pub value: AxisUnitValue,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct BuiltInUnit {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<BuiltInUnitType>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ChartPictureFormat {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    pub value: PictureFormatType,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PictureStackUnit {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    pub value: PictureStackUnitValue,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct PictureOptions {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "applyToFront")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub apply_to_front: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "applyToSides")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub apply_to_sides: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "applyToEnd")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub apply_to_end: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "pictureFormat")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub picture_format: Option<Box<ChartPictureFormat>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "pictureStackUnit")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub picture_stack_unit: Option<Box<PictureStackUnit>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DisplayUnitsLabel {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "layout")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub layout: Option<Box<ChartLayout>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "tx")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx: Option<Box<ChartText>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "txPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_pr: Option<Box<TextBody>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DisplayUnits {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "custUnit")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cust_unit: Option<Box<CTDouble>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "builtInUnit")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub built_in_unit: Option<Box<BuiltInUnit>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dispUnitsLbl")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub disp_units_lbl: Option<Box<DisplayUnitsLabel>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct AxisOrientation {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<AxisOrientationType>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LogBase {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    pub value: LogBaseValue,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct AxisScaling {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "logBase")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub log_base: Option<Box<LogBase>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "orientation")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub orientation: Option<Box<AxisOrientation>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "max")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub max: Option<Box<CTDouble>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "min")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub min: Option<Box<CTDouble>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct LabelOffset {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<LabelOffsetValue>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EGAxShared {
+    #[serde(rename = "axId")]
+    pub ax_id: Box<CTUnsignedInt>,
+    #[serde(rename = "scaling")]
+    pub scaling: Box<AxisScaling>,
+    #[serde(rename = "delete")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub delete: Option<Box<CTBoolean>>,
+    #[serde(rename = "axPos")]
+    pub ax_pos: Box<AxisPosition>,
+    #[serde(rename = "majorGridlines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub major_gridlines: Option<Box<ChartLines>>,
+    #[serde(rename = "minorGridlines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub minor_gridlines: Option<Box<ChartLines>>,
+    #[serde(rename = "title")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub title: Option<Box<ChartTitle>>,
+    #[serde(rename = "numFmt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub num_fmt: Option<Box<ChartNumFmt>>,
+    #[serde(rename = "majorTickMark")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub major_tick_mark: Option<Box<TickMark>>,
+    #[serde(rename = "minorTickMark")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub minor_tick_mark: Option<Box<TickMark>>,
+    #[serde(rename = "tickLblPos")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tick_lbl_pos: Option<Box<TickLabelPosition>>,
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[serde(rename = "txPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_pr: Option<Box<TextBody>>,
+    #[serde(rename = "crossAx")]
+    pub cross_ax: Box<CTUnsignedInt>,
+    #[serde(rename = "crosses")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub crosses: Option<Box<AxisCrosses>>,
+    #[serde(rename = "crossesAt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub crosses_at: Option<Box<CTDouble>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CategoryAxis {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "axId")]
+    pub ax_id: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "scaling")]
+    pub scaling: Box<AxisScaling>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "delete")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub delete: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "axPos")]
+    pub ax_pos: Box<AxisPosition>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "majorGridlines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub major_gridlines: Option<Box<ChartLines>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "minorGridlines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub minor_gridlines: Option<Box<ChartLines>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "title")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub title: Option<Box<ChartTitle>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "numFmt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub num_fmt: Option<Box<ChartNumFmt>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "majorTickMark")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub major_tick_mark: Option<Box<TickMark>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "minorTickMark")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub minor_tick_mark: Option<Box<TickMark>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "tickLblPos")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tick_lbl_pos: Option<Box<TickLabelPosition>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "txPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_pr: Option<Box<TextBody>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "crossAx")]
+    pub cross_ax: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "crosses")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub crosses: Option<Box<AxisCrosses>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "crossesAt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub crosses_at: Option<Box<CTDouble>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "auto")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub auto: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "lblAlgn")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lbl_algn: Option<Box<LabelAlignment>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "lblOffset")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lbl_offset: Option<Box<LabelOffset>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "tickLblSkip")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tick_lbl_skip: Option<Box<AxisSkip>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "tickMarkSkip")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tick_mark_skip: Option<Box<AxisSkip>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "noMultiLvlLbl")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub no_multi_lvl_lbl: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DateAxis {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "axId")]
+    pub ax_id: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "scaling")]
+    pub scaling: Box<AxisScaling>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "delete")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub delete: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "axPos")]
+    pub ax_pos: Box<AxisPosition>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "majorGridlines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub major_gridlines: Option<Box<ChartLines>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "minorGridlines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub minor_gridlines: Option<Box<ChartLines>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "title")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub title: Option<Box<ChartTitle>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "numFmt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub num_fmt: Option<Box<ChartNumFmt>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "majorTickMark")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub major_tick_mark: Option<Box<TickMark>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "minorTickMark")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub minor_tick_mark: Option<Box<TickMark>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "tickLblPos")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tick_lbl_pos: Option<Box<TickLabelPosition>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "txPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_pr: Option<Box<TextBody>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "crossAx")]
+    pub cross_ax: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "crosses")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub crosses: Option<Box<AxisCrosses>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "crossesAt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub crosses_at: Option<Box<CTDouble>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "auto")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub auto: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "lblOffset")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lbl_offset: Option<Box<LabelOffset>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "baseTimeUnit")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub base_time_unit: Option<Box<TimeUnit>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "majorUnit")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub major_unit: Option<Box<AxisUnit>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "majorTimeUnit")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub major_time_unit: Option<Box<TimeUnit>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "minorUnit")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub minor_unit: Option<Box<AxisUnit>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "minorTimeUnit")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub minor_time_unit: Option<Box<TimeUnit>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SeriesAxis {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "axId")]
+    pub ax_id: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "scaling")]
+    pub scaling: Box<AxisScaling>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "delete")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub delete: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "axPos")]
+    pub ax_pos: Box<AxisPosition>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "majorGridlines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub major_gridlines: Option<Box<ChartLines>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "minorGridlines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub minor_gridlines: Option<Box<ChartLines>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "title")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub title: Option<Box<ChartTitle>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "numFmt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub num_fmt: Option<Box<ChartNumFmt>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "majorTickMark")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub major_tick_mark: Option<Box<TickMark>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "minorTickMark")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub minor_tick_mark: Option<Box<TickMark>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "tickLblPos")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tick_lbl_pos: Option<Box<TickLabelPosition>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "txPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_pr: Option<Box<TextBody>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "crossAx")]
+    pub cross_ax: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "crosses")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub crosses: Option<Box<AxisCrosses>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "crossesAt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub crosses_at: Option<Box<CTDouble>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "tickLblSkip")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tick_lbl_skip: Option<Box<AxisSkip>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "tickMarkSkip")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tick_mark_skip: Option<Box<AxisSkip>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ValueAxis {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "axId")]
+    pub ax_id: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "scaling")]
+    pub scaling: Box<AxisScaling>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "delete")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub delete: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "axPos")]
+    pub ax_pos: Box<AxisPosition>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "majorGridlines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub major_gridlines: Option<Box<ChartLines>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "minorGridlines")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub minor_gridlines: Option<Box<ChartLines>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "title")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub title: Option<Box<ChartTitle>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "numFmt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub num_fmt: Option<Box<ChartNumFmt>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "majorTickMark")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub major_tick_mark: Option<Box<TickMark>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "minorTickMark")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub minor_tick_mark: Option<Box<TickMark>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "tickLblPos")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tick_lbl_pos: Option<Box<TickLabelPosition>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "txPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_pr: Option<Box<TextBody>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "crossAx")]
+    pub cross_ax: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "crosses")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub crosses: Option<Box<AxisCrosses>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "crossesAt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub crosses_at: Option<Box<CTDouble>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "crossBetween")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cross_between: Option<Box<CrossBetween>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "majorUnit")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub major_unit: Option<Box<AxisUnit>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "minorUnit")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub minor_unit: Option<Box<AxisUnit>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dispUnits")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub disp_units: Option<Box<DisplayUnits>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct PlotArea {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "layout")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub layout: Option<Box<ChartLayout>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "areaChart")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub area_chart: Vec<AreaChart>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "area3DChart")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub area3_d_chart: Vec<Area3DChart>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "lineChart")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub line_chart: Vec<LineChart>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "line3DChart")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub line3_d_chart: Vec<Line3DChart>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "stockChart")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub stock_chart: Vec<StockChart>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "radarChart")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub radar_chart: Vec<RadarChart>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "scatterChart")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub scatter_chart: Vec<ScatterChart>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "pieChart")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub pie_chart: Vec<PieChart>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "pie3DChart")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub pie3_d_chart: Vec<Pie3DChart>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "doughnutChart")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub doughnut_chart: Vec<DoughnutChart>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "barChart")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub bar_chart: Vec<BarChart>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "bar3DChart")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub bar3_d_chart: Vec<Bar3DChart>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "ofPieChart")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub of_pie_chart: Vec<OfPieChart>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "surfaceChart")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub surface_chart: Vec<SurfaceChart>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "surface3DChart")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub surface3_d_chart: Vec<Surface3DChart>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "bubbleChart")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub bubble_chart: Vec<BubbleChart>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "valAx")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub val_ax: Vec<ValueAxis>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "catAx")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub cat_ax: Vec<CategoryAxis>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dateAx")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub date_ax: Vec<DateAxis>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "serAx")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ser_ax: Vec<SeriesAxis>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dTable")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_table: Option<Box<DataTable>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PivotFormat {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "idx")]
+    pub idx: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "txPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_pr: Option<Box<TextBody>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "marker")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub marker: Option<Box<ChartMarker>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dLbl")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d_lbl: Option<Box<DataLabel>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct PivotFormats {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "pivotFmt")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub pivot_fmt: Vec<PivotFormat>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct LegendPosition {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<LegendPositionType>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct EGLegendEntryData {
+    #[serde(rename = "txPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_pr: Option<Box<TextBody>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LegendEntry {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "idx")]
+    pub idx: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "delete")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub delete: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "txPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_pr: Option<Box<TextBody>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct Legend {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "legendPos")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub legend_pos: Option<Box<LegendPosition>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "legendEntry")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub legend_entry: Vec<LegendEntry>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "layout")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub layout: Option<Box<ChartLayout>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "overlay")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub overlay: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "txPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_pr: Option<Box<TextBody>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DisplayBlanksAs {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<DisplayBlanksAsType>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Chart {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "title")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub title: Option<Box<ChartTitle>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "autoTitleDeleted")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub auto_title_deleted: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "pivotFmts")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pivot_fmts: Option<Box<PivotFormats>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "view3D")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub view3_d: Option<Box<View3D>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "floor")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub floor: Option<Box<ChartSurface>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "sideWall")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub side_wall: Option<Box<ChartSurface>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "backWall")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub back_wall: Option<Box<ChartSurface>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "plotArea")]
+    pub plot_area: Box<PlotArea>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "legend")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub legend: Option<Box<Legend>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "plotVisOnly")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub plot_vis_only: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "dispBlanksAs")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub disp_blanks_as: Option<Box<DisplayBlanksAs>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "showDLblsOverMax")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_d_lbls_over_max: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ChartStyle {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@val")]
+    pub value: ChartStyleValue,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PivotSource {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "name")]
+    pub name: XmlString,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "fmtId")]
+    pub fmt_id: Box<CTUnsignedInt>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ext_lst: Vec<ChartExtensionList>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ChartProtection {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "chartObject")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub chart_object: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "data")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub data: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "formatting")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub formatting: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "selection")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub selection: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "userInterface")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub user_interface: Option<Box<CTBoolean>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ChartHeaderFooter {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@alignWithMargins")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub align_with_margins: Option<bool>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@differentOddEven")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub different_odd_even: Option<bool>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@differentFirst")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub different_first: Option<bool>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "oddHeader")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub odd_header: Option<XmlString>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "oddFooter")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub odd_footer: Option<XmlString>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "evenHeader")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub even_header: Option<XmlString>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "evenFooter")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub even_footer: Option<XmlString>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "firstHeader")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub first_header: Option<XmlString>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "firstFooter")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub first_footer: Option<XmlString>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ChartPageMargins {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@l")]
+    pub l: f64,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@r")]
+    pub relationship_id: f64,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@t")]
+    pub t: f64,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@b")]
+    pub b: f64,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@header")]
+    pub header: f64,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@footer")]
+    pub footer: f64,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ExternalData {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@r:id")]
+    pub id: STRelationshipId,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "autoUpdate")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub auto_update: Option<Box<CTBoolean>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ChartPageSetup {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@paperSize")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub paper_size: Option<u32>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@paperHeight")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub paper_height: Option<STPositiveUniversalMeasure>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@paperWidth")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub paper_width: Option<STPositiveUniversalMeasure>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@firstPageNumber")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub first_page_number: Option<u32>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@orientation")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub orientation: Option<ChartPageOrientation>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@blackAndWhite")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub black_and_white: Option<bool>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@draft")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub draft: Option<bool>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@useFirstPageNumber")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub use_first_page_number: Option<bool>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@horizontalDpi")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub horizontal_dpi: Option<i32>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@verticalDpi")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vertical_dpi: Option<i32>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "@copies")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub copies: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct PrintSettings {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "headerFooter")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub header_footer: Option<Box<ChartHeaderFooter>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "pageMargins")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub page_margins: Option<Box<ChartPageMargins>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "pageSetup")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub page_setup: Option<Box<ChartPageSetup>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "legacyDrawingHF")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub legacy_drawing_h_f: Option<Box<ChartRelId>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ChartSpace {
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "date1904")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub date1904: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "lang")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lang: Option<Box<TextLanguageId>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "roundedCorners")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rounded_corners: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "style")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub style: Option<Box<ChartStyle>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "clrMapOvr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub clr_map_ovr: Option<Box<CTColorMapping>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "pivotSource")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pivot_source: Option<Box<PivotSource>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "protection")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub protection: Option<Box<ChartProtection>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "chart")]
+    pub chart: Box<Chart>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "txPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_pr: Option<Box<TextBody>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "externalData")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub external_data: Option<Box<ExternalData>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "printSettings")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub print_settings: Option<Box<PrintSettings>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "userShapes")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub user_shapes: Option<Box<ChartRelId>>,
+    #[cfg(feature = "dml-charts")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<ChartExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+pub type DchrtChartSpace = Box<ChartSpace>;
+
+pub type DchrtUserShapes = String;
+
+pub type DchrtChart = Box<ChartRelId>;

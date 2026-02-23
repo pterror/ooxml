@@ -15138,3 +15138,16557 @@ impl ToXml for TextRun {
         true
     }
 }
+
+impl ToXml for CTDouble {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        {
+            let val = &self.value;
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for CTUnsignedInt {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        {
+            let val = &self.value;
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for ChartRelId {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.id;
+            start.push_attribute(("r:id", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for ChartExtension {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.uri {
+            start.push_attribute(("uri", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for ChartExtensionList {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-charts")]
+        for item in &self.extents {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ext", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if !self.extents.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for NumericValue {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.idx;
+            {
+                let s = val.to_string();
+                start.push_attribute(("idx", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.format_code {
+            start.push_attribute(("formatCode", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.v;
+            {
+                let start = BytesStart::new("a:v");
+                writer.write_event(Event::Start(start))?;
+                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::End(BytesEnd::new("a:v")))?;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for NumericData {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.format_code {
+            {
+                let start = BytesStart::new("a:formatCode");
+                writer.write_event(Event::Start(start))?;
+                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::End(BytesEnd::new("a:formatCode")))?;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.pt_count {
+            val.write_element("a:ptCount", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.pt {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:pt", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.format_code.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.pt_count.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.pt.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for NumericReference {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.f;
+            {
+                let start = BytesStart::new("a:f");
+                writer.write_event(Event::Start(start))?;
+                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::End(BytesEnd::new("a:f")))?;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.num_cache {
+            val.write_element("a:numCache", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.num_cache.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for NumericDataSource {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.num_ref {
+            val.write_element("a:numRef", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.num_lit {
+            val.write_element("a:numLit", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.num_ref.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.num_lit.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for StringValue {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.idx;
+            {
+                let s = val.to_string();
+                start.push_attribute(("idx", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.v;
+            {
+                let start = BytesStart::new("a:v");
+                writer.write_event(Event::Start(start))?;
+                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::End(BytesEnd::new("a:v")))?;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for StringData {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.pt_count {
+            val.write_element("a:ptCount", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.pt {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:pt", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.pt_count.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.pt.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for StringReference {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.f;
+            {
+                let start = BytesStart::new("a:f");
+                writer.write_event(Event::Start(start))?;
+                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::End(BytesEnd::new("a:f")))?;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.str_cache {
+            val.write_element("a:strCache", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.str_cache.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for ChartText {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.str_ref {
+            val.write_element("a:strRef", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.rich {
+            val.write_element("a:rich", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.str_ref.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.rich.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for TextLanguageId {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.value;
+            start.push_attribute(("val", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for MultiLevelStrLevel {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-charts")]
+        for item in &self.pt {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:pt", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if !self.pt.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for MultiLevelStrData {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.pt_count {
+            val.write_element("a:ptCount", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.lvl {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:lvl", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.pt_count.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.lvl.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for MultiLevelStrRef {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.f;
+            {
+                let start = BytesStart::new("a:f");
+                writer.write_event(Event::Start(start))?;
+                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::End(BytesEnd::new("a:f")))?;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.multi_lvl_str_cache {
+            val.write_element("a:multiLvlStrCache", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.multi_lvl_str_cache.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for AxisDataSource {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.multi_lvl_str_ref {
+            val.write_element("a:multiLvlStrRef", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.num_ref {
+            val.write_element("a:numRef", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.num_lit {
+            val.write_element("a:numLit", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.str_ref {
+            val.write_element("a:strRef", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.str_lit {
+            val.write_element("a:strLit", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.multi_lvl_str_ref.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.num_ref.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.num_lit.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.str_ref.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.str_lit.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for SeriesText {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.str_ref {
+            val.write_element("a:strRef", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.v {
+            {
+                let start = BytesStart::new("a:v");
+                writer.write_event(Event::Start(start))?;
+                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::End(BytesEnd::new("a:v")))?;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.str_ref.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.v.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for LayoutTarget {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for LayoutMode {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for ManualLayout {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.layout_target {
+            val.write_element("a:layoutTarget", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.x_mode {
+            val.write_element("a:xMode", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.y_mode {
+            val.write_element("a:yMode", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.w_mode {
+            val.write_element("a:wMode", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.h_mode {
+            val.write_element("a:hMode", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.x {
+            val.write_element("a:x", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.y {
+            val.write_element("a:y", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.width {
+            val.write_element("a:w", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.height {
+            val.write_element("a:h", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.layout_target.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.x_mode.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.y_mode.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.w_mode.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.h_mode.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.x.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.y.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.width.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.height.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for ChartLayout {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.manual_layout {
+            val.write_element("a:manualLayout", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.manual_layout.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for ChartTitle {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx {
+            val.write_element("a:tx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.layout {
+            val.write_element("a:layout", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.overlay {
+            val.write_element("a:overlay", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx_pr {
+            val.write_element("a:txPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.tx.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.layout.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.overlay.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tx_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for RotX {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for HPercent {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for RotY {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for DepthPercent {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for Perspective {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for View3D {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.rot_x {
+            val.write_element("a:rotX", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.h_percent {
+            val.write_element("a:hPercent", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.rot_y {
+            val.write_element("a:rotY", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.depth_percent {
+            val.write_element("a:depthPercent", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.r_ang_ax {
+            val.write_element("a:rAngAx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.perspective {
+            val.write_element("a:perspective", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.rot_x.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.h_percent.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.rot_y.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.depth_percent.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.r_ang_ax.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.perspective.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for ChartSurface {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.thickness {
+            val.write_element("a:thickness", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.picture_options {
+            val.write_element("a:pictureOptions", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.thickness.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.picture_options.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for ChartThickness {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.value;
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for DataTable {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.show_horz_border {
+            val.write_element("a:showHorzBorder", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.show_vert_border {
+            val.write_element("a:showVertBorder", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.show_outline {
+            val.write_element("a:showOutline", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.show_keys {
+            val.write_element("a:showKeys", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx_pr {
+            val.write_element("a:txPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.show_horz_border.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.show_vert_border.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.show_outline.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.show_keys.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tx_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for GapAmount {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for OverlapAmount {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for BubbleScale {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for SizeRepresents {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for FirstSliceAngle {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for HoleSize {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for SplitType {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for CustomSplit {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-charts")]
+        for item in &self.second_pie_pt {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:secondPiePt", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if !self.second_pie_pt.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for SecondPieSize {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for ChartNumFmt {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.format_code;
+            start.push_attribute(("formatCode", val.as_str()));
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.source_linked {
+            start.push_attribute(("sourceLinked", if *val { "1" } else { "0" }));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for LabelAlignment {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.value;
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for DataLabelPosition {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.value;
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for EGDLblShared {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.num_fmt {
+            val.write_element("a:numFmt", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.tx_pr {
+            val.write_element("a:txPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.d_lbl_pos {
+            val.write_element("a:dLblPos", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.show_legend_key {
+            val.write_element("a:showLegendKey", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.show_val {
+            val.write_element("a:showVal", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.show_cat_name {
+            val.write_element("a:showCatName", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.show_ser_name {
+            val.write_element("a:showSerName", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.show_percent {
+            val.write_element("a:showPercent", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.show_bubble_size {
+            val.write_element("a:showBubbleSize", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.separator {
+            {
+                let start = BytesStart::new("a:separator");
+                writer.write_event(Event::Start(start))?;
+                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::End(BytesEnd::new("a:separator")))?;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        if self.num_fmt.is_some() {
+            return false;
+        }
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        if self.tx_pr.is_some() {
+            return false;
+        }
+        if self.d_lbl_pos.is_some() {
+            return false;
+        }
+        if self.show_legend_key.is_some() {
+            return false;
+        }
+        if self.show_val.is_some() {
+            return false;
+        }
+        if self.show_cat_name.is_some() {
+            return false;
+        }
+        if self.show_ser_name.is_some() {
+            return false;
+        }
+        if self.show_percent.is_some() {
+            return false;
+        }
+        if self.show_bubble_size.is_some() {
+            return false;
+        }
+        if self.separator.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DchrtGroupDLbl {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.layout {
+            val.write_element("a:layout", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.tx {
+            val.write_element("a:tx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.num_fmt {
+            val.write_element("a:numFmt", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.tx_pr {
+            val.write_element("a:txPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.d_lbl_pos {
+            val.write_element("a:dLblPos", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.show_legend_key {
+            val.write_element("a:showLegendKey", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.show_val {
+            val.write_element("a:showVal", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.show_cat_name {
+            val.write_element("a:showCatName", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.show_ser_name {
+            val.write_element("a:showSerName", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.show_percent {
+            val.write_element("a:showPercent", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.show_bubble_size {
+            val.write_element("a:showBubbleSize", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.separator {
+            {
+                let start = BytesStart::new("a:separator");
+                writer.write_event(Event::Start(start))?;
+                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::End(BytesEnd::new("a:separator")))?;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        if self.layout.is_some() {
+            return false;
+        }
+        if self.tx.is_some() {
+            return false;
+        }
+        if self.num_fmt.is_some() {
+            return false;
+        }
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        if self.tx_pr.is_some() {
+            return false;
+        }
+        if self.d_lbl_pos.is_some() {
+            return false;
+        }
+        if self.show_legend_key.is_some() {
+            return false;
+        }
+        if self.show_val.is_some() {
+            return false;
+        }
+        if self.show_cat_name.is_some() {
+            return false;
+        }
+        if self.show_ser_name.is_some() {
+            return false;
+        }
+        if self.show_percent.is_some() {
+            return false;
+        }
+        if self.show_bubble_size.is_some() {
+            return false;
+        }
+        if self.separator.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DataLabel {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.idx;
+            val.write_element("a:idx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.delete {
+            val.write_element("a:delete", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.layout {
+            val.write_element("a:layout", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx {
+            val.write_element("a:tx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.num_fmt {
+            val.write_element("a:numFmt", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx_pr {
+            val.write_element("a:txPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbl_pos {
+            val.write_element("a:dLblPos", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.show_legend_key {
+            val.write_element("a:showLegendKey", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.show_val {
+            val.write_element("a:showVal", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.show_cat_name {
+            val.write_element("a:showCatName", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.show_ser_name {
+            val.write_element("a:showSerName", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.show_percent {
+            val.write_element("a:showPercent", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.show_bubble_size {
+            val.write_element("a:showBubbleSize", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.separator {
+            {
+                let start = BytesStart::new("a:separator");
+                writer.write_event(Event::Start(start))?;
+                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::End(BytesEnd::new("a:separator")))?;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.delete.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.layout.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tx.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.num_fmt.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tx_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbl_pos.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.show_legend_key.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.show_val.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.show_cat_name.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.show_ser_name.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.show_percent.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.show_bubble_size.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.separator.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DchrtGroupDLbls {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.num_fmt {
+            val.write_element("a:numFmt", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.tx_pr {
+            val.write_element("a:txPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.d_lbl_pos {
+            val.write_element("a:dLblPos", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.show_legend_key {
+            val.write_element("a:showLegendKey", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.show_val {
+            val.write_element("a:showVal", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.show_cat_name {
+            val.write_element("a:showCatName", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.show_ser_name {
+            val.write_element("a:showSerName", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.show_percent {
+            val.write_element("a:showPercent", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.show_bubble_size {
+            val.write_element("a:showBubbleSize", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.separator {
+            {
+                let start = BytesStart::new("a:separator");
+                writer.write_event(Event::Start(start))?;
+                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::End(BytesEnd::new("a:separator")))?;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.show_leader_lines {
+            val.write_element("a:showLeaderLines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.leader_lines {
+            val.write_element("a:leaderLines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        if self.num_fmt.is_some() {
+            return false;
+        }
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        if self.tx_pr.is_some() {
+            return false;
+        }
+        if self.d_lbl_pos.is_some() {
+            return false;
+        }
+        if self.show_legend_key.is_some() {
+            return false;
+        }
+        if self.show_val.is_some() {
+            return false;
+        }
+        if self.show_cat_name.is_some() {
+            return false;
+        }
+        if self.show_ser_name.is_some() {
+            return false;
+        }
+        if self.show_percent.is_some() {
+            return false;
+        }
+        if self.show_bubble_size.is_some() {
+            return false;
+        }
+        if self.separator.is_some() {
+            return false;
+        }
+        if self.show_leader_lines.is_some() {
+            return false;
+        }
+        if self.leader_lines.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DataLabels {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-charts")]
+        for item in &self.d_lbl {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:dLbl", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.delete {
+            val.write_element("a:delete", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.num_fmt {
+            val.write_element("a:numFmt", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx_pr {
+            val.write_element("a:txPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbl_pos {
+            val.write_element("a:dLblPos", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.show_legend_key {
+            val.write_element("a:showLegendKey", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.show_val {
+            val.write_element("a:showVal", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.show_cat_name {
+            val.write_element("a:showCatName", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.show_ser_name {
+            val.write_element("a:showSerName", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.show_percent {
+            val.write_element("a:showPercent", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.show_bubble_size {
+            val.write_element("a:showBubbleSize", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.separator {
+            {
+                let start = BytesStart::new("a:separator");
+                writer.write_event(Event::Start(start))?;
+                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::End(BytesEnd::new("a:separator")))?;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.show_leader_lines {
+            val.write_element("a:showLeaderLines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.leader_lines {
+            val.write_element("a:leaderLines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if !self.d_lbl.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.delete.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.num_fmt.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tx_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbl_pos.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.show_legend_key.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.show_val.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.show_cat_name.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.show_ser_name.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.show_percent.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.show_bubble_size.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.separator.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.show_leader_lines.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.leader_lines.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for ChartMarkerStyle {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.value;
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for ChartMarkerSize {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for ChartMarker {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.symbol {
+            val.write_element("a:symbol", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.size {
+            val.write_element("a:size", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.symbol.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.size.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DataPoint {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.idx;
+            val.write_element("a:idx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.invert_if_negative {
+            val.write_element("a:invertIfNegative", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.marker {
+            val.write_element("a:marker", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.bubble3_d {
+            val.write_element("a:bubble3D", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.explosion {
+            val.write_element("a:explosion", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.picture_options {
+            val.write_element("a:pictureOptions", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.invert_if_negative.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.marker.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.bubble3_d.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.explosion.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.picture_options.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for TrendlineType {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for TrendlineOrder {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for TrendlinePeriod {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for TrendlineLabel {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.layout {
+            val.write_element("a:layout", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx {
+            val.write_element("a:tx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.num_fmt {
+            val.write_element("a:numFmt", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx_pr {
+            val.write_element("a:txPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.layout.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tx.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.num_fmt.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tx_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for Trendline {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.name {
+            {
+                let start = BytesStart::new("a:name");
+                writer.write_event(Event::Start(start))?;
+                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::End(BytesEnd::new("a:name")))?;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.trendline_type;
+            val.write_element("a:trendlineType", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.order {
+            val.write_element("a:order", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.period {
+            val.write_element("a:period", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.forward {
+            val.write_element("a:forward", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.backward {
+            val.write_element("a:backward", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.intercept {
+            val.write_element("a:intercept", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.disp_r_sqr {
+            val.write_element("a:dispRSqr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.disp_eq {
+            val.write_element("a:dispEq", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.trendline_lbl {
+            val.write_element("a:trendlineLbl", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.name.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.order.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.period.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.forward.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.backward.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.intercept.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.disp_r_sqr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.disp_eq.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.trendline_lbl.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for ErrorDirection {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.value;
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for ErrorBarType {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for ErrorValueType {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for ErrorBars {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.err_dir {
+            val.write_element("a:errDir", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.err_bar_type;
+            val.write_element("a:errBarType", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.err_val_type;
+            val.write_element("a:errValType", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.no_end_cap {
+            val.write_element("a:noEndCap", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.plus {
+            val.write_element("a:plus", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.minus {
+            val.write_element("a:minus", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            val.write_element("a:val", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.err_dir.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.no_end_cap.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.plus.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.minus.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.value.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for UpDownBar {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for UpDownBars {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.gap_width {
+            val.write_element("a:gapWidth", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.up_bars {
+            val.write_element("a:upBars", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.down_bars {
+            val.write_element("a:downBars", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.gap_width.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.up_bars.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.down_bars.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for EGSerShared {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        {
+            let val = &self.idx;
+            val.write_element("a:idx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        {
+            let val = &self.order;
+            val.write_element("a:order", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.tx {
+            val.write_element("a:tx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        false
+    }
+}
+
+impl ToXml for LineSeries {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.idx;
+            val.write_element("a:idx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.order;
+            val.write_element("a:order", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx {
+            val.write_element("a:tx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.marker {
+            val.write_element("a:marker", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.d_pt {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:dPt", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.trendline {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:trendline", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.err_bars {
+            val.write_element("a:errBars", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.cat {
+            val.write_element("a:cat", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            val.write_element("a:val", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.smooth {
+            val.write_element("a:smooth", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.tx.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.marker.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.d_pt.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.trendline.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.err_bars.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.cat.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.value.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.smooth.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for ScatterSeries {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.idx;
+            val.write_element("a:idx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.order;
+            val.write_element("a:order", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx {
+            val.write_element("a:tx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.marker {
+            val.write_element("a:marker", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.d_pt {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:dPt", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.trendline {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:trendline", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.err_bars {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:errBars", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.x_val {
+            val.write_element("a:xVal", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.y_val {
+            val.write_element("a:yVal", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.smooth {
+            val.write_element("a:smooth", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.tx.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.marker.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.d_pt.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.trendline.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.err_bars.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.x_val.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.y_val.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.smooth.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for RadarSeries {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.idx;
+            val.write_element("a:idx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.order;
+            val.write_element("a:order", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx {
+            val.write_element("a:tx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.marker {
+            val.write_element("a:marker", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.d_pt {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:dPt", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.cat {
+            val.write_element("a:cat", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            val.write_element("a:val", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.tx.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.marker.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.d_pt.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.cat.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.value.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for BarSeries {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.idx;
+            val.write_element("a:idx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.order;
+            val.write_element("a:order", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx {
+            val.write_element("a:tx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.invert_if_negative {
+            val.write_element("a:invertIfNegative", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.picture_options {
+            val.write_element("a:pictureOptions", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.d_pt {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:dPt", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.trendline {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:trendline", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.err_bars {
+            val.write_element("a:errBars", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.cat {
+            val.write_element("a:cat", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            val.write_element("a:val", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.shape {
+            val.write_element("a:shape", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.tx.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.invert_if_negative.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.picture_options.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.d_pt.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.trendline.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.err_bars.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.cat.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.value.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.shape.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for AreaSeries {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.idx;
+            val.write_element("a:idx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.order;
+            val.write_element("a:order", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx {
+            val.write_element("a:tx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.picture_options {
+            val.write_element("a:pictureOptions", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.d_pt {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:dPt", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.trendline {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:trendline", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.err_bars {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:errBars", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.cat {
+            val.write_element("a:cat", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            val.write_element("a:val", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.tx.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.picture_options.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.d_pt.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.trendline.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.err_bars.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.cat.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.value.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for PieSeries {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.idx;
+            val.write_element("a:idx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.order;
+            val.write_element("a:order", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx {
+            val.write_element("a:tx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.explosion {
+            val.write_element("a:explosion", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.d_pt {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:dPt", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.cat {
+            val.write_element("a:cat", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            val.write_element("a:val", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.tx.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.explosion.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.d_pt.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.cat.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.value.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for BubbleSeries {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.idx;
+            val.write_element("a:idx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.order;
+            val.write_element("a:order", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx {
+            val.write_element("a:tx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.invert_if_negative {
+            val.write_element("a:invertIfNegative", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.d_pt {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:dPt", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.trendline {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:trendline", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.err_bars {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:errBars", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.x_val {
+            val.write_element("a:xVal", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.y_val {
+            val.write_element("a:yVal", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.bubble_size {
+            val.write_element("a:bubbleSize", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.bubble3_d {
+            val.write_element("a:bubble3D", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.tx.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.invert_if_negative.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.d_pt.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.trendline.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.err_bars.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.x_val.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.y_val.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.bubble_size.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.bubble3_d.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for SurfaceSeries {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.idx;
+            val.write_element("a:idx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.order;
+            val.write_element("a:order", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx {
+            val.write_element("a:tx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.cat {
+            val.write_element("a:cat", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            val.write_element("a:val", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.tx.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.cat.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.value.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for ChartGrouping {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for ChartLines {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for EGLineChartShared {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        {
+            let val = &self.grouping;
+            val.write_element("a:grouping", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.vary_colors {
+            val.write_element("a:varyColors", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        for item in &self.ser {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ser", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.drop_lines {
+            val.write_element("a:dropLines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        false
+    }
+}
+
+impl ToXml for LineChart {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.grouping;
+            val.write_element("a:grouping", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.vary_colors {
+            val.write_element("a:varyColors", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ser {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ser", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.drop_lines {
+            val.write_element("a:dropLines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.hi_low_lines {
+            val.write_element("a:hiLowLines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.up_down_bars {
+            val.write_element("a:upDownBars", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.marker {
+            val.write_element("a:marker", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.smooth {
+            val.write_element("a:smooth", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ax_id {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:axId", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.vary_colors.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ser.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.drop_lines.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.hi_low_lines.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.up_down_bars.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.marker.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.smooth.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ax_id.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for Line3DChart {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.grouping;
+            val.write_element("a:grouping", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.vary_colors {
+            val.write_element("a:varyColors", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ser {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ser", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.drop_lines {
+            val.write_element("a:dropLines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.gap_depth {
+            val.write_element("a:gapDepth", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ax_id {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:axId", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.vary_colors.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ser.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.drop_lines.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.gap_depth.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ax_id.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for StockChart {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ser {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ser", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.drop_lines {
+            val.write_element("a:dropLines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.hi_low_lines {
+            val.write_element("a:hiLowLines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.up_down_bars {
+            val.write_element("a:upDownBars", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ax_id {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:axId", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if !self.ser.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.drop_lines.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.hi_low_lines.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.up_down_bars.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ax_id.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for ScatterStyle {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for ScatterChart {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.scatter_style;
+            val.write_element("a:scatterStyle", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.vary_colors {
+            val.write_element("a:varyColors", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ser {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ser", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ax_id {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:axId", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.vary_colors.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ser.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ax_id.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for RadarStyle {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for RadarChart {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.radar_style;
+            val.write_element("a:radarStyle", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.vary_colors {
+            val.write_element("a:varyColors", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ser {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ser", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ax_id {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:axId", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.vary_colors.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ser.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ax_id.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for BarGrouping {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for BarDirection {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for BarShape {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for EGBarChartShared {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        {
+            let val = &self.bar_dir;
+            val.write_element("a:barDir", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.grouping {
+            val.write_element("a:grouping", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.vary_colors {
+            val.write_element("a:varyColors", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        for item in &self.ser {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ser", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        false
+    }
+}
+
+impl ToXml for BarChart {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.bar_dir;
+            val.write_element("a:barDir", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.grouping {
+            val.write_element("a:grouping", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.vary_colors {
+            val.write_element("a:varyColors", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ser {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ser", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.gap_width {
+            val.write_element("a:gapWidth", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.overlap {
+            val.write_element("a:overlap", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ser_lines {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:serLines", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ax_id {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:axId", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.grouping.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.vary_colors.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ser.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.gap_width.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.overlap.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ser_lines.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ax_id.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for Bar3DChart {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.bar_dir;
+            val.write_element("a:barDir", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.grouping {
+            val.write_element("a:grouping", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.vary_colors {
+            val.write_element("a:varyColors", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ser {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ser", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.gap_width {
+            val.write_element("a:gapWidth", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.gap_depth {
+            val.write_element("a:gapDepth", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.shape {
+            val.write_element("a:shape", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ax_id {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:axId", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.grouping.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.vary_colors.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ser.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.gap_width.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.gap_depth.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.shape.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ax_id.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for EGAreaChartShared {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.grouping {
+            val.write_element("a:grouping", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.vary_colors {
+            val.write_element("a:varyColors", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        for item in &self.ser {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ser", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.drop_lines {
+            val.write_element("a:dropLines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        if self.grouping.is_some() {
+            return false;
+        }
+        if self.vary_colors.is_some() {
+            return false;
+        }
+        if !self.ser.is_empty() {
+            return false;
+        }
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        if self.drop_lines.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for AreaChart {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.grouping {
+            val.write_element("a:grouping", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.vary_colors {
+            val.write_element("a:varyColors", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ser {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ser", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.drop_lines {
+            val.write_element("a:dropLines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ax_id {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:axId", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.grouping.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.vary_colors.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ser.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.drop_lines.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ax_id.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for Area3DChart {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.grouping {
+            val.write_element("a:grouping", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.vary_colors {
+            val.write_element("a:varyColors", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ser {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ser", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.drop_lines {
+            val.write_element("a:dropLines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.gap_depth {
+            val.write_element("a:gapDepth", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ax_id {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:axId", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.grouping.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.vary_colors.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ser.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.drop_lines.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.gap_depth.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ax_id.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for EGPieChartShared {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.vary_colors {
+            val.write_element("a:varyColors", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        for item in &self.ser {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ser", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        if self.vary_colors.is_some() {
+            return false;
+        }
+        if !self.ser.is_empty() {
+            return false;
+        }
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for PieChart {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.vary_colors {
+            val.write_element("a:varyColors", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ser {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ser", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.first_slice_ang {
+            val.write_element("a:firstSliceAng", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.vary_colors.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ser.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.first_slice_ang.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for Pie3DChart {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.vary_colors {
+            val.write_element("a:varyColors", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ser {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ser", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.vary_colors.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ser.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DoughnutChart {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.vary_colors {
+            val.write_element("a:varyColors", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ser {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ser", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.first_slice_ang {
+            val.write_element("a:firstSliceAng", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.hole_size {
+            val.write_element("a:holeSize", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.vary_colors.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ser.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.first_slice_ang.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.hole_size.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for OfPieType {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for OfPieChart {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.of_pie_type;
+            val.write_element("a:ofPieType", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.vary_colors {
+            val.write_element("a:varyColors", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ser {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ser", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.gap_width {
+            val.write_element("a:gapWidth", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.split_type {
+            val.write_element("a:splitType", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.split_pos {
+            val.write_element("a:splitPos", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.cust_split {
+            val.write_element("a:custSplit", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.second_pie_size {
+            val.write_element("a:secondPieSize", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ser_lines {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:serLines", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.vary_colors.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ser.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.gap_width.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.split_type.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.split_pos.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.cust_split.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.second_pie_size.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ser_lines.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for BubbleChart {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.vary_colors {
+            val.write_element("a:varyColors", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ser {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ser", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbls {
+            val.write_element("a:dLbls", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.bubble3_d {
+            val.write_element("a:bubble3D", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.bubble_scale {
+            val.write_element("a:bubbleScale", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.show_neg_bubbles {
+            val.write_element("a:showNegBubbles", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.size_represents {
+            val.write_element("a:sizeRepresents", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ax_id {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:axId", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.vary_colors.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ser.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbls.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.bubble3_d.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.bubble_scale.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.show_neg_bubbles.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.size_represents.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ax_id.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for BandFormat {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.idx;
+            val.write_element("a:idx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for BandFormats {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-charts")]
+        for item in &self.band_fmt {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:bandFmt", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if !self.band_fmt.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for EGSurfaceChartShared {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.wireframe {
+            val.write_element("a:wireframe", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        for item in &self.ser {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ser", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.band_fmts {
+            val.write_element("a:bandFmts", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        if self.wireframe.is_some() {
+            return false;
+        }
+        if !self.ser.is_empty() {
+            return false;
+        }
+        if self.band_fmts.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for SurfaceChart {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.wireframe {
+            val.write_element("a:wireframe", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ser {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ser", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.band_fmts {
+            val.write_element("a:bandFmts", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ax_id {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:axId", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.wireframe.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ser.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.band_fmts.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ax_id.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for Surface3DChart {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.wireframe {
+            val.write_element("a:wireframe", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ser {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ser", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.band_fmts {
+            val.write_element("a:bandFmts", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ax_id {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:axId", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.wireframe.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ser.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.band_fmts.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ax_id.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for AxisPosition {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.value;
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for AxisCrosses {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.value;
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for CrossBetween {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.value;
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for TickMark {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for TickLabelPosition {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for AxisSkip {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.value;
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for TimeUnit {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for AxisUnit {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.value;
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for BuiltInUnit {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for ChartPictureFormat {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.value;
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for PictureStackUnit {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.value;
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for PictureOptions {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.apply_to_front {
+            val.write_element("a:applyToFront", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.apply_to_sides {
+            val.write_element("a:applyToSides", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.apply_to_end {
+            val.write_element("a:applyToEnd", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.picture_format {
+            val.write_element("a:pictureFormat", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.picture_stack_unit {
+            val.write_element("a:pictureStackUnit", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.apply_to_front.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.apply_to_sides.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.apply_to_end.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.picture_format.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.picture_stack_unit.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DisplayUnitsLabel {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.layout {
+            val.write_element("a:layout", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx {
+            val.write_element("a:tx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx_pr {
+            val.write_element("a:txPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.layout.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tx.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tx_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DisplayUnits {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.cust_unit {
+            val.write_element("a:custUnit", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.built_in_unit {
+            val.write_element("a:builtInUnit", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.disp_units_lbl {
+            val.write_element("a:dispUnitsLbl", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.cust_unit.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.built_in_unit.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.disp_units_lbl.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for AxisOrientation {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for LogBase {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.value;
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for AxisScaling {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.log_base {
+            val.write_element("a:logBase", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.orientation {
+            val.write_element("a:orientation", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.max {
+            val.write_element("a:max", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.min {
+            val.write_element("a:min", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.log_base.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.orientation.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.max.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.min.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for LabelOffset {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for EGAxShared {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        {
+            let val = &self.ax_id;
+            val.write_element("a:axId", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        {
+            let val = &self.scaling;
+            val.write_element("a:scaling", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.delete {
+            val.write_element("a:delete", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        {
+            let val = &self.ax_pos;
+            val.write_element("a:axPos", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.major_gridlines {
+            val.write_element("a:majorGridlines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.minor_gridlines {
+            val.write_element("a:minorGridlines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.title {
+            val.write_element("a:title", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.num_fmt {
+            val.write_element("a:numFmt", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.major_tick_mark {
+            val.write_element("a:majorTickMark", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.minor_tick_mark {
+            val.write_element("a:minorTickMark", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.tick_lbl_pos {
+            val.write_element("a:tickLblPos", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.tx_pr {
+            val.write_element("a:txPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        {
+            let val = &self.cross_ax;
+            val.write_element("a:crossAx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.crosses {
+            val.write_element("a:crosses", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.crosses_at {
+            val.write_element("a:crossesAt", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        false
+    }
+}
+
+impl ToXml for CategoryAxis {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.ax_id;
+            val.write_element("a:axId", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.scaling;
+            val.write_element("a:scaling", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.delete {
+            val.write_element("a:delete", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.ax_pos;
+            val.write_element("a:axPos", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.major_gridlines {
+            val.write_element("a:majorGridlines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.minor_gridlines {
+            val.write_element("a:minorGridlines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.title {
+            val.write_element("a:title", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.num_fmt {
+            val.write_element("a:numFmt", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.major_tick_mark {
+            val.write_element("a:majorTickMark", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.minor_tick_mark {
+            val.write_element("a:minorTickMark", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tick_lbl_pos {
+            val.write_element("a:tickLblPos", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx_pr {
+            val.write_element("a:txPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.cross_ax;
+            val.write_element("a:crossAx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.crosses {
+            val.write_element("a:crosses", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.crosses_at {
+            val.write_element("a:crossesAt", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.auto {
+            val.write_element("a:auto", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.lbl_algn {
+            val.write_element("a:lblAlgn", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.lbl_offset {
+            val.write_element("a:lblOffset", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tick_lbl_skip {
+            val.write_element("a:tickLblSkip", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tick_mark_skip {
+            val.write_element("a:tickMarkSkip", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.no_multi_lvl_lbl {
+            val.write_element("a:noMultiLvlLbl", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.delete.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.major_gridlines.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.minor_gridlines.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.title.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.num_fmt.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.major_tick_mark.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.minor_tick_mark.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tick_lbl_pos.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tx_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.crosses.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.crosses_at.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.auto.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.lbl_algn.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.lbl_offset.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tick_lbl_skip.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tick_mark_skip.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.no_multi_lvl_lbl.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DateAxis {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.ax_id;
+            val.write_element("a:axId", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.scaling;
+            val.write_element("a:scaling", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.delete {
+            val.write_element("a:delete", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.ax_pos;
+            val.write_element("a:axPos", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.major_gridlines {
+            val.write_element("a:majorGridlines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.minor_gridlines {
+            val.write_element("a:minorGridlines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.title {
+            val.write_element("a:title", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.num_fmt {
+            val.write_element("a:numFmt", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.major_tick_mark {
+            val.write_element("a:majorTickMark", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.minor_tick_mark {
+            val.write_element("a:minorTickMark", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tick_lbl_pos {
+            val.write_element("a:tickLblPos", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx_pr {
+            val.write_element("a:txPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.cross_ax;
+            val.write_element("a:crossAx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.crosses {
+            val.write_element("a:crosses", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.crosses_at {
+            val.write_element("a:crossesAt", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.auto {
+            val.write_element("a:auto", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.lbl_offset {
+            val.write_element("a:lblOffset", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.base_time_unit {
+            val.write_element("a:baseTimeUnit", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.major_unit {
+            val.write_element("a:majorUnit", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.major_time_unit {
+            val.write_element("a:majorTimeUnit", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.minor_unit {
+            val.write_element("a:minorUnit", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.minor_time_unit {
+            val.write_element("a:minorTimeUnit", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.delete.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.major_gridlines.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.minor_gridlines.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.title.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.num_fmt.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.major_tick_mark.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.minor_tick_mark.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tick_lbl_pos.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tx_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.crosses.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.crosses_at.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.auto.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.lbl_offset.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.base_time_unit.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.major_unit.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.major_time_unit.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.minor_unit.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.minor_time_unit.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for SeriesAxis {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.ax_id;
+            val.write_element("a:axId", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.scaling;
+            val.write_element("a:scaling", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.delete {
+            val.write_element("a:delete", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.ax_pos;
+            val.write_element("a:axPos", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.major_gridlines {
+            val.write_element("a:majorGridlines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.minor_gridlines {
+            val.write_element("a:minorGridlines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.title {
+            val.write_element("a:title", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.num_fmt {
+            val.write_element("a:numFmt", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.major_tick_mark {
+            val.write_element("a:majorTickMark", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.minor_tick_mark {
+            val.write_element("a:minorTickMark", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tick_lbl_pos {
+            val.write_element("a:tickLblPos", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx_pr {
+            val.write_element("a:txPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.cross_ax;
+            val.write_element("a:crossAx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.crosses {
+            val.write_element("a:crosses", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.crosses_at {
+            val.write_element("a:crossesAt", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tick_lbl_skip {
+            val.write_element("a:tickLblSkip", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tick_mark_skip {
+            val.write_element("a:tickMarkSkip", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.delete.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.major_gridlines.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.minor_gridlines.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.title.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.num_fmt.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.major_tick_mark.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.minor_tick_mark.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tick_lbl_pos.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tx_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.crosses.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.crosses_at.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tick_lbl_skip.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tick_mark_skip.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for ValueAxis {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.ax_id;
+            val.write_element("a:axId", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.scaling;
+            val.write_element("a:scaling", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.delete {
+            val.write_element("a:delete", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.ax_pos;
+            val.write_element("a:axPos", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.major_gridlines {
+            val.write_element("a:majorGridlines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.minor_gridlines {
+            val.write_element("a:minorGridlines", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.title {
+            val.write_element("a:title", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.num_fmt {
+            val.write_element("a:numFmt", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.major_tick_mark {
+            val.write_element("a:majorTickMark", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.minor_tick_mark {
+            val.write_element("a:minorTickMark", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tick_lbl_pos {
+            val.write_element("a:tickLblPos", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx_pr {
+            val.write_element("a:txPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.cross_ax;
+            val.write_element("a:crossAx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.crosses {
+            val.write_element("a:crosses", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.crosses_at {
+            val.write_element("a:crossesAt", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.cross_between {
+            val.write_element("a:crossBetween", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.major_unit {
+            val.write_element("a:majorUnit", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.minor_unit {
+            val.write_element("a:minorUnit", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.disp_units {
+            val.write_element("a:dispUnits", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.delete.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.major_gridlines.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.minor_gridlines.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.title.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.num_fmt.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.major_tick_mark.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.minor_tick_mark.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tick_lbl_pos.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tx_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.crosses.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.crosses_at.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.cross_between.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.major_unit.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.minor_unit.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.disp_units.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for PlotArea {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.layout {
+            val.write_element("a:layout", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.area_chart {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:areaChart", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.area3_d_chart {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:area3DChart", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.line_chart {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:lineChart", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.line3_d_chart {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:line3DChart", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.stock_chart {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:stockChart", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.radar_chart {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:radarChart", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.scatter_chart {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:scatterChart", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.pie_chart {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:pieChart", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.pie3_d_chart {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:pie3DChart", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.doughnut_chart {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:doughnutChart", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.bar_chart {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:barChart", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.bar3_d_chart {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:bar3DChart", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.of_pie_chart {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:ofPieChart", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.surface_chart {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:surfaceChart", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.surface3_d_chart {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:surface3DChart", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.bubble_chart {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:bubbleChart", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.val_ax {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:valAx", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.cat_ax {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:catAx", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.date_ax {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:dateAx", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ser_ax {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:serAx", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_table {
+            val.write_element("a:dTable", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.layout.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.area_chart.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.area3_d_chart.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.line_chart.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.line3_d_chart.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.stock_chart.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.radar_chart.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.scatter_chart.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.pie_chart.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.pie3_d_chart.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.doughnut_chart.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.bar_chart.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.bar3_d_chart.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.of_pie_chart.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.surface_chart.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.surface3_d_chart.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.bubble_chart.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.val_ax.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.cat_ax.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.date_ax.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.ser_ax.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_table.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for PivotFormat {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.idx;
+            val.write_element("a:idx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx_pr {
+            val.write_element("a:txPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.marker {
+            val.write_element("a:marker", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.d_lbl {
+            val.write_element("a:dLbl", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tx_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.marker.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.d_lbl.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for PivotFormats {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-charts")]
+        for item in &self.pivot_fmt {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:pivotFmt", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if !self.pivot_fmt.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for LegendPosition {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for EGLegendEntryData {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.tx_pr {
+            val.write_element("a:txPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        if self.tx_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for LegendEntry {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.idx;
+            val.write_element("a:idx", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.delete {
+            val.write_element("a:delete", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx_pr {
+            val.write_element("a:txPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.delete.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tx_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for Legend {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.legend_pos {
+            val.write_element("a:legendPos", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.legend_entry {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:legendEntry", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.layout {
+            val.write_element("a:layout", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.overlay {
+            val.write_element("a:overlay", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx_pr {
+            val.write_element("a:txPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.legend_pos.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if !self.legend_entry.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.layout.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.overlay.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tx_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DisplayBlanksAs {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for Chart {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.title {
+            val.write_element("a:title", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.auto_title_deleted {
+            val.write_element("a:autoTitleDeleted", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.pivot_fmts {
+            val.write_element("a:pivotFmts", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.view3_d {
+            val.write_element("a:view3D", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.floor {
+            val.write_element("a:floor", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.side_wall {
+            val.write_element("a:sideWall", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.back_wall {
+            val.write_element("a:backWall", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.plot_area;
+            val.write_element("a:plotArea", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.legend {
+            val.write_element("a:legend", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.plot_vis_only {
+            val.write_element("a:plotVisOnly", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.disp_blanks_as {
+            val.write_element("a:dispBlanksAs", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.show_d_lbls_over_max {
+            val.write_element("a:showDLblsOverMax", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.title.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.auto_title_deleted.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.pivot_fmts.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.view3_d.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.floor.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.side_wall.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.back_wall.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.legend.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.plot_vis_only.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.disp_blanks_as.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.show_d_lbls_over_max.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for ChartStyle {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.value;
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for PivotSource {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.name;
+            {
+                let start = BytesStart::new("a:name");
+                writer.write_event(Event::Start(start))?;
+                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::End(BytesEnd::new("a:name")))?;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.fmt_id;
+            val.write_element("a:fmtId", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-charts")]
+        for item in &self.ext_lst {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:extLst", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if !self.ext_lst.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for ChartProtection {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.chart_object {
+            val.write_element("a:chartObject", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.data {
+            val.write_element("a:data", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.formatting {
+            val.write_element("a:formatting", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.selection {
+            val.write_element("a:selection", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.user_interface {
+            val.write_element("a:userInterface", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.chart_object.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.data.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.formatting.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.selection.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.user_interface.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for ChartHeaderFooter {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.align_with_margins {
+            start.push_attribute(("alignWithMargins", if *val { "1" } else { "0" }));
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.different_odd_even {
+            start.push_attribute(("differentOddEven", if *val { "1" } else { "0" }));
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.different_first {
+            start.push_attribute(("differentFirst", if *val { "1" } else { "0" }));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.odd_header {
+            {
+                let start = BytesStart::new("a:oddHeader");
+                writer.write_event(Event::Start(start))?;
+                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::End(BytesEnd::new("a:oddHeader")))?;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.odd_footer {
+            {
+                let start = BytesStart::new("a:oddFooter");
+                writer.write_event(Event::Start(start))?;
+                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::End(BytesEnd::new("a:oddFooter")))?;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.even_header {
+            {
+                let start = BytesStart::new("a:evenHeader");
+                writer.write_event(Event::Start(start))?;
+                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::End(BytesEnd::new("a:evenHeader")))?;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.even_footer {
+            {
+                let start = BytesStart::new("a:evenFooter");
+                writer.write_event(Event::Start(start))?;
+                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::End(BytesEnd::new("a:evenFooter")))?;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.first_header {
+            {
+                let start = BytesStart::new("a:firstHeader");
+                writer.write_event(Event::Start(start))?;
+                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::End(BytesEnd::new("a:firstHeader")))?;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.first_footer {
+            {
+                let start = BytesStart::new("a:firstFooter");
+                writer.write_event(Event::Start(start))?;
+                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::End(BytesEnd::new("a:firstFooter")))?;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.odd_header.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.odd_footer.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.even_header.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.even_footer.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.first_header.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.first_footer.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for ChartPageMargins {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.l;
+            {
+                let s = val.to_string();
+                start.push_attribute(("l", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.relationship_id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("r", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.t;
+            {
+                let s = val.to_string();
+                start.push_attribute(("t", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.b;
+            {
+                let s = val.to_string();
+                start.push_attribute(("b", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.header;
+            {
+                let s = val.to_string();
+                start.push_attribute(("header", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.footer;
+            {
+                let s = val.to_string();
+                start.push_attribute(("footer", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for ExternalData {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.id;
+            start.push_attribute(("r:id", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.auto_update {
+            val.write_element("a:autoUpdate", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.auto_update.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for ChartPageSetup {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.paper_size {
+            {
+                let s = val.to_string();
+                start.push_attribute(("paperSize", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.paper_height {
+            start.push_attribute(("paperHeight", val.as_str()));
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.paper_width {
+            start.push_attribute(("paperWidth", val.as_str()));
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.first_page_number {
+            {
+                let s = val.to_string();
+                start.push_attribute(("firstPageNumber", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.orientation {
+            {
+                let s = val.to_string();
+                start.push_attribute(("orientation", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.black_and_white {
+            start.push_attribute(("blackAndWhite", if *val { "1" } else { "0" }));
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.draft {
+            start.push_attribute(("draft", if *val { "1" } else { "0" }));
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.use_first_page_number {
+            start.push_attribute(("useFirstPageNumber", if *val { "1" } else { "0" }));
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.horizontal_dpi {
+            {
+                let s = val.to_string();
+                start.push_attribute(("horizontalDpi", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.vertical_dpi {
+            {
+                let s = val.to_string();
+                start.push_attribute(("verticalDpi", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.copies {
+            {
+                let s = val.to_string();
+                start.push_attribute(("copies", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for PrintSettings {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.header_footer {
+            val.write_element("a:headerFooter", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.page_margins {
+            val.write_element("a:pageMargins", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.page_setup {
+            val.write_element("a:pageSetup", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.legacy_drawing_h_f {
+            val.write_element("a:legacyDrawingHF", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.header_footer.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.page_margins.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.page_setup.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.legacy_drawing_h_f.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for ChartSpace {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.date1904 {
+            val.write_element("a:date1904", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.lang {
+            val.write_element("a:lang", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.rounded_corners {
+            val.write_element("a:roundedCorners", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.style {
+            val.write_element("a:style", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.clr_map_ovr {
+            val.write_element("a:clrMapOvr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.pivot_source {
+            val.write_element("a:pivotSource", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.protection {
+            val.write_element("a:protection", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        {
+            let val = &self.chart;
+            val.write_element("a:chart", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.tx_pr {
+            val.write_element("a:txPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.external_data {
+            val.write_element("a:externalData", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.print_settings {
+            val.write_element("a:printSettings", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.user_shapes {
+            val.write_element("a:userShapes", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-charts")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-charts")]
+        if self.date1904.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.lang.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.rounded_corners.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.style.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.clr_map_ovr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.pivot_source.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.protection.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        return false;
+        #[cfg(feature = "dml-charts")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.tx_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.external_data.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.print_settings.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.user_shapes.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-charts")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}

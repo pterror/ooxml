@@ -3268,3 +3268,405 @@ dml:
     # Children
     grpSpLocks: [shapes]
     extLst: [extensions]
+
+  # ---------------------------------------------------------------------------
+  # Charts (ECMA-376 §21.2, dml-chart.rnc)
+  # ---------------------------------------------------------------------------
+  ChartSpace:
+    "*": [charts]
+
+  Chart:
+    "*": [charts]
+
+  PlotArea:
+    "*": [charts]
+
+  ChartTitle:
+    "*": [charts]
+
+  Legend:
+    "*": [charts]
+
+  LegendEntry:
+    "*": [charts]
+
+  LegendPosition:
+    "*": [charts]
+
+  View3D:
+    "*": [charts]
+
+  BarChart:
+    "*": [charts]
+
+  Bar3DChart:
+    "*": [charts]
+
+  LineChart:
+    "*": [charts]
+
+  Line3DChart:
+    "*": [charts]
+
+  PieChart:
+    "*": [charts]
+
+  Pie3DChart:
+    "*": [charts]
+
+  DoughnutChart:
+    "*": [charts]
+
+  ScatterChart:
+    "*": [charts]
+
+  AreaChart:
+    "*": [charts]
+
+  Area3DChart:
+    "*": [charts]
+
+  RadarChart:
+    "*": [charts]
+
+  BubbleChart:
+    "*": [charts]
+
+  StockChart:
+    "*": [charts]
+
+  SurfaceChart:
+    "*": [charts]
+
+  Surface3DChart:
+    "*": [charts]
+
+  OfPieChart:
+    "*": [charts]
+
+  BarSeries:
+    "*": [charts]
+
+  LineSeries:
+    "*": [charts]
+
+  PieSeries:
+    "*": [charts]
+
+  ScatterSeries:
+    "*": [charts]
+
+  AreaSeries:
+    "*": [charts]
+
+  BubbleSeries:
+    "*": [charts]
+
+  RadarSeries:
+    "*": [charts]
+
+  SurfaceSeries:
+    "*": [charts]
+
+  CategoryAxis:
+    "*": [charts]
+
+  ValueAxis:
+    "*": [charts]
+
+  DateAxis:
+    "*": [charts]
+
+  SeriesAxis:
+    "*": [charts]
+
+  NumericReference:
+    "*": [charts]
+
+  NumericData:
+    "*": [charts]
+
+  NumericValue:
+    "*": [charts]
+
+  StringReference:
+    "*": [charts]
+
+  StringData:
+    "*": [charts]
+
+  StringValue:
+    "*": [charts]
+
+  DataLabel:
+    "*": [charts]
+
+  DataLabels:
+    "*": [charts]
+
+  DataPoint:
+    "*": [charts]
+
+  ChartMarker:
+    "*": [charts]
+
+  ChartNumFmt:
+    "*": [charts]
+
+  ChartLayout:
+    "*": [charts]
+
+  ManualLayout:
+    "*": [charts]
+
+  AxisScaling:
+    "*": [charts]
+
+  AxisDataSource:
+    "*": [charts]
+
+  SeriesText:
+    "*": [charts]
+
+  ChartText:
+    "*": [charts]
+
+  NumericDataSource:
+    "*": [charts]
+
+  LayoutTarget:
+    "*": [charts]
+
+  LayoutMode:
+    "*": [charts]
+
+  DisplayUnits:
+    "*": [charts]
+
+  DisplayUnitsLabel:
+    "*": [charts]
+
+  UpDownBars:
+    "*": [charts]
+
+  UpDownBar:
+    "*": [charts]
+
+  TrendlineLabel:
+    "*": [charts]
+
+  Trendline:
+    "*": [charts]
+
+  ErrorBars:
+    "*": [charts]
+
+  ChartLines:
+    "*": [charts]
+
+  BandFormat:
+    "*": [charts]
+
+  BandFormats:
+    "*": [charts]
+
+  PivotFormat:
+    "*": [charts]
+
+  PivotFormats:
+    "*": [charts]
+
+  PivotSource:
+    "*": [charts]
+
+  DataTable:
+    "*": [charts]
+
+  ChartSurface:
+    "*": [charts]
+
+  CustomSplit:
+    "*": [charts]
+
+  PictureOptions:
+    "*": [charts]
+
+  ChartProtection:
+    "*": [charts]
+
+  ChartHeaderFooter:
+    "*": [charts]
+
+  ChartPageMargins:
+    "*": [charts]
+
+  ChartPageSetup:
+    "*": [charts]
+
+  PrintSettings:
+    "*": [charts]
+
+  ExternalData:
+    "*": [charts]
+
+  ChartExtension:
+    "*": [charts]
+
+  ChartExtensionList:
+    "*": [charts]
+
+  MultiLevelStrLevel:
+    "*": [charts]
+
+  MultiLevelStrData:
+    "*": [charts]
+
+  MultiLevelStrRef:
+    "*": [charts]
+
+  TextLanguageId:
+    "*": [charts]
+
+  ChartRelId:
+    "*": [charts]
+
+  GapAmount:
+    "*": [charts]
+
+  OverlapAmount:
+    "*": [charts]
+
+  BubbleScale:
+    "*": [charts]
+
+  SizeRepresents:
+    "*": [charts]
+
+  FirstSliceAngle:
+    "*": [charts]
+
+  HoleSize:
+    "*": [charts]
+
+  SplitType:
+    "*": [charts]
+
+  SecondPieSize:
+    "*": [charts]
+
+  LabelAlignment:
+    "*": [charts]
+
+  DataLabelPosition:
+    "*": [charts]
+
+  ChartMarkerStyle:
+    "*": [charts]
+
+  ChartMarkerSize:
+    "*": [charts]
+
+  TrendlineType:
+    "*": [charts]
+
+  TrendlineOrder:
+    "*": [charts]
+
+  TrendlinePeriod:
+    "*": [charts]
+
+  ErrorDirection:
+    "*": [charts]
+
+  ErrorBarType:
+    "*": [charts]
+
+  ErrorValueType:
+    "*": [charts]
+
+  ChartGrouping:
+    "*": [charts]
+
+  ScatterStyle:
+    "*": [charts]
+
+  RadarStyle:
+    "*": [charts]
+
+  BarGrouping:
+    "*": [charts]
+
+  BarDirection:
+    "*": [charts]
+
+  BarShape:
+    "*": [charts]
+
+  OfPieType:
+    "*": [charts]
+
+  ChartThickness:
+    "*": [charts]
+
+  HPercent:
+    "*": [charts]
+
+  RotX:
+    "*": [charts]
+
+  RotY:
+    "*": [charts]
+
+  DepthPercent:
+    "*": [charts]
+
+  Perspective:
+    "*": [charts]
+
+  AxisPosition:
+    "*": [charts]
+
+  AxisCrosses:
+    "*": [charts]
+
+  CrossBetween:
+    "*": [charts]
+
+  TickMark:
+    "*": [charts]
+
+  TickLabelPosition:
+    "*": [charts]
+
+  AxisSkip:
+    "*": [charts]
+
+  TimeUnit:
+    "*": [charts]
+
+  AxisUnit:
+    "*": [charts]
+
+  BuiltInUnit:
+    "*": [charts]
+
+  ChartPictureFormat:
+    "*": [charts]
+
+  PictureStackUnit:
+    "*": [charts]
+
+  LabelOffset:
+    "*": [charts]
+
+  LogBase:
+    "*": [charts]
+
+  AxisOrientation:
+    "*": [charts]
+
+  DisplayBlanksAs:
+    "*": [charts]
+
+  ChartStyle:
+    "*": [charts]
