@@ -66,8 +66,8 @@ pub use error::{Error, Result};
 // Writer-required types from workbook module
 pub use workbook::{
     ConditionalRuleType, DataValidationErrorStyle, DataValidationOperator, DataValidationType,
-    DefinedName, DefinedNameScope, Stylesheet, Workbook, builtin_format_code, excel_date_to_ymd,
-    excel_datetime_to_ymdhms, format_excel_date, format_excel_datetime,
+    DefinedNameExt, DefinedNameScope, StylesheetExt, Workbook, builtin_format_code,
+    excel_date_to_ymd, excel_datetime_to_ymdhms, format_excel_date, format_excel_datetime,
 };
 pub use writer::{
     BorderLineStyle, BorderSideStyle, BorderStyle, CellStyle, CommentBuilder, ConditionalFormat,

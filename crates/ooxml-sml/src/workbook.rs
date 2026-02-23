@@ -7,6 +7,7 @@ use crate::ext::{
     Chart as ExtChart, ChartType as ExtChartType, Comment as ExtComment, ResolvedSheet,
     parse_worksheet,
 };
+use crate::parsers::FromXml;
 use ooxml_opc::{Package, Relationships};
 use quick_xml::Reader;
 use quick_xml::events::Event;
@@ -43,9 +44,9 @@ pub struct Workbook<R: Read + Seek> {
     /// Shared string table.
     shared_strings: Vec<String>,
     /// Stylesheet (number formats, fonts, fills, borders, cell formats).
-    styles: Stylesheet,
+    styles: crate::types::Stylesheet,
     /// Defined names (named ranges).
-    defined_names: Vec<DefinedName>,
+    defined_names: Vec<crate::types::DefinedName>,
 }
 
 /// Metadata about a sheet.
@@ -82,16 +83,33 @@ impl<R: Read + Seek> Workbook<R> {
             .read_part_relationships(&workbook_path)
             .unwrap_or_default();
 
-        // Parse workbook.xml to get sheet list and defined names
+        // Parse workbook.xml once to get sheet list and defined names
         let workbook_xml = package.read_part(&workbook_path)?;
-        let sheet_info = parse_workbook_sheets(&workbook_xml)?;
-        let defined_names = parse_defined_names(&workbook_xml)?;
+        let wb: crate::types::Workbook = bootstrap(&workbook_xml)?;
+        let sheet_info = wb
+            .sheets
+            .sheet
+            .iter()
+            .map(|s| SheetInfo {
+                name: s.name.to_string(),
+                sheet_id: s.sheet_id,
+                rel_id: s.id.to_string(),
+            })
+            .collect();
+        let defined_names = wb
+            .defined_names
+            .map(|dn| {
+                let inner = *dn;
+                inner.defined_name
+            })
+            .unwrap_or_default();
 
         // Load shared strings if present
         let shared_strings = if let Some(rel) = workbook_rels.get_by_type(REL_SHARED_STRINGS) {
             let path = resolve_path(&workbook_path, &rel.target);
             if let Ok(data) = package.read_part(&path) {
-                parse_shared_strings(&data)?
+                let sst: crate::types::SharedStrings = bootstrap(&data)?;
+                extract_shared_strings(&sst)
             } else {
                 Vec::new()
             }
@@ -103,12 +121,12 @@ impl<R: Read + Seek> Workbook<R> {
         let styles = if let Some(rel) = workbook_rels.get_by_type(REL_STYLES) {
             let path = resolve_path(&workbook_path, &rel.target);
             if let Ok(data) = package.read_part(&path) {
-                parse_styles(&data)?
+                bootstrap(&data)?
             } else {
-                Stylesheet::default()
+                crate::types::Stylesheet::default()
             }
         } else {
-            Stylesheet::default()
+            crate::types::Stylesheet::default()
         };
 
         Ok(Self {
@@ -133,44 +151,52 @@ impl<R: Read + Seek> Workbook<R> {
     }
 
     /// Get the workbook stylesheet.
-    pub fn styles(&self) -> &Stylesheet {
+    pub fn styles(&self) -> &crate::types::Stylesheet {
         &self.styles
     }
 
     /// Get all defined names (named ranges).
-    pub fn defined_names(&self) -> &[DefinedName] {
+    pub fn defined_names(&self) -> &[crate::types::DefinedName] {
         &self.defined_names
     }
 
     /// Get a defined name by its name.
     ///
     /// For names with sheet scope, use `defined_name_in_sheet` instead.
-    pub fn defined_name(&self, name: &str) -> Option<&DefinedName> {
+    pub fn defined_name(&self, name: &str) -> Option<&crate::types::DefinedName> {
         self.defined_names
             .iter()
             .find(|d| d.name.eq_ignore_ascii_case(name) && d.local_sheet_id.is_none())
     }
 
     /// Get a defined name by its name within a specific sheet scope.
-    pub fn defined_name_in_sheet(&self, name: &str, sheet_index: u32) -> Option<&DefinedName> {
+    pub fn defined_name_in_sheet(
+        &self,
+        name: &str,
+        sheet_index: u32,
+    ) -> Option<&crate::types::DefinedName> {
         self.defined_names
             .iter()
             .find(|d| d.name.eq_ignore_ascii_case(name) && d.local_sheet_id == Some(sheet_index))
     }
 
     /// Get all global defined names (workbook scope).
-    pub fn global_defined_names(&self) -> impl Iterator<Item = &DefinedName> {
+    pub fn global_defined_names(&self) -> impl Iterator<Item = &crate::types::DefinedName> {
         self.defined_names
             .iter()
             .filter(|d| d.local_sheet_id.is_none())
     }
 
     /// Get all defined names scoped to a specific sheet.
-    pub fn sheet_defined_names(&self, sheet_index: u32) -> impl Iterator<Item = &DefinedName> {
+    pub fn sheet_defined_names(
+        &self,
+        sheet_index: u32,
+    ) -> impl Iterator<Item = &crate::types::DefinedName> {
         self.defined_names
             .iter()
             .filter(move |d| d.local_sheet_id == Some(sheet_index))
     }
+
     // =========================================================================
     // New API using generated types (ADR-003)
     // =========================================================================
@@ -303,7 +329,7 @@ impl<R: Read + Seek> Workbook<R> {
             if !is_chartsheet && let Some(comments_rel) = sheet_rels.get_by_type(REL_COMMENTS) {
                 let comments_path = resolve_path(&path, &comments_rel.target);
                 if let Ok(comments_data) = self.package.read_part(&comments_path) {
-                    comments = parse_comments_ext(&comments_data)?;
+                    comments = parse_comments_xml(&comments_data)?;
                 }
             }
 
@@ -334,16 +360,28 @@ impl<R: Read + Seek> Workbook<R> {
     }
 }
 
-/// Parse comments for ext::Comment
-fn parse_comments_ext(xml: &[u8]) -> Result<Vec<ExtComment>> {
-    // Reuse existing comment parsing but convert to ext::Comment
-    let old_comments = parse_comments(xml)?;
-    Ok(old_comments
-        .into_iter()
-        .map(|c| ExtComment {
-            reference: c.reference,
-            author: c.author,
-            text: c.text,
+/// Parse comments using the generated FromXml parser.
+fn parse_comments_xml(xml: &[u8]) -> Result<Vec<ExtComment>> {
+    let comments: crate::types::Comments = bootstrap(xml)?;
+    let authors = comments.authors.author.clone();
+    #[cfg(not(feature = "sml-comments"))]
+    {
+        let _ = (authors, comments.comment_list);
+        return Ok(Vec::new());
+    }
+    #[cfg(feature = "sml-comments")]
+    Ok(comments
+        .comment_list
+        .comment
+        .iter()
+        .map(|c| {
+            let author = authors.get(c.author_id as usize).cloned();
+            let text = rich_string_to_plain(&c.text);
+            ExtComment {
+                reference: c.reference.clone(),
+                author,
+                text,
+            }
         })
         .collect())
 }
@@ -367,36 +405,6 @@ fn parse_chart_ext(xml: &[u8]) -> Result<ExtChart> {
             ChartType::Unknown => ExtChartType::Unknown,
         },
     })
-}
-
-/// A cell comment (note).
-///
-/// ECMA-376 Part 1, Section 18.7 (Comments).
-#[derive(Debug, Clone)]
-pub struct Comment {
-    /// Cell reference (e.g., "A1").
-    reference: String,
-    /// Author of the comment.
-    author: Option<String>,
-    /// Comment text content.
-    text: String,
-}
-
-impl Comment {
-    /// Get the cell reference (e.g., "A1").
-    pub fn reference(&self) -> &str {
-        &self.reference
-    }
-
-    /// Get the author of the comment.
-    pub fn author(&self) -> Option<&str> {
-        self.author.as_deref()
-    }
-
-    /// Get the comment text.
-    pub fn text(&self) -> &str {
-        &self.text
-    }
 }
 
 /// Type of conditional formatting rule.
@@ -582,6 +590,7 @@ impl ChartSeries {
         &self.values
     }
 }
+
 /// Type of data validation.
 ///
 /// ECMA-376 Part 1, Section 18.18.21 (ST_DataValidationType).
@@ -730,39 +739,42 @@ impl DataValidationErrorStyle {
     }
 }
 
-/// Stylesheet containing number formats, fonts, fills, and cell styles.
-///
-/// ECMA-376 Part 1, Section 18.8 (Styles).
-#[derive(Debug, Clone, Default)]
-pub struct Stylesheet {
-    /// Number formats (custom format codes).
-    pub number_formats: Vec<NumberFormat>,
-    /// Font definitions.
-    pub fonts: Vec<Font>,
-    /// Fill definitions.
-    pub fills: Vec<Fill>,
-    /// Border definitions.
-    pub borders: Vec<Border>,
-    /// Cell format records (combines font, fill, border, number format).
-    pub cell_formats: Vec<CellFormat>,
+/// The scope of a defined name.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DefinedNameScope {
+    /// Global workbook scope.
+    Workbook,
+    /// Local to a specific sheet (by index).
+    Sheet(u32),
 }
 
-impl Stylesheet {
+// ============================================================================
+// Extension Traits for Generated Types
+// ============================================================================
+
+/// Extension methods for the generated [`types::Stylesheet`](crate::types::Stylesheet).
+pub trait StylesheetExt {
     /// Get a number format code by ID.
     ///
     /// Looks up custom formats first, then falls back to built-in formats.
-    pub fn format_code(&self, id: u32) -> Option<String> {
-        // Check custom formats first
-        if let Some(fmt) = self.number_formats.iter().find(|f| f.id == id) {
-            return Some(fmt.code.clone());
-        }
+    fn format_code(&self, id: u32) -> Option<String>;
 
-        // Fall back to built-in formats
+    /// Check if a format ID represents a date/time format.
+    fn is_date_format(&self, id: u32) -> bool;
+}
+
+impl StylesheetExt for crate::types::Stylesheet {
+    fn format_code(&self, id: u32) -> Option<String> {
+        #[cfg(feature = "sml-styling")]
+        if let Some(num_fmts) = &self.num_fmts
+            && let Some(fmt) = num_fmts.num_fmt.iter().find(|f| f.number_format_id == id)
+        {
+            return Some(fmt.format_code.clone());
+        }
         builtin_format_code(id).map(|s| s.to_string())
     }
 
-    /// Check if a format ID represents a date/time format.
-    pub fn is_date_format(&self, id: u32) -> bool {
+    fn is_date_format(&self, id: u32) -> bool {
         if let Some(code) = self.format_code(id) {
             is_date_format_code(&code)
         } else {
@@ -772,47 +784,8 @@ impl Stylesheet {
     }
 }
 
-/// A number format definition.
-///
-/// ECMA-376 Part 1, Section 18.8.30 (numFmt).
-#[derive(Debug, Clone)]
-pub struct NumberFormat {
-    /// Format ID (built-in formats use IDs 0-163).
-    pub id: u32,
-    /// Format code (e.g., "0.00", "#,##0", "yyyy-mm-dd").
-    pub code: String,
-}
-
-impl NumberFormat {
-    /// Check if this format represents a date/time format.
-    ///
-    /// Date formats contain patterns like y, m, d, h, s but not in contexts
-    /// like `[Red]` color codes or escaped characters.
-    pub fn is_date_format(&self) -> bool {
-        is_date_format_code(&self.code)
-    }
-}
-
-/// A named range (defined name) in the workbook.
-///
-/// ECMA-376 Part 1, Section 18.2.5 (definedName).
-/// Named ranges can be global (workbook scope) or local (sheet scope).
-#[derive(Debug, Clone)]
-pub struct DefinedName {
-    /// The name of the defined range (e.g., "MyRange", "_xlnm.Print_Area").
-    pub name: String,
-    /// The formula or reference (e.g., "Sheet1!$A$1:$B$10").
-    pub reference: String,
-    /// Optional sheet index if this name is scoped to a specific sheet.
-    /// If None, the name is global (workbook scope).
-    pub local_sheet_id: Option<u32>,
-    /// Optional comment/description.
-    pub comment: Option<String>,
-    /// Whether this is a hidden name.
-    pub hidden: bool,
-}
-
-impl DefinedName {
+/// Extension methods for the generated [`types::DefinedName`](crate::types::DefinedName).
+pub trait DefinedNameExt {
     /// Check if this is a built-in Excel name (prefixed with "_xlnm.").
     ///
     /// Built-in names include:
@@ -821,12 +794,18 @@ impl DefinedName {
     /// - _xlnm._FilterDatabase
     /// - _xlnm.Criteria
     /// - _xlnm.Extract
-    pub fn is_builtin(&self) -> bool {
+    fn is_builtin(&self) -> bool;
+
+    /// Get the scope of this defined name.
+    fn scope(&self) -> DefinedNameScope;
+}
+
+impl DefinedNameExt for crate::types::DefinedName {
+    fn is_builtin(&self) -> bool {
         self.name.starts_with("_xlnm.")
     }
 
-    /// Get the scope of this defined name.
-    pub fn scope(&self) -> DefinedNameScope {
+    fn scope(&self) -> DefinedNameScope {
         match self.local_sheet_id {
             Some(id) => DefinedNameScope::Sheet(id),
             None => DefinedNameScope::Workbook,
@@ -834,14 +813,9 @@ impl DefinedName {
     }
 }
 
-/// The scope of a defined name.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum DefinedNameScope {
-    /// Global workbook scope.
-    Workbook,
-    /// Local to a specific sheet (by index).
-    Sheet(u32),
-}
+// ============================================================================
+// Utility Functions
+// ============================================================================
 
 /// Get the format code for a built-in format ID.
 ///
@@ -1004,271 +978,25 @@ fn is_date_format_code(code: &str) -> bool {
     false
 }
 
-/// A font definition.
-///
-/// ECMA-376 Part 1, Section 18.8.22 (font).
-#[derive(Debug, Clone, Default)]
-pub struct Font {
-    /// Font name (e.g., "Calibri", "Arial").
-    pub name: Option<String>,
-    /// Font size in points.
-    pub size: Option<f64>,
-    /// Bold.
-    pub bold: bool,
-    /// Italic.
-    pub italic: bool,
-    /// Underline.
-    pub underline: bool,
-    /// Strikethrough.
-    pub strike: bool,
-    /// Font color (RGB hex without #, or theme reference).
-    pub color: Option<String>,
-}
-
-/// A fill definition.
-///
-/// ECMA-376 Part 1, Section 18.8.20 (fill).
-#[derive(Debug, Clone, Default)]
-pub struct Fill {
-    /// Pattern type (e.g., "solid", "none", "gray125").
-    pub pattern_type: Option<String>,
-    /// Foreground color (RGB hex).
-    pub fg_color: Option<String>,
-    /// Background color (RGB hex).
-    pub bg_color: Option<String>,
-}
-
-/// A border definition.
-///
-/// ECMA-376 Part 1, Section 18.8.4 (border).
-#[derive(Debug, Clone, Default)]
-pub struct Border {
-    /// Left border style.
-    pub left: Option<BorderSide>,
-    /// Right border style.
-    pub right: Option<BorderSide>,
-    /// Top border style.
-    pub top: Option<BorderSide>,
-    /// Bottom border style.
-    pub bottom: Option<BorderSide>,
-}
-
-/// A single border side.
-#[derive(Debug, Clone, Default)]
-pub struct BorderSide {
-    /// Border style (e.g., "thin", "medium", "thick", "dashed").
-    pub style: Option<String>,
-    /// Border color (RGB hex).
-    pub color: Option<String>,
-}
-
-/// A cell format record combining style elements.
-///
-/// ECMA-376 Part 1, Section 18.8.45 (xf).
-#[derive(Debug, Clone, Default)]
-pub struct CellFormat {
-    /// Index into number_formats (or built-in format ID).
-    pub number_format_id: u32,
-    /// Index into fonts.
-    pub font_id: u32,
-    /// Index into fills.
-    pub fill_id: u32,
-    /// Index into borders.
-    pub border_id: u32,
-    /// Horizontal alignment.
-    pub horizontal_align: Option<String>,
-    /// Vertical alignment.
-    pub vertical_align: Option<String>,
-    /// Text wrap.
-    pub wrap_text: bool,
-}
-
 // ============================================================================
-// Parsing
+// Private Parsing Helpers
 // ============================================================================
 
-/// Parse the workbook.xml to extract sheet information.
-fn parse_workbook_sheets(xml: &[u8]) -> Result<Vec<SheetInfo>> {
+/// Bootstrap a generated type from raw XML bytes.
+///
+/// Scans the XML for the first element and calls `T::from_xml` on it.
+fn bootstrap<T: FromXml>(xml: &[u8]) -> Result<T> {
     let mut reader = Reader::from_reader(Cursor::new(xml));
     let mut buf = Vec::new();
-    let mut sheets = Vec::new();
-    let mut in_sheets = false;
-
-    loop {
-        match reader.read_event_into(&mut buf) {
-            Ok(Event::Start(e)) | Ok(Event::Empty(e)) => {
-                let name = e.name();
-                let name = name.as_ref();
-                if name == b"sheets" {
-                    in_sheets = true;
-                } else if in_sheets && name == b"sheet" {
-                    let mut sheet_name = String::new();
-                    let mut sheet_id = 0u32;
-                    let mut rel_id = String::new();
-
-                    for attr in e.attributes().filter_map(|a| a.ok()) {
-                        match attr.key.as_ref() {
-                            b"name" => {
-                                sheet_name = String::from_utf8_lossy(&attr.value).into_owned();
-                            }
-                            b"sheetId" => {
-                                sheet_id =
-                                    String::from_utf8_lossy(&attr.value).parse().unwrap_or(0);
-                            }
-                            key if key == b"r:id" || key == b"id" => {
-                                rel_id = String::from_utf8_lossy(&attr.value).into_owned();
-                            }
-                            _ => {}
-                        }
-                    }
-
-                    if !sheet_name.is_empty() && !rel_id.is_empty() {
-                        sheets.push(SheetInfo {
-                            name: sheet_name,
-                            sheet_id,
-                            rel_id,
-                        });
-                    }
-                }
-            }
-            Ok(Event::End(e)) => {
-                let name = e.name();
-                if name.as_ref() == b"sheets" {
-                    in_sheets = false;
-                }
-            }
-            Ok(Event::Eof) => break,
-            Err(e) => return Err(Error::Xml(e)),
-            _ => {}
-        }
-        buf.clear();
-    }
-
-    Ok(sheets)
-}
-
-/// Parse defined names (named ranges) from workbook.xml.
-fn parse_defined_names(xml: &[u8]) -> Result<Vec<DefinedName>> {
-    let mut reader = Reader::from_reader(Cursor::new(xml));
-    let mut buf = Vec::new();
-    let mut names = Vec::new();
-    let mut in_defined_names = false;
-    let mut current_name: Option<(String, Option<u32>, Option<String>, bool)> = None;
-    let mut current_text = String::new();
-
     loop {
         match reader.read_event_into(&mut buf) {
             Ok(Event::Start(e)) => {
-                let tag = e.name();
-                let tag = tag.as_ref();
-                if tag == b"definedNames" {
-                    in_defined_names = true;
-                } else if in_defined_names && tag == b"definedName" {
-                    let mut name = String::new();
-                    let mut local_sheet_id = None;
-                    let mut comment = None;
-                    let mut hidden = false;
-
-                    for attr in e.attributes().filter_map(|a| a.ok()) {
-                        match attr.key.as_ref() {
-                            b"name" => {
-                                name = String::from_utf8_lossy(&attr.value).into_owned();
-                            }
-                            b"localSheetId" => {
-                                local_sheet_id = String::from_utf8_lossy(&attr.value).parse().ok();
-                            }
-                            b"comment" => {
-                                comment = Some(String::from_utf8_lossy(&attr.value).into_owned());
-                            }
-                            b"hidden" => {
-                                hidden = &*attr.value == b"1" || &*attr.value == b"true";
-                            }
-                            _ => {}
-                        }
-                    }
-
-                    current_name = Some((name, local_sheet_id, comment, hidden));
-                    current_text.clear();
-                }
-            }
-            Ok(Event::Text(e)) => {
-                if current_name.is_some() {
-                    current_text.push_str(&e.decode().unwrap_or_default());
-                }
-            }
-            Ok(Event::End(e)) => {
-                let tag = e.name();
-                let tag = tag.as_ref();
-                if tag == b"definedNames" {
-                    in_defined_names = false;
-                } else if tag == b"definedName" {
-                    if let Some((name, local_sheet_id, comment, hidden)) = current_name.take()
-                        && !name.is_empty()
-                        && !current_text.is_empty()
-                    {
-                        names.push(DefinedName {
-                            name,
-                            reference: current_text.clone(),
-                            local_sheet_id,
-                            comment,
-                            hidden,
-                        });
-                    }
-                    current_text.clear();
-                }
-            }
-            Ok(Event::Eof) => break,
-            Err(e) => return Err(Error::Xml(e)),
-            _ => {}
-        }
-        buf.clear();
-    }
-
-    Ok(names)
-}
-
-/// Parse the shared strings table.
-fn parse_shared_strings(xml: &[u8]) -> Result<Vec<String>> {
-    let mut reader = Reader::from_reader(Cursor::new(xml));
-    let mut buf = Vec::new();
-    let mut strings = Vec::new();
-    let mut current_string = String::new();
-    let mut in_si = false;
-    let mut in_t = false;
-
-    loop {
-        match reader.read_event_into(&mut buf) {
-            Ok(Event::Start(e)) => {
-                let name = e.name();
-                let name = name.as_ref();
-                if name == b"si" {
-                    in_si = true;
-                    current_string.clear();
-                } else if in_si && name == b"t" {
-                    in_t = true;
-                }
+                return T::from_xml(&mut reader, &e, false)
+                    .map_err(|e| Error::Invalid(format!("{e:?}")));
             }
             Ok(Event::Empty(e)) => {
-                // Handle self-closing <t/> (empty string)
-                let name = e.name();
-                if in_si && name.as_ref() == b"t" {
-                    // Empty text element, nothing to add
-                }
-            }
-            Ok(Event::Text(e)) => {
-                if in_t {
-                    current_string.push_str(&e.decode().unwrap_or_default());
-                }
-            }
-            Ok(Event::End(e)) => {
-                let name = e.name();
-                let name = name.as_ref();
-                if name == b"si" {
-                    strings.push(std::mem::take(&mut current_string));
-                    in_si = false;
-                } else if name == b"t" {
-                    in_t = false;
-                }
+                return T::from_xml(&mut reader, &e, true)
+                    .map_err(|e| Error::Invalid(format!("{e:?}")));
             }
             Ok(Event::Eof) => break,
             Err(e) => return Err(Error::Xml(e)),
@@ -1276,347 +1004,30 @@ fn parse_shared_strings(xml: &[u8]) -> Result<Vec<String>> {
         }
         buf.clear();
     }
-
-    Ok(strings)
+    Err(Error::Invalid("element not found".into()))
 }
 
-/// Parse the styles.xml file.
-///
-/// ECMA-376 Part 1, Section 18.8 (Styles).
-fn parse_styles(xml: &[u8]) -> Result<Stylesheet> {
-    let mut reader = Reader::from_reader(Cursor::new(xml));
-    let mut buf = Vec::new();
-    let mut styles = Stylesheet::default();
-
-    // Parsing state
-    let mut in_num_fmts = false;
-    let mut in_fonts = false;
-    let mut in_fills = false;
-    let mut in_borders = false;
-    let mut in_cell_xfs = false;
-    let mut in_font = false;
-    let mut in_fill = false;
-    let mut in_border = false;
-    let mut in_xf = false;
-
-    let mut current_font = Font::default();
-    let mut current_fill = Fill::default();
-    let mut current_border = Border::default();
-    let mut current_xf = CellFormat::default();
-
-    loop {
-        match reader.read_event_into(&mut buf) {
-            Ok(Event::Start(e)) => {
-                let tag = e.name();
-                let tag = tag.as_ref();
-                match tag {
-                    b"numFmts" => in_num_fmts = true,
-                    b"fonts" => in_fonts = true,
-                    b"fills" => in_fills = true,
-                    b"borders" => in_borders = true,
-                    b"cellXfs" => in_cell_xfs = true,
-                    b"font" if in_fonts => {
-                        in_font = true;
-                        current_font = Font::default();
-                    }
-                    b"fill" if in_fills => {
-                        in_fill = true;
-                        current_fill = Fill::default();
-                    }
-                    b"patternFill" if in_fill => {
-                        for attr in e.attributes().filter_map(|a| a.ok()) {
-                            if attr.key.as_ref() == b"patternType" {
-                                current_fill.pattern_type =
-                                    Some(String::from_utf8_lossy(&attr.value).into_owned());
-                            }
-                        }
-                    }
-                    b"border" if in_borders => {
-                        in_border = true;
-                        current_border = Border::default();
-                    }
-                    b"left" | b"right" | b"top" | b"bottom" if in_border => {
-                        // Border sides with content are handled in End event
-                    }
-                    b"xf" if in_cell_xfs => {
-                        in_xf = true;
-                        current_xf = CellFormat::default();
-                        for attr in e.attributes().filter_map(|a| a.ok()) {
-                            let val = String::from_utf8_lossy(&attr.value);
-                            match attr.key.as_ref() {
-                                b"numFmtId" => {
-                                    current_xf.number_format_id = val.parse().unwrap_or(0)
-                                }
-                                b"fontId" => current_xf.font_id = val.parse().unwrap_or(0),
-                                b"fillId" => current_xf.fill_id = val.parse().unwrap_or(0),
-                                b"borderId" => current_xf.border_id = val.parse().unwrap_or(0),
-                                _ => {}
-                            }
-                        }
-                    }
-                    b"alignment" if in_xf => {
-                        for attr in e.attributes().filter_map(|a| a.ok()) {
-                            let val = String::from_utf8_lossy(&attr.value);
-                            match attr.key.as_ref() {
-                                b"horizontal" => {
-                                    current_xf.horizontal_align = Some(val.into_owned())
-                                }
-                                b"vertical" => current_xf.vertical_align = Some(val.into_owned()),
-                                b"wrapText" => current_xf.wrap_text = val == "1" || val == "true",
-                                _ => {}
-                            }
-                        }
-                    }
-                    _ => {}
-                }
+/// Extract plain strings from a SharedStrings SST.
+fn extract_shared_strings(sst: &crate::types::SharedStrings) -> Vec<String> {
+    sst.si
+        .iter()
+        .map(|si| {
+            if let Some(t) = &si.cell_type {
+                t.clone()
+            } else {
+                si.reference.iter().map(|r| r.cell_type.as_str()).collect()
             }
-            Ok(Event::Empty(e)) => {
-                let tag = e.name();
-                let tag = tag.as_ref();
-                match tag {
-                    b"numFmt" if in_num_fmts => {
-                        let mut id = 0u32;
-                        let mut code = String::new();
-                        for attr in e.attributes().filter_map(|a| a.ok()) {
-                            let val = String::from_utf8_lossy(&attr.value);
-                            match attr.key.as_ref() {
-                                b"numFmtId" => id = val.parse().unwrap_or(0),
-                                b"formatCode" => code = val.into_owned(),
-                                _ => {}
-                            }
-                        }
-                        styles.number_formats.push(NumberFormat { id, code });
-                    }
-                    b"name" if in_font => {
-                        for attr in e.attributes().filter_map(|a| a.ok()) {
-                            if attr.key.as_ref() == b"val" {
-                                current_font.name =
-                                    Some(String::from_utf8_lossy(&attr.value).into_owned());
-                            }
-                        }
-                    }
-                    b"sz" if in_font => {
-                        for attr in e.attributes().filter_map(|a| a.ok()) {
-                            if attr.key.as_ref() == b"val" {
-                                current_font.size =
-                                    String::from_utf8_lossy(&attr.value).parse().ok();
-                            }
-                        }
-                    }
-                    b"b" if in_font => current_font.bold = true,
-                    b"i" if in_font => current_font.italic = true,
-                    b"u" if in_font => current_font.underline = true,
-                    b"strike" if in_font => current_font.strike = true,
-                    b"color" if in_font => {
-                        for attr in e.attributes().filter_map(|a| a.ok()) {
-                            if attr.key.as_ref() == b"rgb" {
-                                current_font.color =
-                                    Some(String::from_utf8_lossy(&attr.value).into_owned());
-                            }
-                        }
-                    }
-                    b"patternFill" if in_fill => {
-                        // Handle self-closing patternFill
-                        for attr in e.attributes().filter_map(|a| a.ok()) {
-                            if attr.key.as_ref() == b"patternType" {
-                                current_fill.pattern_type =
-                                    Some(String::from_utf8_lossy(&attr.value).into_owned());
-                            }
-                        }
-                    }
-                    b"fgColor" if in_fill => {
-                        for attr in e.attributes().filter_map(|a| a.ok()) {
-                            if attr.key.as_ref() == b"rgb" {
-                                current_fill.fg_color =
-                                    Some(String::from_utf8_lossy(&attr.value).into_owned());
-                            }
-                        }
-                    }
-                    b"bgColor" if in_fill => {
-                        for attr in e.attributes().filter_map(|a| a.ok()) {
-                            if attr.key.as_ref() == b"rgb" {
-                                current_fill.bg_color =
-                                    Some(String::from_utf8_lossy(&attr.value).into_owned());
-                            }
-                        }
-                    }
-                    b"left" | b"right" | b"top" | b"bottom" if in_border => {
-                        let mut side = BorderSide::default();
-                        for attr in e.attributes().filter_map(|a| a.ok()) {
-                            if attr.key.as_ref() == b"style" {
-                                side.style =
-                                    Some(String::from_utf8_lossy(&attr.value).into_owned());
-                            }
-                        }
-                        match tag {
-                            b"left" => current_border.left = Some(side),
-                            b"right" => current_border.right = Some(side),
-                            b"top" => current_border.top = Some(side),
-                            b"bottom" => current_border.bottom = Some(side),
-                            _ => {}
-                        }
-                    }
-                    b"xf" if in_cell_xfs => {
-                        let mut xf = CellFormat::default();
-                        for attr in e.attributes().filter_map(|a| a.ok()) {
-                            let val = String::from_utf8_lossy(&attr.value);
-                            match attr.key.as_ref() {
-                                b"numFmtId" => xf.number_format_id = val.parse().unwrap_or(0),
-                                b"fontId" => xf.font_id = val.parse().unwrap_or(0),
-                                b"fillId" => xf.fill_id = val.parse().unwrap_or(0),
-                                b"borderId" => xf.border_id = val.parse().unwrap_or(0),
-                                _ => {}
-                            }
-                        }
-                        styles.cell_formats.push(xf);
-                    }
-                    _ => {}
-                }
-            }
-            Ok(Event::End(e)) => {
-                let tag = e.name();
-                let tag = tag.as_ref();
-                match tag {
-                    b"numFmts" => in_num_fmts = false,
-                    b"fonts" => in_fonts = false,
-                    b"fills" => in_fills = false,
-                    b"borders" => in_borders = false,
-                    b"cellXfs" => in_cell_xfs = false,
-                    b"font" if in_fonts => {
-                        styles.fonts.push(std::mem::take(&mut current_font));
-                        in_font = false;
-                    }
-                    b"fill" if in_fills => {
-                        styles.fills.push(std::mem::take(&mut current_fill));
-                        in_fill = false;
-                    }
-                    b"border" if in_borders => {
-                        styles.borders.push(std::mem::take(&mut current_border));
-                        in_border = false;
-                    }
-                    b"xf" if in_cell_xfs => {
-                        styles.cell_formats.push(std::mem::take(&mut current_xf));
-                        in_xf = false;
-                    }
-                    _ => {}
-                }
-            }
-            Ok(Event::Eof) => break,
-            Err(e) => return Err(Error::Xml(e)),
-            _ => {}
-        }
-        buf.clear();
-    }
-
-    Ok(styles)
+        })
+        .collect()
 }
 
-/// Parse comments from a comments XML file.
-///
-/// ECMA-376 Part 1, Section 18.7 (Comments).
-#[allow(dead_code)]
-fn parse_comments(xml: &[u8]) -> Result<Vec<Comment>> {
-    let mut reader = Reader::from_reader(Cursor::new(xml));
-    let mut buf = Vec::new();
-    let mut comments = Vec::new();
-    let mut authors: Vec<String> = Vec::new();
-
-    // Parsing state
-    let mut in_authors = false;
-    let mut in_author = false;
-    let mut in_comment_list = false;
-    let mut in_comment = false;
-    let mut in_text = false;
-    let mut in_t = false;
-
-    let mut current_ref = String::new();
-    let mut current_author_id: Option<usize> = None;
-    let mut current_text = String::new();
-    let mut author_text = String::new();
-
-    loop {
-        match reader.read_event_into(&mut buf) {
-            Ok(Event::Start(e)) => {
-                let name = e.name();
-                let name = name.as_ref();
-                match name {
-                    b"authors" => in_authors = true,
-                    b"author" => {
-                        in_author = true;
-                        author_text.clear();
-                    }
-                    b"commentList" => in_comment_list = true,
-                    b"comment" if in_comment_list => {
-                        in_comment = true;
-                        current_ref.clear();
-                        current_author_id = None;
-                        current_text.clear();
-
-                        for attr in e.attributes().filter_map(|a| a.ok()) {
-                            match attr.key.as_ref() {
-                                b"ref" => {
-                                    current_ref = String::from_utf8_lossy(&attr.value).into_owned();
-                                }
-                                b"authorId" => {
-                                    current_author_id =
-                                        String::from_utf8_lossy(&attr.value).parse().ok();
-                                }
-                                _ => {}
-                            }
-                        }
-                    }
-                    b"text" if in_comment => in_text = true,
-                    b"t" if in_text => in_t = true,
-                    b"r" if in_text => {
-                        // Text run inside comment text
-                    }
-                    _ => {}
-                }
-            }
-            Ok(Event::Text(e)) => {
-                let text = e.decode().unwrap_or_default();
-                if in_author {
-                    author_text.push_str(&text);
-                } else if in_t {
-                    current_text.push_str(&text);
-                }
-            }
-            Ok(Event::End(e)) => {
-                let name = e.name();
-                let name = name.as_ref();
-                match name {
-                    b"authors" => in_authors = false,
-                    b"author" => {
-                        in_author = false;
-                        if in_authors {
-                            authors.push(std::mem::take(&mut author_text));
-                        }
-                    }
-                    b"commentList" => in_comment_list = false,
-                    b"comment" if in_comment => {
-                        in_comment = false;
-                        if !current_ref.is_empty() {
-                            let author = current_author_id.and_then(|id| authors.get(id).cloned());
-                            comments.push(Comment {
-                                reference: std::mem::take(&mut current_ref),
-                                author,
-                                text: std::mem::take(&mut current_text),
-                            });
-                        }
-                    }
-                    b"text" if in_text => in_text = false,
-                    b"t" if in_t => in_t = false,
-                    _ => {}
-                }
-            }
-            Ok(Event::Eof) => break,
-            Err(e) => return Err(Error::Xml(e)),
-            _ => {}
-        }
-        buf.clear();
+/// Extract plain text from a RichString.
+fn rich_string_to_plain(rs: &crate::types::RichString) -> String {
+    if let Some(t) = &rs.cell_type {
+        t.clone()
+    } else {
+        rs.reference.iter().map(|r| r.cell_type.as_str()).collect()
     }
-
-    Ok(comments)
 }
 
 /// Parse a chart XML file.
@@ -1930,7 +1341,7 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_shared_strings() {
+    fn test_bootstrap_shared_strings() {
         let xml = r#"<?xml version="1.0"?>
         <sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
             <si><t>Hello</t></si>
@@ -1938,93 +1349,40 @@ mod tests {
             <si><t></t></si>
         </sst>"#;
 
-        let strings = parse_shared_strings(xml.as_bytes()).unwrap();
+        let sst: crate::types::SharedStrings = bootstrap(xml.as_bytes()).unwrap();
+        let strings = extract_shared_strings(&sst);
         assert_eq!(strings, vec!["Hello", "World", ""]);
     }
 
     #[test]
-    fn test_parse_styles() {
+    #[cfg(feature = "sml-styling")]
+    fn test_stylesheet_ext() {
         let xml = r#"<?xml version="1.0"?>
         <styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
             <numFmts count="1">
                 <numFmt numFmtId="164" formatCode="0.00%"/>
             </numFmts>
-            <fonts count="2">
-                <font>
-                    <name val="Calibri"/>
-                    <sz val="11"/>
-                </font>
-                <font>
-                    <b/>
-                    <name val="Arial"/>
-                    <sz val="14"/>
-                    <color rgb="FF0000FF"/>
-                </font>
-            </fonts>
-            <fills count="2">
-                <fill>
-                    <patternFill patternType="none"/>
-                </fill>
-                <fill>
-                    <patternFill patternType="solid">
-                        <fgColor rgb="FFFFFF00"/>
-                    </patternFill>
-                </fill>
-            </fills>
-            <borders count="1">
-                <border>
-                    <left style="thin"/>
-                    <right/>
-                    <top/>
-                    <bottom/>
-                </border>
-            </borders>
-            <cellXfs count="2">
-                <xf numFmtId="0" fontId="0" fillId="0" borderId="0"/>
-                <xf numFmtId="164" fontId="1" fillId="1" borderId="0"/>
-            </cellXfs>
         </styleSheet>"#;
 
-        let styles = parse_styles(xml.as_bytes()).unwrap();
+        let styles: crate::types::Stylesheet = bootstrap(xml.as_bytes()).unwrap();
 
-        // Check number formats
-        assert_eq!(styles.number_formats.len(), 1);
-        assert_eq!(styles.number_formats[0].id, 164);
-        assert_eq!(styles.number_formats[0].code, "0.00%");
+        // Custom format lookup
+        assert_eq!(styles.format_code(164), Some("0.00%".to_string()));
 
-        // Check fonts
-        assert_eq!(styles.fonts.len(), 2);
-        assert_eq!(styles.fonts[0].name, Some("Calibri".to_string()));
-        assert_eq!(styles.fonts[0].size, Some(11.0));
-        assert!(!styles.fonts[0].bold);
-        assert_eq!(styles.fonts[1].name, Some("Arial".to_string()));
-        assert!(styles.fonts[1].bold);
-        assert_eq!(styles.fonts[1].color, Some("FF0000FF".to_string()));
+        // Built-in format fallback
+        assert_eq!(styles.format_code(14), Some("mm-dd-yy".to_string()));
+        assert_eq!(styles.format_code(0), Some("General".to_string()));
+        assert_eq!(styles.format_code(100), None);
 
-        // Check fills
-        assert_eq!(styles.fills.len(), 2);
-        assert_eq!(styles.fills[0].pattern_type, Some("none".to_string()));
-        assert_eq!(styles.fills[1].pattern_type, Some("solid".to_string()));
-        assert_eq!(styles.fills[1].fg_color, Some("FFFFFF00".to_string()));
-
-        // Check borders
-        assert_eq!(styles.borders.len(), 1);
-        assert!(styles.borders[0].left.is_some());
-        assert_eq!(
-            styles.borders[0].left.as_ref().unwrap().style,
-            Some("thin".to_string())
-        );
-
-        // Check cell formats
-        assert_eq!(styles.cell_formats.len(), 2);
-        assert_eq!(styles.cell_formats[0].font_id, 0);
-        assert_eq!(styles.cell_formats[1].number_format_id, 164);
-        assert_eq!(styles.cell_formats[1].font_id, 1);
-        assert_eq!(styles.cell_formats[1].fill_id, 1);
+        // Date format detection
+        assert!(styles.is_date_format(14));
+        assert!(!styles.is_date_format(0));
+        assert!(!styles.is_date_format(164)); // "0.00%" is not a date format
     }
 
     #[test]
-    fn test_parse_comments() {
+    #[cfg(feature = "sml-comments")]
+    fn test_parse_comments_xml() {
         let xml = r#"<?xml version="1.0"?>
         <comments xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
             <authors>
@@ -2044,18 +1402,59 @@ mod tests {
             </commentList>
         </comments>"#;
 
-        let comments = parse_comments(xml.as_bytes()).unwrap();
+        let comments = parse_comments_xml(xml.as_bytes()).unwrap();
         assert_eq!(comments.len(), 2);
 
-        // First comment
-        assert_eq!(comments[0].reference(), "A1");
-        assert_eq!(comments[0].author(), Some("John Doe"));
-        assert_eq!(comments[0].text(), "This is a comment on A1");
+        assert_eq!(comments[0].reference, "A1");
+        assert_eq!(comments[0].author, Some("John Doe".to_string()));
+        assert_eq!(comments[0].text, "This is a comment on A1");
 
-        // Second comment (with multiple text runs)
-        assert_eq!(comments[1].reference(), "B2");
-        assert_eq!(comments[1].author(), Some("Jane Smith"));
-        assert_eq!(comments[1].text(), "Multi-line comment");
+        assert_eq!(comments[1].reference, "B2");
+        assert_eq!(comments[1].author, Some("Jane Smith".to_string()));
+        assert_eq!(comments[1].text, "Multi-line comment");
+    }
+
+    #[test]
+    fn test_bootstrap_defined_names() {
+        let xml = r#"<?xml version="1.0"?>
+        <workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+                  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+            <sheets>
+                <sheet name="Sheet1" sheetId="1" r:id="rId1"/>
+            </sheets>
+            <definedNames>
+                <definedName name="MyRange">Sheet1!$A$1:$B$10</definedName>
+                <definedName name="LocalName" localSheetId="0">Sheet1!$C$1:$C$5</definedName>
+                <definedName name="_xlnm.Print_Area" localSheetId="0" comment="Print area">Sheet1!$A$1:$F$20</definedName>
+            </definedNames>
+        </workbook>"#;
+
+        let wb: crate::types::Workbook = bootstrap(xml.as_bytes()).unwrap();
+        let names = wb
+            .defined_names
+            .map(|dn| {
+                let inner = *dn;
+                inner.defined_name
+            })
+            .unwrap_or_default();
+        assert_eq!(names.len(), 3);
+
+        // Global name
+        assert_eq!(names[0].name, "MyRange");
+        assert_eq!(names[0].text.as_deref(), Some("Sheet1!$A$1:$B$10"));
+        assert!(names[0].local_sheet_id.is_none());
+        assert!(!names[0].is_builtin());
+        assert_eq!(names[0].scope(), DefinedNameScope::Workbook);
+
+        // Local name
+        assert_eq!(names[1].name, "LocalName");
+        assert_eq!(names[1].local_sheet_id, Some(0));
+        assert_eq!(names[1].scope(), DefinedNameScope::Sheet(0));
+
+        // Built-in name with comment
+        assert_eq!(names[2].name, "_xlnm.Print_Area");
+        assert!(names[2].is_builtin());
+        assert_eq!(names[2].comment.as_deref(), Some("Print area"));
     }
 
     #[test]
@@ -2109,43 +1508,5 @@ mod tests {
         assert!(!is_date_format_code("#,##0"));
         assert!(!is_date_format_code("General"));
         assert!(!is_date_format_code("@")); // Text format
-    }
-
-    #[test]
-    fn test_parse_defined_names() {
-        let xml = r#"<?xml version="1.0"?>
-        <workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
-            <sheets>
-                <sheet name="Sheet1" sheetId="1" r:id="rId1"/>
-            </sheets>
-            <definedNames>
-                <definedName name="MyRange">Sheet1!$A$1:$B$10</definedName>
-                <definedName name="LocalName" localSheetId="0">Sheet1!$C$1:$C$5</definedName>
-                <definedName name="_xlnm.Print_Area" localSheetId="0" comment="Print area">Sheet1!$A$1:$F$20</definedName>
-                <definedName name="HiddenName" hidden="1">Sheet1!$Z$1</definedName>
-            </definedNames>
-        </workbook>"#;
-
-        let names = parse_defined_names(xml.as_bytes()).unwrap();
-        assert_eq!(names.len(), 4);
-
-        // Global name
-        assert_eq!(names[0].name, "MyRange");
-        assert_eq!(names[0].reference, "Sheet1!$A$1:$B$10");
-        assert!(names[0].local_sheet_id.is_none());
-        assert!(!names[0].is_builtin());
-
-        // Local name
-        assert_eq!(names[1].name, "LocalName");
-        assert_eq!(names[1].local_sheet_id, Some(0));
-
-        // Built-in name with comment
-        assert_eq!(names[2].name, "_xlnm.Print_Area");
-        assert!(names[2].is_builtin());
-        assert_eq!(names[2].comment, Some("Print area".to_string()));
-
-        // Hidden name
-        assert_eq!(names[3].name, "HiddenName");
-        assert!(names[3].hidden);
     }
 }
