@@ -52,7 +52,6 @@ const REL_HYPERLINK: &str =
 const NS_PRES: &str = "http://schemas.openxmlformats.org/presentationml/2006/main";
 const NS_DRAWING: &str = "http://schemas.openxmlformats.org/drawingml/2006/main";
 const NS_REL: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
-const NS_P: &str = "http://schemas.openxmlformats.org/presentationml/2006/main";
 
 // Namespace declarations for PML slides
 const NS_DECLS_SLIDE: &[(&str, &str)] = &[
@@ -61,27 +60,26 @@ const NS_DECLS_SLIDE: &[(&str, &str)] = &[
     ("xmlns:p", NS_PRES),
 ];
 
-/// Serialize a `types::Slide` to XML bytes with PML namespace declarations.
-fn serialize_slide_xml(slide: &types::Slide) -> Result<Vec<u8>> {
+/// Serialize any `ToXml` type to XML bytes with a given tag name and PML namespace declarations.
+fn serialize_pml_xml<T: ToXml>(value: &T, tag: &str) -> Result<Vec<u8>> {
     use quick_xml::Writer;
     use quick_xml::events::{BytesEnd, BytesStart, Event};
 
     let inner = Vec::new();
     let mut writer = Writer::new(inner);
 
-    let tag = "p:sld";
     let start = BytesStart::new(tag);
-    let start = slide.write_attrs(start);
+    let start = value.write_attrs(start);
     let mut start = start;
     for &(key, val) in NS_DECLS_SLIDE {
         start.push_attribute((key, val));
     }
 
-    if slide.is_empty_element() {
+    if value.is_empty_element() {
         writer.write_event(Event::Empty(start))?;
     } else {
         writer.write_event(Event::Start(start))?;
-        slide.write_children(&mut writer)?;
+        value.write_children(&mut writer)?;
         writer.write_event(Event::End(BytesEnd::new(tag)))?;
     }
 
@@ -92,6 +90,11 @@ fn serialize_slide_xml(slide: &types::Slide) -> Result<Vec<u8>> {
     buf.extend_from_slice(b"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
     buf.extend_from_slice(&inner);
     Ok(buf)
+}
+
+/// Serialize a `types::Slide` to XML bytes with PML namespace declarations.
+fn serialize_slide_xml(slide: &types::Slide) -> Result<Vec<u8>> {
+    serialize_pml_xml(slide, "p:sld")
 }
 
 /// Construct a `CTNonVisualDrawingProps` with required fields.
@@ -1282,7 +1285,7 @@ impl PresentationBuilder {
         }
         pres_rels.push_str("</Relationships>");
 
-        let presentation_xml = self.serialize_presentation();
+        let presentation_xml = serialize_pml_xml(&self.build_presentation(), "p:presentation")?;
 
         pkg.add_part("_rels/.rels", CT_RELATIONSHIPS, root_rels.as_bytes())?;
         pkg.add_part(
@@ -1290,11 +1293,7 @@ impl PresentationBuilder {
             CT_RELATIONSHIPS,
             pres_rels.as_bytes(),
         )?;
-        pkg.add_part(
-            "ppt/presentation.xml",
-            CT_PRESENTATION,
-            presentation_xml.as_bytes(),
-        )?;
+        pkg.add_part("ppt/presentation.xml", CT_PRESENTATION, &presentation_xml)?;
 
         let mut global_image_num = 1;
 
@@ -1369,9 +1368,10 @@ impl PresentationBuilder {
             global_image_num += slide.images.len();
 
             if slide.has_notes() {
-                let notes_xml = self.serialize_notes_slide(slide, slide_num);
+                let notes_xml =
+                    serialize_pml_xml(&Self::build_notes_slide(slide, slide_num), "p:notes")?;
                 let notes_name = format!("ppt/notesSlides/notesSlide{}.xml", slide_num);
-                pkg.add_part(&notes_name, CT_NOTES_SLIDE, notes_xml.as_bytes())?;
+                pkg.add_part(&notes_name, CT_NOTES_SLIDE, &notes_xml)?;
             }
         }
 
@@ -1380,123 +1380,248 @@ impl PresentationBuilder {
     }
 
     /// Serialize presentation.xml
-    fn serialize_presentation(&self) -> String {
-        let mut xml = String::new();
-        xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
-        xml.push('\n');
-        xml.push_str(&format!(
-            r#"<p:presentation xmlns:a="{}" xmlns:r="{}" xmlns:p="{}">"#,
-            NS_DRAWING, NS_REL, NS_P
-        ));
-        xml.push('\n');
-        xml.push_str(&format!(
-            r#"  <p:sldSz cx="{}" cy="{}"/>"#,
-            self.slide_width, self.slide_height
-        ));
-        xml.push('\n');
-        xml.push_str(&format!(
-            r#"  <p:notesSz cx="{}" cy="{}"/>"#,
-            self.slide_width, self.slide_height
-        ));
-        xml.push('\n');
-        xml.push_str("  <p:sldIdLst>\n");
-        for i in 0..self.slides.len() {
-            let slide_id = 256 + i as u32;
-            let rel_id = i + 1;
-            xml.push_str(&format!(
-                r#"    <p:sldId id="{}" r:id="rId{}"/>"#,
-                slide_id, rel_id
-            ));
-            xml.push('\n');
+    fn build_presentation(&self) -> types::Presentation {
+        let sld_id_lst = types::SlideIdList {
+            sld_id: self
+                .slides
+                .iter()
+                .enumerate()
+                .map(|(i, _)| {
+                    let mut entry = types::CTSlideIdListEntry {
+                        id: 256 + i as u32,
+                        ext_lst: None,
+                        extra_attrs: Default::default(),
+                        extra_children: Default::default(),
+                    };
+                    entry
+                        .extra_attrs
+                        .insert("r:id".to_string(), format!("rId{}", i + 1));
+                    entry
+                })
+                .collect(),
+            extra_children: Default::default(),
+        };
+
+        types::Presentation {
+            first_slide_num: None,
+            remove_personal_info_on_save: None,
+            compat_mode: None,
+            bookmark_id_seed: None,
+            conformance: None,
+            sld_master_id_lst: None,
+            sld_id_lst: Some(Box::new(sld_id_lst)),
+            sld_sz: Some(Box::new(types::CTSlideSize {
+                cx: self.slide_width as i32,
+                cy: self.slide_height as i32,
+                r#type: None,
+                extra_attrs: Default::default(),
+            })),
+            #[cfg(feature = "pml-notes")]
+            notes_master_id_lst: None,
+            #[cfg(feature = "pml-notes")]
+            notes_sz: Box::new(dml::PositiveSize2D {
+                cx: self.slide_width,
+                cy: self.slide_height,
+                extra_attrs: Default::default(),
+            }),
+            #[cfg(feature = "pml-masters")]
+            handout_master_id_lst: None,
+            cust_show_lst: None,
+            modify_verifier: None,
+            #[cfg(feature = "pml-styling")]
+            server_zoom: None,
+            #[cfg(feature = "pml-styling")]
+            show_special_pls_on_title_sld: None,
+            #[cfg(feature = "pml-styling")]
+            rtl: None,
+            #[cfg(feature = "pml-styling")]
+            strict_first_and_last_chars: None,
+            #[cfg(feature = "pml-styling")]
+            embed_true_type_fonts: None,
+            #[cfg(feature = "pml-styling")]
+            save_subset_fonts: None,
+            #[cfg(feature = "pml-styling")]
+            auto_compress_pictures: None,
+            #[cfg(feature = "pml-styling")]
+            embedded_font_lst: None,
+            #[cfg(feature = "pml-styling")]
+            kinsoku: None,
+            #[cfg(feature = "pml-styling")]
+            default_text_style: None,
+            #[cfg(feature = "pml-external")]
+            smart_tags: None,
+            #[cfg(feature = "pml-external")]
+            cust_data_lst: None,
+            #[cfg(feature = "pml-media")]
+            photo_album: None,
+            #[cfg(feature = "pml-extensions")]
+            ext_lst: None,
+            extra_attrs: Default::default(),
+            extra_children: Default::default(),
         }
-        xml.push_str("  </p:sldIdLst>\n");
-        xml.push_str("</p:presentation>");
-        xml
     }
 
-    /// Serialize a notes slide to XML.
-    fn serialize_notes_slide(&self, slide: &SlideBuilder, slide_num: usize) -> String {
+    /// Build a `types::NotesSlide` for a slide's speaker notes.
+    fn build_notes_slide(slide: &SlideBuilder, slide_num: usize) -> types::NotesSlide {
         let notes_text = slide.notes.as_deref().unwrap_or("");
 
-        let mut xml = String::new();
-        xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
-        xml.push('\n');
-        xml.push_str(&format!(
-            r#"<p:notes xmlns:a="{}" xmlns:r="{}" xmlns:p="{}">"#,
-            NS_DRAWING, NS_REL, NS_PRES
-        ));
-        xml.push('\n');
-        xml.push_str("  <p:cSld>\n");
-        xml.push_str("    <p:spTree>\n");
-        xml.push_str("      <p:nvGrpSpPr>\n");
-        xml.push_str(r#"        <p:cNvPr id="1" name=""/>"#);
-        xml.push('\n');
-        xml.push_str("        <p:cNvGrpSpPr/>\n");
-        xml.push_str("        <p:nvPr/>\n");
-        xml.push_str("      </p:nvGrpSpPr>\n");
-        xml.push_str("      <p:grpSpPr>\n");
-        xml.push_str("        <a:xfrm>\n");
-        xml.push_str(r#"          <a:off x="0" y="0"/>"#);
-        xml.push('\n');
-        xml.push_str(r#"          <a:ext cx="0" cy="0"/>"#);
-        xml.push('\n');
-        xml.push_str(r#"          <a:chOff x="0" y="0"/>"#);
-        xml.push('\n');
-        xml.push_str(r#"          <a:chExt cx="0" cy="0"/>"#);
-        xml.push('\n');
-        xml.push_str("        </a:xfrm>\n");
-        xml.push_str("      </p:grpSpPr>\n");
-        xml.push_str("      <p:sp>\n");
-        xml.push_str("        <p:nvSpPr>\n");
-        xml.push_str(&format!(
-            r#"          <p:cNvPr id="2" name="Slide Image Placeholder {}"/>"#,
-            slide_num
-        ));
-        xml.push('\n');
-        xml.push_str("          <p:cNvSpPr>\n");
-        xml.push_str(r#"            <a:spLocks noGrp="1" noRot="1" noChangeAspect="1"/>"#);
-        xml.push('\n');
-        xml.push_str("          </p:cNvSpPr>\n");
-        xml.push_str(r#"          <p:nvPr><p:ph type="sldImg"/></p:nvPr>"#);
-        xml.push('\n');
-        xml.push_str("        </p:nvSpPr>\n");
-        xml.push_str("        <p:spPr/>\n");
-        xml.push_str("      </p:sp>\n");
-        xml.push_str("      <p:sp>\n");
-        xml.push_str("        <p:nvSpPr>\n");
-        xml.push_str(r#"          <p:cNvPr id="3" name="Notes Placeholder"/>"#);
-        xml.push('\n');
-        xml.push_str("          <p:cNvSpPr>\n");
-        xml.push_str(r#"            <a:spLocks noGrp="1"/>"#);
-        xml.push('\n');
-        xml.push_str("          </p:cNvSpPr>\n");
-        xml.push_str(r#"          <p:nvPr><p:ph type="body" idx="1"/></p:nvPr>"#);
-        xml.push('\n');
-        xml.push_str("        </p:nvSpPr>\n");
-        xml.push_str("        <p:spPr/>\n");
-        xml.push_str("        <p:txBody>\n");
-        xml.push_str(r#"          <a:bodyPr/>"#);
-        xml.push('\n');
-        xml.push_str(r#"          <a:lstStyle/>"#);
-        xml.push('\n');
-        for line in notes_text.lines() {
-            xml.push_str("          <a:p>\n");
-            xml.push_str("            <a:r>\n");
-            xml.push_str(r#"              <a:rPr lang="en-US"/>"#);
-            xml.push('\n');
-            xml.push_str(&format!("              <a:t>{}</a:t>\n", escape_xml(line)));
-            xml.push_str("            </a:r>\n");
-            xml.push_str("          </a:p>\n");
+        // Slide image placeholder shape (id=2).
+        let sld_img_shape = types::Shape {
+            use_bg_fill: None,
+            non_visual_properties: Box::new(types::ShapeNonVisual {
+                c_nv_pr: make_cnv_pr(2, &format!("Slide Image Placeholder {}", slide_num)),
+                c_nv_sp_pr: Box::new(dml::CTNonVisualDrawingShapeProps {
+                    sp_locks: Some(Box::new(dml::CTShapeLocking {
+                        no_grp: Some(true),
+                        no_rot: Some(true),
+                        no_change_aspect: Some(true),
+                        ..Default::default()
+                    })),
+                    ..Default::default()
+                }),
+                nv_pr: Box::new(types::CTApplicationNonVisualDrawingProps {
+                    ph: Some(Box::new(types::CTPlaceholder {
+                        r#type: Some(types::STPlaceholderType::SldImg),
+                        ..Default::default()
+                    })),
+                    ..Default::default()
+                }),
+                extra_children: Default::default(),
+            }),
+            shape_properties: Box::new(dml::CTShapeProperties::default()),
+            style: None,
+            text_body: None,
+            ext_lst: None,
+            extra_attrs: Default::default(),
+            extra_children: Default::default(),
+        };
+
+        // Notes text paragraphs.
+        let paragraphs: Vec<dml::TextParagraph> = if notes_text.is_empty() {
+            vec![dml::TextParagraph::default()]
+        } else {
+            notes_text
+                .lines()
+                .map(|line| dml::TextParagraph {
+                    text_run: vec![dml::EGTextRun::R(Box::new(dml::TextRun {
+                        r_pr: Some(Box::new(dml::TextCharacterProperties {
+                            lang: Some("en-US".to_string()),
+                            ..Default::default()
+                        })),
+                        t: line.to_string(),
+                        extra_children: Default::default(),
+                    }))],
+                    ..Default::default()
+                })
+                .collect()
+        };
+
+        // Notes body placeholder shape (id=3).
+        let notes_shape = types::Shape {
+            use_bg_fill: None,
+            non_visual_properties: Box::new(types::ShapeNonVisual {
+                c_nv_pr: make_cnv_pr(3, "Notes Placeholder"),
+                c_nv_sp_pr: Box::new(dml::CTNonVisualDrawingShapeProps {
+                    sp_locks: Some(Box::new(dml::CTShapeLocking {
+                        no_grp: Some(true),
+                        ..Default::default()
+                    })),
+                    ..Default::default()
+                }),
+                nv_pr: Box::new(types::CTApplicationNonVisualDrawingProps {
+                    ph: Some(Box::new(types::CTPlaceholder {
+                        r#type: Some(types::STPlaceholderType::Body),
+                        idx: Some(1),
+                        ..Default::default()
+                    })),
+                    ..Default::default()
+                }),
+                extra_children: Default::default(),
+            }),
+            shape_properties: Box::new(dml::CTShapeProperties::default()),
+            style: None,
+            text_body: Some(Box::new(dml::TextBody {
+                body_pr: Box::default(),
+                lst_style: Some(Box::new(dml::CTTextListStyle::default())),
+                p: paragraphs,
+                extra_children: Default::default(),
+            })),
+            ext_lst: None,
+            extra_attrs: Default::default(),
+            extra_children: Default::default(),
+        };
+
+        let grp_xfrm = dml::CTGroupTransform2D {
+            offset: Some(Box::new(dml::Point2D {
+                x: "0".to_string(),
+                y: "0".to_string(),
+                extra_attrs: Default::default(),
+            })),
+            extents: Some(Box::new(dml::PositiveSize2D {
+                cx: 0,
+                cy: 0,
+                extra_attrs: Default::default(),
+            })),
+            child_offset: Some(Box::new(dml::Point2D {
+                x: "0".to_string(),
+                y: "0".to_string(),
+                extra_attrs: Default::default(),
+            })),
+            child_extents: Some(Box::new(dml::PositiveSize2D {
+                cx: 0,
+                cy: 0,
+                extra_attrs: Default::default(),
+            })),
+            ..Default::default()
+        };
+
+        let shape_tree = Box::new(types::GroupShape {
+            non_visual_group_properties: Box::new(types::CTGroupShapeNonVisual {
+                c_nv_pr: make_cnv_pr(1, ""),
+                c_nv_grp_sp_pr: Box::new(dml::CTNonVisualGroupDrawingShapeProps {
+                    grp_sp_locks: None,
+                    ext_lst: None,
+                    extra_children: Default::default(),
+                }),
+                nv_pr: make_nv_pr(),
+                extra_children: Default::default(),
+            }),
+            grp_sp_pr: Box::new(dml::CTGroupShapeProperties {
+                transform: Some(Box::new(grp_xfrm)),
+                ..Default::default()
+            }),
+            shape: vec![sld_img_shape, notes_shape],
+            picture: Vec::new(),
+            connector: Vec::new(),
+            group_shape: Vec::new(),
+            graphic_frame: Vec::new(),
+            content_part: Vec::new(),
+            ext_lst: None,
+            extra_children: Default::default(),
+        });
+
+        types::NotesSlide {
+            common_slide_data: Box::new(types::CommonSlideData {
+                name: None,
+                bg: None,
+                shape_tree,
+                cust_data_lst: None,
+                controls: None,
+                ext_lst: None,
+                extra_attrs: Default::default(),
+                extra_children: Default::default(),
+            }),
+            #[cfg(feature = "pml-notes")]
+            show_master_sp: None,
+            #[cfg(feature = "pml-notes")]
+            show_master_ph_anim: None,
+            #[cfg(feature = "pml-styling")]
+            clr_map_ovr: None,
+            #[cfg(feature = "pml-extensions")]
+            ext_lst: None,
+            extra_attrs: Default::default(),
+            extra_children: Default::default(),
         }
-        if notes_text.is_empty() {
-            xml.push_str("          <a:p/>\n");
-        }
-        xml.push_str("        </p:txBody>\n");
-        xml.push_str("      </p:sp>\n");
-        xml.push_str("    </p:spTree>\n");
-        xml.push_str("  </p:cSld>\n");
-        xml.push_str("</p:notes>");
-        xml
     }
 }
 
