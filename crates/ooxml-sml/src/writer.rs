@@ -3444,6 +3444,7 @@ mod tests {
         assert!(print_area.is_builtin());
     }
 
+    #[cfg(feature = "sml-comments")]
     #[test]
     fn test_roundtrip_comments() {
         use std::io::Cursor;

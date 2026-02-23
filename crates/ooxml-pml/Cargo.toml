@@ -21,9 +21,11 @@ full = [
     "pml-extensions",
     "extra-attrs",
     "extra-children",
+    "dml-tables",
 ]
 # Individual feature flags (see spec/ooxml-features.yaml)
 pml-transitions = []     # Slide transitions
+dml-tables = ["ooxml-dml/dml-tables"]  # DML table support
 pml-animations = []      # Slide timing/animations
 pml-notes = []           # Speaker notes
 pml-comments = []        # Slide comments

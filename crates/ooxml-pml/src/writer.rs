@@ -1398,6 +1398,7 @@ mod tests {
         assert_eq!(table.col_count(), 3);
     }
 
+    #[cfg(feature = "dml-tables")]
     #[test]
     fn test_roundtrip_with_table() {
         use ooxml_dml::TableCellExt;
@@ -1516,6 +1517,7 @@ mod tests {
         assert_eq!(links[0].text, "documentation");
     }
 
+    #[cfg(feature = "pml-transitions")]
     #[test]
     fn test_roundtrip_with_transition() {
         use std::io::Cursor;
