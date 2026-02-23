@@ -534,23 +534,6 @@ struct BuilderCell {
     style: Option<CellStyle>,
 }
 
-/// Column width definition for writing.
-#[derive(Debug, Clone)]
-#[allow(dead_code)] // Fields read only with sml-styling feature
-struct ColumnWidth {
-    min: u32,
-    max: u32,
-    width: f64,
-}
-
-/// Row height definition for writing.
-#[derive(Debug, Clone)]
-#[allow(dead_code)] // Fields read only with sml-styling feature
-struct RowHeight {
-    row: u32,
-    height: f64,
-}
-
 /// A conditional formatting rule for writing.
 #[derive(Debug, Clone)]
 pub struct ConditionalFormat {
@@ -965,15 +948,100 @@ impl CommentBuilder {
 #[derive(Debug)]
 pub struct SheetBuilder {
     name: String,
+    /// Cells stored as a map for O(1) mutation; resolved to rows at write time.
     cells: HashMap<(u32, u32), BuilderCell>,
-    merged_cells: Vec<String>,
-    column_widths: Vec<ColumnWidth>,
-    row_heights: Vec<RowHeight>,
-    conditional_formats: Vec<ConditionalFormat>,
-    data_validations: Vec<DataValidationBuilder>,
+    /// Row heights applied to Row elements at write time.
+    row_heights: HashMap<u32, f64>,
+    /// Comments go into a separate XML file, not into Worksheet.
     comments: Vec<CommentBuilder>,
-    /// Freeze pane: (frozen_rows, frozen_cols).
-    freeze_pane: Option<(u32, u32)>,
+    /// All other worksheet state lives here directly; mutated by setter methods.
+    worksheet: types::Worksheet,
+}
+
+/// Create a default empty Worksheet, ready to be filled in by SheetBuilder methods.
+fn init_worksheet() -> types::Worksheet {
+    types::Worksheet {
+        #[cfg(feature = "sml-styling")]
+        sheet_properties: None,
+        dimension: None,
+        sheet_views: None,
+        #[cfg(feature = "sml-styling")]
+        sheet_format: None,
+        #[cfg(feature = "sml-styling")]
+        cols: Vec::new(),
+        sheet_data: Box::new(types::SheetData {
+            row: Vec::new(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        }),
+        #[cfg(feature = "sml-formulas")]
+        sheet_calc_pr: None,
+        #[cfg(feature = "sml-protection")]
+        sheet_protection: None,
+        #[cfg(feature = "sml-protection")]
+        protected_ranges: None,
+        #[cfg(feature = "sml-formulas-advanced")]
+        scenarios: None,
+        #[cfg(feature = "sml-filtering")]
+        auto_filter: None,
+        #[cfg(feature = "sml-filtering")]
+        sort_state: None,
+        #[cfg(feature = "sml-formulas-advanced")]
+        data_consolidate: None,
+        #[cfg(feature = "sml-structure")]
+        custom_sheet_views: None,
+        merged_cells: None,
+        #[cfg(feature = "sml-i18n")]
+        phonetic_pr: None,
+        #[cfg(feature = "sml-styling")]
+        conditional_formatting: Vec::new(),
+        #[cfg(feature = "sml-validation")]
+        data_validations: None,
+        #[cfg(feature = "sml-hyperlinks")]
+        hyperlinks: None,
+        #[cfg(feature = "sml-layout")]
+        print_options: None,
+        #[cfg(feature = "sml-layout")]
+        page_margins: None,
+        #[cfg(feature = "sml-layout")]
+        page_setup: None,
+        #[cfg(feature = "sml-layout")]
+        header_footer: None,
+        #[cfg(feature = "sml-layout")]
+        row_breaks: None,
+        #[cfg(feature = "sml-layout")]
+        col_breaks: None,
+        #[cfg(feature = "sml-metadata")]
+        custom_properties: None,
+        #[cfg(feature = "sml-formulas-advanced")]
+        cell_watches: None,
+        #[cfg(feature = "sml-validation")]
+        ignored_errors: None,
+        #[cfg(feature = "sml-metadata")]
+        smart_tags: None,
+        #[cfg(feature = "sml-drawings")]
+        drawing: None,
+        #[cfg(feature = "sml-comments")]
+        legacy_drawing: None,
+        #[cfg(feature = "sml-layout")]
+        legacy_drawing_h_f: None,
+        #[cfg(feature = "sml-drawings")]
+        drawing_h_f: None,
+        #[cfg(feature = "sml-drawings")]
+        picture: None,
+        #[cfg(feature = "sml-external")]
+        ole_objects: None,
+        #[cfg(feature = "sml-external")]
+        controls: None,
+        #[cfg(feature = "sml-external")]
+        web_publish_items: None,
+        #[cfg(feature = "sml-tables")]
+        table_parts: None,
+        #[cfg(feature = "sml-extensions")]
+        extension_list: None,
+        #[cfg(feature = "extra-children")]
+        extra_children: Vec::new(),
+    }
 }
 
 impl SheetBuilder {
@@ -981,13 +1049,9 @@ impl SheetBuilder {
         Self {
             name: name.into(),
             cells: HashMap::new(),
-            merged_cells: Vec::new(),
-            column_widths: Vec::new(),
-            row_heights: Vec::new(),
-            conditional_formats: Vec::new(),
-            data_validations: Vec::new(),
+            row_heights: HashMap::new(),
             comments: Vec::new(),
-            freeze_pane: None,
+            worksheet: init_worksheet(),
         }
     }
 
@@ -1094,7 +1158,13 @@ impl SheetBuilder {
     ///
     /// Note: The value of the merged cell should be set in the top-left cell.
     pub fn merge_cells(&mut self, range: &str) {
-        self.merged_cells.push(range.to_string());
+        let mc = self.worksheet.merged_cells.get_or_insert_with(Box::default);
+        mc.merge_cell.push(types::MergedCell {
+            reference: range.to_string(),
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+        });
+        mc.count = Some(mc.merge_cell.len() as u32);
     }
 
     /// Set the width of a column (in character units, Excel default is ~8.43).
@@ -1102,11 +1172,7 @@ impl SheetBuilder {
     /// Column is specified by letter (e.g., "A", "B", "AA").
     pub fn set_column_width(&mut self, col: &str, width: f64) {
         if let Some(col_num) = column_letter_to_number(col) {
-            self.column_widths.push(ColumnWidth {
-                min: col_num,
-                max: col_num,
-                width,
-            });
+            self.push_column(col_num, col_num, width);
         }
     }
 
@@ -1118,13 +1184,57 @@ impl SheetBuilder {
             column_letter_to_number(start_col),
             column_letter_to_number(end_col),
         ) {
-            self.column_widths.push(ColumnWidth { min, max, width });
+            self.push_column(min, max, width);
+        }
+    }
+
+    /// Push a column definition directly into the worksheet.
+    fn push_column(&mut self, min: u32, max: u32, width: f64) {
+        #[cfg(feature = "sml-styling")]
+        {
+            let col = types::Column {
+                #[cfg(feature = "sml-styling")]
+                start_column: min,
+                #[cfg(feature = "sml-styling")]
+                end_column: max,
+                #[cfg(feature = "sml-styling")]
+                width: Some(width),
+                #[cfg(feature = "sml-styling")]
+                style: None,
+                #[cfg(feature = "sml-structure")]
+                hidden: None,
+                #[cfg(feature = "sml-styling")]
+                best_fit: None,
+                #[cfg(feature = "sml-styling")]
+                custom_width: Some(true),
+                #[cfg(feature = "sml-i18n")]
+                phonetic: None,
+                #[cfg(feature = "sml-structure")]
+                outline_level: None,
+                #[cfg(feature = "sml-structure")]
+                collapsed: None,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+            };
+            if let Some(cols_list) = self.worksheet.cols.first_mut() {
+                cols_list.col.push(col);
+            } else {
+                self.worksheet.cols.push(types::Columns {
+                    col: vec![col],
+                    #[cfg(feature = "extra-children")]
+                    extra_children: Vec::new(),
+                });
+            }
+        }
+        #[cfg(not(feature = "sml-styling"))]
+        {
+            let _ = (min, max, width);
         }
     }
 
     /// Set the height of a row (in points, Excel default is ~15).
     pub fn set_row_height(&mut self, row: u32, height: f64) {
-        self.row_heights.push(RowHeight { row, height });
+        self.row_heights.insert(row, height);
     }
 
     /// Freeze the top `rows` rows and left `cols` columns.
@@ -1144,33 +1254,176 @@ impl SheetBuilder {
     /// sheet.set_freeze_pane(1, 1);
     /// ```
     pub fn set_freeze_pane(&mut self, rows: u32, cols: u32) {
-        self.freeze_pane = Some((rows, cols));
+        self.apply_freeze_pane(rows, cols);
     }
 
     /// Freeze the top `n` rows (e.g., header rows).
     ///
     /// Shorthand for `set_freeze_pane(n, 0)`.
     pub fn freeze_rows(&mut self, n: u32) {
-        let cols = self.freeze_pane.map_or(0, |(_, c)| c);
-        self.freeze_pane = Some((n, cols));
+        let (_, c) = self.current_freeze_pane();
+        self.apply_freeze_pane(n, c);
     }
 
     /// Freeze the left `n` columns.
     ///
     /// Shorthand for `set_freeze_pane(0, n)`.
     pub fn freeze_cols(&mut self, n: u32) {
-        let rows = self.freeze_pane.map_or(0, |(r, _)| r);
-        self.freeze_pane = Some((rows, n));
+        let (r, _) = self.current_freeze_pane();
+        self.apply_freeze_pane(r, n);
+    }
+
+    /// Read back the current freeze pane settings from the worksheet.
+    fn current_freeze_pane(&self) -> (u32, u32) {
+        #[cfg(feature = "sml-structure")]
+        {
+            let pane = self
+                .worksheet
+                .sheet_views
+                .as_deref()
+                .and_then(|v| v.sheet_view.first())
+                .and_then(|sv| sv.pane.as_deref());
+            if let Some(p) = pane {
+                return (
+                    p.y_split.map(|y| y as u32).unwrap_or(0),
+                    p.x_split.map(|x| x as u32).unwrap_or(0),
+                );
+            }
+        }
+        (0, 0)
+    }
+
+    /// Write freeze pane settings directly into the worksheet's sheet_views.
+    fn apply_freeze_pane(&mut self, frozen_rows: u32, frozen_cols: u32) {
+        #[cfg(feature = "sml-structure")]
+        {
+            if frozen_rows == 0 && frozen_cols == 0 {
+                self.worksheet.sheet_views = None;
+                return;
+            }
+            // Determine which pane is active after freezing.
+            let active_pane = match (frozen_rows > 0, frozen_cols > 0) {
+                (true, true) => types::PaneType::BottomRight,
+                (true, false) => types::PaneType::BottomLeft,
+                (false, true) => types::PaneType::TopRight,
+                (false, false) => types::PaneType::TopLeft,
+            };
+            // topLeftCell is the first unfrozen cell (e.g., "B2" for 1 frozen row + 1 frozen col).
+            let top_left_col = if frozen_cols > 0 {
+                column_to_letter(frozen_cols + 1)
+            } else {
+                "A".to_string()
+            };
+            let top_left_row = frozen_rows + 1;
+            let top_left_cell = format!("{}{}", top_left_col, top_left_row);
+
+            let pane = types::Pane {
+                x_split: (frozen_cols > 0).then_some(frozen_cols as f64),
+                y_split: (frozen_rows > 0).then_some(frozen_rows as f64),
+                top_left_cell: Some(top_left_cell),
+                active_pane: Some(active_pane),
+                state: Some(types::PaneState::Frozen),
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+            };
+            let sheet_view = types::SheetView {
+                #[cfg(feature = "sml-protection")]
+                window_protection: None,
+                #[cfg(feature = "sml-formulas")]
+                show_formulas: None,
+                #[cfg(feature = "sml-styling")]
+                show_grid_lines: None,
+                #[cfg(feature = "sml-styling")]
+                show_row_col_headers: None,
+                #[cfg(feature = "sml-styling")]
+                show_zeros: None,
+                #[cfg(feature = "sml-i18n")]
+                right_to_left: None,
+                tab_selected: None,
+                #[cfg(feature = "sml-layout")]
+                show_ruler: None,
+                #[cfg(feature = "sml-structure")]
+                show_outline_symbols: None,
+                #[cfg(feature = "sml-styling")]
+                default_grid_color: None,
+                #[cfg(feature = "sml-layout")]
+                show_white_space: None,
+                view: None,
+                top_left_cell: None,
+                #[cfg(feature = "sml-styling")]
+                color_id: None,
+                zoom_scale: None,
+                zoom_scale_normal: None,
+                #[cfg(feature = "sml-layout")]
+                zoom_scale_sheet_layout_view: None,
+                #[cfg(feature = "sml-layout")]
+                zoom_scale_page_layout_view: None,
+                workbook_view_id: 0,
+                #[cfg(feature = "sml-structure")]
+                pane: Some(Box::new(pane)),
+                selection: vec![types::Selection {
+                    pane: Some(active_pane),
+                    active_cell: None,
+                    active_cell_id: None,
+                    square_reference: None,
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                }],
+                #[cfg(feature = "sml-pivot")]
+                pivot_selection: Vec::new(),
+                #[cfg(feature = "sml-extensions")]
+                extension_list: None,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+                #[cfg(feature = "extra-children")]
+                extra_children: Vec::new(),
+            };
+            self.worksheet.sheet_views = Some(Box::new(types::SheetViews {
+                sheet_view: vec![sheet_view],
+                extension_list: None,
+                #[cfg(feature = "extra-children")]
+                extra_children: Vec::new(),
+            }));
+        }
+        #[cfg(not(feature = "sml-structure"))]
+        {
+            let _ = (frozen_rows, frozen_cols);
+        }
     }
 
     /// Add conditional formatting to the sheet.
     pub fn add_conditional_format(&mut self, cf: ConditionalFormat) {
-        self.conditional_formats.push(cf);
+        #[cfg(feature = "sml-styling")]
+        self.worksheet
+            .conditional_formatting
+            .push(build_one_conditional_format(&cf));
+        #[cfg(not(feature = "sml-styling"))]
+        let _ = cf;
     }
 
     /// Add data validation to the sheet.
     pub fn add_data_validation(&mut self, dv: DataValidationBuilder) {
-        self.data_validations.push(dv);
+        #[cfg(feature = "sml-validation")]
+        {
+            let validation = build_one_data_validation(&dv);
+            let dvs = self.worksheet.data_validations.get_or_insert_with(|| {
+                Box::new(types::DataValidations {
+                    disable_prompts: None,
+                    x_window: None,
+                    y_window: None,
+                    count: None,
+                    data_validation: Vec::new(),
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                    #[cfg(feature = "extra-children")]
+                    extra_children: Vec::new(),
+                })
+            });
+            dvs.data_validation.push(validation);
+            dvs.count = Some(dvs.data_validation.len() as u32);
+        }
+        #[cfg(not(feature = "sml-validation"))]
+        let _ = dv;
     }
 
     /// Add a comment (note) to a cell.
@@ -2062,58 +2315,15 @@ impl WorkbookBuilder {
 
     /// Serialize a sheet to XML using generated types.
     fn serialize_sheet(&self, sheet: &SheetBuilder) -> Result<Vec<u8>> {
-        // Build column definitions
+        // Build row height lookup (already a HashMap now)
         #[cfg(feature = "sml-styling")]
-        let cols: Vec<types::Columns> = if sheet.column_widths.is_empty() {
-            Vec::new()
-        } else {
-            vec![types::Columns {
-                col: sheet
-                    .column_widths
-                    .iter()
-                    .map(|cw| types::Column {
-                        #[cfg(feature = "sml-styling")]
-                        start_column: cw.min,
-                        #[cfg(feature = "sml-styling")]
-                        end_column: cw.max,
-                        #[cfg(feature = "sml-styling")]
-                        width: Some(cw.width),
-                        #[cfg(feature = "sml-styling")]
-                        style: None,
-                        #[cfg(feature = "sml-structure")]
-                        hidden: None,
-                        #[cfg(feature = "sml-styling")]
-                        best_fit: None,
-                        #[cfg(feature = "sml-styling")]
-                        custom_width: Some(true),
-                        #[cfg(feature = "sml-styling")]
-                        phonetic: None,
-                        #[cfg(feature = "sml-structure")]
-                        outline_level: None,
-                        #[cfg(feature = "sml-structure")]
-                        collapsed: None,
-                        #[cfg(feature = "extra-attrs")]
-                        extra_attrs: Default::default(),
-                    })
-                    .collect(),
-                #[cfg(feature = "extra-children")]
-                extra_children: Vec::new(),
-            }]
-        };
+        let row_heights = &sheet.row_heights;
 
         // Group cells by row
         let mut rows_map: HashMap<u32, Vec<(u32, &BuilderCell)>> = HashMap::new();
         for ((row, col), cell) in &sheet.cells {
             rows_map.entry(*row).or_default().push((*col, cell));
         }
-
-        // Build row height lookup
-        #[cfg(feature = "sml-styling")]
-        let row_height_map: HashMap<u32, f64> = sheet
-            .row_heights
-            .iter()
-            .map(|rh| (rh.row, rh.height))
-            .collect();
 
         // Sort and build rows
         let mut row_nums: Vec<_> = rows_map.keys().copied().collect();
@@ -2141,11 +2351,11 @@ impl WorkbookBuilder {
                     #[cfg(feature = "sml-styling")]
                     custom_format: None,
                     #[cfg(feature = "sml-styling")]
-                    height: row_height_map.get(&row_num).copied(),
+                    height: row_heights.get(&row_num).copied(),
                     #[cfg(feature = "sml-structure")]
                     hidden: None,
                     #[cfg(feature = "sml-styling")]
-                    custom_height: row_height_map.get(&row_num).map(|_| true),
+                    custom_height: row_heights.get(&row_num).map(|_| true),
                     #[cfg(feature = "sml-structure")]
                     outline_level: None,
                     #[cfg(feature = "sml-structure")]
@@ -2167,116 +2377,13 @@ impl WorkbookBuilder {
             })
             .collect();
 
-        // Build merged cells
-        let merged_cells = if sheet.merged_cells.is_empty() {
-            None
-        } else {
-            Some(Box::new(types::MergedCells {
-                count: Some(sheet.merged_cells.len() as u32),
-                merge_cell: sheet
-                    .merged_cells
-                    .iter()
-                    .map(|range| types::MergedCell {
-                        reference: range.clone(),
-                        #[cfg(feature = "extra-attrs")]
-                        extra_attrs: Default::default(),
-                    })
-                    .collect(),
-                #[cfg(feature = "extra-attrs")]
-                extra_attrs: Default::default(),
-                #[cfg(feature = "extra-children")]
-                extra_children: Vec::new(),
-            }))
-        };
-
-        // Build sheet views (used for freeze panes, zoom, etc.)
-        let sheet_views = Self::build_sheet_views(sheet);
-
-        // Build worksheet
-        // Note: conditionalFormatting and dataValidations require more complex type
-        // mapping and are left as manual XML appending for now (TODO: migrate these)
-        let worksheet = types::Worksheet {
-            #[cfg(feature = "sml-styling")]
-            sheet_properties: None,
-            dimension: None,
-            sheet_views,
-            #[cfg(feature = "sml-styling")]
-            sheet_format: None,
-            #[cfg(feature = "sml-styling")]
-            cols,
-            sheet_data: Box::new(types::SheetData {
-                row: rows,
-                #[cfg(feature = "extra-children")]
-                extra_children: Vec::new(),
-            }),
-            #[cfg(feature = "sml-formulas")]
-            sheet_calc_pr: None,
-            #[cfg(feature = "sml-protection")]
-            sheet_protection: None,
-            #[cfg(feature = "sml-protection")]
-            protected_ranges: None,
-            #[cfg(feature = "sml-formulas-advanced")]
-            scenarios: None,
-            #[cfg(feature = "sml-filtering")]
-            auto_filter: None,
-            #[cfg(feature = "sml-filtering")]
-            sort_state: None,
-            #[cfg(feature = "sml-formulas-advanced")]
-            data_consolidate: None,
-            #[cfg(feature = "sml-structure")]
-            custom_sheet_views: None,
-            merged_cells,
-            #[cfg(feature = "sml-i18n")]
-            phonetic_pr: None,
-            #[cfg(feature = "sml-styling")]
-            conditional_formatting: Self::build_conditional_formatting(&sheet.conditional_formats),
-            #[cfg(feature = "sml-validation")]
-            data_validations: Self::build_data_validations(&sheet.data_validations),
-            #[cfg(feature = "sml-hyperlinks")]
-            hyperlinks: None,
-            #[cfg(feature = "sml-layout")]
-            print_options: None,
-            #[cfg(feature = "sml-layout")]
-            page_margins: None,
-            #[cfg(feature = "sml-layout")]
-            page_setup: None,
-            #[cfg(feature = "sml-layout")]
-            header_footer: None,
-            #[cfg(feature = "sml-layout")]
-            row_breaks: None,
-            #[cfg(feature = "sml-layout")]
-            col_breaks: None,
-            #[cfg(feature = "sml-metadata")]
-            custom_properties: None,
-            #[cfg(feature = "sml-formulas-advanced")]
-            cell_watches: None,
-            #[cfg(feature = "sml-validation")]
-            ignored_errors: None,
-            #[cfg(feature = "sml-metadata")]
-            smart_tags: None,
-            #[cfg(feature = "sml-drawings")]
-            drawing: None,
-            #[cfg(feature = "sml-comments")]
-            legacy_drawing: None,
-            #[cfg(feature = "sml-layout")]
-            legacy_drawing_h_f: None,
-            #[cfg(feature = "sml-drawings")]
-            drawing_h_f: None,
-            #[cfg(feature = "sml-drawings")]
-            picture: None,
-            #[cfg(feature = "sml-external")]
-            ole_objects: None,
-            #[cfg(feature = "sml-external")]
-            controls: None,
-            #[cfg(feature = "sml-external")]
-            web_publish_items: None,
-            #[cfg(feature = "sml-tables")]
-            table_parts: None,
-            #[cfg(feature = "sml-extensions")]
-            extension_list: None,
+        // Clone pre-built worksheet and fill in the rows
+        let mut worksheet = sheet.worksheet.clone();
+        worksheet.sheet_data = Box::new(types::SheetData {
+            row: rows,
             #[cfg(feature = "extra-children")]
             extra_children: Vec::new(),
-        };
+        });
 
         serialize_with_namespaces(&worksheet, "worksheet")
     }
@@ -2356,313 +2463,6 @@ impl WorkbookBuilder {
             extra_attrs: Default::default(),
             #[cfg(feature = "extra-children")]
             extra_children: Vec::new(),
-        }
-    }
-
-    /// Build sheet views (currently handles freeze panes).
-    fn build_sheet_views(sheet: &SheetBuilder) -> Option<Box<types::SheetViews>> {
-        #[cfg(feature = "sml-structure")]
-        if let Some((frozen_rows, frozen_cols)) = sheet.freeze_pane
-            && (frozen_rows > 0 || frozen_cols > 0)
-        {
-            // Determine which pane is active after freezing.
-            let active_pane = match (frozen_rows > 0, frozen_cols > 0) {
-                (true, true) => types::PaneType::BottomRight,
-                (true, false) => types::PaneType::BottomLeft,
-                (false, true) => types::PaneType::TopRight,
-                (false, false) => types::PaneType::TopLeft,
-            };
-            // topLeftCell is the first unfrozen cell (e.g., "B2" for 1 frozen row + 1 frozen col).
-            let top_left_col = if frozen_cols > 0 {
-                column_to_letter(frozen_cols + 1)
-            } else {
-                "A".to_string()
-            };
-            let top_left_row = frozen_rows + 1;
-            let top_left_cell = format!("{}{}", top_left_col, top_left_row);
-
-            let pane = types::Pane {
-                x_split: (frozen_cols > 0).then_some(frozen_cols as f64),
-                y_split: (frozen_rows > 0).then_some(frozen_rows as f64),
-                top_left_cell: Some(top_left_cell),
-                active_pane: Some(active_pane),
-                state: Some(types::PaneState::Frozen),
-                #[cfg(feature = "extra-attrs")]
-                extra_attrs: Default::default(),
-            };
-            let sheet_view = types::SheetView {
-                #[cfg(feature = "sml-protection")]
-                window_protection: None,
-                #[cfg(feature = "sml-formulas")]
-                show_formulas: None,
-                #[cfg(feature = "sml-styling")]
-                show_grid_lines: None,
-                #[cfg(feature = "sml-styling")]
-                show_row_col_headers: None,
-                #[cfg(feature = "sml-styling")]
-                show_zeros: None,
-                #[cfg(feature = "sml-i18n")]
-                right_to_left: None,
-                tab_selected: None,
-                #[cfg(feature = "sml-layout")]
-                show_ruler: None,
-                #[cfg(feature = "sml-structure")]
-                show_outline_symbols: None,
-                #[cfg(feature = "sml-styling")]
-                default_grid_color: None,
-                #[cfg(feature = "sml-layout")]
-                show_white_space: None,
-                view: None,
-                top_left_cell: None,
-                #[cfg(feature = "sml-styling")]
-                color_id: None,
-                zoom_scale: None,
-                zoom_scale_normal: None,
-                #[cfg(feature = "sml-layout")]
-                zoom_scale_sheet_layout_view: None,
-                #[cfg(feature = "sml-layout")]
-                zoom_scale_page_layout_view: None,
-                workbook_view_id: 0,
-                #[cfg(feature = "sml-structure")]
-                pane: Some(Box::new(pane)),
-                selection: vec![types::Selection {
-                    pane: Some(active_pane),
-                    active_cell: None,
-                    active_cell_id: None,
-                    square_reference: None,
-                    #[cfg(feature = "extra-attrs")]
-                    extra_attrs: Default::default(),
-                }],
-                #[cfg(feature = "sml-pivot")]
-                pivot_selection: Vec::new(),
-                #[cfg(feature = "sml-extensions")]
-                extension_list: None,
-                #[cfg(feature = "extra-attrs")]
-                extra_attrs: Default::default(),
-                #[cfg(feature = "extra-children")]
-                extra_children: Vec::new(),
-            };
-            return Some(Box::new(types::SheetViews {
-                sheet_view: vec![sheet_view],
-                extension_list: None,
-                #[cfg(feature = "extra-children")]
-                extra_children: Vec::new(),
-            }));
-        }
-        #[cfg(not(feature = "sml-structure"))]
-        let _ = sheet;
-        None
-    }
-
-    /// Build conditional formatting from builder data.
-    #[cfg(feature = "sml-styling")]
-    fn build_conditional_formatting(
-        formats: &[ConditionalFormat],
-    ) -> Vec<types::ConditionalFormatting> {
-        formats
-            .iter()
-            .map(|cf| types::ConditionalFormatting {
-                #[cfg(feature = "sml-pivot")]
-                pivot: None,
-                square_reference: Some(cf.range.clone()),
-                cf_rule: cf
-                    .rules
-                    .iter()
-                    .map(|rule| types::ConditionalRule {
-                        r#type: Some(Self::map_conditional_rule_type(&rule.rule_type)),
-                        dxf_id: rule.dxf_id,
-                        priority: rule.priority as i32,
-                        stop_if_true: None,
-                        above_average: None,
-                        percent: None,
-                        bottom: None,
-                        operator: rule
-                            .operator
-                            .as_ref()
-                            .and_then(|op| Self::parse_conditional_operator(op)),
-                        text: rule.text.clone(),
-                        time_period: None,
-                        rank: None,
-                        std_dev: None,
-                        equal_average: None,
-                        formula: rule.formulas.clone(),
-                        #[cfg(feature = "sml-styling")]
-                        color_scale: None,
-                        #[cfg(feature = "sml-styling")]
-                        data_bar: None,
-                        #[cfg(feature = "sml-styling")]
-                        icon_set: None,
-                        #[cfg(feature = "sml-extensions")]
-                        extension_list: None,
-                        #[cfg(feature = "extra-attrs")]
-                        extra_attrs: Default::default(),
-                        #[cfg(feature = "extra-children")]
-                        extra_children: Vec::new(),
-                    })
-                    .collect(),
-                #[cfg(feature = "sml-extensions")]
-                extension_list: None,
-                #[cfg(feature = "extra-attrs")]
-                extra_attrs: Default::default(),
-                #[cfg(feature = "extra-children")]
-                extra_children: Vec::new(),
-            })
-            .collect()
-    }
-
-    /// Map ConditionalRuleType to generated ConditionalType.
-    #[cfg(feature = "sml-styling")]
-    fn map_conditional_rule_type(rule_type: &crate::ConditionalRuleType) -> types::ConditionalType {
-        match rule_type {
-            crate::ConditionalRuleType::Expression => types::ConditionalType::Expression,
-            crate::ConditionalRuleType::CellIs => types::ConditionalType::CellIs,
-            crate::ConditionalRuleType::ColorScale => types::ConditionalType::ColorScale,
-            crate::ConditionalRuleType::DataBar => types::ConditionalType::DataBar,
-            crate::ConditionalRuleType::IconSet => types::ConditionalType::IconSet,
-            crate::ConditionalRuleType::Top10 => types::ConditionalType::Top10,
-            crate::ConditionalRuleType::UniqueValues => types::ConditionalType::UniqueValues,
-            crate::ConditionalRuleType::DuplicateValues => types::ConditionalType::DuplicateValues,
-            crate::ConditionalRuleType::ContainsText => types::ConditionalType::ContainsText,
-            crate::ConditionalRuleType::NotContainsText => types::ConditionalType::NotContainsText,
-            crate::ConditionalRuleType::BeginsWith => types::ConditionalType::BeginsWith,
-            crate::ConditionalRuleType::EndsWith => types::ConditionalType::EndsWith,
-            crate::ConditionalRuleType::ContainsBlanks => types::ConditionalType::ContainsBlanks,
-            crate::ConditionalRuleType::NotContainsBlanks => {
-                types::ConditionalType::NotContainsBlanks
-            }
-            crate::ConditionalRuleType::ContainsErrors => types::ConditionalType::ContainsErrors,
-            crate::ConditionalRuleType::NotContainsErrors => {
-                types::ConditionalType::NotContainsErrors
-            }
-            crate::ConditionalRuleType::TimePeriod => types::ConditionalType::TimePeriod,
-            crate::ConditionalRuleType::AboveAverage => types::ConditionalType::AboveAverage,
-        }
-    }
-
-    /// Parse a conditional operator string to the generated type.
-    #[cfg(feature = "sml-styling")]
-    fn parse_conditional_operator(op: &str) -> Option<types::ConditionalOperator> {
-        match op {
-            "lessThan" => Some(types::ConditionalOperator::LessThan),
-            "lessThanOrEqual" => Some(types::ConditionalOperator::LessThanOrEqual),
-            "equal" => Some(types::ConditionalOperator::Equal),
-            "notEqual" => Some(types::ConditionalOperator::NotEqual),
-            "greaterThanOrEqual" => Some(types::ConditionalOperator::GreaterThanOrEqual),
-            "greaterThan" => Some(types::ConditionalOperator::GreaterThan),
-            "between" => Some(types::ConditionalOperator::Between),
-            "notBetween" => Some(types::ConditionalOperator::NotBetween),
-            "containsText" => Some(types::ConditionalOperator::ContainsText),
-            "notContains" => Some(types::ConditionalOperator::NotContains),
-            "beginsWith" => Some(types::ConditionalOperator::BeginsWith),
-            "endsWith" => Some(types::ConditionalOperator::EndsWith),
-            _ => None,
-        }
-    }
-
-    /// Build data validations from builder data.
-    #[cfg(feature = "sml-validation")]
-    fn build_data_validations(
-        validations: &[DataValidationBuilder],
-    ) -> Option<Box<types::DataValidations>> {
-        if validations.is_empty() {
-            return None;
-        }
-
-        Some(Box::new(types::DataValidations {
-            disable_prompts: None,
-            x_window: None,
-            y_window: None,
-            count: Some(validations.len() as u32),
-            data_validation: validations
-                .iter()
-                .map(|dv| types::DataValidation {
-                    r#type: Self::map_validation_type(&dv.validation_type),
-                    error_style: Self::map_validation_error_style(&dv.error_style),
-                    ime_mode: None,
-                    operator: Self::map_validation_operator(&dv.operator),
-                    allow_blank: if dv.allow_blank { Some(true) } else { None },
-                    show_drop_down: None,
-                    show_input_message: if dv.show_input_message {
-                        Some(true)
-                    } else {
-                        None
-                    },
-                    show_error_message: if dv.show_error_message {
-                        Some(true)
-                    } else {
-                        None
-                    },
-                    error_title: dv.error_title.clone(),
-                    error: dv.error_message.clone(),
-                    prompt_title: dv.prompt_title.clone(),
-                    prompt: dv.prompt_message.clone(),
-                    square_reference: dv.range.clone(),
-                    formula1: dv.formula1.clone(),
-                    formula2: dv.formula2.clone(),
-                    #[cfg(feature = "extra-attrs")]
-                    extra_attrs: Default::default(),
-                    #[cfg(feature = "extra-children")]
-                    extra_children: Vec::new(),
-                })
-                .collect(),
-            #[cfg(feature = "extra-attrs")]
-            extra_attrs: Default::default(),
-            #[cfg(feature = "extra-children")]
-            extra_children: Vec::new(),
-        }))
-    }
-
-    /// Map DataValidationType to generated ValidationType.
-    #[cfg(feature = "sml-validation")]
-    fn map_validation_type(vt: &crate::DataValidationType) -> Option<types::ValidationType> {
-        match vt {
-            crate::DataValidationType::None => None, // None type means no validation
-            crate::DataValidationType::Whole => Some(types::ValidationType::Whole),
-            crate::DataValidationType::Decimal => Some(types::ValidationType::Decimal),
-            crate::DataValidationType::List => Some(types::ValidationType::List),
-            crate::DataValidationType::Date => Some(types::ValidationType::Date),
-            crate::DataValidationType::Time => Some(types::ValidationType::Time),
-            crate::DataValidationType::TextLength => Some(types::ValidationType::TextLength),
-            crate::DataValidationType::Custom => Some(types::ValidationType::Custom),
-        }
-    }
-
-    /// Map DataValidationOperator to generated ValidationOperator.
-    #[cfg(feature = "sml-validation")]
-    fn map_validation_operator(
-        op: &crate::DataValidationOperator,
-    ) -> Option<types::ValidationOperator> {
-        match op {
-            crate::DataValidationOperator::Between => Some(types::ValidationOperator::Between),
-            crate::DataValidationOperator::NotBetween => {
-                Some(types::ValidationOperator::NotBetween)
-            }
-            crate::DataValidationOperator::Equal => Some(types::ValidationOperator::Equal),
-            crate::DataValidationOperator::NotEqual => Some(types::ValidationOperator::NotEqual),
-            crate::DataValidationOperator::LessThan => Some(types::ValidationOperator::LessThan),
-            crate::DataValidationOperator::LessThanOrEqual => {
-                Some(types::ValidationOperator::LessThanOrEqual)
-            }
-            crate::DataValidationOperator::GreaterThan => {
-                Some(types::ValidationOperator::GreaterThan)
-            }
-            crate::DataValidationOperator::GreaterThanOrEqual => {
-                Some(types::ValidationOperator::GreaterThanOrEqual)
-            }
-        }
-    }
-
-    /// Map DataValidationErrorStyle to generated ValidationErrorStyle.
-    #[cfg(feature = "sml-validation")]
-    fn map_validation_error_style(
-        style: &crate::DataValidationErrorStyle,
-    ) -> Option<types::ValidationErrorStyle> {
-        match style {
-            crate::DataValidationErrorStyle::Stop => None, // Stop is the default
-            crate::DataValidationErrorStyle::Warning => Some(types::ValidationErrorStyle::Warning),
-            crate::DataValidationErrorStyle::Information => {
-                Some(types::ValidationErrorStyle::Information)
-            }
         }
     }
 
@@ -2801,6 +2601,186 @@ impl WorkbookBuilder {
             extra_children: Vec::new(),
         };
         serialize_with_namespaces(&sst, "sst")
+    }
+}
+
+/// Build a single ConditionalFormatting item from a ConditionalFormat builder.
+#[cfg(feature = "sml-styling")]
+fn build_one_conditional_format(cf: &ConditionalFormat) -> types::ConditionalFormatting {
+    types::ConditionalFormatting {
+        #[cfg(feature = "sml-pivot")]
+        pivot: None,
+        square_reference: Some(cf.range.clone()),
+        cf_rule: cf
+            .rules
+            .iter()
+            .map(|rule| types::ConditionalRule {
+                r#type: Some(map_conditional_rule_type(&rule.rule_type)),
+                dxf_id: rule.dxf_id,
+                priority: rule.priority as i32,
+                stop_if_true: None,
+                above_average: None,
+                percent: None,
+                bottom: None,
+                operator: rule
+                    .operator
+                    .as_ref()
+                    .and_then(|op| parse_conditional_operator(op)),
+                text: rule.text.clone(),
+                time_period: None,
+                rank: None,
+                std_dev: None,
+                equal_average: None,
+                formula: rule.formulas.clone(),
+                #[cfg(feature = "sml-styling")]
+                color_scale: None,
+                #[cfg(feature = "sml-styling")]
+                data_bar: None,
+                #[cfg(feature = "sml-styling")]
+                icon_set: None,
+                #[cfg(feature = "sml-extensions")]
+                extension_list: None,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+                #[cfg(feature = "extra-children")]
+                extra_children: Vec::new(),
+            })
+            .collect(),
+        #[cfg(feature = "sml-extensions")]
+        extension_list: None,
+        #[cfg(feature = "extra-attrs")]
+        extra_attrs: Default::default(),
+        #[cfg(feature = "extra-children")]
+        extra_children: Vec::new(),
+    }
+}
+
+/// Map ConditionalRuleType to generated ConditionalType.
+#[cfg(feature = "sml-styling")]
+fn map_conditional_rule_type(rule_type: &crate::ConditionalRuleType) -> types::ConditionalType {
+    match rule_type {
+        crate::ConditionalRuleType::Expression => types::ConditionalType::Expression,
+        crate::ConditionalRuleType::CellIs => types::ConditionalType::CellIs,
+        crate::ConditionalRuleType::ColorScale => types::ConditionalType::ColorScale,
+        crate::ConditionalRuleType::DataBar => types::ConditionalType::DataBar,
+        crate::ConditionalRuleType::IconSet => types::ConditionalType::IconSet,
+        crate::ConditionalRuleType::Top10 => types::ConditionalType::Top10,
+        crate::ConditionalRuleType::UniqueValues => types::ConditionalType::UniqueValues,
+        crate::ConditionalRuleType::DuplicateValues => types::ConditionalType::DuplicateValues,
+        crate::ConditionalRuleType::ContainsText => types::ConditionalType::ContainsText,
+        crate::ConditionalRuleType::NotContainsText => types::ConditionalType::NotContainsText,
+        crate::ConditionalRuleType::BeginsWith => types::ConditionalType::BeginsWith,
+        crate::ConditionalRuleType::EndsWith => types::ConditionalType::EndsWith,
+        crate::ConditionalRuleType::ContainsBlanks => types::ConditionalType::ContainsBlanks,
+        crate::ConditionalRuleType::NotContainsBlanks => types::ConditionalType::NotContainsBlanks,
+        crate::ConditionalRuleType::ContainsErrors => types::ConditionalType::ContainsErrors,
+        crate::ConditionalRuleType::NotContainsErrors => types::ConditionalType::NotContainsErrors,
+        crate::ConditionalRuleType::TimePeriod => types::ConditionalType::TimePeriod,
+        crate::ConditionalRuleType::AboveAverage => types::ConditionalType::AboveAverage,
+    }
+}
+
+/// Parse a conditional operator string to the generated type.
+#[cfg(feature = "sml-styling")]
+fn parse_conditional_operator(op: &str) -> Option<types::ConditionalOperator> {
+    match op {
+        "lessThan" => Some(types::ConditionalOperator::LessThan),
+        "lessThanOrEqual" => Some(types::ConditionalOperator::LessThanOrEqual),
+        "equal" => Some(types::ConditionalOperator::Equal),
+        "notEqual" => Some(types::ConditionalOperator::NotEqual),
+        "greaterThanOrEqual" => Some(types::ConditionalOperator::GreaterThanOrEqual),
+        "greaterThan" => Some(types::ConditionalOperator::GreaterThan),
+        "between" => Some(types::ConditionalOperator::Between),
+        "notBetween" => Some(types::ConditionalOperator::NotBetween),
+        "containsText" => Some(types::ConditionalOperator::ContainsText),
+        "notContains" => Some(types::ConditionalOperator::NotContains),
+        "beginsWith" => Some(types::ConditionalOperator::BeginsWith),
+        "endsWith" => Some(types::ConditionalOperator::EndsWith),
+        _ => None,
+    }
+}
+
+/// Build a single DataValidation item from a DataValidationBuilder.
+#[cfg(feature = "sml-validation")]
+fn build_one_data_validation(dv: &DataValidationBuilder) -> types::DataValidation {
+    types::DataValidation {
+        r#type: map_validation_type(&dv.validation_type),
+        error_style: map_validation_error_style(&dv.error_style),
+        ime_mode: None,
+        operator: map_validation_operator(&dv.operator),
+        allow_blank: if dv.allow_blank { Some(true) } else { None },
+        show_drop_down: None,
+        show_input_message: if dv.show_input_message {
+            Some(true)
+        } else {
+            None
+        },
+        show_error_message: if dv.show_error_message {
+            Some(true)
+        } else {
+            None
+        },
+        error_title: dv.error_title.clone(),
+        error: dv.error_message.clone(),
+        prompt_title: dv.prompt_title.clone(),
+        prompt: dv.prompt_message.clone(),
+        square_reference: dv.range.clone(),
+        formula1: dv.formula1.clone(),
+        formula2: dv.formula2.clone(),
+        #[cfg(feature = "extra-attrs")]
+        extra_attrs: Default::default(),
+        #[cfg(feature = "extra-children")]
+        extra_children: Vec::new(),
+    }
+}
+
+/// Map DataValidationType to generated ValidationType.
+#[cfg(feature = "sml-validation")]
+fn map_validation_type(vt: &crate::DataValidationType) -> Option<types::ValidationType> {
+    match vt {
+        crate::DataValidationType::None => None, // None type means no validation
+        crate::DataValidationType::Whole => Some(types::ValidationType::Whole),
+        crate::DataValidationType::Decimal => Some(types::ValidationType::Decimal),
+        crate::DataValidationType::List => Some(types::ValidationType::List),
+        crate::DataValidationType::Date => Some(types::ValidationType::Date),
+        crate::DataValidationType::Time => Some(types::ValidationType::Time),
+        crate::DataValidationType::TextLength => Some(types::ValidationType::TextLength),
+        crate::DataValidationType::Custom => Some(types::ValidationType::Custom),
+    }
+}
+
+/// Map DataValidationOperator to generated ValidationOperator.
+#[cfg(feature = "sml-validation")]
+fn map_validation_operator(
+    op: &crate::DataValidationOperator,
+) -> Option<types::ValidationOperator> {
+    match op {
+        crate::DataValidationOperator::Between => Some(types::ValidationOperator::Between),
+        crate::DataValidationOperator::NotBetween => Some(types::ValidationOperator::NotBetween),
+        crate::DataValidationOperator::Equal => Some(types::ValidationOperator::Equal),
+        crate::DataValidationOperator::NotEqual => Some(types::ValidationOperator::NotEqual),
+        crate::DataValidationOperator::LessThan => Some(types::ValidationOperator::LessThan),
+        crate::DataValidationOperator::LessThanOrEqual => {
+            Some(types::ValidationOperator::LessThanOrEqual)
+        }
+        crate::DataValidationOperator::GreaterThan => Some(types::ValidationOperator::GreaterThan),
+        crate::DataValidationOperator::GreaterThanOrEqual => {
+            Some(types::ValidationOperator::GreaterThanOrEqual)
+        }
+    }
+}
+
+/// Map DataValidationErrorStyle to generated ValidationErrorStyle.
+#[cfg(feature = "sml-validation")]
+fn map_validation_error_style(
+    style: &crate::DataValidationErrorStyle,
+) -> Option<types::ValidationErrorStyle> {
+    match style {
+        crate::DataValidationErrorStyle::Stop => None, // Stop is the default
+        crate::DataValidationErrorStyle::Warning => Some(types::ValidationErrorStyle::Warning),
+        crate::DataValidationErrorStyle::Information => {
+            Some(types::ValidationErrorStyle::Information)
+        }
     }
 }
 
