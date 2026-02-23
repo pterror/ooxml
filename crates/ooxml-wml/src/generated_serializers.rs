@@ -31,7 +31,7 @@ impl ToXml for CTEmpty {
     }
 }
 
-impl ToXml for CTOnOff {
+impl ToXml for OnOffElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
@@ -53,7 +53,7 @@ impl ToXml for CTOnOff {
     }
 }
 
-impl ToXml for CTLongHexNumber {
+impl ToXml for LongHexNumberElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
@@ -125,7 +125,7 @@ impl ToXml for CTDecimalNumber {
     }
 }
 
-impl ToXml for CTUnsignedDecimalNumber {
+impl ToXml for UnsignedDecimalNumberElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
@@ -171,7 +171,7 @@ impl ToXml for CTDecimalNumberOrPrecent {
     }
 }
 
-impl ToXml for CTTwipsMeasure {
+impl ToXml for TwipsMeasureElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
@@ -194,7 +194,7 @@ impl ToXml for CTTwipsMeasure {
     }
 }
 
-impl ToXml for CTSignedTwipsMeasure {
+impl ToXml for SignedTwipsMeasureElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
@@ -217,7 +217,7 @@ impl ToXml for CTSignedTwipsMeasure {
     }
 }
 
-impl ToXml for CTPixelsMeasure {
+impl ToXml for PixelsMeasureElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
@@ -240,7 +240,7 @@ impl ToXml for CTPixelsMeasure {
     }
 }
 
-impl ToXml for CTHpsMeasure {
+impl ToXml for HpsMeasureElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
@@ -263,7 +263,7 @@ impl ToXml for CTHpsMeasure {
     }
 }
 
-impl ToXml for CTSignedHpsMeasure {
+impl ToXml for SignedHpsMeasureElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
@@ -286,7 +286,7 @@ impl ToXml for CTSignedHpsMeasure {
     }
 }
 
-impl ToXml for CTMacroName {
+impl ToXml for MacroNameElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
@@ -326,7 +326,7 @@ impl ToXml for CTString {
     }
 }
 
-impl ToXml for CTTextScale {
+impl ToXml for TextScaleElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
@@ -435,7 +435,7 @@ impl ToXml for CTLang {
     }
 }
 
-impl ToXml for CTGuid {
+impl ToXml for GuidElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
@@ -762,19 +762,16 @@ impl ToXml for CTEm {
     }
 }
 
-impl ToXml for CTLanguage {
+impl ToXml for LanguageElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
-        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.value {
             start.push_attribute(("w:val", val.as_str()));
         }
-        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.east_asia {
             start.push_attribute(("w:eastAsia", val.as_str()));
         }
-        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.bidi {
             start.push_attribute(("w:bidi", val.as_str()));
         }
@@ -1351,7 +1348,7 @@ impl ToXml for CTProof {
     }
 }
 
-impl ToXml for CTDocType {
+impl ToXml for DocTypeElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
@@ -1647,7 +1644,7 @@ impl ToXml for CTMailMergeDocType {
     }
 }
 
-impl ToXml for CTMailMergeDataType {
+impl ToXml for MailMergeDataTypeElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
@@ -6147,7 +6144,7 @@ impl ToXml for CTFFTextType {
     }
 }
 
-impl ToXml for CTFFName {
+impl ToXml for FFNameElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
@@ -30539,7 +30536,7 @@ impl ToXml for Styles {
     }
 }
 
-impl ToXml for CTPanose {
+impl ToXml for PanoseElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;

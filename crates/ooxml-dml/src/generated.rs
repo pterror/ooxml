@@ -5056,9 +5056,9 @@ pub enum EGMedia {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum EGColorTransform {
     #[serde(rename = "tint")]
-    Tint(Box<CTPositiveFixedPercentage>),
+    Tint(Box<PositiveFixedPercentageElement>),
     #[serde(rename = "shade")]
-    Shade(Box<CTPositiveFixedPercentage>),
+    Shade(Box<PositiveFixedPercentageElement>),
     #[serde(rename = "comp")]
     Comp(Box<CTComplementTransform>),
     #[serde(rename = "inv")]
@@ -5066,17 +5066,17 @@ pub enum EGColorTransform {
     #[serde(rename = "gray")]
     Gray(Box<CTGrayscaleTransform>),
     #[serde(rename = "alpha")]
-    Alpha(Box<CTPositiveFixedPercentage>),
+    Alpha(Box<PositiveFixedPercentageElement>),
     #[serde(rename = "alphaOff")]
-    AlphaOff(Box<CTFixedPercentage>),
+    AlphaOff(Box<FixedPercentageElement>),
     #[serde(rename = "alphaMod")]
-    AlphaMod(Box<CTPositivePercentage>),
+    AlphaMod(Box<PositivePercentageElement>),
     #[serde(rename = "hue")]
     Hue(Box<CTPositiveFixedAngle>),
     #[serde(rename = "hueOff")]
     HueOff(Box<CTAngle>),
     #[serde(rename = "hueMod")]
-    HueMod(Box<CTPositivePercentage>),
+    HueMod(Box<PositivePercentageElement>),
     #[serde(rename = "sat")]
     Sat(Box<CTPercentage>),
     #[serde(rename = "satOff")]
@@ -5184,7 +5184,7 @@ pub enum EGEffect {
     #[serde(rename = "alphaInv")]
     AlphaInv(Box<CTAlphaInverseEffect>),
     #[serde(rename = "alphaMod")]
-    AlphaMod(CTAlphaModulateEffect),
+    AlphaMod(AlphaModulateEffectElement),
     #[serde(rename = "alphaModFix")]
     AlphaModFix(Box<CTAlphaModulateFixedEffect>),
     #[serde(rename = "alphaOutset")]
@@ -5334,7 +5334,7 @@ pub enum EGTextBulletSize {
     #[serde(rename = "buSzTx")]
     BuSzTx(Box<CTTextBulletSizeFollowText>),
     #[serde(rename = "buSzPct")]
-    BuSzPct(Box<CTTextBulletSizePercent>),
+    BuSzPct(Box<TextBulletSizePercentElement>),
     #[serde(rename = "buSzPts")]
     BuSzPts(Box<CTTextBulletSizePoint>),
 }
@@ -5356,7 +5356,7 @@ pub enum EGTextBullet {
     #[serde(rename = "buChar")]
     BuChar(Box<CTTextCharBullet>),
     #[serde(rename = "buBlip")]
-    BuBlip(CTTextBlipBullet),
+    BuBlip(TextBlipBulletElement),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5783,7 +5783,7 @@ pub struct CTOfficeArtExtension {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-pub type CTOfficeArtExtensionAny = String;
+pub type OfficeArtExtensionAnyElement = String;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTAngle {
@@ -5825,7 +5825,7 @@ pub struct CTPercentage {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPositivePercentage {
+pub struct PositivePercentageElement {
     #[serde(rename = "@val")]
     pub value: STPositivePercentage,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -5838,7 +5838,7 @@ pub struct CTPositivePercentage {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTFixedPercentage {
+pub struct FixedPercentageElement {
     #[serde(rename = "@val")]
     pub value: STFixedPercentage,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -5851,7 +5851,7 @@ pub struct CTFixedPercentage {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPositiveFixedPercentage {
+pub struct PositiveFixedPercentageElement {
     #[serde(rename = "@val")]
     pub value: STPositiveFixedPercentage,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -7172,11 +7172,11 @@ pub struct CTGraphicalObjectData {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-pub type CTGraphicalObjectDataAny = String;
+pub type GraphicalObjectDataAnyElement = String;
 
-pub type CTGraphicalObject = Box<CTGraphicalObjectData>;
+pub type GraphicalObjectElement = Box<CTGraphicalObjectData>;
 
-pub type AGraphic = CTGraphicalObject;
+pub type AGraphic = GraphicalObjectElement;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTAnimationDgmElement {
@@ -7458,7 +7458,7 @@ pub struct CTGvmlGraphicalObjectFrame {
     #[serde(rename = "nvGraphicFramePr")]
     pub nv_graphic_frame_pr: Box<CTGvmlGraphicFrameNonVisual>,
     #[serde(rename = "graphic")]
-    pub graphic: CTGraphicalObject,
+    pub graphic: GraphicalObjectElement,
     #[serde(rename = "xfrm")]
     pub transform: Box<Transform2D>,
     #[serde(rename = "extLst")]
@@ -8396,7 +8396,7 @@ pub struct Blip {
     #[cfg(feature = "dml-fills")]
     #[serde(rename = "alphaMod")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub alpha_mod: Vec<CTAlphaModulateEffect>,
+    pub alpha_mod: Vec<AlphaModulateEffectElement>,
     #[cfg(feature = "dml-fills")]
     #[serde(rename = "alphaModFix")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -8616,7 +8616,7 @@ pub struct EffectContainer {
     pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
-pub type CTAlphaModulateEffect = Box<EffectContainer>;
+pub type AlphaModulateEffectElement = Box<EffectContainer>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTBlendEffect {
@@ -8888,9 +8888,9 @@ pub struct CTConnection {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-pub type CTPath2DMoveTo = Box<CTAdjPoint2D>;
+pub type Path2DMoveToElement = Box<CTAdjPoint2D>;
 
-pub type CTPath2DLineTo = Box<CTAdjPoint2D>;
+pub type Path2DLineToElement = Box<CTAdjPoint2D>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPath2DArcTo {
@@ -8968,10 +8968,10 @@ pub struct CTPath2D {
     pub close: Vec<CTPath2DClose>,
     #[serde(rename = "moveTo")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub move_to: Vec<CTPath2DMoveTo>,
+    pub move_to: Vec<Path2DMoveToElement>,
     #[serde(rename = "lnTo")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub ln_to: Vec<CTPath2DLineTo>,
+    pub ln_to: Vec<Path2DLineToElement>,
     #[serde(rename = "arcTo")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub arc_to: Vec<CTPath2DArcTo>,
@@ -10396,7 +10396,7 @@ pub struct CTTextBulletColorFollowText;
 pub struct CTTextBulletSizeFollowText;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTTextBulletSizePercent {
+pub struct TextBulletSizePercentElement {
     #[serde(rename = "@val")]
     pub value: STTextBulletSizePercent,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -10453,7 +10453,7 @@ pub struct CTTextCharBullet {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-pub type CTTextBlipBullet = Box<Blip>;
+pub type TextBlipBulletElement = Box<Blip>;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTextNoBullet;

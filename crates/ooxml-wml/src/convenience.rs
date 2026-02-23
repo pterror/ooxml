@@ -224,7 +224,7 @@ impl types::Run {
             .r_pr
             .get_or_insert_with(|| Box::new(types::RunProperties::default()));
         if bold {
-            rpr.bold = Some(Box::new(types::CTOnOff {
+            rpr.bold = Some(Box::new(types::OnOffElement {
                 value: None, // None means "true" for on/off elements
                 #[cfg(feature = "extra-attrs")]
                 extra_attrs: Default::default(),
@@ -241,7 +241,7 @@ impl types::Run {
             .r_pr
             .get_or_insert_with(|| Box::new(types::RunProperties::default()));
         if italic {
-            rpr.italic = Some(Box::new(types::CTOnOff {
+            rpr.italic = Some(Box::new(types::OnOffElement {
                 value: None,
                 #[cfg(feature = "extra-attrs")]
                 extra_attrs: Default::default(),
@@ -284,7 +284,7 @@ impl types::Run {
         let rpr = self
             .r_pr
             .get_or_insert_with(|| Box::new(types::RunProperties::default()));
-        rpr.size = Some(Box::new(types::CTHpsMeasure {
+        rpr.size = Some(Box::new(types::HpsMeasureElement {
             value: half_points.to_string(),
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
@@ -298,7 +298,7 @@ impl types::Run {
             .r_pr
             .get_or_insert_with(|| Box::new(types::RunProperties::default()));
         if strike {
-            rpr.strikethrough = Some(Box::new(types::CTOnOff {
+            rpr.strikethrough = Some(Box::new(types::OnOffElement {
                 value: None,
                 #[cfg(feature = "extra-attrs")]
                 extra_attrs: Default::default(),

@@ -1461,7 +1461,7 @@ impl ToXml for CTPercentage {
     }
 }
 
-impl ToXml for CTPositivePercentage {
+impl ToXml for PositivePercentageElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
@@ -1484,7 +1484,7 @@ impl ToXml for CTPositivePercentage {
     }
 }
 
-impl ToXml for CTFixedPercentage {
+impl ToXml for FixedPercentageElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
@@ -1507,7 +1507,7 @@ impl ToXml for CTFixedPercentage {
     }
 }
 
-impl ToXml for CTPositiveFixedPercentage {
+impl ToXml for PositiveFixedPercentageElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
@@ -13735,7 +13735,7 @@ impl ToXml for CTTextBulletSizeFollowText {
     }
 }
 
-impl ToXml for CTTextBulletSizePercent {
+impl ToXml for TextBulletSizePercentElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;

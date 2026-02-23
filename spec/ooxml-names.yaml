@@ -391,6 +391,12 @@ sml:
     ST_Comments: CommentVisibility
     ST_Objects: ObjectVisibility
 
+    # CT_* wrapper types: using "Element" suffix to avoid name collision
+    # with same-named ST_* type aliases
+    CT_AutoSortScope: AutoSortScopeElement
+    CT_DataBinding_any: DataBindingAnyElement
+    CT_Extension_any: ExtensionAnyElement
+    CT_Schema_any: SchemaAnyElement
   fields:
     # Cell/Row fields
     r: reference         # row number or cell reference
@@ -727,6 +733,25 @@ wml:
     CT_FtnEdn: FootnoteEndnote
     CT_FtnEdnRef: FootnoteEndnoteRef
     CT_HdrFtrRef: HeaderFooterReference
+    # CT_* wrapper types: using "Element" suffix to avoid name collision
+    # with same-named ST_* type aliases (e.g., CT_OnOff contains val: OnOff string)
+    CT_OnOff: OnOffElement
+    CT_HpsMeasure: HpsMeasureElement
+    CT_SignedHpsMeasure: SignedHpsMeasureElement
+    CT_TwipsMeasure: TwipsMeasureElement
+    CT_SignedTwipsMeasure: SignedTwipsMeasureElement
+    CT_TextScale: TextScaleElement
+    CT_UnsignedDecimalNumber: UnsignedDecimalNumberElement
+    CT_DocType: DocTypeElement
+    CT_FFName: FFNameElement
+    CT_Guid: GuidElement
+    CT_Language: LanguageElement
+    CT_LongHexNumber: LongHexNumberElement
+    CT_MacroName: MacroNameElement
+    CT_MailMergeDataType: MailMergeDataTypeElement
+    CT_Panose: PanoseElement
+    CT_PixelsMeasure: PixelsMeasureElement
+    CT_Placeholder: PlaceholderElement
 
   fields:
     val: value
@@ -800,6 +825,11 @@ pml:
     CT_NotesMaster: NotesMaster
     CT_HandoutMaster: HandoutMaster
 
+    # CT_* wrapper types: using "Element" suffix to avoid name collision
+    # with same-named ST_* type aliases
+    CT_Extension_any: ExtensionAnyElement
+    CT_TLTimeNodeExclusive: TLTimeNodeExclusiveElement
+    CT_TLTimeNodeParallel: TLTimeNodeParallelElement
   fields:
     cSld: common_slide_data
     spTree: shape_tree
@@ -858,6 +888,19 @@ dml:
     CT_ScatterChart: ScatterChart
     CT_AreaChart: AreaChart
 
+    # CT_* wrapper types: using "Element" suffix to avoid name collision
+    # with same-named ST_* type aliases
+    CT_FixedPercentage: FixedPercentageElement
+    CT_PositiveFixedPercentage: PositiveFixedPercentageElement
+    CT_PositivePercentage: PositivePercentageElement
+    CT_TextBulletSizePercent: TextBulletSizePercentElement
+    CT_AlphaModulateEffect: AlphaModulateEffectElement
+    CT_GraphicalObject: GraphicalObjectElement
+    CT_GraphicalObjectData_any: GraphicalObjectDataAnyElement
+    CT_OfficeArtExtension_any: OfficeArtExtensionAnyElement
+    CT_Path2DLineTo: Path2DLineToElement
+    CT_Path2DMoveTo: Path2DMoveToElement
+    CT_TextBlipBullet: TextBlipBulletElement
   fields:
     off: offset
     ext: extents

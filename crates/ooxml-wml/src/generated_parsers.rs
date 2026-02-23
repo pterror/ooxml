@@ -105,7 +105,7 @@ impl FromXml for CTEmpty {
     }
 }
 
-impl FromXml for CTOnOff {
+impl FromXml for OnOffElement {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -152,7 +152,7 @@ impl FromXml for CTOnOff {
     }
 }
 
-impl FromXml for CTLongHexNumber {
+impl FromXml for LongHexNumberElement {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -301,7 +301,7 @@ impl FromXml for CTDecimalNumber {
     }
 }
 
-impl FromXml for CTUnsignedDecimalNumber {
+impl FromXml for UnsignedDecimalNumberElement {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -395,7 +395,7 @@ impl FromXml for CTDecimalNumberOrPrecent {
     }
 }
 
-impl FromXml for CTTwipsMeasure {
+impl FromXml for TwipsMeasureElement {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -442,7 +442,7 @@ impl FromXml for CTTwipsMeasure {
     }
 }
 
-impl FromXml for CTSignedTwipsMeasure {
+impl FromXml for SignedTwipsMeasureElement {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -489,7 +489,7 @@ impl FromXml for CTSignedTwipsMeasure {
     }
 }
 
-impl FromXml for CTPixelsMeasure {
+impl FromXml for PixelsMeasureElement {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -536,7 +536,7 @@ impl FromXml for CTPixelsMeasure {
     }
 }
 
-impl FromXml for CTHpsMeasure {
+impl FromXml for HpsMeasureElement {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -583,7 +583,7 @@ impl FromXml for CTHpsMeasure {
     }
 }
 
-impl FromXml for CTSignedHpsMeasure {
+impl FromXml for SignedHpsMeasureElement {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -630,7 +630,7 @@ impl FromXml for CTSignedHpsMeasure {
     }
 }
 
-impl FromXml for CTMacroName {
+impl FromXml for MacroNameElement {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -724,7 +724,7 @@ impl FromXml for CTString {
     }
 }
 
-impl FromXml for CTTextScale {
+impl FromXml for TextScaleElement {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -936,7 +936,7 @@ impl FromXml for CTLang {
     }
 }
 
-impl FromXml for CTGuid {
+impl FromXml for GuidElement {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -1483,17 +1483,14 @@ impl FromXml for CTEm {
     }
 }
 
-impl FromXml for CTLanguage {
+impl FromXml for LanguageElement {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
-        #[cfg(feature = "wml-styling")]
         let mut f_value = None;
-        #[cfg(feature = "wml-styling")]
         let mut f_east_asia = None;
-        #[cfg(feature = "wml-styling")]
         let mut f_bidi = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -1502,15 +1499,12 @@ impl FromXml for CTLanguage {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
-                #[cfg(feature = "wml-styling")]
                 b"val" => {
                     f_value = Some(val.into_owned());
                 }
-                #[cfg(feature = "wml-styling")]
                 b"eastAsia" => {
                     f_east_asia = Some(val.into_owned());
                 }
-                #[cfg(feature = "wml-styling")]
                 b"bidi" => {
                     f_bidi = Some(val.into_owned());
                 }
@@ -1537,11 +1531,8 @@ impl FromXml for CTLanguage {
         }
 
         Ok(Self {
-            #[cfg(feature = "wml-styling")]
             value: f_value,
-            #[cfg(feature = "wml-styling")]
             east_asia: f_east_asia,
-            #[cfg(feature = "wml-styling")]
             bidi: f_bidi,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -2446,7 +2437,7 @@ impl FromXml for CTProof {
     }
 }
 
-impl FromXml for CTDocType {
+impl FromXml for DocTypeElement {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -2898,7 +2889,7 @@ impl FromXml for CTMailMergeDocType {
     }
 }
 
-impl FromXml for CTMailMergeDataType {
+impl FromXml for MailMergeDataTypeElement {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -6276,7 +6267,8 @@ impl FromXml for ParagraphProperties {
                             }
                             #[cfg(feature = "wml-layout")]
                             b"keepNext" => {
-                                f_keep_next = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_keep_next =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6285,7 +6277,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-layout")]
                             b"keepLines" => {
                                 f_keep_lines =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6294,7 +6286,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-layout")]
                             b"pageBreakBefore" => {
                                 f_page_break_before =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6312,7 +6304,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-layout")]
                             b"widowControl" => {
                                 f_widow_control =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6331,7 +6323,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-layout")]
                             b"suppressLineNumbers" => {
                                 f_suppress_line_numbers =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6365,7 +6357,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-styling")]
                             b"suppressAutoHyphens" => {
                                 f_suppress_auto_hyphens =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6373,7 +6365,8 @@ impl FromXml for ParagraphProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"kinsoku" => {
-                                f_kinsoku = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_kinsoku =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6381,7 +6374,8 @@ impl FromXml for ParagraphProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"wordWrap" => {
-                                f_word_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_word_wrap =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6390,7 +6384,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-styling")]
                             b"overflowPunct" => {
                                 f_overflow_punct =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6399,7 +6393,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-styling")]
                             b"topLinePunct" => {
                                 f_top_line_punct =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6408,7 +6402,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-styling")]
                             b"autoSpaceDE" => {
                                 f_auto_space_d_e =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6417,7 +6411,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-styling")]
                             b"autoSpaceDN" => {
                                 f_auto_space_d_n =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6425,7 +6419,7 @@ impl FromXml for ParagraphProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"bidi" => {
-                                f_bidi = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_bidi = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6434,7 +6428,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-styling")]
                             b"adjustRightInd" => {
                                 f_adjust_right_ind =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6443,7 +6437,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-layout")]
                             b"snapToGrid" => {
                                 f_snap_to_grid =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6468,7 +6462,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-styling")]
                             b"contextualSpacing" => {
                                 f_contextual_spacing =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6477,7 +6471,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-styling")]
                             b"mirrorIndents" => {
                                 f_mirror_indents =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6486,7 +6480,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-layout")]
                             b"suppressOverlap" => {
                                 f_suppress_overlap =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6610,7 +6604,8 @@ impl FromXml for ParagraphProperties {
                             }
                             #[cfg(feature = "wml-layout")]
                             b"keepNext" => {
-                                f_keep_next = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_keep_next =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6618,7 +6613,8 @@ impl FromXml for ParagraphProperties {
                             }
                             #[cfg(feature = "wml-layout")]
                             b"keepLines" => {
-                                f_keep_lines = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_keep_lines =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6627,7 +6623,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-layout")]
                             b"pageBreakBefore" => {
                                 f_page_break_before =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6644,7 +6640,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-layout")]
                             b"widowControl" => {
                                 f_widow_control =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6663,7 +6659,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-layout")]
                             b"suppressLineNumbers" => {
                                 f_suppress_line_numbers =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6697,7 +6693,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-styling")]
                             b"suppressAutoHyphens" => {
                                 f_suppress_auto_hyphens =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6705,7 +6701,8 @@ impl FromXml for ParagraphProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"kinsoku" => {
-                                f_kinsoku = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_kinsoku =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6713,7 +6710,8 @@ impl FromXml for ParagraphProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"wordWrap" => {
-                                f_word_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_word_wrap =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6722,7 +6720,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-styling")]
                             b"overflowPunct" => {
                                 f_overflow_punct =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6731,7 +6729,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-styling")]
                             b"topLinePunct" => {
                                 f_top_line_punct =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6740,7 +6738,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-styling")]
                             b"autoSpaceDE" => {
                                 f_auto_space_d_e =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6749,7 +6747,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-styling")]
                             b"autoSpaceDN" => {
                                 f_auto_space_d_n =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6757,7 +6755,7 @@ impl FromXml for ParagraphProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"bidi" => {
-                                f_bidi = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_bidi = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6766,7 +6764,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-styling")]
                             b"adjustRightInd" => {
                                 f_adjust_right_ind =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6775,7 +6773,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-layout")]
                             b"snapToGrid" => {
                                 f_snap_to_grid =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6800,7 +6798,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-styling")]
                             b"contextualSpacing" => {
                                 f_contextual_spacing =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6809,7 +6807,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-styling")]
                             b"mirrorIndents" => {
                                 f_mirror_indents =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6818,7 +6816,7 @@ impl FromXml for ParagraphProperties {
                             #[cfg(feature = "wml-layout")]
                             b"suppressOverlap" => {
                                 f_suppress_overlap =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7104,7 +7102,8 @@ impl FromXml for CTPPrBase {
                             }
                             #[cfg(feature = "wml-layout")]
                             b"keepNext" => {
-                                f_keep_next = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_keep_next =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7113,7 +7112,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-layout")]
                             b"keepLines" => {
                                 f_keep_lines =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7122,7 +7121,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-layout")]
                             b"pageBreakBefore" => {
                                 f_page_break_before =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7140,7 +7139,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-layout")]
                             b"widowControl" => {
                                 f_widow_control =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7159,7 +7158,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-layout")]
                             b"suppressLineNumbers" => {
                                 f_suppress_line_numbers =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7193,7 +7192,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-styling")]
                             b"suppressAutoHyphens" => {
                                 f_suppress_auto_hyphens =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7201,7 +7200,8 @@ impl FromXml for CTPPrBase {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"kinsoku" => {
-                                f_kinsoku = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_kinsoku =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7209,7 +7209,8 @@ impl FromXml for CTPPrBase {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"wordWrap" => {
-                                f_word_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_word_wrap =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7218,7 +7219,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-styling")]
                             b"overflowPunct" => {
                                 f_overflow_punct =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7227,7 +7228,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-styling")]
                             b"topLinePunct" => {
                                 f_top_line_punct =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7236,7 +7237,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-styling")]
                             b"autoSpaceDE" => {
                                 f_auto_space_d_e =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7245,7 +7246,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-styling")]
                             b"autoSpaceDN" => {
                                 f_auto_space_d_n =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7253,7 +7254,7 @@ impl FromXml for CTPPrBase {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"bidi" => {
-                                f_bidi = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_bidi = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7262,7 +7263,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-styling")]
                             b"adjustRightInd" => {
                                 f_adjust_right_ind =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7271,7 +7272,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-layout")]
                             b"snapToGrid" => {
                                 f_snap_to_grid =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7296,7 +7297,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-styling")]
                             b"contextualSpacing" => {
                                 f_contextual_spacing =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7305,7 +7306,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-styling")]
                             b"mirrorIndents" => {
                                 f_mirror_indents =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7314,7 +7315,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-layout")]
                             b"suppressOverlap" => {
                                 f_suppress_overlap =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7412,7 +7413,8 @@ impl FromXml for CTPPrBase {
                             }
                             #[cfg(feature = "wml-layout")]
                             b"keepNext" => {
-                                f_keep_next = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_keep_next =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7420,7 +7422,8 @@ impl FromXml for CTPPrBase {
                             }
                             #[cfg(feature = "wml-layout")]
                             b"keepLines" => {
-                                f_keep_lines = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_keep_lines =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7429,7 +7432,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-layout")]
                             b"pageBreakBefore" => {
                                 f_page_break_before =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7446,7 +7449,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-layout")]
                             b"widowControl" => {
                                 f_widow_control =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7465,7 +7468,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-layout")]
                             b"suppressLineNumbers" => {
                                 f_suppress_line_numbers =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7499,7 +7502,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-styling")]
                             b"suppressAutoHyphens" => {
                                 f_suppress_auto_hyphens =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7507,7 +7510,8 @@ impl FromXml for CTPPrBase {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"kinsoku" => {
-                                f_kinsoku = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_kinsoku =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7515,7 +7519,8 @@ impl FromXml for CTPPrBase {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"wordWrap" => {
-                                f_word_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_word_wrap =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7524,7 +7529,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-styling")]
                             b"overflowPunct" => {
                                 f_overflow_punct =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7533,7 +7538,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-styling")]
                             b"topLinePunct" => {
                                 f_top_line_punct =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7542,7 +7547,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-styling")]
                             b"autoSpaceDE" => {
                                 f_auto_space_d_e =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7551,7 +7556,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-styling")]
                             b"autoSpaceDN" => {
                                 f_auto_space_d_n =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7559,7 +7564,7 @@ impl FromXml for CTPPrBase {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"bidi" => {
-                                f_bidi = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_bidi = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7568,7 +7573,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-styling")]
                             b"adjustRightInd" => {
                                 f_adjust_right_ind =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7577,7 +7582,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-layout")]
                             b"snapToGrid" => {
                                 f_snap_to_grid =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7602,7 +7607,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-styling")]
                             b"contextualSpacing" => {
                                 f_contextual_spacing =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7611,7 +7616,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-styling")]
                             b"mirrorIndents" => {
                                 f_mirror_indents =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7620,7 +7625,7 @@ impl FromXml for CTPPrBase {
                             #[cfg(feature = "wml-layout")]
                             b"suppressOverlap" => {
                                 f_suppress_overlap =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7843,7 +7848,8 @@ impl FromXml for CTPPrGeneral {
                                 }
                             }
                             b"keepNext" => {
-                                f_keep_next = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_keep_next =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7851,7 +7857,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"keepLines" => {
                                 f_keep_lines =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7859,7 +7865,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"pageBreakBefore" => {
                                 f_page_break_before =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7875,7 +7881,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"widowControl" => {
                                 f_widow_control =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7892,7 +7898,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"suppressLineNumbers" => {
                                 f_suppress_line_numbers =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7922,21 +7928,23 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"suppressAutoHyphens" => {
                                 f_suppress_auto_hyphens =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"kinsoku" => {
-                                f_kinsoku = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_kinsoku =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"wordWrap" => {
-                                f_word_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_word_wrap =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7944,7 +7952,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"overflowPunct" => {
                                 f_overflow_punct =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7952,7 +7960,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"topLinePunct" => {
                                 f_top_line_punct =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7960,7 +7968,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"autoSpaceDE" => {
                                 f_auto_space_d_e =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7968,14 +7976,14 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"autoSpaceDN" => {
                                 f_auto_space_d_n =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"bidi" => {
-                                f_bidi = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_bidi = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7983,7 +7991,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"adjustRightInd" => {
                                 f_adjust_right_ind =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7991,7 +7999,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"snapToGrid" => {
                                 f_snap_to_grid =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -8013,7 +8021,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"contextualSpacing" => {
                                 f_contextual_spacing =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -8021,7 +8029,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"mirrorIndents" => {
                                 f_mirror_indents =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -8029,7 +8037,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"suppressOverlap" => {
                                 f_suppress_overlap =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -8128,14 +8136,16 @@ impl FromXml for CTPPrGeneral {
                                 }
                             }
                             b"keepNext" => {
-                                f_keep_next = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_keep_next =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"keepLines" => {
-                                f_keep_lines = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_keep_lines =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -8143,7 +8153,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"pageBreakBefore" => {
                                 f_page_break_before =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -8158,7 +8168,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"widowControl" => {
                                 f_widow_control =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -8175,7 +8185,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"suppressLineNumbers" => {
                                 f_suppress_line_numbers =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -8205,21 +8215,23 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"suppressAutoHyphens" => {
                                 f_suppress_auto_hyphens =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"kinsoku" => {
-                                f_kinsoku = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_kinsoku =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"wordWrap" => {
-                                f_word_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_word_wrap =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -8227,7 +8239,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"overflowPunct" => {
                                 f_overflow_punct =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -8235,7 +8247,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"topLinePunct" => {
                                 f_top_line_punct =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -8243,7 +8255,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"autoSpaceDE" => {
                                 f_auto_space_d_e =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -8251,14 +8263,14 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"autoSpaceDN" => {
                                 f_auto_space_d_n =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"bidi" => {
-                                f_bidi = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_bidi = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -8266,7 +8278,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"adjustRightInd" => {
                                 f_adjust_right_ind =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -8274,7 +8286,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"snapToGrid" => {
                                 f_snap_to_grid =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -8296,7 +8308,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"contextualSpacing" => {
                                 f_contextual_spacing =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -8304,7 +8316,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"mirrorIndents" => {
                                 f_mirror_indents =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -8312,7 +8324,7 @@ impl FromXml for CTPPrGeneral {
                             }
                             b"suppressOverlap" => {
                                 f_suppress_overlap =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -9485,7 +9497,7 @@ impl FromXml for CTFFTextType {
     }
 }
 
-impl FromXml for CTFFName {
+impl FromXml for FFNameElement {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -9952,7 +9964,7 @@ impl FromXml for CTFFData {
                         match e.local_name().as_ref() {
                             #[cfg(feature = "wml-fields")]
                             b"name" => {
-                                f_name.push(CTFFName::from_xml(reader, &e, false)?);
+                                f_name.push(FFNameElement::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -9969,9 +9981,9 @@ impl FromXml for CTFFData {
                             }
                             #[cfg(feature = "wml-fields")]
                             b"tabIndex" => {
-                                f_tab_index = Some(Box::new(CTUnsignedDecimalNumber::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_tab_index = Some(Box::new(
+                                    UnsignedDecimalNumberElement::from_xml(reader, &e, false)?,
+                                ));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -9979,7 +9991,7 @@ impl FromXml for CTFFData {
                             }
                             #[cfg(feature = "wml-fields")]
                             b"enabled" => {
-                                f_enabled.push(CTOnOff::from_xml(reader, &e, false)?);
+                                f_enabled.push(OnOffElement::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -9987,7 +9999,7 @@ impl FromXml for CTFFData {
                             }
                             #[cfg(feature = "wml-fields")]
                             b"calcOnExit" => {
-                                f_calc_on_exit.push(CTOnOff::from_xml(reader, &e, false)?);
+                                f_calc_on_exit.push(OnOffElement::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -9996,7 +10008,7 @@ impl FromXml for CTFFData {
                             #[cfg(feature = "wml-fields")]
                             b"entryMacro" => {
                                 f_entry_macro =
-                                    Some(Box::new(CTMacroName::from_xml(reader, &e, false)?));
+                                    Some(Box::new(MacroNameElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -10005,7 +10017,7 @@ impl FromXml for CTFFData {
                             #[cfg(feature = "wml-fields")]
                             b"exitMacro" => {
                                 f_exit_macro =
-                                    Some(Box::new(CTMacroName::from_xml(reader, &e, false)?));
+                                    Some(Box::new(MacroNameElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -10050,7 +10062,7 @@ impl FromXml for CTFFData {
                         match e.local_name().as_ref() {
                             #[cfg(feature = "wml-fields")]
                             b"name" => {
-                                f_name.push(CTFFName::from_xml(reader, &e, true)?);
+                                f_name.push(FFNameElement::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -10067,9 +10079,9 @@ impl FromXml for CTFFData {
                             }
                             #[cfg(feature = "wml-fields")]
                             b"tabIndex" => {
-                                f_tab_index = Some(Box::new(CTUnsignedDecimalNumber::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_tab_index = Some(Box::new(
+                                    UnsignedDecimalNumberElement::from_xml(reader, &e, true)?,
+                                ));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -10077,7 +10089,7 @@ impl FromXml for CTFFData {
                             }
                             #[cfg(feature = "wml-fields")]
                             b"enabled" => {
-                                f_enabled.push(CTOnOff::from_xml(reader, &e, true)?);
+                                f_enabled.push(OnOffElement::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -10085,7 +10097,7 @@ impl FromXml for CTFFData {
                             }
                             #[cfg(feature = "wml-fields")]
                             b"calcOnExit" => {
-                                f_calc_on_exit.push(CTOnOff::from_xml(reader, &e, true)?);
+                                f_calc_on_exit.push(OnOffElement::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -10094,7 +10106,7 @@ impl FromXml for CTFFData {
                             #[cfg(feature = "wml-fields")]
                             b"entryMacro" => {
                                 f_entry_macro =
-                                    Some(Box::new(CTMacroName::from_xml(reader, &e, true)?));
+                                    Some(Box::new(MacroNameElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -10103,7 +10115,7 @@ impl FromXml for CTFFData {
                             #[cfg(feature = "wml-fields")]
                             b"exitMacro" => {
                                 f_exit_macro =
-                                    Some(Box::new(CTMacroName::from_xml(reader, &e, true)?));
+                                    Some(Box::new(MacroNameElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -10306,7 +10318,8 @@ impl FromXml for CTFFCheckBox {
                         match e.local_name().as_ref() {
                             #[cfg(feature = "wml-fields")]
                             b"size" => {
-                                f_size = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
+                                f_size =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -10314,7 +10327,8 @@ impl FromXml for CTFFCheckBox {
                             }
                             #[cfg(feature = "wml-fields")]
                             b"sizeAuto" => {
-                                f_size_auto = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_size_auto =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -10322,7 +10336,8 @@ impl FromXml for CTFFCheckBox {
                             }
                             #[cfg(feature = "wml-fields")]
                             b"default" => {
-                                f_default = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_default =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -10330,7 +10345,8 @@ impl FromXml for CTFFCheckBox {
                             }
                             #[cfg(feature = "wml-fields")]
                             b"checked" => {
-                                f_checked = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_checked =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -10357,7 +10373,8 @@ impl FromXml for CTFFCheckBox {
                         match e.local_name().as_ref() {
                             #[cfg(feature = "wml-fields")]
                             b"size" => {
-                                f_size = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
+                                f_size =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -10365,7 +10382,8 @@ impl FromXml for CTFFCheckBox {
                             }
                             #[cfg(feature = "wml-fields")]
                             b"sizeAuto" => {
-                                f_size_auto = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_size_auto =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -10373,7 +10391,8 @@ impl FromXml for CTFFCheckBox {
                             }
                             #[cfg(feature = "wml-fields")]
                             b"default" => {
-                                f_default = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_default =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -10381,7 +10400,8 @@ impl FromXml for CTFFCheckBox {
                             }
                             #[cfg(feature = "wml-fields")]
                             b"checked" => {
-                                f_checked = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_checked =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12265,7 +12285,8 @@ impl FromXml for EGSectPrContents {
                                 }
                             }
                             b"formProt" => {
-                                f_form_prot = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_form_prot =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12281,14 +12302,15 @@ impl FromXml for EGSectPrContents {
                             }
                             b"noEndnote" => {
                                 f_no_endnote =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"titlePg" => {
-                                f_title_pg = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_title_pg =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12303,7 +12325,7 @@ impl FromXml for EGSectPrContents {
                                 }
                             }
                             b"bidi" => {
-                                f_bidi = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_bidi = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12311,7 +12333,7 @@ impl FromXml for EGSectPrContents {
                             }
                             b"rtlGutter" => {
                                 f_rtl_gutter =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12429,7 +12451,8 @@ impl FromXml for EGSectPrContents {
                                 }
                             }
                             b"formProt" => {
-                                f_form_prot = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_form_prot =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12444,14 +12467,16 @@ impl FromXml for EGSectPrContents {
                                 }
                             }
                             b"noEndnote" => {
-                                f_no_endnote = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_no_endnote =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"titlePg" => {
-                                f_title_pg = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_title_pg =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12466,14 +12491,15 @@ impl FromXml for EGSectPrContents {
                                 }
                             }
                             b"bidi" => {
-                                f_bidi = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_bidi = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"rtlGutter" => {
-                                f_rtl_gutter = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_rtl_gutter =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12760,7 +12786,8 @@ impl FromXml for CTSectPrBase {
                                 }
                             }
                             b"formProt" => {
-                                f_form_prot = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_form_prot =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12776,14 +12803,15 @@ impl FromXml for CTSectPrBase {
                             }
                             b"noEndnote" => {
                                 f_no_endnote =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"titlePg" => {
-                                f_title_pg = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_title_pg =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12798,7 +12826,7 @@ impl FromXml for CTSectPrBase {
                                 }
                             }
                             b"bidi" => {
-                                f_bidi = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_bidi = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12806,7 +12834,7 @@ impl FromXml for CTSectPrBase {
                             }
                             b"rtlGutter" => {
                                 f_rtl_gutter =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12924,7 +12952,8 @@ impl FromXml for CTSectPrBase {
                                 }
                             }
                             b"formProt" => {
-                                f_form_prot = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_form_prot =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12939,14 +12968,16 @@ impl FromXml for CTSectPrBase {
                                 }
                             }
                             b"noEndnote" => {
-                                f_no_endnote = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_no_endnote =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"titlePg" => {
-                                f_title_pg = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_title_pg =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12961,14 +12992,15 @@ impl FromXml for CTSectPrBase {
                                 }
                             }
                             b"bidi" => {
-                                f_bidi = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_bidi = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"rtlGutter" => {
-                                f_rtl_gutter = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_rtl_gutter =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13244,7 +13276,8 @@ impl FromXml for SectionProperties {
                             }
                             #[cfg(feature = "wml-layout")]
                             b"formProt" => {
-                                f_form_prot = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_form_prot =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13262,7 +13295,7 @@ impl FromXml for SectionProperties {
                             #[cfg(feature = "wml-comments")]
                             b"noEndnote" => {
                                 f_no_endnote =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13270,7 +13303,8 @@ impl FromXml for SectionProperties {
                             }
                             #[cfg(feature = "wml-layout")]
                             b"titlePg" => {
-                                f_title_pg = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_title_pg =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13287,7 +13321,7 @@ impl FromXml for SectionProperties {
                             }
                             #[cfg(feature = "wml-layout")]
                             b"bidi" => {
-                                f_bidi = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_bidi = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13296,7 +13330,7 @@ impl FromXml for SectionProperties {
                             #[cfg(feature = "wml-layout")]
                             b"rtlGutter" => {
                                 f_rtl_gutter =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13444,7 +13478,8 @@ impl FromXml for SectionProperties {
                             }
                             #[cfg(feature = "wml-layout")]
                             b"formProt" => {
-                                f_form_prot = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_form_prot =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13461,7 +13496,8 @@ impl FromXml for SectionProperties {
                             }
                             #[cfg(feature = "wml-comments")]
                             b"noEndnote" => {
-                                f_no_endnote = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_no_endnote =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13469,7 +13505,8 @@ impl FromXml for SectionProperties {
                             }
                             #[cfg(feature = "wml-layout")]
                             b"titlePg" => {
-                                f_title_pg = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_title_pg =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13486,7 +13523,7 @@ impl FromXml for SectionProperties {
                             }
                             #[cfg(feature = "wml-layout")]
                             b"bidi" => {
-                                f_bidi = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_bidi = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13494,7 +13531,8 @@ impl FromXml for SectionProperties {
                             }
                             #[cfg(feature = "wml-layout")]
                             b"rtlGutter" => {
-                                f_rtl_gutter = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_rtl_gutter =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -14576,35 +14614,36 @@ impl FromXml for EGRPrBase {
                                 }
                             }
                             b"b" => {
-                                f_bold = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_bold = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"bCs" => {
-                                f_b_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_b_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"i" => {
-                                f_italic = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_italic =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"iCs" => {
-                                f_i_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_i_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"caps" => {
-                                f_caps = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_caps = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -14612,7 +14651,7 @@ impl FromXml for EGRPrBase {
                             }
                             b"smallCaps" => {
                                 f_small_caps =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -14620,49 +14659,55 @@ impl FromXml for EGRPrBase {
                             }
                             b"strike" => {
                                 f_strikethrough =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"dstrike" => {
-                                f_dstrike = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_dstrike =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"outline" => {
-                                f_outline = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_outline =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"shadow" => {
-                                f_shadow = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_shadow =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"emboss" => {
-                                f_emboss = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_emboss =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"imprint" => {
-                                f_imprint = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_imprint =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"noProof" => {
-                                f_no_proof = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_no_proof =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -14670,14 +14715,15 @@ impl FromXml for EGRPrBase {
                             }
                             b"snapToGrid" => {
                                 f_snap_to_grid =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"vanish" => {
-                                f_vanish = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_vanish =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -14685,7 +14731,7 @@ impl FromXml for EGRPrBase {
                             }
                             b"webHidden" => {
                                 f_web_hidden =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -14699,7 +14745,7 @@ impl FromXml for EGRPrBase {
                                 }
                             }
                             b"spacing" => {
-                                f_spacing = Some(Box::new(CTSignedTwipsMeasure::from_xml(
+                                f_spacing = Some(Box::new(SignedTwipsMeasureElement::from_xml(
                                     reader, &e, false,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -14708,21 +14754,23 @@ impl FromXml for EGRPrBase {
                                 }
                             }
                             b"w" => {
-                                f_width = Some(Box::new(CTTextScale::from_xml(reader, &e, false)?));
+                                f_width =
+                                    Some(Box::new(TextScaleElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"kern" => {
-                                f_kern = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
+                                f_kern =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"position" => {
-                                f_position = Some(Box::new(CTSignedHpsMeasure::from_xml(
+                                f_position = Some(Box::new(SignedHpsMeasureElement::from_xml(
                                     reader, &e, false,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -14731,7 +14779,8 @@ impl FromXml for EGRPrBase {
                                 }
                             }
                             b"sz" => {
-                                f_size = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
+                                f_size =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -14739,7 +14788,7 @@ impl FromXml for EGRPrBase {
                             }
                             b"szCs" => {
                                 f_size_complex_script =
-                                    Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -14801,14 +14850,14 @@ impl FromXml for EGRPrBase {
                                 }
                             }
                             b"rtl" => {
-                                f_rtl = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_rtl = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"cs" => {
-                                f_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -14822,7 +14871,8 @@ impl FromXml for EGRPrBase {
                                 }
                             }
                             b"lang" => {
-                                f_lang = Some(Box::new(CTLanguage::from_xml(reader, &e, false)?));
+                                f_lang =
+                                    Some(Box::new(LanguageElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -14838,14 +14888,15 @@ impl FromXml for EGRPrBase {
                             }
                             b"specVanish" => {
                                 f_spec_vanish =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"oMath" => {
-                                f_o_math = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_o_math =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -14885,42 +14936,44 @@ impl FromXml for EGRPrBase {
                                 }
                             }
                             b"b" => {
-                                f_bold = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_bold = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"bCs" => {
-                                f_b_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_b_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"i" => {
-                                f_italic = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_italic =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"iCs" => {
-                                f_i_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_i_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"caps" => {
-                                f_caps = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_caps = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"smallCaps" => {
-                                f_small_caps = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_small_caps =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -14928,49 +14981,55 @@ impl FromXml for EGRPrBase {
                             }
                             b"strike" => {
                                 f_strikethrough =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"dstrike" => {
-                                f_dstrike = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_dstrike =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"outline" => {
-                                f_outline = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_outline =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"shadow" => {
-                                f_shadow = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_shadow =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"emboss" => {
-                                f_emboss = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_emboss =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"imprint" => {
-                                f_imprint = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_imprint =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"noProof" => {
-                                f_no_proof = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_no_proof =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -14978,21 +15037,23 @@ impl FromXml for EGRPrBase {
                             }
                             b"snapToGrid" => {
                                 f_snap_to_grid =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"vanish" => {
-                                f_vanish = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_vanish =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"webHidden" => {
-                                f_web_hidden = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_web_hidden =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15006,7 +15067,7 @@ impl FromXml for EGRPrBase {
                                 }
                             }
                             b"spacing" => {
-                                f_spacing = Some(Box::new(CTSignedTwipsMeasure::from_xml(
+                                f_spacing = Some(Box::new(SignedTwipsMeasureElement::from_xml(
                                     reader, &e, true,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -15015,29 +15076,33 @@ impl FromXml for EGRPrBase {
                                 }
                             }
                             b"w" => {
-                                f_width = Some(Box::new(CTTextScale::from_xml(reader, &e, true)?));
+                                f_width =
+                                    Some(Box::new(TextScaleElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"kern" => {
-                                f_kern = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
+                                f_kern =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"position" => {
-                                f_position =
-                                    Some(Box::new(CTSignedHpsMeasure::from_xml(reader, &e, true)?));
+                                f_position = Some(Box::new(SignedHpsMeasureElement::from_xml(
+                                    reader, &e, true,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"sz" => {
-                                f_size = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
+                                f_size =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15045,7 +15110,7 @@ impl FromXml for EGRPrBase {
                             }
                             b"szCs" => {
                                 f_size_complex_script =
-                                    Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15105,14 +15170,14 @@ impl FromXml for EGRPrBase {
                                 }
                             }
                             b"rtl" => {
-                                f_rtl = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_rtl = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"cs" => {
-                                f_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15126,7 +15191,8 @@ impl FromXml for EGRPrBase {
                                 }
                             }
                             b"lang" => {
-                                f_lang = Some(Box::new(CTLanguage::from_xml(reader, &e, true)?));
+                                f_lang =
+                                    Some(Box::new(LanguageElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15142,14 +15208,15 @@ impl FromXml for EGRPrBase {
                             }
                             b"specVanish" => {
                                 f_spec_vanish =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"oMath" => {
-                                f_o_math = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_o_math =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15297,35 +15364,36 @@ impl FromXml for EGRPrContent {
                                 }
                             }
                             b"b" => {
-                                f_bold = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_bold = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"bCs" => {
-                                f_b_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_b_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"i" => {
-                                f_italic = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_italic =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"iCs" => {
-                                f_i_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_i_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"caps" => {
-                                f_caps = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_caps = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15333,7 +15401,7 @@ impl FromXml for EGRPrContent {
                             }
                             b"smallCaps" => {
                                 f_small_caps =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15341,49 +15409,55 @@ impl FromXml for EGRPrContent {
                             }
                             b"strike" => {
                                 f_strikethrough =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"dstrike" => {
-                                f_dstrike = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_dstrike =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"outline" => {
-                                f_outline = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_outline =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"shadow" => {
-                                f_shadow = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_shadow =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"emboss" => {
-                                f_emboss = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_emboss =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"imprint" => {
-                                f_imprint = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_imprint =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"noProof" => {
-                                f_no_proof = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_no_proof =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15391,14 +15465,15 @@ impl FromXml for EGRPrContent {
                             }
                             b"snapToGrid" => {
                                 f_snap_to_grid =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"vanish" => {
-                                f_vanish = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_vanish =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15406,7 +15481,7 @@ impl FromXml for EGRPrContent {
                             }
                             b"webHidden" => {
                                 f_web_hidden =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15420,7 +15495,7 @@ impl FromXml for EGRPrContent {
                                 }
                             }
                             b"spacing" => {
-                                f_spacing = Some(Box::new(CTSignedTwipsMeasure::from_xml(
+                                f_spacing = Some(Box::new(SignedTwipsMeasureElement::from_xml(
                                     reader, &e, false,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -15429,21 +15504,23 @@ impl FromXml for EGRPrContent {
                                 }
                             }
                             b"w" => {
-                                f_width = Some(Box::new(CTTextScale::from_xml(reader, &e, false)?));
+                                f_width =
+                                    Some(Box::new(TextScaleElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"kern" => {
-                                f_kern = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
+                                f_kern =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"position" => {
-                                f_position = Some(Box::new(CTSignedHpsMeasure::from_xml(
+                                f_position = Some(Box::new(SignedHpsMeasureElement::from_xml(
                                     reader, &e, false,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -15452,7 +15529,8 @@ impl FromXml for EGRPrContent {
                                 }
                             }
                             b"sz" => {
-                                f_size = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
+                                f_size =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15460,7 +15538,7 @@ impl FromXml for EGRPrContent {
                             }
                             b"szCs" => {
                                 f_size_complex_script =
-                                    Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15522,14 +15600,14 @@ impl FromXml for EGRPrContent {
                                 }
                             }
                             b"rtl" => {
-                                f_rtl = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_rtl = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"cs" => {
-                                f_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15543,7 +15621,8 @@ impl FromXml for EGRPrContent {
                                 }
                             }
                             b"lang" => {
-                                f_lang = Some(Box::new(CTLanguage::from_xml(reader, &e, false)?));
+                                f_lang =
+                                    Some(Box::new(LanguageElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15559,14 +15638,15 @@ impl FromXml for EGRPrContent {
                             }
                             b"specVanish" => {
                                 f_spec_vanish =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"oMath" => {
-                                f_o_math = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_o_math =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15614,42 +15694,44 @@ impl FromXml for EGRPrContent {
                                 }
                             }
                             b"b" => {
-                                f_bold = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_bold = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"bCs" => {
-                                f_b_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_b_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"i" => {
-                                f_italic = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_italic =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"iCs" => {
-                                f_i_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_i_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"caps" => {
-                                f_caps = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_caps = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"smallCaps" => {
-                                f_small_caps = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_small_caps =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15657,49 +15739,55 @@ impl FromXml for EGRPrContent {
                             }
                             b"strike" => {
                                 f_strikethrough =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"dstrike" => {
-                                f_dstrike = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_dstrike =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"outline" => {
-                                f_outline = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_outline =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"shadow" => {
-                                f_shadow = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_shadow =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"emboss" => {
-                                f_emboss = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_emboss =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"imprint" => {
-                                f_imprint = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_imprint =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"noProof" => {
-                                f_no_proof = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_no_proof =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15707,21 +15795,23 @@ impl FromXml for EGRPrContent {
                             }
                             b"snapToGrid" => {
                                 f_snap_to_grid =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"vanish" => {
-                                f_vanish = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_vanish =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"webHidden" => {
-                                f_web_hidden = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_web_hidden =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15735,7 +15825,7 @@ impl FromXml for EGRPrContent {
                                 }
                             }
                             b"spacing" => {
-                                f_spacing = Some(Box::new(CTSignedTwipsMeasure::from_xml(
+                                f_spacing = Some(Box::new(SignedTwipsMeasureElement::from_xml(
                                     reader, &e, true,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -15744,29 +15834,33 @@ impl FromXml for EGRPrContent {
                                 }
                             }
                             b"w" => {
-                                f_width = Some(Box::new(CTTextScale::from_xml(reader, &e, true)?));
+                                f_width =
+                                    Some(Box::new(TextScaleElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"kern" => {
-                                f_kern = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
+                                f_kern =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"position" => {
-                                f_position =
-                                    Some(Box::new(CTSignedHpsMeasure::from_xml(reader, &e, true)?));
+                                f_position = Some(Box::new(SignedHpsMeasureElement::from_xml(
+                                    reader, &e, true,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"sz" => {
-                                f_size = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
+                                f_size =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15774,7 +15868,7 @@ impl FromXml for EGRPrContent {
                             }
                             b"szCs" => {
                                 f_size_complex_script =
-                                    Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15834,14 +15928,14 @@ impl FromXml for EGRPrContent {
                                 }
                             }
                             b"rtl" => {
-                                f_rtl = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_rtl = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"cs" => {
-                                f_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15855,7 +15949,8 @@ impl FromXml for EGRPrContent {
                                 }
                             }
                             b"lang" => {
-                                f_lang = Some(Box::new(CTLanguage::from_xml(reader, &e, true)?));
+                                f_lang =
+                                    Some(Box::new(LanguageElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15871,14 +15966,15 @@ impl FromXml for EGRPrContent {
                             }
                             b"specVanish" => {
                                 f_spec_vanish =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"oMath" => {
-                                f_o_math = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_o_math =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16076,7 +16172,7 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"b" => {
-                                f_bold = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_bold = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16084,7 +16180,7 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"bCs" => {
-                                f_b_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_b_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16092,7 +16188,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"i" => {
-                                f_italic = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_italic =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16100,7 +16197,7 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"iCs" => {
-                                f_i_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_i_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16108,7 +16205,7 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"caps" => {
-                                f_caps = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_caps = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16117,7 +16214,7 @@ impl FromXml for RunProperties {
                             #[cfg(feature = "wml-styling")]
                             b"smallCaps" => {
                                 f_small_caps =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16126,7 +16223,7 @@ impl FromXml for RunProperties {
                             #[cfg(feature = "wml-styling")]
                             b"strike" => {
                                 f_strikethrough =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16134,7 +16231,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"dstrike" => {
-                                f_dstrike = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_dstrike =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16142,7 +16240,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"outline" => {
-                                f_outline = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_outline =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16150,7 +16249,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"shadow" => {
-                                f_shadow = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_shadow =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16158,7 +16258,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"emboss" => {
-                                f_emboss = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_emboss =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16166,7 +16267,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"imprint" => {
-                                f_imprint = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_imprint =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16174,7 +16276,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"noProof" => {
-                                f_no_proof = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_no_proof =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16183,7 +16286,7 @@ impl FromXml for RunProperties {
                             #[cfg(feature = "wml-styling")]
                             b"snapToGrid" => {
                                 f_snap_to_grid =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16191,7 +16294,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"vanish" => {
-                                f_vanish = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_vanish =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16200,7 +16304,7 @@ impl FromXml for RunProperties {
                             #[cfg(feature = "wml-styling")]
                             b"webHidden" => {
                                 f_web_hidden =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16216,7 +16320,7 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"spacing" => {
-                                f_spacing = Some(Box::new(CTSignedTwipsMeasure::from_xml(
+                                f_spacing = Some(Box::new(SignedTwipsMeasureElement::from_xml(
                                     reader, &e, false,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -16226,7 +16330,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"w" => {
-                                f_width = Some(Box::new(CTTextScale::from_xml(reader, &e, false)?));
+                                f_width =
+                                    Some(Box::new(TextScaleElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16234,7 +16339,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"kern" => {
-                                f_kern = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
+                                f_kern =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16242,7 +16348,7 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"position" => {
-                                f_position = Some(Box::new(CTSignedHpsMeasure::from_xml(
+                                f_position = Some(Box::new(SignedHpsMeasureElement::from_xml(
                                     reader, &e, false,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -16252,7 +16358,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"sz" => {
-                                f_size = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
+                                f_size =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16261,7 +16368,7 @@ impl FromXml for RunProperties {
                             #[cfg(feature = "wml-styling")]
                             b"szCs" => {
                                 f_size_complex_script =
-                                    Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16331,7 +16438,7 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"rtl" => {
-                                f_rtl = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_rtl = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16339,7 +16446,7 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"cs" => {
-                                f_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16355,7 +16462,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"lang" => {
-                                f_lang = Some(Box::new(CTLanguage::from_xml(reader, &e, false)?));
+                                f_lang =
+                                    Some(Box::new(LanguageElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16373,7 +16481,7 @@ impl FromXml for RunProperties {
                             #[cfg(feature = "wml-styling")]
                             b"specVanish" => {
                                 f_spec_vanish =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16381,7 +16489,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"oMath" => {
-                                f_o_math = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_o_math =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16432,7 +16541,7 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"b" => {
-                                f_bold = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_bold = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16440,7 +16549,7 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"bCs" => {
-                                f_b_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_b_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16448,7 +16557,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"i" => {
-                                f_italic = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_italic =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16456,7 +16566,7 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"iCs" => {
-                                f_i_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_i_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16464,7 +16574,7 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"caps" => {
-                                f_caps = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_caps = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16472,7 +16582,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"smallCaps" => {
-                                f_small_caps = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_small_caps =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16481,7 +16592,7 @@ impl FromXml for RunProperties {
                             #[cfg(feature = "wml-styling")]
                             b"strike" => {
                                 f_strikethrough =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16489,7 +16600,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"dstrike" => {
-                                f_dstrike = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_dstrike =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16497,7 +16609,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"outline" => {
-                                f_outline = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_outline =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16505,7 +16618,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"shadow" => {
-                                f_shadow = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_shadow =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16513,7 +16627,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"emboss" => {
-                                f_emboss = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_emboss =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16521,7 +16636,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"imprint" => {
-                                f_imprint = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_imprint =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16529,7 +16645,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"noProof" => {
-                                f_no_proof = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_no_proof =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16538,7 +16655,7 @@ impl FromXml for RunProperties {
                             #[cfg(feature = "wml-styling")]
                             b"snapToGrid" => {
                                 f_snap_to_grid =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16546,7 +16663,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"vanish" => {
-                                f_vanish = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_vanish =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16554,7 +16672,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"webHidden" => {
-                                f_web_hidden = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_web_hidden =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16570,7 +16689,7 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"spacing" => {
-                                f_spacing = Some(Box::new(CTSignedTwipsMeasure::from_xml(
+                                f_spacing = Some(Box::new(SignedTwipsMeasureElement::from_xml(
                                     reader, &e, true,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -16580,7 +16699,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"w" => {
-                                f_width = Some(Box::new(CTTextScale::from_xml(reader, &e, true)?));
+                                f_width =
+                                    Some(Box::new(TextScaleElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16588,7 +16708,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"kern" => {
-                                f_kern = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
+                                f_kern =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16596,8 +16717,9 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"position" => {
-                                f_position =
-                                    Some(Box::new(CTSignedHpsMeasure::from_xml(reader, &e, true)?));
+                                f_position = Some(Box::new(SignedHpsMeasureElement::from_xml(
+                                    reader, &e, true,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16605,7 +16727,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"sz" => {
-                                f_size = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
+                                f_size =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16614,7 +16737,7 @@ impl FromXml for RunProperties {
                             #[cfg(feature = "wml-styling")]
                             b"szCs" => {
                                 f_size_complex_script =
-                                    Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16682,7 +16805,7 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"rtl" => {
-                                f_rtl = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_rtl = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16690,7 +16813,7 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"cs" => {
-                                f_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16706,7 +16829,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"lang" => {
-                                f_lang = Some(Box::new(CTLanguage::from_xml(reader, &e, true)?));
+                                f_lang =
+                                    Some(Box::new(LanguageElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16724,7 +16848,7 @@ impl FromXml for RunProperties {
                             #[cfg(feature = "wml-styling")]
                             b"specVanish" => {
                                 f_spec_vanish =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16732,7 +16856,8 @@ impl FromXml for RunProperties {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"oMath" => {
-                                f_o_math = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_o_math =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -17298,35 +17423,36 @@ impl FromXml for CTRPrOriginal {
                                 }
                             }
                             b"b" => {
-                                f_bold = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_bold = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"bCs" => {
-                                f_b_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_b_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"i" => {
-                                f_italic = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_italic =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"iCs" => {
-                                f_i_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_i_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"caps" => {
-                                f_caps = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_caps = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -17334,7 +17460,7 @@ impl FromXml for CTRPrOriginal {
                             }
                             b"smallCaps" => {
                                 f_small_caps =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -17342,49 +17468,55 @@ impl FromXml for CTRPrOriginal {
                             }
                             b"strike" => {
                                 f_strikethrough =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"dstrike" => {
-                                f_dstrike = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_dstrike =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"outline" => {
-                                f_outline = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_outline =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"shadow" => {
-                                f_shadow = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_shadow =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"emboss" => {
-                                f_emboss = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_emboss =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"imprint" => {
-                                f_imprint = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_imprint =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"noProof" => {
-                                f_no_proof = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_no_proof =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -17392,14 +17524,15 @@ impl FromXml for CTRPrOriginal {
                             }
                             b"snapToGrid" => {
                                 f_snap_to_grid =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"vanish" => {
-                                f_vanish = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_vanish =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -17407,7 +17540,7 @@ impl FromXml for CTRPrOriginal {
                             }
                             b"webHidden" => {
                                 f_web_hidden =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -17421,7 +17554,7 @@ impl FromXml for CTRPrOriginal {
                                 }
                             }
                             b"spacing" => {
-                                f_spacing = Some(Box::new(CTSignedTwipsMeasure::from_xml(
+                                f_spacing = Some(Box::new(SignedTwipsMeasureElement::from_xml(
                                     reader, &e, false,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -17430,21 +17563,23 @@ impl FromXml for CTRPrOriginal {
                                 }
                             }
                             b"w" => {
-                                f_width = Some(Box::new(CTTextScale::from_xml(reader, &e, false)?));
+                                f_width =
+                                    Some(Box::new(TextScaleElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"kern" => {
-                                f_kern = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
+                                f_kern =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"position" => {
-                                f_position = Some(Box::new(CTSignedHpsMeasure::from_xml(
+                                f_position = Some(Box::new(SignedHpsMeasureElement::from_xml(
                                     reader, &e, false,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -17453,7 +17588,8 @@ impl FromXml for CTRPrOriginal {
                                 }
                             }
                             b"sz" => {
-                                f_size = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
+                                f_size =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -17461,7 +17597,7 @@ impl FromXml for CTRPrOriginal {
                             }
                             b"szCs" => {
                                 f_size_complex_script =
-                                    Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -17523,14 +17659,14 @@ impl FromXml for CTRPrOriginal {
                                 }
                             }
                             b"rtl" => {
-                                f_rtl = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_rtl = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"cs" => {
-                                f_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -17544,7 +17680,8 @@ impl FromXml for CTRPrOriginal {
                                 }
                             }
                             b"lang" => {
-                                f_lang = Some(Box::new(CTLanguage::from_xml(reader, &e, false)?));
+                                f_lang =
+                                    Some(Box::new(LanguageElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -17560,14 +17697,15 @@ impl FromXml for CTRPrOriginal {
                             }
                             b"specVanish" => {
                                 f_spec_vanish =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"oMath" => {
-                                f_o_math = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_o_math =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -17607,42 +17745,44 @@ impl FromXml for CTRPrOriginal {
                                 }
                             }
                             b"b" => {
-                                f_bold = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_bold = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"bCs" => {
-                                f_b_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_b_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"i" => {
-                                f_italic = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_italic =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"iCs" => {
-                                f_i_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_i_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"caps" => {
-                                f_caps = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_caps = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"smallCaps" => {
-                                f_small_caps = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_small_caps =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -17650,49 +17790,55 @@ impl FromXml for CTRPrOriginal {
                             }
                             b"strike" => {
                                 f_strikethrough =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"dstrike" => {
-                                f_dstrike = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_dstrike =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"outline" => {
-                                f_outline = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_outline =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"shadow" => {
-                                f_shadow = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_shadow =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"emboss" => {
-                                f_emboss = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_emboss =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"imprint" => {
-                                f_imprint = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_imprint =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"noProof" => {
-                                f_no_proof = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_no_proof =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -17700,21 +17846,23 @@ impl FromXml for CTRPrOriginal {
                             }
                             b"snapToGrid" => {
                                 f_snap_to_grid =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"vanish" => {
-                                f_vanish = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_vanish =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"webHidden" => {
-                                f_web_hidden = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_web_hidden =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -17728,7 +17876,7 @@ impl FromXml for CTRPrOriginal {
                                 }
                             }
                             b"spacing" => {
-                                f_spacing = Some(Box::new(CTSignedTwipsMeasure::from_xml(
+                                f_spacing = Some(Box::new(SignedTwipsMeasureElement::from_xml(
                                     reader, &e, true,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -17737,29 +17885,33 @@ impl FromXml for CTRPrOriginal {
                                 }
                             }
                             b"w" => {
-                                f_width = Some(Box::new(CTTextScale::from_xml(reader, &e, true)?));
+                                f_width =
+                                    Some(Box::new(TextScaleElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"kern" => {
-                                f_kern = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
+                                f_kern =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"position" => {
-                                f_position =
-                                    Some(Box::new(CTSignedHpsMeasure::from_xml(reader, &e, true)?));
+                                f_position = Some(Box::new(SignedHpsMeasureElement::from_xml(
+                                    reader, &e, true,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"sz" => {
-                                f_size = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
+                                f_size =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -17767,7 +17919,7 @@ impl FromXml for CTRPrOriginal {
                             }
                             b"szCs" => {
                                 f_size_complex_script =
-                                    Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -17827,14 +17979,14 @@ impl FromXml for CTRPrOriginal {
                                 }
                             }
                             b"rtl" => {
-                                f_rtl = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_rtl = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"cs" => {
-                                f_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -17848,7 +18000,8 @@ impl FromXml for CTRPrOriginal {
                                 }
                             }
                             b"lang" => {
-                                f_lang = Some(Box::new(CTLanguage::from_xml(reader, &e, true)?));
+                                f_lang =
+                                    Some(Box::new(LanguageElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -17864,14 +18017,15 @@ impl FromXml for CTRPrOriginal {
                             }
                             b"specVanish" => {
                                 f_spec_vanish =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"oMath" => {
-                                f_o_math = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_o_math =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18052,35 +18206,36 @@ impl FromXml for CTParaRPrOriginal {
                                 }
                             }
                             b"b" => {
-                                f_bold = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_bold = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"bCs" => {
-                                f_b_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_b_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"i" => {
-                                f_italic = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_italic =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"iCs" => {
-                                f_i_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_i_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"caps" => {
-                                f_caps = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_caps = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18088,7 +18243,7 @@ impl FromXml for CTParaRPrOriginal {
                             }
                             b"smallCaps" => {
                                 f_small_caps =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18096,49 +18251,55 @@ impl FromXml for CTParaRPrOriginal {
                             }
                             b"strike" => {
                                 f_strikethrough =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"dstrike" => {
-                                f_dstrike = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_dstrike =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"outline" => {
-                                f_outline = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_outline =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"shadow" => {
-                                f_shadow = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_shadow =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"emboss" => {
-                                f_emboss = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_emboss =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"imprint" => {
-                                f_imprint = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_imprint =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"noProof" => {
-                                f_no_proof = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_no_proof =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18146,14 +18307,15 @@ impl FromXml for CTParaRPrOriginal {
                             }
                             b"snapToGrid" => {
                                 f_snap_to_grid =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"vanish" => {
-                                f_vanish = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_vanish =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18161,7 +18323,7 @@ impl FromXml for CTParaRPrOriginal {
                             }
                             b"webHidden" => {
                                 f_web_hidden =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18175,7 +18337,7 @@ impl FromXml for CTParaRPrOriginal {
                                 }
                             }
                             b"spacing" => {
-                                f_spacing = Some(Box::new(CTSignedTwipsMeasure::from_xml(
+                                f_spacing = Some(Box::new(SignedTwipsMeasureElement::from_xml(
                                     reader, &e, false,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -18184,21 +18346,23 @@ impl FromXml for CTParaRPrOriginal {
                                 }
                             }
                             b"w" => {
-                                f_width = Some(Box::new(CTTextScale::from_xml(reader, &e, false)?));
+                                f_width =
+                                    Some(Box::new(TextScaleElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"kern" => {
-                                f_kern = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
+                                f_kern =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"position" => {
-                                f_position = Some(Box::new(CTSignedHpsMeasure::from_xml(
+                                f_position = Some(Box::new(SignedHpsMeasureElement::from_xml(
                                     reader, &e, false,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -18207,7 +18371,8 @@ impl FromXml for CTParaRPrOriginal {
                                 }
                             }
                             b"sz" => {
-                                f_size = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
+                                f_size =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18215,7 +18380,7 @@ impl FromXml for CTParaRPrOriginal {
                             }
                             b"szCs" => {
                                 f_size_complex_script =
-                                    Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18277,14 +18442,14 @@ impl FromXml for CTParaRPrOriginal {
                                 }
                             }
                             b"rtl" => {
-                                f_rtl = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_rtl = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"cs" => {
-                                f_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18298,7 +18463,8 @@ impl FromXml for CTParaRPrOriginal {
                                 }
                             }
                             b"lang" => {
-                                f_lang = Some(Box::new(CTLanguage::from_xml(reader, &e, false)?));
+                                f_lang =
+                                    Some(Box::new(LanguageElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18314,14 +18480,15 @@ impl FromXml for CTParaRPrOriginal {
                             }
                             b"specVanish" => {
                                 f_spec_vanish =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"oMath" => {
-                                f_o_math = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_o_math =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18391,42 +18558,44 @@ impl FromXml for CTParaRPrOriginal {
                                 }
                             }
                             b"b" => {
-                                f_bold = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_bold = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"bCs" => {
-                                f_b_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_b_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"i" => {
-                                f_italic = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_italic =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"iCs" => {
-                                f_i_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_i_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"caps" => {
-                                f_caps = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_caps = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"smallCaps" => {
-                                f_small_caps = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_small_caps =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18434,49 +18603,55 @@ impl FromXml for CTParaRPrOriginal {
                             }
                             b"strike" => {
                                 f_strikethrough =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"dstrike" => {
-                                f_dstrike = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_dstrike =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"outline" => {
-                                f_outline = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_outline =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"shadow" => {
-                                f_shadow = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_shadow =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"emboss" => {
-                                f_emboss = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_emboss =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"imprint" => {
-                                f_imprint = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_imprint =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"noProof" => {
-                                f_no_proof = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_no_proof =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18484,21 +18659,23 @@ impl FromXml for CTParaRPrOriginal {
                             }
                             b"snapToGrid" => {
                                 f_snap_to_grid =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"vanish" => {
-                                f_vanish = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_vanish =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"webHidden" => {
-                                f_web_hidden = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_web_hidden =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18512,7 +18689,7 @@ impl FromXml for CTParaRPrOriginal {
                                 }
                             }
                             b"spacing" => {
-                                f_spacing = Some(Box::new(CTSignedTwipsMeasure::from_xml(
+                                f_spacing = Some(Box::new(SignedTwipsMeasureElement::from_xml(
                                     reader, &e, true,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -18521,29 +18698,33 @@ impl FromXml for CTParaRPrOriginal {
                                 }
                             }
                             b"w" => {
-                                f_width = Some(Box::new(CTTextScale::from_xml(reader, &e, true)?));
+                                f_width =
+                                    Some(Box::new(TextScaleElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"kern" => {
-                                f_kern = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
+                                f_kern =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"position" => {
-                                f_position =
-                                    Some(Box::new(CTSignedHpsMeasure::from_xml(reader, &e, true)?));
+                                f_position = Some(Box::new(SignedHpsMeasureElement::from_xml(
+                                    reader, &e, true,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"sz" => {
-                                f_size = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
+                                f_size =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18551,7 +18732,7 @@ impl FromXml for CTParaRPrOriginal {
                             }
                             b"szCs" => {
                                 f_size_complex_script =
-                                    Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18611,14 +18792,14 @@ impl FromXml for CTParaRPrOriginal {
                                 }
                             }
                             b"rtl" => {
-                                f_rtl = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_rtl = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"cs" => {
-                                f_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18632,7 +18813,8 @@ impl FromXml for CTParaRPrOriginal {
                                 }
                             }
                             b"lang" => {
-                                f_lang = Some(Box::new(CTLanguage::from_xml(reader, &e, true)?));
+                                f_lang =
+                                    Some(Box::new(LanguageElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18648,14 +18830,15 @@ impl FromXml for CTParaRPrOriginal {
                             }
                             b"specVanish" => {
                                 f_spec_vanish =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"oMath" => {
-                                f_o_math = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_o_math =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18842,35 +19025,36 @@ impl FromXml for CTParaRPr {
                                 }
                             }
                             b"b" => {
-                                f_bold = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_bold = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"bCs" => {
-                                f_b_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_b_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"i" => {
-                                f_italic = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_italic =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"iCs" => {
-                                f_i_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_i_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"caps" => {
-                                f_caps = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_caps = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18878,7 +19062,7 @@ impl FromXml for CTParaRPr {
                             }
                             b"smallCaps" => {
                                 f_small_caps =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18886,49 +19070,55 @@ impl FromXml for CTParaRPr {
                             }
                             b"strike" => {
                                 f_strikethrough =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"dstrike" => {
-                                f_dstrike = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_dstrike =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"outline" => {
-                                f_outline = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_outline =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"shadow" => {
-                                f_shadow = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_shadow =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"emboss" => {
-                                f_emboss = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_emboss =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"imprint" => {
-                                f_imprint = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_imprint =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"noProof" => {
-                                f_no_proof = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_no_proof =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18936,14 +19126,15 @@ impl FromXml for CTParaRPr {
                             }
                             b"snapToGrid" => {
                                 f_snap_to_grid =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"vanish" => {
-                                f_vanish = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_vanish =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18951,7 +19142,7 @@ impl FromXml for CTParaRPr {
                             }
                             b"webHidden" => {
                                 f_web_hidden =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18965,7 +19156,7 @@ impl FromXml for CTParaRPr {
                                 }
                             }
                             b"spacing" => {
-                                f_spacing = Some(Box::new(CTSignedTwipsMeasure::from_xml(
+                                f_spacing = Some(Box::new(SignedTwipsMeasureElement::from_xml(
                                     reader, &e, false,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -18974,21 +19165,23 @@ impl FromXml for CTParaRPr {
                                 }
                             }
                             b"w" => {
-                                f_width = Some(Box::new(CTTextScale::from_xml(reader, &e, false)?));
+                                f_width =
+                                    Some(Box::new(TextScaleElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"kern" => {
-                                f_kern = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
+                                f_kern =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"position" => {
-                                f_position = Some(Box::new(CTSignedHpsMeasure::from_xml(
+                                f_position = Some(Box::new(SignedHpsMeasureElement::from_xml(
                                     reader, &e, false,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -18997,7 +19190,8 @@ impl FromXml for CTParaRPr {
                                 }
                             }
                             b"sz" => {
-                                f_size = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
+                                f_size =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19005,7 +19199,7 @@ impl FromXml for CTParaRPr {
                             }
                             b"szCs" => {
                                 f_size_complex_script =
-                                    Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19067,14 +19261,14 @@ impl FromXml for CTParaRPr {
                                 }
                             }
                             b"rtl" => {
-                                f_rtl = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_rtl = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"cs" => {
-                                f_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19088,7 +19282,8 @@ impl FromXml for CTParaRPr {
                                 }
                             }
                             b"lang" => {
-                                f_lang = Some(Box::new(CTLanguage::from_xml(reader, &e, false)?));
+                                f_lang =
+                                    Some(Box::new(LanguageElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19104,14 +19299,15 @@ impl FromXml for CTParaRPr {
                             }
                             b"specVanish" => {
                                 f_spec_vanish =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"oMath" => {
-                                f_o_math = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_o_math =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19190,42 +19386,44 @@ impl FromXml for CTParaRPr {
                                 }
                             }
                             b"b" => {
-                                f_bold = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_bold = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"bCs" => {
-                                f_b_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_b_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"i" => {
-                                f_italic = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_italic =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"iCs" => {
-                                f_i_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_i_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"caps" => {
-                                f_caps = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_caps = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"smallCaps" => {
-                                f_small_caps = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_small_caps =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19233,49 +19431,55 @@ impl FromXml for CTParaRPr {
                             }
                             b"strike" => {
                                 f_strikethrough =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"dstrike" => {
-                                f_dstrike = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_dstrike =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"outline" => {
-                                f_outline = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_outline =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"shadow" => {
-                                f_shadow = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_shadow =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"emboss" => {
-                                f_emboss = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_emboss =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"imprint" => {
-                                f_imprint = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_imprint =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"noProof" => {
-                                f_no_proof = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_no_proof =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19283,21 +19487,23 @@ impl FromXml for CTParaRPr {
                             }
                             b"snapToGrid" => {
                                 f_snap_to_grid =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"vanish" => {
-                                f_vanish = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_vanish =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"webHidden" => {
-                                f_web_hidden = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_web_hidden =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19311,7 +19517,7 @@ impl FromXml for CTParaRPr {
                                 }
                             }
                             b"spacing" => {
-                                f_spacing = Some(Box::new(CTSignedTwipsMeasure::from_xml(
+                                f_spacing = Some(Box::new(SignedTwipsMeasureElement::from_xml(
                                     reader, &e, true,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -19320,29 +19526,33 @@ impl FromXml for CTParaRPr {
                                 }
                             }
                             b"w" => {
-                                f_width = Some(Box::new(CTTextScale::from_xml(reader, &e, true)?));
+                                f_width =
+                                    Some(Box::new(TextScaleElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"kern" => {
-                                f_kern = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
+                                f_kern =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"position" => {
-                                f_position =
-                                    Some(Box::new(CTSignedHpsMeasure::from_xml(reader, &e, true)?));
+                                f_position = Some(Box::new(SignedHpsMeasureElement::from_xml(
+                                    reader, &e, true,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"sz" => {
-                                f_size = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
+                                f_size =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19350,7 +19560,7 @@ impl FromXml for CTParaRPr {
                             }
                             b"szCs" => {
                                 f_size_complex_script =
-                                    Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19410,14 +19620,14 @@ impl FromXml for CTParaRPr {
                                 }
                             }
                             b"rtl" => {
-                                f_rtl = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_rtl = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"cs" => {
-                                f_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_cs = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19431,7 +19641,8 @@ impl FromXml for CTParaRPr {
                                 }
                             }
                             b"lang" => {
-                                f_lang = Some(Box::new(CTLanguage::from_xml(reader, &e, true)?));
+                                f_lang =
+                                    Some(Box::new(LanguageElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19447,14 +19658,15 @@ impl FromXml for CTParaRPr {
                             }
                             b"specVanish" => {
                                 f_spec_vanish =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"oMath" => {
-                                f_o_math = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_o_math =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19810,7 +20022,8 @@ impl FromXml for CTAltChunkPr {
                         match e.local_name().as_ref() {
                             #[cfg(feature = "wml-settings")]
                             b"matchSrc" => {
-                                f_match_src = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_match_src =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19837,7 +20050,8 @@ impl FromXml for CTAltChunkPr {
                         match e.local_name().as_ref() {
                             #[cfg(feature = "wml-settings")]
                             b"matchSrc" => {
-                                f_match_src = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_match_src =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19930,11 +20144,11 @@ impl FromXml for CTRubyPr {
         #[cfg(feature = "wml-styling")]
         let mut f_ruby_align: Option<Box<CTRubyAlign>> = None;
         #[cfg(feature = "wml-styling")]
-        let mut f_hps: Option<Box<CTHpsMeasure>> = None;
+        let mut f_hps: Option<Box<HpsMeasureElement>> = None;
         #[cfg(feature = "wml-styling")]
-        let mut f_hps_raise: Option<Box<CTHpsMeasure>> = None;
+        let mut f_hps_raise: Option<Box<HpsMeasureElement>> = None;
         #[cfg(feature = "wml-styling")]
-        let mut f_hps_base_text: Option<Box<CTHpsMeasure>> = None;
+        let mut f_hps_base_text: Option<Box<HpsMeasureElement>> = None;
         #[cfg(feature = "wml-styling")]
         let mut f_lid: Option<Box<CTLang>> = None;
         #[cfg(feature = "wml-styling")]
@@ -19962,7 +20176,8 @@ impl FromXml for CTRubyPr {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"hps" => {
-                                f_hps = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
+                                f_hps =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19971,7 +20186,7 @@ impl FromXml for CTRubyPr {
                             #[cfg(feature = "wml-styling")]
                             b"hpsRaise" => {
                                 f_hps_raise =
-                                    Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19980,7 +20195,7 @@ impl FromXml for CTRubyPr {
                             #[cfg(feature = "wml-styling")]
                             b"hpsBaseText" => {
                                 f_hps_base_text =
-                                    Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19996,7 +20211,8 @@ impl FromXml for CTRubyPr {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"dirty" => {
-                                f_dirty = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_dirty =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -20032,7 +20248,8 @@ impl FromXml for CTRubyPr {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"hps" => {
-                                f_hps = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
+                                f_hps =
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -20041,7 +20258,7 @@ impl FromXml for CTRubyPr {
                             #[cfg(feature = "wml-styling")]
                             b"hpsRaise" => {
                                 f_hps_raise =
-                                    Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -20050,7 +20267,7 @@ impl FromXml for CTRubyPr {
                             #[cfg(feature = "wml-styling")]
                             b"hpsBaseText" => {
                                 f_hps_base_text =
-                                    Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
+                                    Some(Box::new(HpsMeasureElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -20066,7 +20283,7 @@ impl FromXml for CTRubyPr {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"dirty" => {
-                                f_dirty = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_dirty = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -21006,7 +21223,7 @@ impl FromXml for CTSdtDocPart {
                             #[cfg(feature = "wml-settings")]
                             b"docPartUnique" => {
                                 f_doc_part_unique =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -21052,7 +21269,7 @@ impl FromXml for CTSdtDocPart {
                             #[cfg(feature = "wml-settings")]
                             b"docPartUnique" => {
                                 f_doc_part_unique =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -21439,7 +21656,8 @@ impl FromXml for CTSdtPr {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"temporary" => {
-                                f_temporary = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_temporary =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -21448,7 +21666,7 @@ impl FromXml for CTSdtPr {
                             #[cfg(feature = "wml-settings")]
                             b"showingPlcHdr" => {
                                 f_showing_plc_hdr =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -21474,9 +21692,9 @@ impl FromXml for CTSdtPr {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"tabIndex" => {
-                                f_tab_index = Some(Box::new(CTUnsignedDecimalNumber::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_tab_index = Some(Box::new(
+                                    UnsignedDecimalNumberElement::from_xml(reader, &e, false)?,
+                                ));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -21653,7 +21871,8 @@ impl FromXml for CTSdtPr {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"temporary" => {
-                                f_temporary = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_temporary =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -21662,7 +21881,7 @@ impl FromXml for CTSdtPr {
                             #[cfg(feature = "wml-settings")]
                             b"showingPlcHdr" => {
                                 f_showing_plc_hdr =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -21688,9 +21907,9 @@ impl FromXml for CTSdtPr {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"tabIndex" => {
-                                f_tab_index = Some(Box::new(CTUnsignedDecimalNumber::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_tab_index = Some(Box::new(
+                                    UnsignedDecimalNumberElement::from_xml(reader, &e, true)?,
+                                ));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -26432,7 +26651,8 @@ impl FromXml for CTTcPrBase {
                             }
                             #[cfg(feature = "wml-tables")]
                             b"noWrap" => {
-                                f_no_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_no_wrap =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -26458,7 +26678,7 @@ impl FromXml for CTTcPrBase {
                             #[cfg(feature = "wml-tables")]
                             b"tcFitText" => {
                                 f_tc_fit_text =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -26475,7 +26695,8 @@ impl FromXml for CTTcPrBase {
                             }
                             #[cfg(feature = "wml-tables")]
                             b"hideMark" => {
-                                f_hide_mark = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_hide_mark =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -26570,7 +26791,8 @@ impl FromXml for CTTcPrBase {
                             }
                             #[cfg(feature = "wml-tables")]
                             b"noWrap" => {
-                                f_no_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_no_wrap =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -26596,7 +26818,7 @@ impl FromXml for CTTcPrBase {
                             #[cfg(feature = "wml-tables")]
                             b"tcFitText" => {
                                 f_tc_fit_text =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -26613,7 +26835,8 @@ impl FromXml for CTTcPrBase {
                             }
                             #[cfg(feature = "wml-tables")]
                             b"hideMark" => {
-                                f_hide_mark = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_hide_mark =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -26795,7 +27018,8 @@ impl FromXml for TableCellProperties {
                             }
                             #[cfg(feature = "wml-tables")]
                             b"noWrap" => {
-                                f_no_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_no_wrap =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -26821,7 +27045,7 @@ impl FromXml for TableCellProperties {
                             #[cfg(feature = "wml-tables")]
                             b"tcFitText" => {
                                 f_tc_fit_text =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -26838,7 +27062,8 @@ impl FromXml for TableCellProperties {
                             }
                             #[cfg(feature = "wml-tables")]
                             b"hideMark" => {
-                                f_hide_mark = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_hide_mark =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -26950,7 +27175,8 @@ impl FromXml for TableCellProperties {
                             }
                             #[cfg(feature = "wml-tables")]
                             b"noWrap" => {
-                                f_no_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_no_wrap =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -26976,7 +27202,7 @@ impl FromXml for TableCellProperties {
                             #[cfg(feature = "wml-tables")]
                             b"tcFitText" => {
                                 f_tc_fit_text =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -26993,7 +27219,8 @@ impl FromXml for TableCellProperties {
                             }
                             #[cfg(feature = "wml-tables")]
                             b"hideMark" => {
-                                f_hide_mark = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_hide_mark =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -27171,7 +27398,8 @@ impl FromXml for CTTcPrInner {
                                 }
                             }
                             b"noWrap" => {
-                                f_no_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_no_wrap =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -27194,7 +27422,7 @@ impl FromXml for CTTcPrInner {
                             }
                             b"tcFitText" => {
                                 f_tc_fit_text =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -27209,7 +27437,8 @@ impl FromXml for CTTcPrInner {
                                 }
                             }
                             b"hideMark" => {
-                                f_hide_mark = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_hide_mark =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -27303,7 +27532,8 @@ impl FromXml for CTTcPrInner {
                                 }
                             }
                             b"noWrap" => {
-                                f_no_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_no_wrap =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -27326,7 +27556,7 @@ impl FromXml for CTTcPrInner {
                             }
                             b"tcFitText" => {
                                 f_tc_fit_text =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -27341,7 +27571,8 @@ impl FromXml for CTTcPrInner {
                                 }
                             }
                             b"hideMark" => {
-                                f_hide_mark = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_hide_mark =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -27918,7 +28149,7 @@ impl FromXml for CTTrPrBase {
                             #[cfg(feature = "wml-tables")]
                             b"cantSplit" => {
                                 f_cant_split =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -27936,7 +28167,7 @@ impl FromXml for CTTrPrBase {
                             #[cfg(feature = "wml-tables")]
                             b"tblHeader" => {
                                 f_tbl_header =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -27962,7 +28193,8 @@ impl FromXml for CTTrPrBase {
                             }
                             #[cfg(feature = "wml-tables")]
                             b"hidden" => {
-                                f_hidden = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_hidden =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -28041,7 +28273,8 @@ impl FromXml for CTTrPrBase {
                             }
                             #[cfg(feature = "wml-tables")]
                             b"cantSplit" => {
-                                f_cant_split = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_cant_split =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -28057,7 +28290,8 @@ impl FromXml for CTTrPrBase {
                             }
                             #[cfg(feature = "wml-tables")]
                             b"tblHeader" => {
-                                f_tbl_header = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_tbl_header =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -28083,7 +28317,8 @@ impl FromXml for CTTrPrBase {
                             }
                             #[cfg(feature = "wml-tables")]
                             b"hidden" => {
-                                f_hidden = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_hidden =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -28246,7 +28481,7 @@ impl FromXml for TableRowProperties {
                             #[cfg(feature = "wml-tables")]
                             b"cantSplit" => {
                                 f_cant_split =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -28264,7 +28499,7 @@ impl FromXml for TableRowProperties {
                             #[cfg(feature = "wml-tables")]
                             b"tblHeader" => {
                                 f_tbl_header =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -28290,7 +28525,8 @@ impl FromXml for TableRowProperties {
                             }
                             #[cfg(feature = "wml-tables")]
                             b"hidden" => {
-                                f_hidden = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_hidden =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -28394,7 +28630,8 @@ impl FromXml for TableRowProperties {
                             }
                             #[cfg(feature = "wml-tables")]
                             b"cantSplit" => {
-                                f_cant_split = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_cant_split =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -28410,7 +28647,8 @@ impl FromXml for TableRowProperties {
                             }
                             #[cfg(feature = "wml-tables")]
                             b"tblHeader" => {
-                                f_tbl_header = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_tbl_header =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -28436,7 +28674,8 @@ impl FromXml for TableRowProperties {
                             }
                             #[cfg(feature = "wml-tables")]
                             b"hidden" => {
-                                f_hidden = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_hidden =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -29462,7 +29701,7 @@ impl FromXml for CTTblPrBase {
                             #[cfg(feature = "wml-tables")]
                             b"bidiVisual" => {
                                 f_bidi_visual =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -29630,7 +29869,7 @@ impl FromXml for CTTblPrBase {
                             #[cfg(feature = "wml-tables")]
                             b"bidiVisual" => {
                                 f_bidi_visual =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -29895,7 +30134,7 @@ impl FromXml for TableProperties {
                             #[cfg(feature = "wml-tables")]
                             b"bidiVisual" => {
                                 f_bidi_visual =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -30072,7 +30311,7 @@ impl FromXml for TableProperties {
                             #[cfg(feature = "wml-tables")]
                             b"bidiVisual" => {
                                 f_bidi_visual =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -32217,7 +32456,8 @@ impl FromXml for CTRecipientData {
                         match e.local_name().as_ref() {
                             #[cfg(feature = "wml-settings")]
                             b"active" => {
-                                f_active = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_active =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -32262,7 +32502,8 @@ impl FromXml for CTRecipientData {
                         match e.local_name().as_ref() {
                             #[cfg(feature = "wml-settings")]
                             b"active" => {
-                                f_active = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_active =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -32533,7 +32774,7 @@ impl FromXml for CTOdsoFieldMapData {
                             #[cfg(feature = "wml-settings")]
                             b"dynamicAddress" => {
                                 f_dynamic_address =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -32605,7 +32846,7 @@ impl FromXml for CTOdsoFieldMapData {
                             #[cfg(feature = "wml-settings")]
                             b"dynamicAddress" => {
                                 f_dynamic_address =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -32778,7 +33019,8 @@ impl FromXml for CTOdso {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"fHdr" => {
-                                f_f_hdr = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_f_hdr =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -32865,7 +33107,7 @@ impl FromXml for CTOdso {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"fHdr" => {
-                                f_f_hdr = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_f_hdr = Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -32944,7 +33186,7 @@ impl FromXml for CTMailMerge {
         #[cfg(feature = "wml-settings")]
         let mut f_link_to_query = None;
         #[cfg(feature = "wml-settings")]
-        let mut f_data_type: Option<Box<CTMailMergeDataType>> = None;
+        let mut f_data_type: Option<Box<MailMergeDataTypeElement>> = None;
         #[cfg(feature = "wml-settings")]
         let mut f_connect_string = None;
         #[cfg(feature = "wml-settings")]
@@ -32996,7 +33238,7 @@ impl FromXml for CTMailMerge {
                             #[cfg(feature = "wml-settings")]
                             b"linkToQuery" => {
                                 f_link_to_query =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33004,7 +33246,7 @@ impl FromXml for CTMailMerge {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"dataType" => {
-                                f_data_type = Some(Box::new(CTMailMergeDataType::from_xml(
+                                f_data_type = Some(Box::new(MailMergeDataTypeElement::from_xml(
                                     reader, &e, false,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -33049,7 +33291,7 @@ impl FromXml for CTMailMerge {
                             #[cfg(feature = "wml-settings")]
                             b"doNotSuppressBlankLines" => {
                                 f_do_not_suppress_blank_lines =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33085,7 +33327,7 @@ impl FromXml for CTMailMerge {
                             #[cfg(feature = "wml-settings")]
                             b"mailAsAttachment" => {
                                 f_mail_as_attachment =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33094,7 +33336,7 @@ impl FromXml for CTMailMerge {
                             #[cfg(feature = "wml-settings")]
                             b"viewMergedData" => {
                                 f_view_merged_data =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33157,7 +33399,7 @@ impl FromXml for CTMailMerge {
                             #[cfg(feature = "wml-settings")]
                             b"linkToQuery" => {
                                 f_link_to_query =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33165,7 +33407,7 @@ impl FromXml for CTMailMerge {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"dataType" => {
-                                f_data_type = Some(Box::new(CTMailMergeDataType::from_xml(
+                                f_data_type = Some(Box::new(MailMergeDataTypeElement::from_xml(
                                     reader, &e, true,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -33210,7 +33452,7 @@ impl FromXml for CTMailMerge {
                             #[cfg(feature = "wml-settings")]
                             b"doNotSuppressBlankLines" => {
                                 f_do_not_suppress_blank_lines =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33246,7 +33488,7 @@ impl FromXml for CTMailMerge {
                             #[cfg(feature = "wml-settings")]
                             b"mailAsAttachment" => {
                                 f_mail_as_attachment =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33255,7 +33497,7 @@ impl FromXml for CTMailMerge {
                             #[cfg(feature = "wml-settings")]
                             b"viewMergedData" => {
                                 f_view_merged_data =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33550,7 +33792,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"useSingleBorderforContiguousCells" => {
                                 f_use_single_borderfor_contiguous_cells =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33559,7 +33801,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"wpJustification" => {
                                 f_wp_justification =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33568,7 +33810,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"noTabHangInd" => {
                                 f_no_tab_hang_ind =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33577,7 +33819,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"noLeading" => {
                                 f_no_leading =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33586,7 +33828,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"spaceForUL" => {
                                 f_space_for_u_l =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33595,7 +33837,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"noColumnBalance" => {
                                 f_no_column_balance =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33604,7 +33846,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"balanceSingleByteDoubleByteWidth" => {
                                 f_balance_single_byte_double_byte_width =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33613,7 +33855,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"noExtraLineSpacing" => {
                                 f_no_extra_line_spacing =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33622,7 +33864,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotLeaveBackslashAlone" => {
                                 f_do_not_leave_backslash_alone =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33631,7 +33873,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"ulTrailSpace" => {
                                 f_ul_trail_space =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33640,7 +33882,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotExpandShiftReturn" => {
                                 f_do_not_expand_shift_return =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33649,7 +33891,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"spacingInWholePoints" => {
                                 f_spacing_in_whole_points =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33658,7 +33900,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"lineWrapLikeWord6" => {
                                 f_line_wrap_like_word6 =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33667,7 +33909,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"printBodyTextBeforeHeader" => {
                                 f_print_body_text_before_header =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33676,7 +33918,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"printColBlack" => {
                                 f_print_col_black =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33685,7 +33927,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"wpSpaceWidth" => {
                                 f_wp_space_width =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33694,7 +33936,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"showBreaksInFrames" => {
                                 f_show_breaks_in_frames =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33703,7 +33945,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"subFontBySize" => {
                                 f_sub_font_by_size =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33712,7 +33954,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"suppressBottomSpacing" => {
                                 f_suppress_bottom_spacing =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33721,7 +33963,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"suppressTopSpacing" => {
                                 f_suppress_top_spacing =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33730,7 +33972,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"suppressSpacingAtTopOfPage" => {
                                 f_suppress_spacing_at_top_of_page =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33739,7 +33981,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"suppressTopSpacingWP" => {
                                 f_suppress_top_spacing_w_p =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33748,7 +33990,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"suppressSpBfAfterPgBrk" => {
                                 f_suppress_sp_bf_after_pg_brk =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33757,7 +33999,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"swapBordersFacingPages" => {
                                 f_swap_borders_facing_pages =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33766,7 +34008,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"convMailMergeEsc" => {
                                 f_conv_mail_merge_esc =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33775,7 +34017,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"truncateFontHeightsLikeWP6" => {
                                 f_truncate_font_heights_like_w_p6 =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33784,7 +34026,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"mwSmallCaps" => {
                                 f_mw_small_caps =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33793,7 +34035,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"usePrinterMetrics" => {
                                 f_use_printer_metrics =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33802,7 +34044,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotSuppressParagraphBorders" => {
                                 f_do_not_suppress_paragraph_borders =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33811,7 +34053,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"wrapTrailSpaces" => {
                                 f_wrap_trail_spaces =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33820,7 +34062,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"footnoteLayoutLikeWW8" => {
                                 f_footnote_layout_like_w_w8 =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33829,7 +34071,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"shapeLayoutLikeWW8" => {
                                 f_shape_layout_like_w_w8 =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33838,7 +34080,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"alignTablesRowByRow" => {
                                 f_align_tables_row_by_row =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33847,7 +34089,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"forgetLastTabAlignment" => {
                                 f_forget_last_tab_alignment =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33856,7 +34098,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"adjustLineHeightInTable" => {
                                 f_adjust_line_height_in_table =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33865,7 +34107,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"autoSpaceLikeWord95" => {
                                 f_auto_space_like_word95 =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33874,7 +34116,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"noSpaceRaiseLower" => {
                                 f_no_space_raise_lower =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33883,7 +34125,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotUseHTMLParagraphAutoSpacing" => {
                                 f_do_not_use_h_t_m_l_paragraph_auto_spacing =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33892,7 +34134,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"layoutRawTableWidth" => {
                                 f_layout_raw_table_width =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33901,7 +34143,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"layoutTableRowsApart" => {
                                 f_layout_table_rows_apart =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33910,7 +34152,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"useWord97LineBreakRules" => {
                                 f_use_word97_line_break_rules =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33919,7 +34161,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotBreakWrappedTables" => {
                                 f_do_not_break_wrapped_tables =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33928,7 +34170,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotSnapToGridInCell" => {
                                 f_do_not_snap_to_grid_in_cell =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33937,7 +34179,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"selectFldWithFirstOrLastChar" => {
                                 f_select_fld_with_first_or_last_char =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33946,7 +34188,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"applyBreakingRules" => {
                                 f_apply_breaking_rules =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33955,7 +34197,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotWrapTextWithPunct" => {
                                 f_do_not_wrap_text_with_punct =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33964,7 +34206,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotUseEastAsianBreakRules" => {
                                 f_do_not_use_east_asian_break_rules =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33973,7 +34215,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"useWord2002TableStyleRules" => {
                                 f_use_word2002_table_style_rules =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33982,7 +34224,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"growAutofit" => {
                                 f_grow_autofit =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33991,7 +34233,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"useFELayout" => {
                                 f_use_f_e_layout =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34000,7 +34242,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"useNormalStyleForList" => {
                                 f_use_normal_style_for_list =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34009,7 +34251,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotUseIndentAsNumberingTabStop" => {
                                 f_do_not_use_indent_as_numbering_tab_stop =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34018,7 +34260,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"useAltKinsokuLineBreakRules" => {
                                 f_use_alt_kinsoku_line_break_rules =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34027,7 +34269,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"allowSpaceOfSameStyleInTable" => {
                                 f_allow_space_of_same_style_in_table =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34036,7 +34278,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotSuppressIndentation" => {
                                 f_do_not_suppress_indentation =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34045,7 +34287,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotAutofitConstrainedTables" => {
                                 f_do_not_autofit_constrained_tables =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34054,7 +34296,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"autofitToFirstFixedWidthCell" => {
                                 f_autofit_to_first_fixed_width_cell =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34063,7 +34305,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"underlineTabInNumList" => {
                                 f_underline_tab_in_num_list =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34072,7 +34314,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"displayHangulFixedWidth" => {
                                 f_display_hangul_fixed_width =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34081,7 +34323,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"splitPgBreakAndParaMark" => {
                                 f_split_pg_break_and_para_mark =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34090,7 +34332,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotVertAlignCellWithSp" => {
                                 f_do_not_vert_align_cell_with_sp =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34099,7 +34341,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotBreakConstrainedForcedTable" => {
                                 f_do_not_break_constrained_forced_table =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34108,7 +34350,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotVertAlignInTxbx" => {
                                 f_do_not_vert_align_in_txbx =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34117,7 +34359,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"useAnsiKerningPairs" => {
                                 f_use_ansi_kerning_pairs =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34126,7 +34368,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"cachedColBalance" => {
                                 f_cached_col_balance =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34163,7 +34405,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"useSingleBorderforContiguousCells" => {
                                 f_use_single_borderfor_contiguous_cells =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34172,7 +34414,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"wpJustification" => {
                                 f_wp_justification =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34181,7 +34423,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"noTabHangInd" => {
                                 f_no_tab_hang_ind =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34189,7 +34431,8 @@ impl FromXml for Compatibility {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"noLeading" => {
-                                f_no_leading = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_no_leading =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34198,7 +34441,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"spaceForUL" => {
                                 f_space_for_u_l =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34207,7 +34450,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"noColumnBalance" => {
                                 f_no_column_balance =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34216,7 +34459,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"balanceSingleByteDoubleByteWidth" => {
                                 f_balance_single_byte_double_byte_width =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34225,7 +34468,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"noExtraLineSpacing" => {
                                 f_no_extra_line_spacing =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34234,7 +34477,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotLeaveBackslashAlone" => {
                                 f_do_not_leave_backslash_alone =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34243,7 +34486,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"ulTrailSpace" => {
                                 f_ul_trail_space =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34252,7 +34495,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotExpandShiftReturn" => {
                                 f_do_not_expand_shift_return =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34261,7 +34504,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"spacingInWholePoints" => {
                                 f_spacing_in_whole_points =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34270,7 +34513,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"lineWrapLikeWord6" => {
                                 f_line_wrap_like_word6 =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34279,7 +34522,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"printBodyTextBeforeHeader" => {
                                 f_print_body_text_before_header =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34288,7 +34531,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"printColBlack" => {
                                 f_print_col_black =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34297,7 +34540,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"wpSpaceWidth" => {
                                 f_wp_space_width =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34306,7 +34549,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"showBreaksInFrames" => {
                                 f_show_breaks_in_frames =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34315,7 +34558,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"subFontBySize" => {
                                 f_sub_font_by_size =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34324,7 +34567,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"suppressBottomSpacing" => {
                                 f_suppress_bottom_spacing =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34333,7 +34576,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"suppressTopSpacing" => {
                                 f_suppress_top_spacing =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34342,7 +34585,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"suppressSpacingAtTopOfPage" => {
                                 f_suppress_spacing_at_top_of_page =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34351,7 +34594,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"suppressTopSpacingWP" => {
                                 f_suppress_top_spacing_w_p =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34360,7 +34603,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"suppressSpBfAfterPgBrk" => {
                                 f_suppress_sp_bf_after_pg_brk =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34369,7 +34612,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"swapBordersFacingPages" => {
                                 f_swap_borders_facing_pages =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34378,7 +34621,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"convMailMergeEsc" => {
                                 f_conv_mail_merge_esc =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34387,7 +34630,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"truncateFontHeightsLikeWP6" => {
                                 f_truncate_font_heights_like_w_p6 =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34396,7 +34639,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"mwSmallCaps" => {
                                 f_mw_small_caps =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34405,7 +34648,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"usePrinterMetrics" => {
                                 f_use_printer_metrics =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34414,7 +34657,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotSuppressParagraphBorders" => {
                                 f_do_not_suppress_paragraph_borders =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34423,7 +34666,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"wrapTrailSpaces" => {
                                 f_wrap_trail_spaces =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34432,7 +34675,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"footnoteLayoutLikeWW8" => {
                                 f_footnote_layout_like_w_w8 =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34441,7 +34684,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"shapeLayoutLikeWW8" => {
                                 f_shape_layout_like_w_w8 =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34450,7 +34693,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"alignTablesRowByRow" => {
                                 f_align_tables_row_by_row =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34459,7 +34702,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"forgetLastTabAlignment" => {
                                 f_forget_last_tab_alignment =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34468,7 +34711,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"adjustLineHeightInTable" => {
                                 f_adjust_line_height_in_table =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34477,7 +34720,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"autoSpaceLikeWord95" => {
                                 f_auto_space_like_word95 =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34486,7 +34729,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"noSpaceRaiseLower" => {
                                 f_no_space_raise_lower =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34495,7 +34738,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotUseHTMLParagraphAutoSpacing" => {
                                 f_do_not_use_h_t_m_l_paragraph_auto_spacing =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34504,7 +34747,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"layoutRawTableWidth" => {
                                 f_layout_raw_table_width =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34513,7 +34756,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"layoutTableRowsApart" => {
                                 f_layout_table_rows_apart =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34522,7 +34765,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"useWord97LineBreakRules" => {
                                 f_use_word97_line_break_rules =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34531,7 +34774,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotBreakWrappedTables" => {
                                 f_do_not_break_wrapped_tables =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34540,7 +34783,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotSnapToGridInCell" => {
                                 f_do_not_snap_to_grid_in_cell =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34549,7 +34792,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"selectFldWithFirstOrLastChar" => {
                                 f_select_fld_with_first_or_last_char =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34558,7 +34801,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"applyBreakingRules" => {
                                 f_apply_breaking_rules =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34567,7 +34810,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotWrapTextWithPunct" => {
                                 f_do_not_wrap_text_with_punct =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34576,7 +34819,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotUseEastAsianBreakRules" => {
                                 f_do_not_use_east_asian_break_rules =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34585,7 +34828,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"useWord2002TableStyleRules" => {
                                 f_use_word2002_table_style_rules =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34594,7 +34837,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"growAutofit" => {
                                 f_grow_autofit =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34603,7 +34846,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"useFELayout" => {
                                 f_use_f_e_layout =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34612,7 +34855,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"useNormalStyleForList" => {
                                 f_use_normal_style_for_list =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34621,7 +34864,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotUseIndentAsNumberingTabStop" => {
                                 f_do_not_use_indent_as_numbering_tab_stop =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34630,7 +34873,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"useAltKinsokuLineBreakRules" => {
                                 f_use_alt_kinsoku_line_break_rules =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34639,7 +34882,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"allowSpaceOfSameStyleInTable" => {
                                 f_allow_space_of_same_style_in_table =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34648,7 +34891,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotSuppressIndentation" => {
                                 f_do_not_suppress_indentation =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34657,7 +34900,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotAutofitConstrainedTables" => {
                                 f_do_not_autofit_constrained_tables =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34666,7 +34909,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"autofitToFirstFixedWidthCell" => {
                                 f_autofit_to_first_fixed_width_cell =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34675,7 +34918,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"underlineTabInNumList" => {
                                 f_underline_tab_in_num_list =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34684,7 +34927,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"displayHangulFixedWidth" => {
                                 f_display_hangul_fixed_width =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34693,7 +34936,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"splitPgBreakAndParaMark" => {
                                 f_split_pg_break_and_para_mark =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34702,7 +34945,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotVertAlignCellWithSp" => {
                                 f_do_not_vert_align_cell_with_sp =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34711,7 +34954,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotBreakConstrainedForcedTable" => {
                                 f_do_not_break_constrained_forced_table =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34720,7 +34963,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"doNotVertAlignInTxbx" => {
                                 f_do_not_vert_align_in_txbx =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34729,7 +34972,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"useAnsiKerningPairs" => {
                                 f_use_ansi_kerning_pairs =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34738,7 +34981,7 @@ impl FromXml for Compatibility {
                             #[cfg(feature = "wml-settings")]
                             b"cachedColBalance" => {
                                 f_cached_col_balance =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -35132,8 +35375,9 @@ impl FromXml for CTDocRsids {
                         match e.local_name().as_ref() {
                             #[cfg(feature = "wml-track-changes")]
                             b"rsidRoot" => {
-                                f_rsid_root =
-                                    Some(Box::new(CTLongHexNumber::from_xml(reader, &e, false)?));
+                                f_rsid_root = Some(Box::new(LongHexNumberElement::from_xml(
+                                    reader, &e, false,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -35141,7 +35385,7 @@ impl FromXml for CTDocRsids {
                             }
                             #[cfg(feature = "wml-track-changes")]
                             b"rsid" => {
-                                f_rsid.push(CTLongHexNumber::from_xml(reader, &e, false)?);
+                                f_rsid.push(LongHexNumberElement::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -35168,8 +35412,9 @@ impl FromXml for CTDocRsids {
                         match e.local_name().as_ref() {
                             #[cfg(feature = "wml-track-changes")]
                             b"rsidRoot" => {
-                                f_rsid_root =
-                                    Some(Box::new(CTLongHexNumber::from_xml(reader, &e, true)?));
+                                f_rsid_root = Some(Box::new(LongHexNumberElement::from_xml(
+                                    reader, &e, true,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -35177,7 +35422,7 @@ impl FromXml for CTDocRsids {
                             }
                             #[cfg(feature = "wml-track-changes")]
                             b"rsid" => {
-                                f_rsid.push(CTLongHexNumber::from_xml(reader, &e, true)?);
+                                f_rsid.push(LongHexNumberElement::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36221,7 +36466,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"removePersonalInformation" => {
                                 f_remove_personal_information =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36230,7 +36475,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"removeDateAndTime" => {
                                 f_remove_date_and_time =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36239,7 +36484,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotDisplayPageBoundaries" => {
                                 f_do_not_display_page_boundaries =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36248,7 +36493,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"displayBackgroundShape" => {
                                 f_display_background_shape =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36257,7 +36502,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"printPostScriptOverText" => {
                                 f_print_post_script_over_text =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36266,7 +36511,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"printFractionalCharacterWidth" => {
                                 f_print_fractional_character_width =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36275,7 +36520,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"printFormsData" => {
                                 f_print_forms_data =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36284,7 +36529,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"embedTrueTypeFonts" => {
                                 f_embed_true_type_fonts =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36293,7 +36538,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"embedSystemFonts" => {
                                 f_embed_system_fonts =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36302,7 +36547,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"saveSubsetFonts" => {
                                 f_save_subset_fonts =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36311,7 +36556,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"saveFormsData" => {
                                 f_save_forms_data =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36320,7 +36565,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"mirrorMargins" => {
                                 f_mirror_margins =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36329,7 +36574,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"alignBordersAndEdges" => {
                                 f_align_borders_and_edges =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36338,7 +36583,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"bordersDoNotSurroundHeader" => {
                                 f_borders_do_not_surround_header =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36347,7 +36592,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"bordersDoNotSurroundFooter" => {
                                 f_borders_do_not_surround_footer =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36356,7 +36601,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"gutterAtTop" => {
                                 f_gutter_at_top =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36365,7 +36610,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"hideSpellingErrors" => {
                                 f_hide_spelling_errors =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36374,7 +36619,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"hideGrammaticalErrors" => {
                                 f_hide_grammatical_errors =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36401,7 +36646,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"formsDesign" => {
                                 f_forms_design =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36419,7 +36664,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"linkStyles" => {
                                 f_link_styles =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36446,7 +36691,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"documentType" => {
                                 f_document_type =
-                                    Some(Box::new(CTDocType::from_xml(reader, &e, false)?));
+                                    Some(Box::new(DocTypeElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36474,7 +36719,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"trackRevisions" => {
                                 f_track_revisions =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36483,7 +36728,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-track-changes")]
                             b"doNotTrackMoves" => {
                                 f_do_not_track_moves =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36492,7 +36737,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-track-changes")]
                             b"doNotTrackFormatting" => {
                                 f_do_not_track_formatting =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36510,7 +36755,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"autoFormatOverride" => {
                                 f_auto_format_override =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36519,7 +36764,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"styleLockTheme" => {
                                 f_style_lock_theme =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36528,7 +36773,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"styleLockQFSet" => {
                                 f_style_lock_q_f_set =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36536,8 +36781,9 @@ impl FromXml for Settings {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"defaultTabStop" => {
-                                f_default_tab_stop =
-                                    Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, false)?));
+                                f_default_tab_stop = Some(Box::new(TwipsMeasureElement::from_xml(
+                                    reader, &e, false,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36546,7 +36792,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"autoHyphenation" => {
                                 f_auto_hyphenation =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36563,8 +36809,9 @@ impl FromXml for Settings {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"hyphenationZone" => {
-                                f_hyphenation_zone =
-                                    Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, false)?));
+                                f_hyphenation_zone = Some(Box::new(TwipsMeasureElement::from_xml(
+                                    reader, &e, false,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36573,7 +36820,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotHyphenateCaps" => {
                                 f_do_not_hyphenate_caps =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36582,7 +36829,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"showEnvelope" => {
                                 f_show_envelope =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36619,7 +36866,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"evenAndOddHeaders" => {
                                 f_even_and_odd_headers =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36628,7 +36875,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"bookFoldRevPrinting" => {
                                 f_book_fold_rev_printing =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36637,7 +36884,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"bookFoldPrinting" => {
                                 f_book_fold_printing =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36654,8 +36901,9 @@ impl FromXml for Settings {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"drawingGridHorizontalSpacing" => {
-                                f_drawing_grid_horizontal_spacing =
-                                    Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, false)?));
+                                f_drawing_grid_horizontal_spacing = Some(Box::new(
+                                    TwipsMeasureElement::from_xml(reader, &e, false)?,
+                                ));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36663,8 +36911,9 @@ impl FromXml for Settings {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"drawingGridVerticalSpacing" => {
-                                f_drawing_grid_vertical_spacing =
-                                    Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, false)?));
+                                f_drawing_grid_vertical_spacing = Some(Box::new(
+                                    TwipsMeasureElement::from_xml(reader, &e, false)?,
+                                ));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36691,7 +36940,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotUseMarginsForDrawingGridOrigin" => {
                                 f_do_not_use_margins_for_drawing_grid_origin =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36699,8 +36948,9 @@ impl FromXml for Settings {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"drawingGridHorizontalOrigin" => {
-                                f_drawing_grid_horizontal_origin =
-                                    Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, false)?));
+                                f_drawing_grid_horizontal_origin = Some(Box::new(
+                                    TwipsMeasureElement::from_xml(reader, &e, false)?,
+                                ));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36708,8 +36958,9 @@ impl FromXml for Settings {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"drawingGridVerticalOrigin" => {
-                                f_drawing_grid_vertical_origin =
-                                    Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, false)?));
+                                f_drawing_grid_vertical_origin = Some(Box::new(
+                                    TwipsMeasureElement::from_xml(reader, &e, false)?,
+                                ));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36718,7 +36969,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotShadeFormData" => {
                                 f_do_not_shade_form_data =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36727,7 +36978,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"noPunctuationKerning" => {
                                 f_no_punctuation_kerning =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36746,7 +36997,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"printTwoOnOne" => {
                                 f_print_two_on_one =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36755,7 +37006,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"strictFirstAndLastChars" => {
                                 f_strict_first_and_last_chars =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36782,7 +37033,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"savePreviewPicture" => {
                                 f_save_preview_picture =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36791,7 +37042,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotValidateAgainstSchema" => {
                                 f_do_not_validate_against_schema =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36800,7 +37051,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"saveInvalidXml" => {
                                 f_save_invalid_xml =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36809,7 +37060,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"ignoreMixedContent" => {
                                 f_ignore_mixed_content =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36818,7 +37069,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"alwaysShowPlaceholderText" => {
                                 f_always_show_placeholder_text =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36827,7 +37078,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotDemarcateInvalidXml" => {
                                 f_do_not_demarcate_invalid_xml =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36836,7 +37087,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"saveXmlDataOnly" => {
                                 f_save_xml_data_only =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36845,7 +37096,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"useXSLTWhenSaving" => {
                                 f_use_x_s_l_t_when_saving =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36863,7 +37114,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"showXMLTags" => {
                                 f_show_x_m_l_tags =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36872,7 +37123,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"alwaysMergeEmptyNamespace" => {
                                 f_always_merge_empty_namespace =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36881,7 +37132,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"updateFields" => {
                                 f_update_fields =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36951,7 +37202,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"themeFontLang" => {
                                 f_theme_font_lang =
-                                    Some(Box::new(CTLanguage::from_xml(reader, &e, false)?));
+                                    Some(Box::new(LanguageElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36970,7 +37221,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotIncludeSubdocsInStats" => {
                                 f_do_not_include_subdocs_in_stats =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36979,7 +37230,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotAutoCompressPictures" => {
                                 f_do_not_auto_compress_pictures =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37033,7 +37284,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotEmbedSmartTags" => {
                                 f_do_not_embed_smart_tags =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37104,7 +37355,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"removePersonalInformation" => {
                                 f_remove_personal_information =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37113,7 +37364,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"removeDateAndTime" => {
                                 f_remove_date_and_time =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37122,7 +37373,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotDisplayPageBoundaries" => {
                                 f_do_not_display_page_boundaries =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37131,7 +37382,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"displayBackgroundShape" => {
                                 f_display_background_shape =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37140,7 +37391,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"printPostScriptOverText" => {
                                 f_print_post_script_over_text =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37149,7 +37400,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"printFractionalCharacterWidth" => {
                                 f_print_fractional_character_width =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37158,7 +37409,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"printFormsData" => {
                                 f_print_forms_data =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37167,7 +37418,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"embedTrueTypeFonts" => {
                                 f_embed_true_type_fonts =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37176,7 +37427,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"embedSystemFonts" => {
                                 f_embed_system_fonts =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37185,7 +37436,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"saveSubsetFonts" => {
                                 f_save_subset_fonts =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37194,7 +37445,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"saveFormsData" => {
                                 f_save_forms_data =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37203,7 +37454,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"mirrorMargins" => {
                                 f_mirror_margins =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37212,7 +37463,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"alignBordersAndEdges" => {
                                 f_align_borders_and_edges =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37221,7 +37472,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"bordersDoNotSurroundHeader" => {
                                 f_borders_do_not_surround_header =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37230,7 +37481,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"bordersDoNotSurroundFooter" => {
                                 f_borders_do_not_surround_footer =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37239,7 +37490,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"gutterAtTop" => {
                                 f_gutter_at_top =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37248,7 +37499,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"hideSpellingErrors" => {
                                 f_hide_spelling_errors =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37257,7 +37508,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"hideGrammaticalErrors" => {
                                 f_hide_grammatical_errors =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37284,7 +37535,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"formsDesign" => {
                                 f_forms_design =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37302,7 +37553,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"linkStyles" => {
                                 f_link_styles =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37329,7 +37580,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"documentType" => {
                                 f_document_type =
-                                    Some(Box::new(CTDocType::from_xml(reader, &e, true)?));
+                                    Some(Box::new(DocTypeElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37356,7 +37607,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"trackRevisions" => {
                                 f_track_revisions =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37365,7 +37616,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-track-changes")]
                             b"doNotTrackMoves" => {
                                 f_do_not_track_moves =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37374,7 +37625,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-track-changes")]
                             b"doNotTrackFormatting" => {
                                 f_do_not_track_formatting =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37392,7 +37643,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"autoFormatOverride" => {
                                 f_auto_format_override =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37401,7 +37652,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"styleLockTheme" => {
                                 f_style_lock_theme =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37410,7 +37661,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"styleLockQFSet" => {
                                 f_style_lock_q_f_set =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37418,8 +37669,9 @@ impl FromXml for Settings {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"defaultTabStop" => {
-                                f_default_tab_stop =
-                                    Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, true)?));
+                                f_default_tab_stop = Some(Box::new(TwipsMeasureElement::from_xml(
+                                    reader, &e, true,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37428,7 +37680,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"autoHyphenation" => {
                                 f_auto_hyphenation =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37445,8 +37697,9 @@ impl FromXml for Settings {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"hyphenationZone" => {
-                                f_hyphenation_zone =
-                                    Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, true)?));
+                                f_hyphenation_zone = Some(Box::new(TwipsMeasureElement::from_xml(
+                                    reader, &e, true,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37455,7 +37708,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotHyphenateCaps" => {
                                 f_do_not_hyphenate_caps =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37464,7 +37717,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"showEnvelope" => {
                                 f_show_envelope =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37501,7 +37754,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"evenAndOddHeaders" => {
                                 f_even_and_odd_headers =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37510,7 +37763,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"bookFoldRevPrinting" => {
                                 f_book_fold_rev_printing =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37519,7 +37772,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"bookFoldPrinting" => {
                                 f_book_fold_printing =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37536,8 +37789,9 @@ impl FromXml for Settings {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"drawingGridHorizontalSpacing" => {
-                                f_drawing_grid_horizontal_spacing =
-                                    Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, true)?));
+                                f_drawing_grid_horizontal_spacing = Some(Box::new(
+                                    TwipsMeasureElement::from_xml(reader, &e, true)?,
+                                ));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37545,8 +37799,9 @@ impl FromXml for Settings {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"drawingGridVerticalSpacing" => {
-                                f_drawing_grid_vertical_spacing =
-                                    Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, true)?));
+                                f_drawing_grid_vertical_spacing = Some(Box::new(
+                                    TwipsMeasureElement::from_xml(reader, &e, true)?,
+                                ));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37573,7 +37828,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotUseMarginsForDrawingGridOrigin" => {
                                 f_do_not_use_margins_for_drawing_grid_origin =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37581,8 +37836,9 @@ impl FromXml for Settings {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"drawingGridHorizontalOrigin" => {
-                                f_drawing_grid_horizontal_origin =
-                                    Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, true)?));
+                                f_drawing_grid_horizontal_origin = Some(Box::new(
+                                    TwipsMeasureElement::from_xml(reader, &e, true)?,
+                                ));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37590,8 +37846,9 @@ impl FromXml for Settings {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"drawingGridVerticalOrigin" => {
-                                f_drawing_grid_vertical_origin =
-                                    Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, true)?));
+                                f_drawing_grid_vertical_origin = Some(Box::new(
+                                    TwipsMeasureElement::from_xml(reader, &e, true)?,
+                                ));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37600,7 +37857,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotShadeFormData" => {
                                 f_do_not_shade_form_data =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37609,7 +37866,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"noPunctuationKerning" => {
                                 f_no_punctuation_kerning =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37627,7 +37884,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"printTwoOnOne" => {
                                 f_print_two_on_one =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37636,7 +37893,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"strictFirstAndLastChars" => {
                                 f_strict_first_and_last_chars =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37663,7 +37920,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"savePreviewPicture" => {
                                 f_save_preview_picture =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37672,7 +37929,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotValidateAgainstSchema" => {
                                 f_do_not_validate_against_schema =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37681,7 +37938,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"saveInvalidXml" => {
                                 f_save_invalid_xml =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37690,7 +37947,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"ignoreMixedContent" => {
                                 f_ignore_mixed_content =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37699,7 +37956,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"alwaysShowPlaceholderText" => {
                                 f_always_show_placeholder_text =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37708,7 +37965,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotDemarcateInvalidXml" => {
                                 f_do_not_demarcate_invalid_xml =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37717,7 +37974,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"saveXmlDataOnly" => {
                                 f_save_xml_data_only =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37726,7 +37983,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"useXSLTWhenSaving" => {
                                 f_use_x_s_l_t_when_saving =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37744,7 +38001,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"showXMLTags" => {
                                 f_show_x_m_l_tags =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37753,7 +38010,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"alwaysMergeEmptyNamespace" => {
                                 f_always_merge_empty_namespace =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37762,7 +38019,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"updateFields" => {
                                 f_update_fields =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37831,7 +38088,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"themeFontLang" => {
                                 f_theme_font_lang =
-                                    Some(Box::new(CTLanguage::from_xml(reader, &e, true)?));
+                                    Some(Box::new(LanguageElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37850,7 +38107,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotIncludeSubdocsInStats" => {
                                 f_do_not_include_subdocs_in_stats =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37859,7 +38116,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotAutoCompressPictures" => {
                                 f_do_not_auto_compress_pictures =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37913,7 +38170,7 @@ impl FromXml for Settings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotEmbedSmartTags" => {
                                 f_do_not_embed_smart_tags =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38458,7 +38715,7 @@ impl FromXml for CTWebSettings {
                             #[cfg(feature = "wml-settings")]
                             b"relyOnVML" => {
                                 f_rely_on_v_m_l =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38467,7 +38724,7 @@ impl FromXml for CTWebSettings {
                             #[cfg(feature = "wml-settings")]
                             b"allowPNG" => {
                                 f_allow_p_n_g =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38476,7 +38733,7 @@ impl FromXml for CTWebSettings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotRelyOnCSS" => {
                                 f_do_not_rely_on_c_s_s =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38485,7 +38742,7 @@ impl FromXml for CTWebSettings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotSaveAsSingleFile" => {
                                 f_do_not_save_as_single_file =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38494,7 +38751,7 @@ impl FromXml for CTWebSettings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotOrganizeInFolder" => {
                                 f_do_not_organize_in_folder =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38503,7 +38760,7 @@ impl FromXml for CTWebSettings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotUseLongFileNames" => {
                                 f_do_not_use_long_file_names =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38530,7 +38787,7 @@ impl FromXml for CTWebSettings {
                             #[cfg(feature = "wml-settings")]
                             b"saveSmartTagsAsXml" => {
                                 f_save_smart_tags_as_xml =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38593,7 +38850,7 @@ impl FromXml for CTWebSettings {
                             #[cfg(feature = "wml-settings")]
                             b"relyOnVML" => {
                                 f_rely_on_v_m_l =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38602,7 +38859,7 @@ impl FromXml for CTWebSettings {
                             #[cfg(feature = "wml-settings")]
                             b"allowPNG" => {
                                 f_allow_p_n_g =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38611,7 +38868,7 @@ impl FromXml for CTWebSettings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotRelyOnCSS" => {
                                 f_do_not_rely_on_c_s_s =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38620,7 +38877,7 @@ impl FromXml for CTWebSettings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotSaveAsSingleFile" => {
                                 f_do_not_save_as_single_file =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38629,7 +38886,7 @@ impl FromXml for CTWebSettings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotOrganizeInFolder" => {
                                 f_do_not_organize_in_folder =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38638,7 +38895,7 @@ impl FromXml for CTWebSettings {
                             #[cfg(feature = "wml-settings")]
                             b"doNotUseLongFileNames" => {
                                 f_do_not_use_long_file_names =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38665,7 +38922,7 @@ impl FromXml for CTWebSettings {
                             #[cfg(feature = "wml-settings")]
                             b"saveSmartTagsAsXml" => {
                                 f_save_smart_tags_as_xml =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38909,8 +39166,9 @@ impl FromXml for CTFrame {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"marW" => {
-                                f_mar_w =
-                                    Some(Box::new(CTPixelsMeasure::from_xml(reader, &e, false)?));
+                                f_mar_w = Some(Box::new(PixelsMeasureElement::from_xml(
+                                    reader, &e, false,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38918,8 +39176,9 @@ impl FromXml for CTFrame {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"marH" => {
-                                f_mar_h =
-                                    Some(Box::new(CTPixelsMeasure::from_xml(reader, &e, false)?));
+                                f_mar_h = Some(Box::new(PixelsMeasureElement::from_xml(
+                                    reader, &e, false,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38937,7 +39196,7 @@ impl FromXml for CTFrame {
                             #[cfg(feature = "wml-settings")]
                             b"noResizeAllowed" => {
                                 f_no_resize_allowed =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38946,7 +39205,7 @@ impl FromXml for CTFrame {
                             #[cfg(feature = "wml-settings")]
                             b"linkedToFile" => {
                                 f_linked_to_file =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -39014,8 +39273,9 @@ impl FromXml for CTFrame {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"marW" => {
-                                f_mar_w =
-                                    Some(Box::new(CTPixelsMeasure::from_xml(reader, &e, true)?));
+                                f_mar_w = Some(Box::new(PixelsMeasureElement::from_xml(
+                                    reader, &e, true,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -39023,8 +39283,9 @@ impl FromXml for CTFrame {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"marH" => {
-                                f_mar_h =
-                                    Some(Box::new(CTPixelsMeasure::from_xml(reader, &e, true)?));
+                                f_mar_h = Some(Box::new(PixelsMeasureElement::from_xml(
+                                    reader, &e, true,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -39042,7 +39303,7 @@ impl FromXml for CTFrame {
                             #[cfg(feature = "wml-settings")]
                             b"noResizeAllowed" => {
                                 f_no_resize_allowed =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -39051,7 +39312,7 @@ impl FromXml for CTFrame {
                             #[cfg(feature = "wml-settings")]
                             b"linkedToFile" => {
                                 f_linked_to_file =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -39181,8 +39442,9 @@ impl FromXml for CTFramesetSplitbar {
                         match e.local_name().as_ref() {
                             #[cfg(feature = "wml-settings")]
                             b"w" => {
-                                f_width =
-                                    Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, false)?));
+                                f_width = Some(Box::new(TwipsMeasureElement::from_xml(
+                                    reader, &e, false,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -39198,7 +39460,8 @@ impl FromXml for CTFramesetSplitbar {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"noBorder" => {
-                                f_no_border = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_no_border =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -39207,7 +39470,7 @@ impl FromXml for CTFramesetSplitbar {
                             #[cfg(feature = "wml-settings")]
                             b"flatBorders" => {
                                 f_flat_borders =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -39234,8 +39497,9 @@ impl FromXml for CTFramesetSplitbar {
                         match e.local_name().as_ref() {
                             #[cfg(feature = "wml-settings")]
                             b"w" => {
-                                f_width =
-                                    Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, true)?));
+                                f_width = Some(Box::new(TwipsMeasureElement::from_xml(
+                                    reader, &e, true,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -39251,7 +39515,8 @@ impl FromXml for CTFramesetSplitbar {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"noBorder" => {
-                                f_no_border = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_no_border =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -39260,7 +39525,7 @@ impl FromXml for CTFramesetSplitbar {
                             #[cfg(feature = "wml-settings")]
                             b"flatBorders" => {
                                 f_flat_borders =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -39863,7 +40128,8 @@ impl FromXml for Level {
                             }
                             #[cfg(feature = "wml-numbering")]
                             b"isLgl" => {
-                                f_is_lgl = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_is_lgl =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -39986,7 +40252,8 @@ impl FromXml for Level {
                             }
                             #[cfg(feature = "wml-numbering")]
                             b"isLgl" => {
-                                f_is_lgl = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_is_lgl =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -40210,8 +40477,9 @@ impl FromXml for AbstractNumbering {
                         match e.local_name().as_ref() {
                             #[cfg(feature = "wml-numbering")]
                             b"nsid" => {
-                                f_nsid =
-                                    Some(Box::new(CTLongHexNumber::from_xml(reader, &e, false)?));
+                                f_nsid = Some(Box::new(LongHexNumberElement::from_xml(
+                                    reader, &e, false,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -40228,8 +40496,9 @@ impl FromXml for AbstractNumbering {
                             }
                             #[cfg(feature = "wml-numbering")]
                             b"tmpl" => {
-                                f_tmpl =
-                                    Some(Box::new(CTLongHexNumber::from_xml(reader, &e, false)?));
+                                f_tmpl = Some(Box::new(LongHexNumberElement::from_xml(
+                                    reader, &e, false,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -40289,8 +40558,9 @@ impl FromXml for AbstractNumbering {
                         match e.local_name().as_ref() {
                             #[cfg(feature = "wml-numbering")]
                             b"nsid" => {
-                                f_nsid =
-                                    Some(Box::new(CTLongHexNumber::from_xml(reader, &e, true)?));
+                                f_nsid = Some(Box::new(LongHexNumberElement::from_xml(
+                                    reader, &e, true,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -40307,8 +40577,9 @@ impl FromXml for AbstractNumbering {
                             }
                             #[cfg(feature = "wml-numbering")]
                             b"tmpl" => {
-                                f_tmpl =
-                                    Some(Box::new(CTLongHexNumber::from_xml(reader, &e, true)?));
+                                f_tmpl = Some(Box::new(LongHexNumberElement::from_xml(
+                                    reader, &e, true,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41123,7 +41394,7 @@ impl FromXml for Style {
                             #[cfg(feature = "wml-styling")]
                             b"autoRedefine" => {
                                 f_auto_redefine =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41131,7 +41402,8 @@ impl FromXml for Style {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"hidden" => {
-                                f_hidden = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_hidden =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41149,7 +41421,7 @@ impl FromXml for Style {
                             #[cfg(feature = "wml-styling")]
                             b"semiHidden" => {
                                 f_semi_hidden =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41158,7 +41430,7 @@ impl FromXml for Style {
                             #[cfg(feature = "wml-styling")]
                             b"unhideWhenUsed" => {
                                 f_unhide_when_used =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41166,7 +41438,8 @@ impl FromXml for Style {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"qFormat" => {
-                                f_q_format = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_q_format =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41174,7 +41447,8 @@ impl FromXml for Style {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"locked" => {
-                                f_locked = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_locked =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41182,7 +41456,8 @@ impl FromXml for Style {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"personal" => {
-                                f_personal = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_personal =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41191,7 +41466,7 @@ impl FromXml for Style {
                             #[cfg(feature = "wml-settings")]
                             b"personalCompose" => {
                                 f_personal_compose =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41200,7 +41475,7 @@ impl FromXml for Style {
                             #[cfg(feature = "wml-settings")]
                             b"personalReply" => {
                                 f_personal_reply =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41208,8 +41483,9 @@ impl FromXml for Style {
                             }
                             #[cfg(feature = "wml-track-changes")]
                             b"rsid" => {
-                                f_rsid =
-                                    Some(Box::new(CTLongHexNumber::from_xml(reader, &e, false)?));
+                                f_rsid = Some(Box::new(LongHexNumberElement::from_xml(
+                                    reader, &e, false,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41329,7 +41605,7 @@ impl FromXml for Style {
                             #[cfg(feature = "wml-styling")]
                             b"autoRedefine" => {
                                 f_auto_redefine =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41337,7 +41613,8 @@ impl FromXml for Style {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"hidden" => {
-                                f_hidden = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_hidden =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41355,7 +41632,7 @@ impl FromXml for Style {
                             #[cfg(feature = "wml-styling")]
                             b"semiHidden" => {
                                 f_semi_hidden =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41364,7 +41641,7 @@ impl FromXml for Style {
                             #[cfg(feature = "wml-styling")]
                             b"unhideWhenUsed" => {
                                 f_unhide_when_used =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41372,7 +41649,8 @@ impl FromXml for Style {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"qFormat" => {
-                                f_q_format = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_q_format =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41380,7 +41658,8 @@ impl FromXml for Style {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"locked" => {
-                                f_locked = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_locked =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41388,7 +41667,8 @@ impl FromXml for Style {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"personal" => {
-                                f_personal = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_personal =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41397,7 +41677,7 @@ impl FromXml for Style {
                             #[cfg(feature = "wml-settings")]
                             b"personalCompose" => {
                                 f_personal_compose =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41406,7 +41686,7 @@ impl FromXml for Style {
                             #[cfg(feature = "wml-settings")]
                             b"personalReply" => {
                                 f_personal_reply =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41414,8 +41694,9 @@ impl FromXml for Style {
                             }
                             #[cfg(feature = "wml-track-changes")]
                             b"rsid" => {
-                                f_rsid =
-                                    Some(Box::new(CTLongHexNumber::from_xml(reader, &e, true)?));
+                                f_rsid = Some(Box::new(LongHexNumberElement::from_xml(
+                                    reader, &e, true,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41909,7 +42190,7 @@ impl FromXml for Styles {
     }
 }
 
-impl FromXml for CTPanose {
+impl FromXml for PanoseElement {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -42276,7 +42557,8 @@ impl FromXml for Font {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"panose1" => {
-                                f_panose1 = Some(Box::new(CTPanose::from_xml(reader, &e, false)?));
+                                f_panose1 =
+                                    Some(Box::new(PanoseElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -42302,7 +42584,7 @@ impl FromXml for Font {
                             #[cfg(feature = "wml-styling")]
                             b"notTrueType" => {
                                 f_not_true_type =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -42389,7 +42671,8 @@ impl FromXml for Font {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"panose1" => {
-                                f_panose1 = Some(Box::new(CTPanose::from_xml(reader, &e, true)?));
+                                f_panose1 =
+                                    Some(Box::new(PanoseElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -42415,7 +42698,7 @@ impl FromXml for Font {
                             #[cfg(feature = "wml-styling")]
                             b"notTrueType" => {
                                 f_not_true_type =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -42768,13 +43051,13 @@ impl FromXml for CTDiv {
         #[cfg(feature = "wml-settings")]
         let mut f_body_div = None;
         #[cfg(feature = "wml-settings")]
-        let mut f_mar_left: Option<Box<CTSignedTwipsMeasure>> = None;
+        let mut f_mar_left: Option<Box<SignedTwipsMeasureElement>> = None;
         #[cfg(feature = "wml-settings")]
-        let mut f_mar_right: Option<Box<CTSignedTwipsMeasure>> = None;
+        let mut f_mar_right: Option<Box<SignedTwipsMeasureElement>> = None;
         #[cfg(feature = "wml-settings")]
-        let mut f_mar_top: Option<Box<CTSignedTwipsMeasure>> = None;
+        let mut f_mar_top: Option<Box<SignedTwipsMeasureElement>> = None;
         #[cfg(feature = "wml-settings")]
-        let mut f_mar_bottom: Option<Box<CTSignedTwipsMeasure>> = None;
+        let mut f_mar_bottom: Option<Box<SignedTwipsMeasureElement>> = None;
         #[cfg(feature = "wml-settings")]
         let mut f_div_bdr = None;
         #[cfg(feature = "wml-settings")]
@@ -42814,7 +43097,7 @@ impl FromXml for CTDiv {
                             #[cfg(feature = "wml-settings")]
                             b"blockQuote" => {
                                 f_block_quote =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -42822,7 +43105,8 @@ impl FromXml for CTDiv {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"bodyDiv" => {
-                                f_body_div = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_body_div =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -42830,7 +43114,7 @@ impl FromXml for CTDiv {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"marLeft" => {
-                                f_mar_left = Some(Box::new(CTSignedTwipsMeasure::from_xml(
+                                f_mar_left = Some(Box::new(SignedTwipsMeasureElement::from_xml(
                                     reader, &e, false,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -42840,7 +43124,7 @@ impl FromXml for CTDiv {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"marRight" => {
-                                f_mar_right = Some(Box::new(CTSignedTwipsMeasure::from_xml(
+                                f_mar_right = Some(Box::new(SignedTwipsMeasureElement::from_xml(
                                     reader, &e, false,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -42850,7 +43134,7 @@ impl FromXml for CTDiv {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"marTop" => {
-                                f_mar_top = Some(Box::new(CTSignedTwipsMeasure::from_xml(
+                                f_mar_top = Some(Box::new(SignedTwipsMeasureElement::from_xml(
                                     reader, &e, false,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -42860,7 +43144,7 @@ impl FromXml for CTDiv {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"marBottom" => {
-                                f_mar_bottom = Some(Box::new(CTSignedTwipsMeasure::from_xml(
+                                f_mar_bottom = Some(Box::new(SignedTwipsMeasureElement::from_xml(
                                     reader, &e, false,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -42906,7 +43190,7 @@ impl FromXml for CTDiv {
                             #[cfg(feature = "wml-settings")]
                             b"blockQuote" => {
                                 f_block_quote =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -42914,7 +43198,8 @@ impl FromXml for CTDiv {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"bodyDiv" => {
-                                f_body_div = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_body_div =
+                                    Some(Box::new(OnOffElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -42922,7 +43207,7 @@ impl FromXml for CTDiv {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"marLeft" => {
-                                f_mar_left = Some(Box::new(CTSignedTwipsMeasure::from_xml(
+                                f_mar_left = Some(Box::new(SignedTwipsMeasureElement::from_xml(
                                     reader, &e, true,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -42932,7 +43217,7 @@ impl FromXml for CTDiv {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"marRight" => {
-                                f_mar_right = Some(Box::new(CTSignedTwipsMeasure::from_xml(
+                                f_mar_right = Some(Box::new(SignedTwipsMeasureElement::from_xml(
                                     reader, &e, true,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -42942,7 +43227,7 @@ impl FromXml for CTDiv {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"marTop" => {
-                                f_mar_top = Some(Box::new(CTSignedTwipsMeasure::from_xml(
+                                f_mar_top = Some(Box::new(SignedTwipsMeasureElement::from_xml(
                                     reader, &e, true,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -42952,7 +43237,7 @@ impl FromXml for CTDiv {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"marBottom" => {
-                                f_mar_bottom = Some(Box::new(CTSignedTwipsMeasure::from_xml(
+                                f_mar_bottom = Some(Box::new(SignedTwipsMeasureElement::from_xml(
                                     reader, &e, true,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -44773,7 +45058,7 @@ impl FromXml for CTDocPartPr {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"guid" => {
-                                f_guid = Some(Box::new(CTGuid::from_xml(reader, &e, false)?));
+                                f_guid = Some(Box::new(GuidElement::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -44852,7 +45137,7 @@ impl FromXml for CTDocPartPr {
                             }
                             #[cfg(feature = "wml-settings")]
                             b"guid" => {
-                                f_guid = Some(Box::new(CTGuid::from_xml(reader, &e, true)?));
+                                f_guid = Some(Box::new(GuidElement::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;

@@ -3018,13 +3018,13 @@ pub struct CTTLTimeConditionList {
 pub struct CTTimeNodeList {
     #[serde(rename = "par")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub par: Vec<CTTLTimeNodeParallel>,
+    pub par: Vec<TLTimeNodeParallelElement>,
     #[serde(rename = "seq")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub seq: Vec<CTTLTimeNodeSequence>,
     #[serde(rename = "excl")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub excl: Vec<CTTLTimeNodeExclusive>,
+    pub excl: Vec<TLTimeNodeExclusiveElement>,
     #[serde(rename = "anim")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub anim: Vec<CTTLAnimateBehavior>,
@@ -3181,7 +3181,7 @@ pub struct CTTLCommonTimeNodeData {
     pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
-pub type CTTLTimeNodeParallel = Box<CTTLCommonTimeNodeData>;
+pub type TLTimeNodeParallelElement = Box<CTTLCommonTimeNodeData>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTLTimeNodeSequence {
@@ -3220,7 +3220,7 @@ pub struct CTTLTimeNodeSequence {
     pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
-pub type CTTLTimeNodeExclusive = Box<CTTLCommonTimeNodeData>;
+pub type TLTimeNodeExclusiveElement = Box<CTTLCommonTimeNodeData>;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTLBehaviorAttributeNameList {
@@ -4137,7 +4137,7 @@ pub struct CTExtension {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-pub type CTExtensionAny = String;
+pub type ExtensionAnyElement = String;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct EGExtensionList {

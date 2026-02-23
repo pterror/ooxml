@@ -4810,7 +4810,7 @@ pub struct Extension {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-pub type CTExtensionAny = String;
+pub type ExtensionAnyElement = String;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ObjectAnchor {
@@ -5138,7 +5138,7 @@ pub struct XmlSchema {
     pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
-pub type CTSchemaAny = String;
+pub type SchemaAnyElement = String;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct XmlMap {
@@ -5211,7 +5211,7 @@ pub struct DataBinding {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-pub type CTDataBindingAny = String;
+pub type DataBindingAnyElement = String;
 
 pub type SmlConnections = Box<Connections>;
 
@@ -8495,7 +8495,7 @@ pub struct PivotField {
     pub items: Option<Box<PivotItems>>,
     #[serde(rename = "autoSortScope")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub auto_sort_scope: Option<CTAutoSortScope>,
+    pub auto_sort_scope: Option<AutoSortScopeElement>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -8513,7 +8513,7 @@ pub struct PivotField {
     pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
-pub type CTAutoSortScope = Box<PivotArea>;
+pub type AutoSortScopeElement = Box<PivotArea>;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PivotItems {

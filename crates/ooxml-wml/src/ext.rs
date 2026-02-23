@@ -35,7 +35,7 @@ use std::io::Cursor;
 // Helpers (private)
 // =============================================================================
 
-/// Check if a `CTOnOff` field represents "on" (ECMA-376 §17.17.4).
+/// Check if a `OnOffElement` field represents "on" (ECMA-376 §17.17.4).
 ///
 /// An omitted `val` attribute means "true" (the element's presence is the toggle).
 /// Explicit values: "1", "true", "on" → true; "0", "false", "off" → false.
@@ -43,7 +43,7 @@ use std::io::Cursor;
     not(any(feature = "wml-styling", feature = "wml-layout")),
     allow(dead_code)
 )]
-fn is_on(field: &Option<Box<types::CTOnOff>>) -> bool {
+fn is_on(field: &Option<Box<types::OnOffElement>>) -> bool {
     match field {
         None => false,
         Some(ct) => match &ct.value {
@@ -55,7 +55,7 @@ fn is_on(field: &Option<Box<types::CTOnOff>>) -> bool {
 
 /// Tri-state check for style resolution: `None` = not specified, `Some(true/false)` = explicit.
 #[cfg_attr(not(feature = "wml-styling"), allow(dead_code))]
-fn check_toggle(field: &Option<Box<types::CTOnOff>>) -> Option<bool> {
+fn check_toggle(field: &Option<Box<types::OnOffElement>>) -> Option<bool> {
     field.as_ref().map(|ct| match &ct.value {
         None => true,
         Some(v) => matches!(v.as_str(), "1" | "true" | "on"),
@@ -1021,7 +1021,7 @@ impl RunResolveExt for types::Run {
 fn resolve_toggle(
     direct_rpr: &Option<Box<types::RunProperties>>,
     ctx: &StyleContext,
-    accessor: impl Fn(&types::RunProperties) -> &Option<Box<types::CTOnOff>>,
+    accessor: impl Fn(&types::RunProperties) -> &Option<Box<types::OnOffElement>>,
 ) -> bool {
     // 1. Direct run properties
     if let Some(rpr) = direct_rpr {
@@ -1319,7 +1319,7 @@ mod tests {
     #[test]
     fn test_is_on_present_no_val() {
         // Element present with no val attribute → on
-        let field = Some(Box::new(types::CTOnOff {
+        let field = Some(Box::new(types::OnOffElement {
             value: None,
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
@@ -1330,7 +1330,7 @@ mod tests {
     #[test]
     fn test_is_on_explicit_true() {
         for val in &["1", "true", "on"] {
-            let field = Some(Box::new(types::CTOnOff {
+            let field = Some(Box::new(types::OnOffElement {
                 value: Some(val.to_string()),
                 #[cfg(feature = "extra-attrs")]
                 extra_attrs: Default::default(),
@@ -1342,7 +1342,7 @@ mod tests {
     #[test]
     fn test_is_on_explicit_false() {
         for val in &["0", "false", "off"] {
-            let field = Some(Box::new(types::CTOnOff {
+            let field = Some(Box::new(types::OnOffElement {
                 value: Some(val.to_string()),
                 #[cfg(feature = "extra-attrs")]
                 extra_attrs: Default::default(),
@@ -1358,7 +1358,7 @@ mod tests {
 
     #[test]
     fn test_check_toggle_present() {
-        let field = Some(Box::new(types::CTOnOff {
+        let field = Some(Box::new(types::OnOffElement {
             value: None,
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
@@ -1427,8 +1427,8 @@ mod tests {
     }
 
     #[cfg(feature = "wml-styling")]
-    fn on_off(val: Option<&str>) -> Option<Box<types::CTOnOff>> {
-        Some(Box::new(types::CTOnOff {
+    fn on_off(val: Option<&str>) -> Option<Box<types::OnOffElement>> {
+        Some(Box::new(types::OnOffElement {
             value: val.map(|v| v.to_string()),
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
@@ -1511,7 +1511,7 @@ mod tests {
         let mut rpr = make_run_properties();
         assert!(rpr.font_size_half_points().is_none());
 
-        rpr.size = Some(Box::new(types::CTHpsMeasure {
+        rpr.size = Some(Box::new(types::HpsMeasureElement {
             value: "24".to_string(),
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),

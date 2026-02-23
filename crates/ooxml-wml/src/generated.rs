@@ -5896,7 +5896,7 @@ pub enum RunLevelContent {
 pub struct CTEmpty;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTOnOff {
+pub struct OnOffElement {
     #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<OnOff>,
@@ -5910,7 +5910,7 @@ pub struct CTOnOff {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTLongHexNumber {
+pub struct LongHexNumberElement {
     #[serde(rename = "@w:val")]
     pub value: STLongHexNumber,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -5954,7 +5954,7 @@ pub struct CTDecimalNumber {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTUnsignedDecimalNumber {
+pub struct UnsignedDecimalNumberElement {
     #[serde(rename = "@w:val")]
     pub value: STUnsignedDecimalNumber,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -5980,7 +5980,7 @@ pub struct CTDecimalNumberOrPrecent {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTTwipsMeasure {
+pub struct TwipsMeasureElement {
     #[serde(rename = "@w:val")]
     pub value: STTwipsMeasure,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -5993,7 +5993,7 @@ pub struct CTTwipsMeasure {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTSignedTwipsMeasure {
+pub struct SignedTwipsMeasureElement {
     #[serde(rename = "@w:val")]
     pub value: STSignedTwipsMeasure,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6006,7 +6006,7 @@ pub struct CTSignedTwipsMeasure {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPixelsMeasure {
+pub struct PixelsMeasureElement {
     #[serde(rename = "@w:val")]
     pub value: STPixelsMeasure,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6019,7 +6019,7 @@ pub struct CTPixelsMeasure {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTHpsMeasure {
+pub struct HpsMeasureElement {
     #[serde(rename = "@w:val")]
     pub value: STHpsMeasure,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6032,7 +6032,7 @@ pub struct CTHpsMeasure {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTSignedHpsMeasure {
+pub struct SignedHpsMeasureElement {
     #[serde(rename = "@w:val")]
     pub value: STSignedHpsMeasure,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6045,7 +6045,7 @@ pub struct CTSignedHpsMeasure {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTMacroName {
+pub struct MacroNameElement {
     #[serde(rename = "@w:val")]
     pub value: STMacroName,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6071,7 +6071,7 @@ pub struct CTString {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTTextScale {
+pub struct TextScaleElement {
     #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STTextScale>,
@@ -6136,7 +6136,7 @@ pub struct CTLang {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTGuid {
+pub struct GuidElement {
     #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<Guid>,
@@ -6327,16 +6327,13 @@ pub struct CTEm {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTLanguage {
-    #[cfg(feature = "wml-styling")]
+pub struct LanguageElement {
     #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<Language>,
-    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:eastAsia")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub east_asia: Option<Language>,
-    #[cfg(feature = "wml-styling")]
     #[serde(rename = "@w:bidi")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bidi: Option<Language>,
@@ -6678,7 +6675,7 @@ pub struct CTProof {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTDocType {
+pub struct DocTypeElement {
     #[serde(rename = "@w:val")]
     pub value: STDocType,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6861,7 +6858,7 @@ pub struct CTMailMergeDocType {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTMailMergeDataType {
+pub struct MailMergeDataTypeElement {
     #[serde(rename = "@w:val")]
     pub value: STMailMergeDataType,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -7570,15 +7567,15 @@ pub struct ParagraphProperties {
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "keepNext")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub keep_next: Option<Box<CTOnOff>>,
+    pub keep_next: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "keepLines")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub keep_lines: Option<Box<CTOnOff>>,
+    pub keep_lines: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "pageBreakBefore")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub page_break_before: Option<Box<CTOnOff>>,
+    pub page_break_before: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "framePr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7586,7 +7583,7 @@ pub struct ParagraphProperties {
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "widowControl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub widow_control: Option<Box<CTOnOff>>,
+    pub widow_control: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-numbering")]
     #[serde(rename = "numPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7594,7 +7591,7 @@ pub struct ParagraphProperties {
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "suppressLineNumbers")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub suppress_line_numbers: Option<Box<CTOnOff>>,
+    pub suppress_line_numbers: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "pBdr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7610,43 +7607,43 @@ pub struct ParagraphProperties {
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "suppressAutoHyphens")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub suppress_auto_hyphens: Option<Box<CTOnOff>>,
+    pub suppress_auto_hyphens: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "kinsoku")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub kinsoku: Option<Box<CTOnOff>>,
+    pub kinsoku: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "wordWrap")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub word_wrap: Option<Box<CTOnOff>>,
+    pub word_wrap: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "overflowPunct")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub overflow_punct: Option<Box<CTOnOff>>,
+    pub overflow_punct: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "topLinePunct")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub top_line_punct: Option<Box<CTOnOff>>,
+    pub top_line_punct: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "autoSpaceDE")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub auto_space_d_e: Option<Box<CTOnOff>>,
+    pub auto_space_d_e: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "autoSpaceDN")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub auto_space_d_n: Option<Box<CTOnOff>>,
+    pub auto_space_d_n: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "bidi")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bidi: Option<Box<CTOnOff>>,
+    pub bidi: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "adjustRightInd")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub adjust_right_ind: Option<Box<CTOnOff>>,
+    pub adjust_right_ind: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "snapToGrid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub snap_to_grid: Option<Box<CTOnOff>>,
+    pub snap_to_grid: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "spacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7658,15 +7655,15 @@ pub struct ParagraphProperties {
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "contextualSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub contextual_spacing: Option<Box<CTOnOff>>,
+    pub contextual_spacing: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "mirrorIndents")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub mirror_indents: Option<Box<CTOnOff>>,
+    pub mirror_indents: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "suppressOverlap")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub suppress_overlap: Option<Box<CTOnOff>>,
+    pub suppress_overlap: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "jc")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7722,15 +7719,15 @@ pub struct CTPPrBase {
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "keepNext")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub keep_next: Option<Box<CTOnOff>>,
+    pub keep_next: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "keepLines")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub keep_lines: Option<Box<CTOnOff>>,
+    pub keep_lines: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "pageBreakBefore")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub page_break_before: Option<Box<CTOnOff>>,
+    pub page_break_before: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "framePr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7738,7 +7735,7 @@ pub struct CTPPrBase {
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "widowControl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub widow_control: Option<Box<CTOnOff>>,
+    pub widow_control: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-numbering")]
     #[serde(rename = "numPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7746,7 +7743,7 @@ pub struct CTPPrBase {
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "suppressLineNumbers")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub suppress_line_numbers: Option<Box<CTOnOff>>,
+    pub suppress_line_numbers: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "pBdr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7762,43 +7759,43 @@ pub struct CTPPrBase {
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "suppressAutoHyphens")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub suppress_auto_hyphens: Option<Box<CTOnOff>>,
+    pub suppress_auto_hyphens: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "kinsoku")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub kinsoku: Option<Box<CTOnOff>>,
+    pub kinsoku: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "wordWrap")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub word_wrap: Option<Box<CTOnOff>>,
+    pub word_wrap: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "overflowPunct")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub overflow_punct: Option<Box<CTOnOff>>,
+    pub overflow_punct: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "topLinePunct")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub top_line_punct: Option<Box<CTOnOff>>,
+    pub top_line_punct: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "autoSpaceDE")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub auto_space_d_e: Option<Box<CTOnOff>>,
+    pub auto_space_d_e: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "autoSpaceDN")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub auto_space_d_n: Option<Box<CTOnOff>>,
+    pub auto_space_d_n: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "bidi")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bidi: Option<Box<CTOnOff>>,
+    pub bidi: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "adjustRightInd")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub adjust_right_ind: Option<Box<CTOnOff>>,
+    pub adjust_right_ind: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "snapToGrid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub snap_to_grid: Option<Box<CTOnOff>>,
+    pub snap_to_grid: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "spacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7810,15 +7807,15 @@ pub struct CTPPrBase {
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "contextualSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub contextual_spacing: Option<Box<CTOnOff>>,
+    pub contextual_spacing: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "mirrorIndents")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub mirror_indents: Option<Box<CTOnOff>>,
+    pub mirror_indents: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "suppressOverlap")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub suppress_overlap: Option<Box<CTOnOff>>,
+    pub suppress_overlap: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "jc")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7861,25 +7858,25 @@ pub struct CTPPrGeneral {
     pub paragraph_style: Option<Box<CTString>>,
     #[serde(rename = "keepNext")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub keep_next: Option<Box<CTOnOff>>,
+    pub keep_next: Option<Box<OnOffElement>>,
     #[serde(rename = "keepLines")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub keep_lines: Option<Box<CTOnOff>>,
+    pub keep_lines: Option<Box<OnOffElement>>,
     #[serde(rename = "pageBreakBefore")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub page_break_before: Option<Box<CTOnOff>>,
+    pub page_break_before: Option<Box<OnOffElement>>,
     #[serde(rename = "framePr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub frame_pr: Option<Box<CTFramePr>>,
     #[serde(rename = "widowControl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub widow_control: Option<Box<CTOnOff>>,
+    pub widow_control: Option<Box<OnOffElement>>,
     #[serde(rename = "numPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub num_pr: Option<Box<NumberingProperties>>,
     #[serde(rename = "suppressLineNumbers")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub suppress_line_numbers: Option<Box<CTOnOff>>,
+    pub suppress_line_numbers: Option<Box<OnOffElement>>,
     #[serde(rename = "pBdr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub paragraph_border: Option<Box<CTPBdr>>,
@@ -7891,34 +7888,34 @@ pub struct CTPPrGeneral {
     pub tabs: Option<Box<CTTabs>>,
     #[serde(rename = "suppressAutoHyphens")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub suppress_auto_hyphens: Option<Box<CTOnOff>>,
+    pub suppress_auto_hyphens: Option<Box<OnOffElement>>,
     #[serde(rename = "kinsoku")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub kinsoku: Option<Box<CTOnOff>>,
+    pub kinsoku: Option<Box<OnOffElement>>,
     #[serde(rename = "wordWrap")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub word_wrap: Option<Box<CTOnOff>>,
+    pub word_wrap: Option<Box<OnOffElement>>,
     #[serde(rename = "overflowPunct")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub overflow_punct: Option<Box<CTOnOff>>,
+    pub overflow_punct: Option<Box<OnOffElement>>,
     #[serde(rename = "topLinePunct")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub top_line_punct: Option<Box<CTOnOff>>,
+    pub top_line_punct: Option<Box<OnOffElement>>,
     #[serde(rename = "autoSpaceDE")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub auto_space_d_e: Option<Box<CTOnOff>>,
+    pub auto_space_d_e: Option<Box<OnOffElement>>,
     #[serde(rename = "autoSpaceDN")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub auto_space_d_n: Option<Box<CTOnOff>>,
+    pub auto_space_d_n: Option<Box<OnOffElement>>,
     #[serde(rename = "bidi")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bidi: Option<Box<CTOnOff>>,
+    pub bidi: Option<Box<OnOffElement>>,
     #[serde(rename = "adjustRightInd")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub adjust_right_ind: Option<Box<CTOnOff>>,
+    pub adjust_right_ind: Option<Box<OnOffElement>>,
     #[serde(rename = "snapToGrid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub snap_to_grid: Option<Box<CTOnOff>>,
+    pub snap_to_grid: Option<Box<OnOffElement>>,
     #[serde(rename = "spacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spacing: Option<Box<CTSpacing>>,
@@ -7927,13 +7924,13 @@ pub struct CTPPrGeneral {
     pub indentation: Option<Box<CTInd>>,
     #[serde(rename = "contextualSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub contextual_spacing: Option<Box<CTOnOff>>,
+    pub contextual_spacing: Option<Box<OnOffElement>>,
     #[serde(rename = "mirrorIndents")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub mirror_indents: Option<Box<CTOnOff>>,
+    pub mirror_indents: Option<Box<OnOffElement>>,
     #[serde(rename = "suppressOverlap")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub suppress_overlap: Option<Box<CTOnOff>>,
+    pub suppress_overlap: Option<Box<OnOffElement>>,
     #[serde(rename = "jc")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub justification: Option<Box<CTJc>>,
@@ -8222,7 +8219,7 @@ pub struct CTFFTextType {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTFFName {
+pub struct FFNameElement {
     #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STFFName>,
@@ -8321,7 +8318,7 @@ pub struct CTFFData {
     #[cfg(feature = "wml-fields")]
     #[serde(rename = "name")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub name: Vec<CTFFName>,
+    pub name: Vec<FFNameElement>,
     #[cfg(feature = "wml-fields")]
     #[serde(rename = "label")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8329,23 +8326,23 @@ pub struct CTFFData {
     #[cfg(feature = "wml-fields")]
     #[serde(rename = "tabIndex")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tab_index: Option<Box<CTUnsignedDecimalNumber>>,
+    pub tab_index: Option<Box<UnsignedDecimalNumberElement>>,
     #[cfg(feature = "wml-fields")]
     #[serde(rename = "enabled")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub enabled: Vec<CTOnOff>,
+    pub enabled: Vec<OnOffElement>,
     #[cfg(feature = "wml-fields")]
     #[serde(rename = "calcOnExit")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub calc_on_exit: Vec<CTOnOff>,
+    pub calc_on_exit: Vec<OnOffElement>,
     #[cfg(feature = "wml-fields")]
     #[serde(rename = "entryMacro")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub entry_macro: Option<Box<CTMacroName>>,
+    pub entry_macro: Option<Box<MacroNameElement>>,
     #[cfg(feature = "wml-fields")]
     #[serde(rename = "exitMacro")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub exit_macro: Option<Box<CTMacroName>>,
+    pub exit_macro: Option<Box<MacroNameElement>>,
     #[cfg(feature = "wml-fields")]
     #[serde(rename = "helpText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8400,19 +8397,19 @@ pub struct CTFFCheckBox {
     #[cfg(feature = "wml-fields")]
     #[serde(rename = "size")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub size: Option<Box<CTHpsMeasure>>,
+    pub size: Option<Box<HpsMeasureElement>>,
     #[cfg(feature = "wml-fields")]
     #[serde(rename = "sizeAuto")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub size_auto: Option<Box<CTOnOff>>,
+    pub size_auto: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-fields")]
     #[serde(rename = "default")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub default: Option<Box<CTOnOff>>,
+    pub default: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-fields")]
     #[serde(rename = "checked")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub checked: Option<Box<CTOnOff>>,
+    pub checked: Option<Box<OnOffElement>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -8945,25 +8942,25 @@ pub struct EGSectPrContents {
     pub cols: Option<Box<Columns>>,
     #[serde(rename = "formProt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub form_prot: Option<Box<CTOnOff>>,
+    pub form_prot: Option<Box<OnOffElement>>,
     #[serde(rename = "vAlign")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub v_align: Option<Box<CTVerticalJc>>,
     #[serde(rename = "noEndnote")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub no_endnote: Option<Box<CTOnOff>>,
+    pub no_endnote: Option<Box<OnOffElement>>,
     #[serde(rename = "titlePg")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub title_pg: Option<Box<CTOnOff>>,
+    pub title_pg: Option<Box<OnOffElement>>,
     #[serde(rename = "textDirection")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub text_direction: Option<Box<CTTextDirection>>,
     #[serde(rename = "bidi")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bidi: Option<Box<CTOnOff>>,
+    pub bidi: Option<Box<OnOffElement>>,
     #[serde(rename = "rtlGutter")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub rtl_gutter: Option<Box<CTOnOff>>,
+    pub rtl_gutter: Option<Box<OnOffElement>>,
     #[serde(rename = "docGrid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc_grid: Option<Box<DocumentGrid>>,
@@ -9050,25 +9047,25 @@ pub struct CTSectPrBase {
     pub cols: Option<Box<Columns>>,
     #[serde(rename = "formProt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub form_prot: Option<Box<CTOnOff>>,
+    pub form_prot: Option<Box<OnOffElement>>,
     #[serde(rename = "vAlign")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub v_align: Option<Box<CTVerticalJc>>,
     #[serde(rename = "noEndnote")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub no_endnote: Option<Box<CTOnOff>>,
+    pub no_endnote: Option<Box<OnOffElement>>,
     #[serde(rename = "titlePg")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub title_pg: Option<Box<CTOnOff>>,
+    pub title_pg: Option<Box<OnOffElement>>,
     #[serde(rename = "textDirection")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub text_direction: Option<Box<CTTextDirection>>,
     #[serde(rename = "bidi")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bidi: Option<Box<CTOnOff>>,
+    pub bidi: Option<Box<OnOffElement>>,
     #[serde(rename = "rtlGutter")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub rtl_gutter: Option<Box<CTOnOff>>,
+    pub rtl_gutter: Option<Box<OnOffElement>>,
     #[serde(rename = "docGrid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc_grid: Option<Box<DocumentGrid>>,
@@ -9153,7 +9150,7 @@ pub struct SectionProperties {
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "formProt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub form_prot: Option<Box<CTOnOff>>,
+    pub form_prot: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "vAlign")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9161,11 +9158,11 @@ pub struct SectionProperties {
     #[cfg(feature = "wml-comments")]
     #[serde(rename = "noEndnote")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub no_endnote: Option<Box<CTOnOff>>,
+    pub no_endnote: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "titlePg")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub title_pg: Option<Box<CTOnOff>>,
+    pub title_pg: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "textDirection")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9173,11 +9170,11 @@ pub struct SectionProperties {
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "bidi")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bidi: Option<Box<CTOnOff>>,
+    pub bidi: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "rtlGutter")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub rtl_gutter: Option<Box<CTOnOff>>,
+    pub rtl_gutter: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-layout")]
     #[serde(rename = "docGrid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9423,73 +9420,73 @@ pub struct EGRPrBase {
     pub fonts: Option<Box<Fonts>>,
     #[serde(rename = "b")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bold: Option<Box<CTOnOff>>,
+    pub bold: Option<Box<OnOffElement>>,
     #[serde(rename = "bCs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub b_cs: Option<Box<CTOnOff>>,
+    pub b_cs: Option<Box<OnOffElement>>,
     #[serde(rename = "i")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub italic: Option<Box<CTOnOff>>,
+    pub italic: Option<Box<OnOffElement>>,
     #[serde(rename = "iCs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub i_cs: Option<Box<CTOnOff>>,
+    pub i_cs: Option<Box<OnOffElement>>,
     #[serde(rename = "caps")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub caps: Option<Box<CTOnOff>>,
+    pub caps: Option<Box<OnOffElement>>,
     #[serde(rename = "smallCaps")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub small_caps: Option<Box<CTOnOff>>,
+    pub small_caps: Option<Box<OnOffElement>>,
     #[serde(rename = "strike")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub strikethrough: Option<Box<CTOnOff>>,
+    pub strikethrough: Option<Box<OnOffElement>>,
     #[serde(rename = "dstrike")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub dstrike: Option<Box<CTOnOff>>,
+    pub dstrike: Option<Box<OnOffElement>>,
     #[serde(rename = "outline")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub outline: Option<Box<CTOnOff>>,
+    pub outline: Option<Box<OnOffElement>>,
     #[serde(rename = "shadow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub shadow: Option<Box<CTOnOff>>,
+    pub shadow: Option<Box<OnOffElement>>,
     #[serde(rename = "emboss")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub emboss: Option<Box<CTOnOff>>,
+    pub emboss: Option<Box<OnOffElement>>,
     #[serde(rename = "imprint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub imprint: Option<Box<CTOnOff>>,
+    pub imprint: Option<Box<OnOffElement>>,
     #[serde(rename = "noProof")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub no_proof: Option<Box<CTOnOff>>,
+    pub no_proof: Option<Box<OnOffElement>>,
     #[serde(rename = "snapToGrid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub snap_to_grid: Option<Box<CTOnOff>>,
+    pub snap_to_grid: Option<Box<OnOffElement>>,
     #[serde(rename = "vanish")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub vanish: Option<Box<CTOnOff>>,
+    pub vanish: Option<Box<OnOffElement>>,
     #[serde(rename = "webHidden")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub web_hidden: Option<Box<CTOnOff>>,
+    pub web_hidden: Option<Box<OnOffElement>>,
     #[serde(rename = "color")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<Box<CTColor>>,
     #[serde(rename = "spacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub spacing: Option<Box<CTSignedTwipsMeasure>>,
+    pub spacing: Option<Box<SignedTwipsMeasureElement>>,
     #[serde(rename = "w")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub width: Option<Box<CTTextScale>>,
+    pub width: Option<Box<TextScaleElement>>,
     #[serde(rename = "kern")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub kern: Option<Box<CTHpsMeasure>>,
+    pub kern: Option<Box<HpsMeasureElement>>,
     #[serde(rename = "position")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub position: Option<Box<CTSignedHpsMeasure>>,
+    pub position: Option<Box<SignedHpsMeasureElement>>,
     #[serde(rename = "sz")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub size: Option<Box<CTHpsMeasure>>,
+    pub size: Option<Box<HpsMeasureElement>>,
     #[serde(rename = "szCs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub size_complex_script: Option<Box<CTHpsMeasure>>,
+    pub size_complex_script: Option<Box<HpsMeasureElement>>,
     #[serde(rename = "highlight")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub highlight: Option<Box<CTHighlight>>,
@@ -9513,25 +9510,25 @@ pub struct EGRPrBase {
     pub vert_align: Option<Box<CTVerticalAlignRun>>,
     #[serde(rename = "rtl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub rtl: Option<Box<CTOnOff>>,
+    pub rtl: Option<Box<OnOffElement>>,
     #[serde(rename = "cs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub cs: Option<Box<CTOnOff>>,
+    pub cs: Option<Box<OnOffElement>>,
     #[serde(rename = "em")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub em: Option<Box<CTEm>>,
     #[serde(rename = "lang")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub lang: Option<Box<CTLanguage>>,
+    pub lang: Option<Box<LanguageElement>>,
     #[serde(rename = "eastAsianLayout")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub east_asian_layout: Option<Box<CTEastAsianLayout>>,
     #[serde(rename = "specVanish")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub spec_vanish: Option<Box<CTOnOff>>,
+    pub spec_vanish: Option<Box<OnOffElement>>,
     #[serde(rename = "oMath")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub o_math: Option<Box<CTOnOff>>,
+    pub o_math: Option<Box<OnOffElement>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -9549,73 +9546,73 @@ pub struct EGRPrContent {
     pub fonts: Option<Box<Fonts>>,
     #[serde(rename = "b")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bold: Option<Box<CTOnOff>>,
+    pub bold: Option<Box<OnOffElement>>,
     #[serde(rename = "bCs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub b_cs: Option<Box<CTOnOff>>,
+    pub b_cs: Option<Box<OnOffElement>>,
     #[serde(rename = "i")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub italic: Option<Box<CTOnOff>>,
+    pub italic: Option<Box<OnOffElement>>,
     #[serde(rename = "iCs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub i_cs: Option<Box<CTOnOff>>,
+    pub i_cs: Option<Box<OnOffElement>>,
     #[serde(rename = "caps")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub caps: Option<Box<CTOnOff>>,
+    pub caps: Option<Box<OnOffElement>>,
     #[serde(rename = "smallCaps")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub small_caps: Option<Box<CTOnOff>>,
+    pub small_caps: Option<Box<OnOffElement>>,
     #[serde(rename = "strike")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub strikethrough: Option<Box<CTOnOff>>,
+    pub strikethrough: Option<Box<OnOffElement>>,
     #[serde(rename = "dstrike")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub dstrike: Option<Box<CTOnOff>>,
+    pub dstrike: Option<Box<OnOffElement>>,
     #[serde(rename = "outline")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub outline: Option<Box<CTOnOff>>,
+    pub outline: Option<Box<OnOffElement>>,
     #[serde(rename = "shadow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub shadow: Option<Box<CTOnOff>>,
+    pub shadow: Option<Box<OnOffElement>>,
     #[serde(rename = "emboss")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub emboss: Option<Box<CTOnOff>>,
+    pub emboss: Option<Box<OnOffElement>>,
     #[serde(rename = "imprint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub imprint: Option<Box<CTOnOff>>,
+    pub imprint: Option<Box<OnOffElement>>,
     #[serde(rename = "noProof")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub no_proof: Option<Box<CTOnOff>>,
+    pub no_proof: Option<Box<OnOffElement>>,
     #[serde(rename = "snapToGrid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub snap_to_grid: Option<Box<CTOnOff>>,
+    pub snap_to_grid: Option<Box<OnOffElement>>,
     #[serde(rename = "vanish")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub vanish: Option<Box<CTOnOff>>,
+    pub vanish: Option<Box<OnOffElement>>,
     #[serde(rename = "webHidden")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub web_hidden: Option<Box<CTOnOff>>,
+    pub web_hidden: Option<Box<OnOffElement>>,
     #[serde(rename = "color")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<Box<CTColor>>,
     #[serde(rename = "spacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub spacing: Option<Box<CTSignedTwipsMeasure>>,
+    pub spacing: Option<Box<SignedTwipsMeasureElement>>,
     #[serde(rename = "w")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub width: Option<Box<CTTextScale>>,
+    pub width: Option<Box<TextScaleElement>>,
     #[serde(rename = "kern")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub kern: Option<Box<CTHpsMeasure>>,
+    pub kern: Option<Box<HpsMeasureElement>>,
     #[serde(rename = "position")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub position: Option<Box<CTSignedHpsMeasure>>,
+    pub position: Option<Box<SignedHpsMeasureElement>>,
     #[serde(rename = "sz")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub size: Option<Box<CTHpsMeasure>>,
+    pub size: Option<Box<HpsMeasureElement>>,
     #[serde(rename = "szCs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub size_complex_script: Option<Box<CTHpsMeasure>>,
+    pub size_complex_script: Option<Box<HpsMeasureElement>>,
     #[serde(rename = "highlight")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub highlight: Option<Box<CTHighlight>>,
@@ -9639,25 +9636,25 @@ pub struct EGRPrContent {
     pub vert_align: Option<Box<CTVerticalAlignRun>>,
     #[serde(rename = "rtl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub rtl: Option<Box<CTOnOff>>,
+    pub rtl: Option<Box<OnOffElement>>,
     #[serde(rename = "cs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub cs: Option<Box<CTOnOff>>,
+    pub cs: Option<Box<OnOffElement>>,
     #[serde(rename = "em")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub em: Option<Box<CTEm>>,
     #[serde(rename = "lang")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub lang: Option<Box<CTLanguage>>,
+    pub lang: Option<Box<LanguageElement>>,
     #[serde(rename = "eastAsianLayout")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub east_asian_layout: Option<Box<CTEastAsianLayout>>,
     #[serde(rename = "specVanish")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub spec_vanish: Option<Box<CTOnOff>>,
+    pub spec_vanish: Option<Box<OnOffElement>>,
     #[serde(rename = "oMath")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub o_math: Option<Box<CTOnOff>>,
+    pub o_math: Option<Box<OnOffElement>>,
     #[serde(rename = "rPrChange")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r_pr_change: Option<Box<CTRPrChange>>,
@@ -9680,67 +9677,67 @@ pub struct RunProperties {
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "b")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bold: Option<Box<CTOnOff>>,
+    pub bold: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "bCs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub b_cs: Option<Box<CTOnOff>>,
+    pub b_cs: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "i")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub italic: Option<Box<CTOnOff>>,
+    pub italic: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "iCs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub i_cs: Option<Box<CTOnOff>>,
+    pub i_cs: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "caps")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub caps: Option<Box<CTOnOff>>,
+    pub caps: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "smallCaps")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub small_caps: Option<Box<CTOnOff>>,
+    pub small_caps: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "strike")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub strikethrough: Option<Box<CTOnOff>>,
+    pub strikethrough: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "dstrike")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub dstrike: Option<Box<CTOnOff>>,
+    pub dstrike: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "outline")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub outline: Option<Box<CTOnOff>>,
+    pub outline: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "shadow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub shadow: Option<Box<CTOnOff>>,
+    pub shadow: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "emboss")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub emboss: Option<Box<CTOnOff>>,
+    pub emboss: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "imprint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub imprint: Option<Box<CTOnOff>>,
+    pub imprint: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "noProof")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub no_proof: Option<Box<CTOnOff>>,
+    pub no_proof: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "snapToGrid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub snap_to_grid: Option<Box<CTOnOff>>,
+    pub snap_to_grid: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "vanish")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub vanish: Option<Box<CTOnOff>>,
+    pub vanish: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "webHidden")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub web_hidden: Option<Box<CTOnOff>>,
+    pub web_hidden: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "color")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9748,27 +9745,27 @@ pub struct RunProperties {
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "spacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub spacing: Option<Box<CTSignedTwipsMeasure>>,
+    pub spacing: Option<Box<SignedTwipsMeasureElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "w")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub width: Option<Box<CTTextScale>>,
+    pub width: Option<Box<TextScaleElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "kern")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub kern: Option<Box<CTHpsMeasure>>,
+    pub kern: Option<Box<HpsMeasureElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "position")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub position: Option<Box<CTSignedHpsMeasure>>,
+    pub position: Option<Box<SignedHpsMeasureElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "sz")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub size: Option<Box<CTHpsMeasure>>,
+    pub size: Option<Box<HpsMeasureElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "szCs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub size_complex_script: Option<Box<CTHpsMeasure>>,
+    pub size_complex_script: Option<Box<HpsMeasureElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "highlight")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9800,11 +9797,11 @@ pub struct RunProperties {
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "rtl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub rtl: Option<Box<CTOnOff>>,
+    pub rtl: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "cs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub cs: Option<Box<CTOnOff>>,
+    pub cs: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "em")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9812,7 +9809,7 @@ pub struct RunProperties {
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "lang")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub lang: Option<Box<CTLanguage>>,
+    pub lang: Option<Box<LanguageElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "eastAsianLayout")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9820,11 +9817,11 @@ pub struct RunProperties {
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "specVanish")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub spec_vanish: Option<Box<CTOnOff>>,
+    pub spec_vanish: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "oMath")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub o_math: Option<Box<CTOnOff>>,
+    pub o_math: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "rPrChange")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9916,73 +9913,73 @@ pub struct CTRPrOriginal {
     pub fonts: Option<Box<Fonts>>,
     #[serde(rename = "b")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bold: Option<Box<CTOnOff>>,
+    pub bold: Option<Box<OnOffElement>>,
     #[serde(rename = "bCs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub b_cs: Option<Box<CTOnOff>>,
+    pub b_cs: Option<Box<OnOffElement>>,
     #[serde(rename = "i")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub italic: Option<Box<CTOnOff>>,
+    pub italic: Option<Box<OnOffElement>>,
     #[serde(rename = "iCs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub i_cs: Option<Box<CTOnOff>>,
+    pub i_cs: Option<Box<OnOffElement>>,
     #[serde(rename = "caps")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub caps: Option<Box<CTOnOff>>,
+    pub caps: Option<Box<OnOffElement>>,
     #[serde(rename = "smallCaps")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub small_caps: Option<Box<CTOnOff>>,
+    pub small_caps: Option<Box<OnOffElement>>,
     #[serde(rename = "strike")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub strikethrough: Option<Box<CTOnOff>>,
+    pub strikethrough: Option<Box<OnOffElement>>,
     #[serde(rename = "dstrike")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub dstrike: Option<Box<CTOnOff>>,
+    pub dstrike: Option<Box<OnOffElement>>,
     #[serde(rename = "outline")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub outline: Option<Box<CTOnOff>>,
+    pub outline: Option<Box<OnOffElement>>,
     #[serde(rename = "shadow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub shadow: Option<Box<CTOnOff>>,
+    pub shadow: Option<Box<OnOffElement>>,
     #[serde(rename = "emboss")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub emboss: Option<Box<CTOnOff>>,
+    pub emboss: Option<Box<OnOffElement>>,
     #[serde(rename = "imprint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub imprint: Option<Box<CTOnOff>>,
+    pub imprint: Option<Box<OnOffElement>>,
     #[serde(rename = "noProof")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub no_proof: Option<Box<CTOnOff>>,
+    pub no_proof: Option<Box<OnOffElement>>,
     #[serde(rename = "snapToGrid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub snap_to_grid: Option<Box<CTOnOff>>,
+    pub snap_to_grid: Option<Box<OnOffElement>>,
     #[serde(rename = "vanish")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub vanish: Option<Box<CTOnOff>>,
+    pub vanish: Option<Box<OnOffElement>>,
     #[serde(rename = "webHidden")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub web_hidden: Option<Box<CTOnOff>>,
+    pub web_hidden: Option<Box<OnOffElement>>,
     #[serde(rename = "color")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<Box<CTColor>>,
     #[serde(rename = "spacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub spacing: Option<Box<CTSignedTwipsMeasure>>,
+    pub spacing: Option<Box<SignedTwipsMeasureElement>>,
     #[serde(rename = "w")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub width: Option<Box<CTTextScale>>,
+    pub width: Option<Box<TextScaleElement>>,
     #[serde(rename = "kern")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub kern: Option<Box<CTHpsMeasure>>,
+    pub kern: Option<Box<HpsMeasureElement>>,
     #[serde(rename = "position")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub position: Option<Box<CTSignedHpsMeasure>>,
+    pub position: Option<Box<SignedHpsMeasureElement>>,
     #[serde(rename = "sz")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub size: Option<Box<CTHpsMeasure>>,
+    pub size: Option<Box<HpsMeasureElement>>,
     #[serde(rename = "szCs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub size_complex_script: Option<Box<CTHpsMeasure>>,
+    pub size_complex_script: Option<Box<HpsMeasureElement>>,
     #[serde(rename = "highlight")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub highlight: Option<Box<CTHighlight>>,
@@ -10006,25 +10003,25 @@ pub struct CTRPrOriginal {
     pub vert_align: Option<Box<CTVerticalAlignRun>>,
     #[serde(rename = "rtl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub rtl: Option<Box<CTOnOff>>,
+    pub rtl: Option<Box<OnOffElement>>,
     #[serde(rename = "cs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub cs: Option<Box<CTOnOff>>,
+    pub cs: Option<Box<OnOffElement>>,
     #[serde(rename = "em")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub em: Option<Box<CTEm>>,
     #[serde(rename = "lang")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub lang: Option<Box<CTLanguage>>,
+    pub lang: Option<Box<LanguageElement>>,
     #[serde(rename = "eastAsianLayout")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub east_asian_layout: Option<Box<CTEastAsianLayout>>,
     #[serde(rename = "specVanish")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub spec_vanish: Option<Box<CTOnOff>>,
+    pub spec_vanish: Option<Box<OnOffElement>>,
     #[serde(rename = "oMath")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub o_math: Option<Box<CTOnOff>>,
+    pub o_math: Option<Box<OnOffElement>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -10054,73 +10051,73 @@ pub struct CTParaRPrOriginal {
     pub fonts: Option<Box<Fonts>>,
     #[serde(rename = "b")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bold: Option<Box<CTOnOff>>,
+    pub bold: Option<Box<OnOffElement>>,
     #[serde(rename = "bCs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub b_cs: Option<Box<CTOnOff>>,
+    pub b_cs: Option<Box<OnOffElement>>,
     #[serde(rename = "i")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub italic: Option<Box<CTOnOff>>,
+    pub italic: Option<Box<OnOffElement>>,
     #[serde(rename = "iCs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub i_cs: Option<Box<CTOnOff>>,
+    pub i_cs: Option<Box<OnOffElement>>,
     #[serde(rename = "caps")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub caps: Option<Box<CTOnOff>>,
+    pub caps: Option<Box<OnOffElement>>,
     #[serde(rename = "smallCaps")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub small_caps: Option<Box<CTOnOff>>,
+    pub small_caps: Option<Box<OnOffElement>>,
     #[serde(rename = "strike")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub strikethrough: Option<Box<CTOnOff>>,
+    pub strikethrough: Option<Box<OnOffElement>>,
     #[serde(rename = "dstrike")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub dstrike: Option<Box<CTOnOff>>,
+    pub dstrike: Option<Box<OnOffElement>>,
     #[serde(rename = "outline")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub outline: Option<Box<CTOnOff>>,
+    pub outline: Option<Box<OnOffElement>>,
     #[serde(rename = "shadow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub shadow: Option<Box<CTOnOff>>,
+    pub shadow: Option<Box<OnOffElement>>,
     #[serde(rename = "emboss")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub emboss: Option<Box<CTOnOff>>,
+    pub emboss: Option<Box<OnOffElement>>,
     #[serde(rename = "imprint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub imprint: Option<Box<CTOnOff>>,
+    pub imprint: Option<Box<OnOffElement>>,
     #[serde(rename = "noProof")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub no_proof: Option<Box<CTOnOff>>,
+    pub no_proof: Option<Box<OnOffElement>>,
     #[serde(rename = "snapToGrid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub snap_to_grid: Option<Box<CTOnOff>>,
+    pub snap_to_grid: Option<Box<OnOffElement>>,
     #[serde(rename = "vanish")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub vanish: Option<Box<CTOnOff>>,
+    pub vanish: Option<Box<OnOffElement>>,
     #[serde(rename = "webHidden")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub web_hidden: Option<Box<CTOnOff>>,
+    pub web_hidden: Option<Box<OnOffElement>>,
     #[serde(rename = "color")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<Box<CTColor>>,
     #[serde(rename = "spacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub spacing: Option<Box<CTSignedTwipsMeasure>>,
+    pub spacing: Option<Box<SignedTwipsMeasureElement>>,
     #[serde(rename = "w")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub width: Option<Box<CTTextScale>>,
+    pub width: Option<Box<TextScaleElement>>,
     #[serde(rename = "kern")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub kern: Option<Box<CTHpsMeasure>>,
+    pub kern: Option<Box<HpsMeasureElement>>,
     #[serde(rename = "position")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub position: Option<Box<CTSignedHpsMeasure>>,
+    pub position: Option<Box<SignedHpsMeasureElement>>,
     #[serde(rename = "sz")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub size: Option<Box<CTHpsMeasure>>,
+    pub size: Option<Box<HpsMeasureElement>>,
     #[serde(rename = "szCs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub size_complex_script: Option<Box<CTHpsMeasure>>,
+    pub size_complex_script: Option<Box<HpsMeasureElement>>,
     #[serde(rename = "highlight")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub highlight: Option<Box<CTHighlight>>,
@@ -10144,25 +10141,25 @@ pub struct CTParaRPrOriginal {
     pub vert_align: Option<Box<CTVerticalAlignRun>>,
     #[serde(rename = "rtl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub rtl: Option<Box<CTOnOff>>,
+    pub rtl: Option<Box<OnOffElement>>,
     #[serde(rename = "cs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub cs: Option<Box<CTOnOff>>,
+    pub cs: Option<Box<OnOffElement>>,
     #[serde(rename = "em")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub em: Option<Box<CTEm>>,
     #[serde(rename = "lang")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub lang: Option<Box<CTLanguage>>,
+    pub lang: Option<Box<LanguageElement>>,
     #[serde(rename = "eastAsianLayout")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub east_asian_layout: Option<Box<CTEastAsianLayout>>,
     #[serde(rename = "specVanish")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub spec_vanish: Option<Box<CTOnOff>>,
+    pub spec_vanish: Option<Box<OnOffElement>>,
     #[serde(rename = "oMath")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub o_math: Option<Box<CTOnOff>>,
+    pub o_math: Option<Box<OnOffElement>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -10192,73 +10189,73 @@ pub struct CTParaRPr {
     pub fonts: Option<Box<Fonts>>,
     #[serde(rename = "b")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bold: Option<Box<CTOnOff>>,
+    pub bold: Option<Box<OnOffElement>>,
     #[serde(rename = "bCs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub b_cs: Option<Box<CTOnOff>>,
+    pub b_cs: Option<Box<OnOffElement>>,
     #[serde(rename = "i")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub italic: Option<Box<CTOnOff>>,
+    pub italic: Option<Box<OnOffElement>>,
     #[serde(rename = "iCs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub i_cs: Option<Box<CTOnOff>>,
+    pub i_cs: Option<Box<OnOffElement>>,
     #[serde(rename = "caps")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub caps: Option<Box<CTOnOff>>,
+    pub caps: Option<Box<OnOffElement>>,
     #[serde(rename = "smallCaps")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub small_caps: Option<Box<CTOnOff>>,
+    pub small_caps: Option<Box<OnOffElement>>,
     #[serde(rename = "strike")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub strikethrough: Option<Box<CTOnOff>>,
+    pub strikethrough: Option<Box<OnOffElement>>,
     #[serde(rename = "dstrike")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub dstrike: Option<Box<CTOnOff>>,
+    pub dstrike: Option<Box<OnOffElement>>,
     #[serde(rename = "outline")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub outline: Option<Box<CTOnOff>>,
+    pub outline: Option<Box<OnOffElement>>,
     #[serde(rename = "shadow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub shadow: Option<Box<CTOnOff>>,
+    pub shadow: Option<Box<OnOffElement>>,
     #[serde(rename = "emboss")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub emboss: Option<Box<CTOnOff>>,
+    pub emboss: Option<Box<OnOffElement>>,
     #[serde(rename = "imprint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub imprint: Option<Box<CTOnOff>>,
+    pub imprint: Option<Box<OnOffElement>>,
     #[serde(rename = "noProof")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub no_proof: Option<Box<CTOnOff>>,
+    pub no_proof: Option<Box<OnOffElement>>,
     #[serde(rename = "snapToGrid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub snap_to_grid: Option<Box<CTOnOff>>,
+    pub snap_to_grid: Option<Box<OnOffElement>>,
     #[serde(rename = "vanish")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub vanish: Option<Box<CTOnOff>>,
+    pub vanish: Option<Box<OnOffElement>>,
     #[serde(rename = "webHidden")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub web_hidden: Option<Box<CTOnOff>>,
+    pub web_hidden: Option<Box<OnOffElement>>,
     #[serde(rename = "color")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<Box<CTColor>>,
     #[serde(rename = "spacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub spacing: Option<Box<CTSignedTwipsMeasure>>,
+    pub spacing: Option<Box<SignedTwipsMeasureElement>>,
     #[serde(rename = "w")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub width: Option<Box<CTTextScale>>,
+    pub width: Option<Box<TextScaleElement>>,
     #[serde(rename = "kern")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub kern: Option<Box<CTHpsMeasure>>,
+    pub kern: Option<Box<HpsMeasureElement>>,
     #[serde(rename = "position")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub position: Option<Box<CTSignedHpsMeasure>>,
+    pub position: Option<Box<SignedHpsMeasureElement>>,
     #[serde(rename = "sz")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub size: Option<Box<CTHpsMeasure>>,
+    pub size: Option<Box<HpsMeasureElement>>,
     #[serde(rename = "szCs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub size_complex_script: Option<Box<CTHpsMeasure>>,
+    pub size_complex_script: Option<Box<HpsMeasureElement>>,
     #[serde(rename = "highlight")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub highlight: Option<Box<CTHighlight>>,
@@ -10282,25 +10279,25 @@ pub struct CTParaRPr {
     pub vert_align: Option<Box<CTVerticalAlignRun>>,
     #[serde(rename = "rtl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub rtl: Option<Box<CTOnOff>>,
+    pub rtl: Option<Box<OnOffElement>>,
     #[serde(rename = "cs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub cs: Option<Box<CTOnOff>>,
+    pub cs: Option<Box<OnOffElement>>,
     #[serde(rename = "em")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub em: Option<Box<CTEm>>,
     #[serde(rename = "lang")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub lang: Option<Box<CTLanguage>>,
+    pub lang: Option<Box<LanguageElement>>,
     #[serde(rename = "eastAsianLayout")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub east_asian_layout: Option<Box<CTEastAsianLayout>>,
     #[serde(rename = "specVanish")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub spec_vanish: Option<Box<CTOnOff>>,
+    pub spec_vanish: Option<Box<OnOffElement>>,
     #[serde(rename = "oMath")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub o_math: Option<Box<CTOnOff>>,
+    pub o_math: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "rPrChange")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -10361,7 +10358,7 @@ pub struct CTAltChunkPr {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "matchSrc")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub match_src: Option<Box<CTOnOff>>,
+    pub match_src: Option<Box<OnOffElement>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -10389,20 +10386,20 @@ pub struct CTRubyPr {
     pub ruby_align: Box<CTRubyAlign>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "hps")]
-    pub hps: Box<CTHpsMeasure>,
+    pub hps: Box<HpsMeasureElement>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "hpsRaise")]
-    pub hps_raise: Box<CTHpsMeasure>,
+    pub hps_raise: Box<HpsMeasureElement>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "hpsBaseText")]
-    pub hps_base_text: Box<CTHpsMeasure>,
+    pub hps_base_text: Box<HpsMeasureElement>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "lid")]
     pub lid: Box<CTLang>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "dirty")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub dirty: Option<Box<CTOnOff>>,
+    pub dirty: Option<Box<OnOffElement>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -10570,7 +10567,7 @@ pub struct CTSdtDocPart {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "docPartUnique")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub doc_part_unique: Option<Box<CTOnOff>>,
+    pub doc_part_unique: Option<Box<OnOffElement>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -10602,7 +10599,7 @@ pub struct CTSdtDropDownList {
     pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
-pub type CTPlaceholder = Box<CTString>;
+pub type PlaceholderElement = Box<CTString>;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSdtText {
@@ -10665,15 +10662,15 @@ pub struct CTSdtPr {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "placeholder")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub placeholder: Option<CTPlaceholder>,
+    pub placeholder: Option<PlaceholderElement>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "temporary")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub temporary: Option<Box<CTOnOff>>,
+    pub temporary: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "showingPlcHdr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub showing_plc_hdr: Option<Box<CTOnOff>>,
+    pub showing_plc_hdr: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "dataBinding")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -10685,7 +10682,7 @@ pub struct CTSdtPr {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "tabIndex")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tab_index: Option<Box<CTUnsignedDecimalNumber>>,
+    pub tab_index: Option<Box<UnsignedDecimalNumberElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "equation")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11387,7 +11384,7 @@ pub struct CTTcPrBase {
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "noWrap")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub no_wrap: Option<Box<CTOnOff>>,
+    pub no_wrap: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "tcMar")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11399,7 +11396,7 @@ pub struct CTTcPrBase {
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "tcFitText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tc_fit_text: Option<Box<CTOnOff>>,
+    pub tc_fit_text: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "vAlign")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11407,7 +11404,7 @@ pub struct CTTcPrBase {
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "hideMark")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub hide_mark: Option<Box<CTOnOff>>,
+    pub hide_mark: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "headers")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11452,7 +11449,7 @@ pub struct TableCellProperties {
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "noWrap")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub no_wrap: Option<Box<CTOnOff>>,
+    pub no_wrap: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "tcMar")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11464,7 +11461,7 @@ pub struct TableCellProperties {
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "tcFitText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tc_fit_text: Option<Box<CTOnOff>>,
+    pub tc_fit_text: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "vAlign")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11472,7 +11469,7 @@ pub struct TableCellProperties {
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "hideMark")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub hide_mark: Option<Box<CTOnOff>>,
+    pub hide_mark: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "headers")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11516,7 +11513,7 @@ pub struct CTTcPrInner {
     pub shading: Option<Box<CTShd>>,
     #[serde(rename = "noWrap")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub no_wrap: Option<Box<CTOnOff>>,
+    pub no_wrap: Option<Box<OnOffElement>>,
     #[serde(rename = "tcMar")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tc_mar: Option<Box<CTTcMar>>,
@@ -11525,13 +11522,13 @@ pub struct CTTcPrInner {
     pub text_direction: Option<Box<CTTextDirection>>,
     #[serde(rename = "tcFitText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tc_fit_text: Option<Box<CTOnOff>>,
+    pub tc_fit_text: Option<Box<OnOffElement>>,
     #[serde(rename = "vAlign")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub v_align: Option<Box<CTVerticalJc>>,
     #[serde(rename = "hideMark")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub hide_mark: Option<Box<CTOnOff>>,
+    pub hide_mark: Option<Box<OnOffElement>>,
     #[serde(rename = "headers")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub headers: Option<Box<CTHeaders>>,
@@ -11676,7 +11673,7 @@ pub struct CTTrPrBase {
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "cantSplit")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub cant_split: Option<Box<CTOnOff>>,
+    pub cant_split: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "trHeight")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11684,7 +11681,7 @@ pub struct CTTrPrBase {
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblHeader")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tbl_header: Option<Box<CTOnOff>>,
+    pub tbl_header: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblCellSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11696,7 +11693,7 @@ pub struct CTTrPrBase {
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "hidden")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub hidden: Option<Box<CTOnOff>>,
+    pub hidden: Option<Box<OnOffElement>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -11733,7 +11730,7 @@ pub struct TableRowProperties {
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "cantSplit")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub cant_split: Option<Box<CTOnOff>>,
+    pub cant_split: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "trHeight")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11741,7 +11738,7 @@ pub struct TableRowProperties {
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblHeader")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tbl_header: Option<Box<CTOnOff>>,
+    pub tbl_header: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "tblCellSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11753,7 +11750,7 @@ pub struct TableRowProperties {
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "hidden")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub hidden: Option<Box<CTOnOff>>,
+    pub hidden: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "ins")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11985,7 +11982,7 @@ pub struct CTTblPrBase {
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "bidiVisual")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bidi_visual: Option<Box<CTOnOff>>,
+    pub bidi_visual: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "tblStyleRowBandSize")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -12062,7 +12059,7 @@ pub struct TableProperties {
     #[cfg(feature = "wml-tables")]
     #[serde(rename = "bidiVisual")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bidi_visual: Option<Box<CTOnOff>>,
+    pub bidi_visual: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "tblStyleRowBandSize")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -12496,7 +12493,7 @@ pub struct CTRecipientData {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "active")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub active: Option<Box<CTOnOff>>,
+    pub active: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "column")]
     pub column: Box<CTDecimalNumber>,
@@ -12563,7 +12560,7 @@ pub struct CTOdsoFieldMapData {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "dynamicAddress")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub dynamic_address: Option<Box<CTOnOff>>,
+    pub dynamic_address: Option<Box<OnOffElement>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -12609,7 +12606,7 @@ pub struct CTOdso {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "fHdr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub f_hdr: Option<Box<CTOnOff>>,
+    pub f_hdr: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "fieldMapData")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -12633,10 +12630,10 @@ pub struct CTMailMerge {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "linkToQuery")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub link_to_query: Option<Box<CTOnOff>>,
+    pub link_to_query: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "dataType")]
-    pub data_type: Box<CTMailMergeDataType>,
+    pub data_type: Box<MailMergeDataTypeElement>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "connectString")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -12656,7 +12653,7 @@ pub struct CTMailMerge {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotSuppressBlankLines")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_suppress_blank_lines: Option<Box<CTOnOff>>,
+    pub do_not_suppress_blank_lines: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "destination")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -12672,11 +12669,11 @@ pub struct CTMailMerge {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "mailAsAttachment")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub mail_as_attachment: Option<Box<CTOnOff>>,
+    pub mail_as_attachment: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "viewMergedData")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub view_merged_data: Option<Box<CTOnOff>>,
+    pub view_merged_data: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "activeRecord")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -12714,263 +12711,263 @@ pub struct Compatibility {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "useSingleBorderforContiguousCells")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub use_single_borderfor_contiguous_cells: Option<Box<CTOnOff>>,
+    pub use_single_borderfor_contiguous_cells: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "wpJustification")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub wp_justification: Option<Box<CTOnOff>>,
+    pub wp_justification: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "noTabHangInd")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub no_tab_hang_ind: Option<Box<CTOnOff>>,
+    pub no_tab_hang_ind: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "noLeading")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub no_leading: Option<Box<CTOnOff>>,
+    pub no_leading: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "spaceForUL")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub space_for_u_l: Option<Box<CTOnOff>>,
+    pub space_for_u_l: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "noColumnBalance")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub no_column_balance: Option<Box<CTOnOff>>,
+    pub no_column_balance: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "balanceSingleByteDoubleByteWidth")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub balance_single_byte_double_byte_width: Option<Box<CTOnOff>>,
+    pub balance_single_byte_double_byte_width: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "noExtraLineSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub no_extra_line_spacing: Option<Box<CTOnOff>>,
+    pub no_extra_line_spacing: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotLeaveBackslashAlone")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_leave_backslash_alone: Option<Box<CTOnOff>>,
+    pub do_not_leave_backslash_alone: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "ulTrailSpace")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub ul_trail_space: Option<Box<CTOnOff>>,
+    pub ul_trail_space: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotExpandShiftReturn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_expand_shift_return: Option<Box<CTOnOff>>,
+    pub do_not_expand_shift_return: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "spacingInWholePoints")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub spacing_in_whole_points: Option<Box<CTOnOff>>,
+    pub spacing_in_whole_points: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "lineWrapLikeWord6")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub line_wrap_like_word6: Option<Box<CTOnOff>>,
+    pub line_wrap_like_word6: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "printBodyTextBeforeHeader")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub print_body_text_before_header: Option<Box<CTOnOff>>,
+    pub print_body_text_before_header: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "printColBlack")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub print_col_black: Option<Box<CTOnOff>>,
+    pub print_col_black: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "wpSpaceWidth")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub wp_space_width: Option<Box<CTOnOff>>,
+    pub wp_space_width: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "showBreaksInFrames")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub show_breaks_in_frames: Option<Box<CTOnOff>>,
+    pub show_breaks_in_frames: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "subFontBySize")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub sub_font_by_size: Option<Box<CTOnOff>>,
+    pub sub_font_by_size: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "suppressBottomSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub suppress_bottom_spacing: Option<Box<CTOnOff>>,
+    pub suppress_bottom_spacing: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "suppressTopSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub suppress_top_spacing: Option<Box<CTOnOff>>,
+    pub suppress_top_spacing: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "suppressSpacingAtTopOfPage")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub suppress_spacing_at_top_of_page: Option<Box<CTOnOff>>,
+    pub suppress_spacing_at_top_of_page: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "suppressTopSpacingWP")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub suppress_top_spacing_w_p: Option<Box<CTOnOff>>,
+    pub suppress_top_spacing_w_p: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "suppressSpBfAfterPgBrk")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub suppress_sp_bf_after_pg_brk: Option<Box<CTOnOff>>,
+    pub suppress_sp_bf_after_pg_brk: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "swapBordersFacingPages")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub swap_borders_facing_pages: Option<Box<CTOnOff>>,
+    pub swap_borders_facing_pages: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "convMailMergeEsc")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub conv_mail_merge_esc: Option<Box<CTOnOff>>,
+    pub conv_mail_merge_esc: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "truncateFontHeightsLikeWP6")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub truncate_font_heights_like_w_p6: Option<Box<CTOnOff>>,
+    pub truncate_font_heights_like_w_p6: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "mwSmallCaps")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub mw_small_caps: Option<Box<CTOnOff>>,
+    pub mw_small_caps: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "usePrinterMetrics")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub use_printer_metrics: Option<Box<CTOnOff>>,
+    pub use_printer_metrics: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotSuppressParagraphBorders")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_suppress_paragraph_borders: Option<Box<CTOnOff>>,
+    pub do_not_suppress_paragraph_borders: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "wrapTrailSpaces")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub wrap_trail_spaces: Option<Box<CTOnOff>>,
+    pub wrap_trail_spaces: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "footnoteLayoutLikeWW8")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub footnote_layout_like_w_w8: Option<Box<CTOnOff>>,
+    pub footnote_layout_like_w_w8: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "shapeLayoutLikeWW8")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub shape_layout_like_w_w8: Option<Box<CTOnOff>>,
+    pub shape_layout_like_w_w8: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "alignTablesRowByRow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub align_tables_row_by_row: Option<Box<CTOnOff>>,
+    pub align_tables_row_by_row: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "forgetLastTabAlignment")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub forget_last_tab_alignment: Option<Box<CTOnOff>>,
+    pub forget_last_tab_alignment: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "adjustLineHeightInTable")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub adjust_line_height_in_table: Option<Box<CTOnOff>>,
+    pub adjust_line_height_in_table: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "autoSpaceLikeWord95")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub auto_space_like_word95: Option<Box<CTOnOff>>,
+    pub auto_space_like_word95: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "noSpaceRaiseLower")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub no_space_raise_lower: Option<Box<CTOnOff>>,
+    pub no_space_raise_lower: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotUseHTMLParagraphAutoSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_use_h_t_m_l_paragraph_auto_spacing: Option<Box<CTOnOff>>,
+    pub do_not_use_h_t_m_l_paragraph_auto_spacing: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "layoutRawTableWidth")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub layout_raw_table_width: Option<Box<CTOnOff>>,
+    pub layout_raw_table_width: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "layoutTableRowsApart")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub layout_table_rows_apart: Option<Box<CTOnOff>>,
+    pub layout_table_rows_apart: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "useWord97LineBreakRules")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub use_word97_line_break_rules: Option<Box<CTOnOff>>,
+    pub use_word97_line_break_rules: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotBreakWrappedTables")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_break_wrapped_tables: Option<Box<CTOnOff>>,
+    pub do_not_break_wrapped_tables: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotSnapToGridInCell")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_snap_to_grid_in_cell: Option<Box<CTOnOff>>,
+    pub do_not_snap_to_grid_in_cell: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "selectFldWithFirstOrLastChar")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub select_fld_with_first_or_last_char: Option<Box<CTOnOff>>,
+    pub select_fld_with_first_or_last_char: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "applyBreakingRules")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub apply_breaking_rules: Option<Box<CTOnOff>>,
+    pub apply_breaking_rules: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotWrapTextWithPunct")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_wrap_text_with_punct: Option<Box<CTOnOff>>,
+    pub do_not_wrap_text_with_punct: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotUseEastAsianBreakRules")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_use_east_asian_break_rules: Option<Box<CTOnOff>>,
+    pub do_not_use_east_asian_break_rules: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "useWord2002TableStyleRules")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub use_word2002_table_style_rules: Option<Box<CTOnOff>>,
+    pub use_word2002_table_style_rules: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "growAutofit")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub grow_autofit: Option<Box<CTOnOff>>,
+    pub grow_autofit: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "useFELayout")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub use_f_e_layout: Option<Box<CTOnOff>>,
+    pub use_f_e_layout: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "useNormalStyleForList")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub use_normal_style_for_list: Option<Box<CTOnOff>>,
+    pub use_normal_style_for_list: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotUseIndentAsNumberingTabStop")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_use_indent_as_numbering_tab_stop: Option<Box<CTOnOff>>,
+    pub do_not_use_indent_as_numbering_tab_stop: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "useAltKinsokuLineBreakRules")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub use_alt_kinsoku_line_break_rules: Option<Box<CTOnOff>>,
+    pub use_alt_kinsoku_line_break_rules: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "allowSpaceOfSameStyleInTable")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub allow_space_of_same_style_in_table: Option<Box<CTOnOff>>,
+    pub allow_space_of_same_style_in_table: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotSuppressIndentation")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_suppress_indentation: Option<Box<CTOnOff>>,
+    pub do_not_suppress_indentation: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotAutofitConstrainedTables")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_autofit_constrained_tables: Option<Box<CTOnOff>>,
+    pub do_not_autofit_constrained_tables: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "autofitToFirstFixedWidthCell")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub autofit_to_first_fixed_width_cell: Option<Box<CTOnOff>>,
+    pub autofit_to_first_fixed_width_cell: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "underlineTabInNumList")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub underline_tab_in_num_list: Option<Box<CTOnOff>>,
+    pub underline_tab_in_num_list: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "displayHangulFixedWidth")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub display_hangul_fixed_width: Option<Box<CTOnOff>>,
+    pub display_hangul_fixed_width: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "splitPgBreakAndParaMark")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub split_pg_break_and_para_mark: Option<Box<CTOnOff>>,
+    pub split_pg_break_and_para_mark: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotVertAlignCellWithSp")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_vert_align_cell_with_sp: Option<Box<CTOnOff>>,
+    pub do_not_vert_align_cell_with_sp: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotBreakConstrainedForcedTable")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_break_constrained_forced_table: Option<Box<CTOnOff>>,
+    pub do_not_break_constrained_forced_table: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotVertAlignInTxbx")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_vert_align_in_txbx: Option<Box<CTOnOff>>,
+    pub do_not_vert_align_in_txbx: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "useAnsiKerningPairs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub use_ansi_kerning_pairs: Option<Box<CTOnOff>>,
+    pub use_ansi_kerning_pairs: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "cachedColBalance")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub cached_col_balance: Option<Box<CTOnOff>>,
+    pub cached_col_balance: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "compatSetting")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -13035,11 +13032,11 @@ pub struct CTDocRsids {
     #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "rsidRoot")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub rsid_root: Option<Box<CTLongHexNumber>>,
+    pub rsid_root: Option<Box<LongHexNumberElement>>,
     #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "rsid")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rsid: Vec<CTLongHexNumber>,
+    pub rsid: Vec<LongHexNumberElement>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -13296,75 +13293,75 @@ pub struct Settings {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "removePersonalInformation")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub remove_personal_information: Option<Box<CTOnOff>>,
+    pub remove_personal_information: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "removeDateAndTime")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub remove_date_and_time: Option<Box<CTOnOff>>,
+    pub remove_date_and_time: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotDisplayPageBoundaries")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_display_page_boundaries: Option<Box<CTOnOff>>,
+    pub do_not_display_page_boundaries: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "displayBackgroundShape")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub display_background_shape: Option<Box<CTOnOff>>,
+    pub display_background_shape: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "printPostScriptOverText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub print_post_script_over_text: Option<Box<CTOnOff>>,
+    pub print_post_script_over_text: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "printFractionalCharacterWidth")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub print_fractional_character_width: Option<Box<CTOnOff>>,
+    pub print_fractional_character_width: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "printFormsData")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub print_forms_data: Option<Box<CTOnOff>>,
+    pub print_forms_data: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "embedTrueTypeFonts")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub embed_true_type_fonts: Option<Box<CTOnOff>>,
+    pub embed_true_type_fonts: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "embedSystemFonts")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub embed_system_fonts: Option<Box<CTOnOff>>,
+    pub embed_system_fonts: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "saveSubsetFonts")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub save_subset_fonts: Option<Box<CTOnOff>>,
+    pub save_subset_fonts: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "saveFormsData")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub save_forms_data: Option<Box<CTOnOff>>,
+    pub save_forms_data: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "mirrorMargins")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub mirror_margins: Option<Box<CTOnOff>>,
+    pub mirror_margins: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "alignBordersAndEdges")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub align_borders_and_edges: Option<Box<CTOnOff>>,
+    pub align_borders_and_edges: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "bordersDoNotSurroundHeader")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub borders_do_not_surround_header: Option<Box<CTOnOff>>,
+    pub borders_do_not_surround_header: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "bordersDoNotSurroundFooter")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub borders_do_not_surround_footer: Option<Box<CTOnOff>>,
+    pub borders_do_not_surround_footer: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "gutterAtTop")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub gutter_at_top: Option<Box<CTOnOff>>,
+    pub gutter_at_top: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "hideSpellingErrors")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub hide_spelling_errors: Option<Box<CTOnOff>>,
+    pub hide_spelling_errors: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "hideGrammaticalErrors")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub hide_grammatical_errors: Option<Box<CTOnOff>>,
+    pub hide_grammatical_errors: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "activeWritingStyle")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -13376,7 +13373,7 @@ pub struct Settings {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "formsDesign")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub forms_design: Option<Box<CTOnOff>>,
+    pub forms_design: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "attachedTemplate")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13384,7 +13381,7 @@ pub struct Settings {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "linkStyles")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub link_styles: Option<Box<CTOnOff>>,
+    pub link_styles: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "stylePaneFormatFilter")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13396,7 +13393,7 @@ pub struct Settings {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "documentType")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub document_type: Option<Box<CTDocType>>,
+    pub document_type: Option<Box<DocTypeElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "mailMerge")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13408,15 +13405,15 @@ pub struct Settings {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "trackRevisions")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub track_revisions: Option<Box<CTOnOff>>,
+    pub track_revisions: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "doNotTrackMoves")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_track_moves: Option<Box<CTOnOff>>,
+    pub do_not_track_moves: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "doNotTrackFormatting")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_track_formatting: Option<Box<CTOnOff>>,
+    pub do_not_track_formatting: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "documentProtection")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13424,23 +13421,23 @@ pub struct Settings {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "autoFormatOverride")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub auto_format_override: Option<Box<CTOnOff>>,
+    pub auto_format_override: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "styleLockTheme")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub style_lock_theme: Option<Box<CTOnOff>>,
+    pub style_lock_theme: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "styleLockQFSet")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub style_lock_q_f_set: Option<Box<CTOnOff>>,
+    pub style_lock_q_f_set: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "defaultTabStop")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub default_tab_stop: Option<Box<CTTwipsMeasure>>,
+    pub default_tab_stop: Option<Box<TwipsMeasureElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "autoHyphenation")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub auto_hyphenation: Option<Box<CTOnOff>>,
+    pub auto_hyphenation: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "consecutiveHyphenLimit")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13448,15 +13445,15 @@ pub struct Settings {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "hyphenationZone")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub hyphenation_zone: Option<Box<CTTwipsMeasure>>,
+    pub hyphenation_zone: Option<Box<TwipsMeasureElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotHyphenateCaps")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_hyphenate_caps: Option<Box<CTOnOff>>,
+    pub do_not_hyphenate_caps: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "showEnvelope")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub show_envelope: Option<Box<CTOnOff>>,
+    pub show_envelope: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "summaryLength")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13472,15 +13469,15 @@ pub struct Settings {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "evenAndOddHeaders")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub even_and_odd_headers: Option<Box<CTOnOff>>,
+    pub even_and_odd_headers: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "bookFoldRevPrinting")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub book_fold_rev_printing: Option<Box<CTOnOff>>,
+    pub book_fold_rev_printing: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "bookFoldPrinting")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub book_fold_printing: Option<Box<CTOnOff>>,
+    pub book_fold_printing: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "bookFoldPrintingSheets")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13488,11 +13485,11 @@ pub struct Settings {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "drawingGridHorizontalSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub drawing_grid_horizontal_spacing: Option<Box<CTTwipsMeasure>>,
+    pub drawing_grid_horizontal_spacing: Option<Box<TwipsMeasureElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "drawingGridVerticalSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub drawing_grid_vertical_spacing: Option<Box<CTTwipsMeasure>>,
+    pub drawing_grid_vertical_spacing: Option<Box<TwipsMeasureElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "displayHorizontalDrawingGridEvery")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13504,23 +13501,23 @@ pub struct Settings {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotUseMarginsForDrawingGridOrigin")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_use_margins_for_drawing_grid_origin: Option<Box<CTOnOff>>,
+    pub do_not_use_margins_for_drawing_grid_origin: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "drawingGridHorizontalOrigin")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub drawing_grid_horizontal_origin: Option<Box<CTTwipsMeasure>>,
+    pub drawing_grid_horizontal_origin: Option<Box<TwipsMeasureElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "drawingGridVerticalOrigin")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub drawing_grid_vertical_origin: Option<Box<CTTwipsMeasure>>,
+    pub drawing_grid_vertical_origin: Option<Box<TwipsMeasureElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotShadeFormData")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_shade_form_data: Option<Box<CTOnOff>>,
+    pub do_not_shade_form_data: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "noPunctuationKerning")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub no_punctuation_kerning: Option<Box<CTOnOff>>,
+    pub no_punctuation_kerning: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "characterSpacingControl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13528,11 +13525,11 @@ pub struct Settings {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "printTwoOnOne")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub print_two_on_one: Option<Box<CTOnOff>>,
+    pub print_two_on_one: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "strictFirstAndLastChars")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub strict_first_and_last_chars: Option<Box<CTOnOff>>,
+    pub strict_first_and_last_chars: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "noLineBreaksAfter")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13544,35 +13541,35 @@ pub struct Settings {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "savePreviewPicture")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub save_preview_picture: Option<Box<CTOnOff>>,
+    pub save_preview_picture: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotValidateAgainstSchema")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_validate_against_schema: Option<Box<CTOnOff>>,
+    pub do_not_validate_against_schema: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "saveInvalidXml")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub save_invalid_xml: Option<Box<CTOnOff>>,
+    pub save_invalid_xml: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "ignoreMixedContent")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub ignore_mixed_content: Option<Box<CTOnOff>>,
+    pub ignore_mixed_content: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "alwaysShowPlaceholderText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub always_show_placeholder_text: Option<Box<CTOnOff>>,
+    pub always_show_placeholder_text: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotDemarcateInvalidXml")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_demarcate_invalid_xml: Option<Box<CTOnOff>>,
+    pub do_not_demarcate_invalid_xml: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "saveXmlDataOnly")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub save_xml_data_only: Option<Box<CTOnOff>>,
+    pub save_xml_data_only: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "useXSLTWhenSaving")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub use_x_s_l_t_when_saving: Option<Box<CTOnOff>>,
+    pub use_x_s_l_t_when_saving: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "saveThroughXslt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13580,15 +13577,15 @@ pub struct Settings {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "showXMLTags")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub show_x_m_l_tags: Option<Box<CTOnOff>>,
+    pub show_x_m_l_tags: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "alwaysMergeEmptyNamespace")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub always_merge_empty_namespace: Option<Box<CTOnOff>>,
+    pub always_merge_empty_namespace: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "updateFields")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub update_fields: Option<Box<CTOnOff>>,
+    pub update_fields: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-drawings")]
     #[serde(rename = "hdrShapeDefaults")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13620,7 +13617,7 @@ pub struct Settings {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "themeFontLang")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub theme_font_lang: Option<Box<CTLanguage>>,
+    pub theme_font_lang: Option<Box<LanguageElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "clrSchemeMapping")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13628,11 +13625,11 @@ pub struct Settings {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotIncludeSubdocsInStats")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_include_subdocs_in_stats: Option<Box<CTOnOff>>,
+    pub do_not_include_subdocs_in_stats: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotAutoCompressPictures")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_auto_compress_pictures: Option<Box<CTOnOff>>,
+    pub do_not_auto_compress_pictures: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "forceUpgrade")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13656,7 +13653,7 @@ pub struct Settings {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotEmbedSmartTags")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_embed_smart_tags: Option<Box<CTOnOff>>,
+    pub do_not_embed_smart_tags: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "decimalSymbol")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13781,27 +13778,27 @@ pub struct CTWebSettings {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "relyOnVML")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub rely_on_v_m_l: Option<Box<CTOnOff>>,
+    pub rely_on_v_m_l: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "allowPNG")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub allow_p_n_g: Option<Box<CTOnOff>>,
+    pub allow_p_n_g: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotRelyOnCSS")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_rely_on_c_s_s: Option<Box<CTOnOff>>,
+    pub do_not_rely_on_c_s_s: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotSaveAsSingleFile")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_save_as_single_file: Option<Box<CTOnOff>>,
+    pub do_not_save_as_single_file: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotOrganizeInFolder")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_organize_in_folder: Option<Box<CTOnOff>>,
+    pub do_not_organize_in_folder: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "doNotUseLongFileNames")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub do_not_use_long_file_names: Option<Box<CTOnOff>>,
+    pub do_not_use_long_file_names: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "pixelsPerInch")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13813,7 +13810,7 @@ pub struct CTWebSettings {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "saveSmartTagsAsXml")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub save_smart_tags_as_xml: Option<Box<CTOnOff>>,
+    pub save_smart_tags_as_xml: Option<Box<OnOffElement>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -13877,11 +13874,11 @@ pub struct CTFrame {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "marW")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub mar_w: Option<Box<CTPixelsMeasure>>,
+    pub mar_w: Option<Box<PixelsMeasureElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "marH")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub mar_h: Option<Box<CTPixelsMeasure>>,
+    pub mar_h: Option<Box<PixelsMeasureElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "scrollbar")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13889,11 +13886,11 @@ pub struct CTFrame {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "noResizeAllowed")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub no_resize_allowed: Option<Box<CTOnOff>>,
+    pub no_resize_allowed: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "linkedToFile")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub linked_to_file: Option<Box<CTOnOff>>,
+    pub linked_to_file: Option<Box<OnOffElement>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -13919,7 +13916,7 @@ pub struct CTFramesetSplitbar {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "w")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub width: Option<Box<CTTwipsMeasure>>,
+    pub width: Option<Box<TwipsMeasureElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "color")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13927,11 +13924,11 @@ pub struct CTFramesetSplitbar {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "noBorder")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub no_border: Option<Box<CTOnOff>>,
+    pub no_border: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "flatBorders")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub flat_borders: Option<Box<CTOnOff>>,
+    pub flat_borders: Option<Box<OnOffElement>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -14075,7 +14072,7 @@ pub struct Level {
     #[cfg(feature = "wml-numbering")]
     #[serde(rename = "isLgl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub is_lgl: Option<Box<CTOnOff>>,
+    pub is_lgl: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-numbering")]
     #[serde(rename = "suff")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14138,7 +14135,7 @@ pub struct AbstractNumbering {
     #[cfg(feature = "wml-numbering")]
     #[serde(rename = "nsid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub nsid: Option<Box<CTLongHexNumber>>,
+    pub nsid: Option<Box<LongHexNumberElement>>,
     #[cfg(feature = "wml-numbering")]
     #[serde(rename = "multiLevelType")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14146,7 +14143,7 @@ pub struct AbstractNumbering {
     #[cfg(feature = "wml-numbering")]
     #[serde(rename = "tmpl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tmpl: Option<Box<CTLongHexNumber>>,
+    pub tmpl: Option<Box<LongHexNumberElement>>,
     #[cfg(feature = "wml-numbering")]
     #[serde(rename = "name")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14321,11 +14318,11 @@ pub struct Style {
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "autoRedefine")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub auto_redefine: Option<Box<CTOnOff>>,
+    pub auto_redefine: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "hidden")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub hidden: Option<Box<CTOnOff>>,
+    pub hidden: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "uiPriority")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14333,35 +14330,35 @@ pub struct Style {
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "semiHidden")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub semi_hidden: Option<Box<CTOnOff>>,
+    pub semi_hidden: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "unhideWhenUsed")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub unhide_when_used: Option<Box<CTOnOff>>,
+    pub unhide_when_used: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "qFormat")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub q_format: Option<Box<CTOnOff>>,
+    pub q_format: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "locked")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub locked: Option<Box<CTOnOff>>,
+    pub locked: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "personal")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub personal: Option<Box<CTOnOff>>,
+    pub personal: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "personalCompose")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub personal_compose: Option<Box<CTOnOff>>,
+    pub personal_compose: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "personalReply")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub personal_reply: Option<Box<CTOnOff>>,
+    pub personal_reply: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "rsid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub rsid: Option<Box<CTLongHexNumber>>,
+    pub rsid: Option<Box<LongHexNumberElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "pPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14496,7 +14493,7 @@ pub struct Styles {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPanose {
+pub struct PanoseElement {
     #[serde(rename = "@w:val")]
     pub value: Panose,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -14596,7 +14593,7 @@ pub struct Font {
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "panose1")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub panose1: Option<Box<CTPanose>>,
+    pub panose1: Option<Box<PanoseElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "charset")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14608,7 +14605,7 @@ pub struct Font {
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "notTrueType")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub not_true_type: Option<Box<CTOnOff>>,
+    pub not_true_type: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-styling")]
     #[serde(rename = "pitch")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14692,23 +14689,23 @@ pub struct CTDiv {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "blockQuote")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub block_quote: Option<Box<CTOnOff>>,
+    pub block_quote: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "bodyDiv")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub body_div: Option<Box<CTOnOff>>,
+    pub body_div: Option<Box<OnOffElement>>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "marLeft")]
-    pub mar_left: Box<CTSignedTwipsMeasure>,
+    pub mar_left: Box<SignedTwipsMeasureElement>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "marRight")]
-    pub mar_right: Box<CTSignedTwipsMeasure>,
+    pub mar_right: Box<SignedTwipsMeasureElement>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "marTop")]
-    pub mar_top: Box<CTSignedTwipsMeasure>,
+    pub mar_top: Box<SignedTwipsMeasureElement>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "marBottom")]
-    pub mar_bottom: Box<CTSignedTwipsMeasure>,
+    pub mar_bottom: Box<SignedTwipsMeasureElement>,
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "divBdr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -15008,7 +15005,7 @@ pub struct CTDocPartPr {
     #[cfg(feature = "wml-settings")]
     #[serde(rename = "guid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub guid: Option<Box<CTGuid>>,
+    pub guid: Option<Box<GuidElement>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]

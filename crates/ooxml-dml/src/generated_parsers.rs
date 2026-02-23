@@ -2537,7 +2537,7 @@ impl FromXml for CTPercentage {
     }
 }
 
-impl FromXml for CTPositivePercentage {
+impl FromXml for PositivePercentageElement {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -2584,7 +2584,7 @@ impl FromXml for CTPositivePercentage {
     }
 }
 
-impl FromXml for CTFixedPercentage {
+impl FromXml for FixedPercentageElement {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -2631,7 +2631,7 @@ impl FromXml for CTFixedPercentage {
     }
 }
 
-impl FromXml for CTPositiveFixedPercentage {
+impl FromXml for PositiveFixedPercentageElement {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -2983,11 +2983,11 @@ impl FromXml for EGColorTransform {
         let tag = start_tag.local_name();
         match tag.as_ref() {
             b"tint" => {
-                let inner = CTPositiveFixedPercentage::from_xml(reader, start_tag, is_empty)?;
+                let inner = PositiveFixedPercentageElement::from_xml(reader, start_tag, is_empty)?;
                 Ok(Self::Tint(Box::new(inner)))
             }
             b"shade" => {
-                let inner = CTPositiveFixedPercentage::from_xml(reader, start_tag, is_empty)?;
+                let inner = PositiveFixedPercentageElement::from_xml(reader, start_tag, is_empty)?;
                 Ok(Self::Shade(Box::new(inner)))
             }
             b"comp" => {
@@ -3003,15 +3003,15 @@ impl FromXml for EGColorTransform {
                 Ok(Self::Gray(Box::new(inner)))
             }
             b"alpha" => {
-                let inner = CTPositiveFixedPercentage::from_xml(reader, start_tag, is_empty)?;
+                let inner = PositiveFixedPercentageElement::from_xml(reader, start_tag, is_empty)?;
                 Ok(Self::Alpha(Box::new(inner)))
             }
             b"alphaOff" => {
-                let inner = CTFixedPercentage::from_xml(reader, start_tag, is_empty)?;
+                let inner = FixedPercentageElement::from_xml(reader, start_tag, is_empty)?;
                 Ok(Self::AlphaOff(Box::new(inner)))
             }
             b"alphaMod" => {
-                let inner = CTPositivePercentage::from_xml(reader, start_tag, is_empty)?;
+                let inner = PositivePercentageElement::from_xml(reader, start_tag, is_empty)?;
                 Ok(Self::AlphaMod(Box::new(inner)))
             }
             b"hue" => {
@@ -3023,7 +3023,7 @@ impl FromXml for EGColorTransform {
                 Ok(Self::HueOff(Box::new(inner)))
             }
             b"hueMod" => {
-                let inner = CTPositivePercentage::from_xml(reader, start_tag, is_empty)?;
+                let inner = PositivePercentageElement::from_xml(reader, start_tag, is_empty)?;
                 Ok(Self::HueMod(Box::new(inner)))
             }
             b"sat" => {
@@ -8846,7 +8846,7 @@ impl FromXml for CTGvmlGraphicalObjectFrame {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_nv_graphic_frame_pr: Option<Box<CTGvmlGraphicFrameNonVisual>> = None;
-        let mut f_graphic: Option<CTGraphicalObject> = None;
+        let mut f_graphic: Option<GraphicalObjectElement> = None;
         let mut f_transform: Option<Box<Transform2D>> = None;
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-children")]
@@ -23260,7 +23260,7 @@ impl FromXml for CTTextBulletSizeFollowText {
     }
 }
 
-impl FromXml for CTTextBulletSizePercent {
+impl FromXml for TextBulletSizePercentElement {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -23367,7 +23367,7 @@ impl FromXml for EGTextBulletSize {
                 Ok(Self::BuSzTx(Box::new(inner)))
             }
             b"buSzPct" => {
-                let inner = CTTextBulletSizePercent::from_xml(reader, start_tag, is_empty)?;
+                let inner = TextBulletSizePercentElement::from_xml(reader, start_tag, is_empty)?;
                 Ok(Self::BuSzPct(Box::new(inner)))
             }
             b"buSzPts" => {

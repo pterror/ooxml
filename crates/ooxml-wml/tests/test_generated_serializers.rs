@@ -55,7 +55,7 @@ fn roundtrip<T: FromXml + ToXml>(xml: &str, tag: &str) -> T {
 #[test]
 fn test_serialize_empty_element() {
     let xml = r#"<b/>"#;
-    let bold: CTOnOff = parse_from_xml(xml).expect("parse empty bold");
+    let bold: OnOffElement = parse_from_xml(xml).expect("parse empty bold");
     let out = serialize_to_xml(&bold, "w:b").unwrap();
     // Empty element with no attributes should self-close
     assert_eq!(out, "<w:b/>");
@@ -64,7 +64,7 @@ fn test_serialize_empty_element() {
 #[test]
 fn test_serialize_boolean_with_val() {
     let xml = r#"<b val="false"/>"#;
-    let bold: CTOnOff = parse_from_xml(xml).expect("parse bold with val");
+    let bold: OnOffElement = parse_from_xml(xml).expect("parse bold with val");
     let out = serialize_to_xml(&bold, "w:b").unwrap();
     assert!(
         out.contains("val="),
