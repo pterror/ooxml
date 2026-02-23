@@ -131,7 +131,7 @@ fn main() {
         cross_crate_imports: vec!["ooxml_dml::types::*".to_string()],
         // Map DML schema names to ooxml_dml crate types
         cross_crate_type_prefix,
-        ..Default::default()
+        warn_unmapped: true,
     };
 
     // Run static analysis if OOXML_ANALYZE is set
