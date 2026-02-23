@@ -502,3 +502,129 @@ impl types::FootnoteEndnote {
         }
     }
 }
+
+// =============================================================================
+// Track changes helpers (wml-track-changes)
+// =============================================================================
+
+/// Build a `CTRunTrackChange` containing a single text run.
+///
+/// The `text` is placed in a `<w:r><w:t>…</w:t></w:r>` inside the change element.
+/// ECMA-376 §17.13.5.
+#[cfg(feature = "wml-track-changes")]
+fn make_run_track_change(
+    id: i64,
+    author: &str,
+    date: Option<&str>,
+    text: &str,
+) -> types::CTRunTrackChange {
+    let t = types::Text {
+        text: Some(text.to_string()),
+        #[cfg(feature = "extra-children")]
+        extra_children: Vec::new(),
+    };
+    let run = types::Run {
+        #[cfg(feature = "wml-track-changes")]
+        rsid_r_pr: None,
+        #[cfg(feature = "wml-track-changes")]
+        rsid_del: None,
+        #[cfg(feature = "wml-track-changes")]
+        rsid_r: None,
+        #[cfg(feature = "wml-styling")]
+        r_pr: None,
+        run_content: vec![types::RunContent::T(Box::new(t))],
+        #[cfg(feature = "extra-attrs")]
+        extra_attrs: Default::default(),
+        #[cfg(feature = "extra-children")]
+        extra_children: Vec::new(),
+    };
+    types::CTRunTrackChange {
+        id,
+        author: author.to_string(),
+        date: date.map(|d| d.to_string()),
+        run_content: vec![types::RunContentChoice::R(Box::new(run))],
+        #[cfg(feature = "extra-attrs")]
+        extra_attrs: Default::default(),
+        #[cfg(feature = "extra-children")]
+        extra_children: Vec::new(),
+    }
+}
+
+/// Create a `ParagraphContent::Ins` element wrapping a text run.
+///
+/// Use this to add a tracked insertion to a paragraph's `paragraph_content`.
+///
+/// # Example
+///
+/// ```
+/// # #[cfg(feature = "wml-track-changes")] {
+/// use ooxml_wml::convenience::ins_run;
+/// use ooxml_wml::types;
+///
+/// let mut para = types::Paragraph::default();
+/// para.paragraph_content.push(ins_run(1, "Alice", Some("2026-02-24T12:00:00Z"), "inserted text"));
+/// # }
+/// ```
+///
+/// ECMA-376 §17.13.5.16 (`w:ins`).
+#[cfg(feature = "wml-track-changes")]
+pub fn ins_run(id: i64, author: &str, date: Option<&str>, text: &str) -> types::ParagraphContent {
+    types::ParagraphContent::Ins(Box::new(make_run_track_change(id, author, date, text)))
+}
+
+/// Create a `ParagraphContent::Del` element wrapping a text run.
+///
+/// Use this to add a tracked deletion to a paragraph's `paragraph_content`.
+///
+/// # Example
+///
+/// ```
+/// # #[cfg(feature = "wml-track-changes")] {
+/// use ooxml_wml::convenience::del_run;
+/// use ooxml_wml::types;
+///
+/// let mut para = types::Paragraph::default();
+/// para.paragraph_content.push(del_run(2, "Bob", None, "deleted text"));
+/// # }
+/// ```
+///
+/// ECMA-376 §17.13.5.13 (`w:del`).
+#[cfg(feature = "wml-track-changes")]
+pub fn del_run(id: i64, author: &str, date: Option<&str>, text: &str) -> types::ParagraphContent {
+    types::ParagraphContent::Del(Box::new(make_run_track_change(id, author, date, text)))
+}
+
+#[cfg(feature = "wml-track-changes")]
+impl types::Paragraph {
+    /// Add a tracked insertion wrapping the given text and return a mutable
+    /// reference to the `CTRunTrackChange` (ECMA-376 §17.13.5.16).
+    pub fn add_tracked_insertion(
+        &mut self,
+        id: i64,
+        author: &str,
+        date: Option<&str>,
+        text: &str,
+    ) -> &mut types::CTRunTrackChange {
+        self.paragraph_content.push(ins_run(id, author, date, text));
+        match self.paragraph_content.last_mut().unwrap() {
+            types::ParagraphContent::Ins(tc) => tc.as_mut(),
+            _ => unreachable!(),
+        }
+    }
+
+    /// Add a tracked deletion wrapping the given text and return a mutable
+    /// reference to the `CTRunTrackChange` (ECMA-376 §17.13.5.13).
+    pub fn add_tracked_deletion(
+        &mut self,
+        id: i64,
+        author: &str,
+        date: Option<&str>,
+        text: &str,
+    ) -> &mut types::CTRunTrackChange {
+        self.paragraph_content.push(del_run(id, author, date, text));
+        match self.paragraph_content.last_mut().unwrap() {
+            types::ParagraphContent::Del(tc) => tc.as_mut(),
+            _ => unreachable!(),
+        }
+    }
+}

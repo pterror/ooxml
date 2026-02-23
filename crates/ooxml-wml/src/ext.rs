@@ -1648,6 +1648,255 @@ impl ResolvedDocument {
 }
 
 // =============================================================================
+// RevisionExt / BodyRevisionExt
+// =============================================================================
+
+/// The type of a tracked change (ECMA-376 §17.13).
+#[cfg(feature = "wml-track-changes")]
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum TrackChangeType {
+    /// Content that was inserted (`<w:ins>`).
+    Insertion,
+    /// Content that was deleted (`<w:del>`).
+    Deletion,
+    /// Content that was moved away from this location (`<w:moveFrom>`).
+    MoveFrom,
+    /// Content that was moved to this location (`<w:moveTo>`).
+    MoveTo,
+}
+
+/// A single tracked change in a paragraph (ECMA-376 §17.13.5).
+#[cfg(feature = "wml-track-changes")]
+#[derive(Debug, Clone)]
+pub struct TrackChange {
+    /// Revision ID (`w:id` attribute).
+    pub id: i64,
+    /// Author string (`w:author` attribute).
+    pub author: String,
+    /// Optional ISO 8601 date/time string (`w:date` attribute).
+    pub date: Option<String>,
+    /// The kind of change.
+    pub change_type: TrackChangeType,
+    /// Plain text extracted from the run content inside the change.
+    pub text: String,
+}
+
+/// Extension methods for reading tracked changes from a paragraph (ECMA-376 §17.13).
+#[cfg(feature = "wml-track-changes")]
+pub trait RevisionExt {
+    /// All tracked changes in this paragraph.
+    fn track_changes(&self) -> Vec<TrackChange>;
+
+    /// Text produced by accepting all tracked changes: insertions are kept,
+    /// deletions are removed, normal runs are kept.
+    fn accepted_text(&self) -> String;
+
+    /// Text produced by rejecting all tracked changes: insertions are removed,
+    /// deletions are restored, normal runs are kept.
+    fn rejected_text(&self) -> String;
+
+    /// Whether this paragraph contains any tracked changes.
+    fn has_track_changes(&self) -> bool;
+}
+
+/// Extract plain text from a `CTRunTrackChange`'s `run_content` field.
+#[cfg(feature = "wml-track-changes")]
+fn text_from_run_track_change(tc: &types::CTRunTrackChange) -> String {
+    let mut out = String::new();
+    for item in &tc.run_content {
+        if let types::RunContentChoice::R(run) = item {
+            for rc in &run.run_content {
+                match rc {
+                    types::RunContent::T(t) => {
+                        if let Some(ref s) = t.text {
+                            out.push_str(s);
+                        }
+                    }
+                    types::RunContent::Tab(_) => out.push('\t'),
+                    types::RunContent::Cr(_) => out.push('\n'),
+                    types::RunContent::Br(br) => {
+                        if !matches!(
+                            br.r#type,
+                            Some(types::STBrType::Page) | Some(types::STBrType::Column)
+                        ) {
+                            out.push('\n');
+                        }
+                    }
+                    // Also capture del-text for deletion change content
+                    types::RunContent::DelText(t) => {
+                        if let Some(ref s) = t.text {
+                            out.push_str(s);
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+    }
+    out
+}
+
+#[cfg(feature = "wml-track-changes")]
+impl RevisionExt for types::Paragraph {
+    fn track_changes(&self) -> Vec<TrackChange> {
+        let mut result = Vec::new();
+        for item in &self.paragraph_content {
+            let (tc, change_type) = match item {
+                types::ParagraphContent::Ins(tc) => (tc.as_ref(), TrackChangeType::Insertion),
+                types::ParagraphContent::Del(tc) => (tc.as_ref(), TrackChangeType::Deletion),
+                types::ParagraphContent::MoveFrom(tc) => (tc.as_ref(), TrackChangeType::MoveFrom),
+                types::ParagraphContent::MoveTo(tc) => (tc.as_ref(), TrackChangeType::MoveTo),
+                _ => continue,
+            };
+            result.push(TrackChange {
+                id: tc.id,
+                author: tc.author.clone(),
+                date: tc.date.clone(),
+                change_type,
+                text: text_from_run_track_change(tc),
+            });
+        }
+        result
+    }
+
+    fn accepted_text(&self) -> String {
+        let mut out = String::new();
+        for item in &self.paragraph_content {
+            match item {
+                // Normal runs always included
+                types::ParagraphContent::R(r) => {
+                    out.push_str(&r.text());
+                }
+                // Insertions accepted → include text
+                types::ParagraphContent::Ins(tc) | types::ParagraphContent::MoveTo(tc) => {
+                    out.push_str(&text_from_run_track_change(tc));
+                }
+                // Deletions rejected → skip
+                types::ParagraphContent::Del(_) | types::ParagraphContent::MoveFrom(_) => {}
+                // Hyperlinks and simple fields: walk their paragraph_content
+                types::ParagraphContent::Hyperlink(h) => {
+                    for inner in &h.paragraph_content {
+                        collect_text_from_paragraph_content(inner, &mut out);
+                    }
+                }
+                types::ParagraphContent::FldSimple(f) => {
+                    for inner in &f.paragraph_content {
+                        collect_text_from_paragraph_content(inner, &mut out);
+                    }
+                }
+                _ => {}
+            }
+        }
+        out
+    }
+
+    fn rejected_text(&self) -> String {
+        let mut out = String::new();
+        for item in &self.paragraph_content {
+            match item {
+                // Normal runs always included
+                types::ParagraphContent::R(r) => {
+                    out.push_str(&r.text());
+                }
+                // Insertions rejected → skip
+                types::ParagraphContent::Ins(_) | types::ParagraphContent::MoveTo(_) => {}
+                // Deletions restored → include text
+                types::ParagraphContent::Del(tc) | types::ParagraphContent::MoveFrom(tc) => {
+                    out.push_str(&text_from_run_track_change(tc));
+                }
+                // Hyperlinks and simple fields: walk their paragraph_content
+                types::ParagraphContent::Hyperlink(h) => {
+                    for inner in &h.paragraph_content {
+                        collect_text_from_paragraph_content(inner, &mut out);
+                    }
+                }
+                types::ParagraphContent::FldSimple(f) => {
+                    for inner in &f.paragraph_content {
+                        collect_text_from_paragraph_content(inner, &mut out);
+                    }
+                }
+                _ => {}
+            }
+        }
+        out
+    }
+
+    fn has_track_changes(&self) -> bool {
+        self.paragraph_content.iter().any(|item| {
+            matches!(
+                item,
+                types::ParagraphContent::Ins(_)
+                    | types::ParagraphContent::Del(_)
+                    | types::ParagraphContent::MoveFrom(_)
+                    | types::ParagraphContent::MoveTo(_)
+            )
+        })
+    }
+}
+
+/// Extension methods for reading tracked changes from a document body (ECMA-376 §17.13).
+#[cfg(feature = "wml-track-changes")]
+pub trait BodyRevisionExt {
+    /// All tracked changes in the document body across all paragraphs.
+    fn all_track_changes(&self) -> Vec<TrackChange>;
+
+    /// Full document text with all insertions accepted and deletions removed.
+    fn accepted_text(&self) -> String;
+}
+
+/// Collect paragraphs from `BlockContent` items recursively (handles SDTs, custom XML, etc.).
+#[cfg(feature = "wml-track-changes")]
+fn paragraphs_from_block_content(blocks: &[types::BlockContent]) -> Vec<&types::Paragraph> {
+    let mut result = Vec::new();
+    for block in blocks {
+        match block {
+            types::BlockContent::P(p) => result.push(p.as_ref()),
+            types::BlockContent::Tbl(t) => {
+                for row in &t.rows {
+                    if let types::RowContent::Tr(tr) = row {
+                        for cell in &tr.cells {
+                            if let types::CellContent::Tc(tc) = cell {
+                                result.extend(paragraphs_from_block_content(&tc.block_content));
+                            }
+                        }
+                    }
+                }
+            }
+            types::BlockContent::Sdt(sdt) => {
+                if let Some(content) = &sdt.sdt_content {
+                    for inner in &content.block_content {
+                        if let types::BlockContentChoice::P(p) = inner {
+                            result.push(p.as_ref());
+                        }
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+    result
+}
+
+#[cfg(feature = "wml-track-changes")]
+impl BodyRevisionExt for types::Body {
+    fn all_track_changes(&self) -> Vec<TrackChange> {
+        paragraphs_from_block_content(&self.block_content)
+            .into_iter()
+            .flat_map(|p| p.track_changes())
+            .collect()
+    }
+
+    fn accepted_text(&self) -> String {
+        let paras = paragraphs_from_block_content(&self.block_content);
+        paras
+            .iter()
+            .map(|p| p.accepted_text())
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
+}
+
+// =============================================================================
 // Tests
 // =============================================================================
 
@@ -3001,5 +3250,202 @@ mod tests {
         assert_eq!(tocs.len(), 2, "expected 2 separate TOCs");
         assert_eq!(tocs[0].entries[0].text, "First TOC entry");
         assert_eq!(tocs[1].entries[0].text, "Second TOC entry");
+    }
+
+    // -------------------------------------------------------------------------
+    // RevisionExt / BodyRevisionExt tests
+    // -------------------------------------------------------------------------
+
+    /// Build a paragraph with an `<w:ins>` wrapping a run with `text`, plus an
+    /// additional normal run with `suffix`.
+    #[cfg(feature = "wml-track-changes")]
+    fn make_para_with_ins(ins_text: &str, suffix: &str) -> types::Paragraph {
+        use crate::convenience::ins_run;
+        let mut para = types::Paragraph::default();
+        para.paragraph_content
+            .push(ins_run(1, "Alice", Some("2026-01-01T00:00:00Z"), ins_text));
+        // Normal run
+        let t = types::Text {
+            text: Some(suffix.to_string()),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        };
+        let run = types::Run {
+            #[cfg(feature = "wml-track-changes")]
+            rsid_r_pr: None,
+            #[cfg(feature = "wml-track-changes")]
+            rsid_del: None,
+            #[cfg(feature = "wml-track-changes")]
+            rsid_r: None,
+            #[cfg(feature = "wml-styling")]
+            r_pr: None,
+            run_content: vec![types::RunContent::T(Box::new(t))],
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        };
+        para.paragraph_content
+            .push(types::ParagraphContent::R(Box::new(run)));
+        para
+    }
+
+    /// Build a paragraph with a `<w:del>` wrapping a run with `del_text`, plus a
+    /// normal run with `suffix`.
+    #[cfg(feature = "wml-track-changes")]
+    fn make_para_with_del(del_text: &str, suffix: &str) -> types::Paragraph {
+        use crate::convenience::del_run;
+        let mut para = types::Paragraph::default();
+        para.paragraph_content
+            .push(del_run(2, "Bob", None, del_text));
+        let t = types::Text {
+            text: Some(suffix.to_string()),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        };
+        let run = types::Run {
+            #[cfg(feature = "wml-track-changes")]
+            rsid_r_pr: None,
+            #[cfg(feature = "wml-track-changes")]
+            rsid_del: None,
+            #[cfg(feature = "wml-track-changes")]
+            rsid_r: None,
+            #[cfg(feature = "wml-styling")]
+            r_pr: None,
+            run_content: vec![types::RunContent::T(Box::new(t))],
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        };
+        para.paragraph_content
+            .push(types::ParagraphContent::R(Box::new(run)));
+        para
+    }
+
+    #[test]
+    #[cfg(feature = "wml-track-changes")]
+    fn test_track_changes_accepted_text() {
+        use super::RevisionExt;
+        // Ins("hello") + Run(" world") → accepted = "hello world"
+        let para = make_para_with_ins("hello", " world");
+        assert_eq!(para.accepted_text(), "hello world");
+    }
+
+    #[test]
+    #[cfg(feature = "wml-track-changes")]
+    fn test_track_changes_rejected_text() {
+        use super::RevisionExt;
+        // Del("old") + Run(" word") → rejected = "old word"
+        let para = make_para_with_del("old", " word");
+        assert_eq!(para.rejected_text(), "old word");
+    }
+
+    #[test]
+    #[cfg(feature = "wml-track-changes")]
+    fn test_track_changes_accepted_text_excludes_deletions() {
+        use super::RevisionExt;
+        // Del("old") + Run(" word") → accepted = " word" (deletion excluded)
+        let para = make_para_with_del("old", " word");
+        assert_eq!(para.accepted_text(), " word");
+    }
+
+    #[test]
+    #[cfg(feature = "wml-track-changes")]
+    fn test_track_changes_rejected_text_excludes_insertions() {
+        use super::RevisionExt;
+        // Ins("hello") + Run(" world") → rejected = " world" (insertion excluded)
+        let para = make_para_with_ins("hello", " world");
+        assert_eq!(para.rejected_text(), " world");
+    }
+
+    #[test]
+    #[cfg(feature = "wml-track-changes")]
+    fn test_has_track_changes() {
+        use super::RevisionExt;
+        let para_with = make_para_with_ins("text", "");
+        assert!(para_with.has_track_changes());
+
+        // A plain paragraph with no tracked changes
+        let plain = types::Paragraph::default();
+        assert!(!plain.has_track_changes());
+    }
+
+    #[test]
+    #[cfg(feature = "wml-track-changes")]
+    fn test_track_changes_list() {
+        use super::{RevisionExt, TrackChangeType};
+        let para = make_para_with_ins("hello", " world");
+        let changes = para.track_changes();
+        assert_eq!(changes.len(), 1);
+        let tc = &changes[0];
+        assert_eq!(tc.id, 1);
+        assert_eq!(tc.author, "Alice");
+        assert_eq!(tc.date.as_deref(), Some("2026-01-01T00:00:00Z"));
+        assert_eq!(tc.change_type, TrackChangeType::Insertion);
+        assert_eq!(tc.text, "hello");
+    }
+
+    #[test]
+    #[cfg(feature = "wml-track-changes")]
+    fn test_track_changes_deletion_list() {
+        use super::{RevisionExt, TrackChangeType};
+        let para = make_para_with_del("old", " text");
+        let changes = para.track_changes();
+        assert_eq!(changes.len(), 1);
+        let tc = &changes[0];
+        assert_eq!(tc.id, 2);
+        assert_eq!(tc.author, "Bob");
+        assert_eq!(tc.date, None);
+        assert_eq!(tc.change_type, TrackChangeType::Deletion);
+        assert_eq!(tc.text, "old");
+    }
+
+    #[test]
+    #[cfg(feature = "wml-track-changes")]
+    fn test_body_revision_ext_all_track_changes() {
+        use super::{BodyRevisionExt, TrackChangeType};
+        let para1 = make_para_with_ins("inserted", "");
+        let para2 = make_para_with_del("deleted", "");
+
+        let body = types::Body {
+            block_content: vec![
+                types::BlockContent::P(Box::new(para1)),
+                types::BlockContent::P(Box::new(para2)),
+            ],
+            #[cfg(feature = "wml-layout")]
+            sect_pr: None,
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        };
+        let all = body.all_track_changes();
+        assert_eq!(all.len(), 2);
+        assert_eq!(all[0].change_type, TrackChangeType::Insertion);
+        assert_eq!(all[0].text, "inserted");
+        assert_eq!(all[1].change_type, TrackChangeType::Deletion);
+        assert_eq!(all[1].text, "deleted");
+    }
+
+    #[test]
+    #[cfg(feature = "wml-track-changes")]
+    fn test_body_revision_ext_accepted_text() {
+        use super::BodyRevisionExt;
+        // Para 1: Ins("hello") + Run(" world")  → accepted = "hello world"
+        // Para 2: Del("old") + Run(" text")     → accepted = " text"
+        // joined with "\n"
+        let para1 = make_para_with_ins("hello", " world");
+        let para2 = make_para_with_del("old", " text");
+
+        let body = types::Body {
+            block_content: vec![
+                types::BlockContent::P(Box::new(para1)),
+                types::BlockContent::P(Box::new(para2)),
+            ],
+            #[cfg(feature = "wml-layout")]
+            sect_pr: None,
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        };
+        assert_eq!(body.accepted_text(), "hello world\n text");
     }
 }
