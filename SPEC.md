@@ -23,18 +23,19 @@ ooxml/
 ├── crates/                    # Rust implementation
 │   ├── ooxml/                 # Core: OPC packaging, relationships
 │   ├── ooxml-wml/             # WordprocessingML (Word)
-│   ├── ooxml-sml/             # SpreadsheetML (Excel) - future
-│   ├── ooxml-pml/             # PresentationML (PowerPoint) - future
-│   └── ooxml-codegen/         # Generate types from specs
+│   ├── ooxml-sml/             # SpreadsheetML (Excel)
+│   ├── ooxml-pml/             # PresentationML (PowerPoint)
+│   ├── ooxml-dml/             # DrawingML (shared graphics layer)
+│   └── ooxml-codegen/         # Generate types from RNC schemas
 │
 ├── fixtures/                  # Test files (CC0 licensed)
 │   ├── wml/                   # Word documents
 │   ├── sml/                   # Excel spreadsheets
 │   └── pml/                   # PowerPoint presentations
 │
-└── specs/                     # Machine-readable spec (CC0 licensed)
-    ├── elements/              # Element definitions
-    ├── enums/                 # Enumeration values
+└── spec/                      # Machine-readable spec (ECMA-376 RNC/XSD)
+    ├── OfficeOpenXML-RELAXNG-Strict/
+    ├── OfficeOpenXML-RELAXNG-Transitional/
     └── ...
 ```
 
@@ -42,7 +43,7 @@ See [ECOSYSTEM.md](ECOSYSTEM.md) for details on fixtures and specs.
 
 ## Scope
 
-### v0.1 - Core + Word Basics
+### v0.1 - Core + Word Basics ✅
 
 **ooxml-opc (core):**
 - [x] OPC packaging (ZIP read/write)
@@ -69,8 +70,9 @@ See [ECOSYSTEM.md](ECOSYSTEM.md) for details on fixtures and specs.
 - [x] Section breaks
 - [x] Document settings (word/settings.xml)
 
-### v0.2 - Extended Word (Reading)
+### v0.2 - Extended Word ✅
 
+**Reading:**
 - [x] Headers and footers
 - [x] Footnotes and endnotes
 - [x] Table of contents (read)
@@ -86,8 +88,7 @@ See [ECOSYSTEM.md](ECOSYSTEM.md) for details on fixtures and specs.
 - [x] Embedded objects (w:object)
 - [x] Comments
 
-### v0.2 - Extended Word (Writing)
-
+**Writing:**
 - [x] Headers and footers creation
 - [x] Footnotes and endnotes creation
 - [x] Comments creation
@@ -96,35 +97,42 @@ See [ECOSYSTEM.md](ECOSYSTEM.md) for details on fixtures and specs.
 ### v0.3 - Advanced Word
 
 - [x] Track changes (revisions: w:ins, w:del)
-- [x] Form fields
-- [x] Math (OMML integration)
-- [ ] SmartArt (limited)
-- [ ] Charts (limited)
+- [x] Form fields (SDT-based: text, combo, dropdown, date)
+- [x] Math (OMML: text extraction via m:t, display vs inline)
+- [ ] SmartArt (limited) — RNC schema available (`dml-diagram.rnc`)
+- [ ] Charts (limited) — RNC schema available (`dml-chart.rnc`)
 
-### v0.4 - SpreadsheetML (Excel)
+### v0.4 - SpreadsheetML (Excel) ✅
 
-- [ ] ooxml-sml crate
-- [ ] Workbook structure
-- [ ] Worksheets
-- [ ] Cells and values
-- [ ] Formulas (as strings, not evaluated)
-- [ ] Basic formatting
-- [ ] Shared strings
+- [x] ooxml-sml crate
+- [x] Workbook structure (workbook.xml, sheets, defined names)
+- [x] Worksheets (cells, rows, columns)
+- [x] Cells and values (string, number, boolean, date)
+- [x] Formulas (as strings, not evaluated)
+- [x] Basic formatting (fonts, fills, borders, number formats)
+- [x] Shared strings
+- [x] Auto-filter
+- [x] Cell hyperlinks (external and internal)
+- [x] Comments
 
-### v0.5 - PresentationML (PowerPoint)
+### v0.5 - PresentationML (PowerPoint) ✅
 
-- [ ] ooxml-pml crate
-- [ ] Presentation structure
-- [ ] Slides
-- [ ] Shapes and text
-- [ ] Images
-- [ ] Basic transitions
+- [x] ooxml-pml crate
+- [x] Presentation structure (presentation.xml, slide masters, layouts)
+- [x] Slides (read and write)
+- [x] Shapes and text (via DrawingML)
+- [x] Images (inline and relationships)
+- [x] Basic transitions
+- [x] Notes slides
+- [x] Tables (via DrawingML)
 
 ### Future
 
-- [ ] ooxml-dml: Full DrawingML
-- [ ] Advanced Excel (charts, pivot tables)
-- [ ] Advanced PowerPoint (animations, SmartArt)
+- [ ] SmartArt / Diagrams (`ooxml-dml` extension) — schema: `dml-diagram.rnc` (4 sub-schemas: data, layout, colors, style)
+- [ ] Charts (`ooxml-dml` extension) — schema: `dml-chart.rnc`
+- [ ] Advanced Excel (pivot tables, conditional formatting)
+- [ ] Advanced Word (track changes writing, field evaluation)
+- [ ] OMML to MathML/LaTeX conversion
 
 ## Dependencies
 
