@@ -451,6 +451,128 @@ fn collect_blip_rel_ids<'a>(elem: &'a ooxml_xml::RawXmlElement, ids: &mut Vec<&'
 }
 
 // =============================================================================
+// TextBoxExt (DrawingML — modern text boxes)
+// =============================================================================
+
+/// Extension methods for `CTDrawing` — extract text from DrawingML text boxes.
+///
+/// Modern DOCX text boxes live inside `<wp:anchor>` elements within a `<w:drawing>`.
+/// The content path is:
+/// `<w:drawing>` → `<wp:anchor>` → `<a:graphic>` → `<a:graphicData>` →
+/// `<wps:wsp>` → `<wps:txbx>` → `<w:txbxContent>` → paragraphs
+///
+/// Since `CTDrawing` captures all children as raw XML (`extra_children`), this trait
+/// walks the tree recursively to find `w:txbxContent` elements and parses them.
+///
+/// ECMA-376 Part 1, §20.4.2.3 (anchor) and §20.1.2.2.19 (graphic).
+#[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+pub trait DrawingTextBoxExt {
+    /// Extract the plain text of all text boxes in this drawing.
+    ///
+    /// Returns one `String` per text box found (anchored or inline).
+    /// Each string contains the text of all paragraphs in that text box,
+    /// joined with newlines.
+    fn text_box_texts(&self) -> Vec<String>;
+}
+
+#[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+impl DrawingTextBoxExt for types::CTDrawing {
+    fn text_box_texts(&self) -> Vec<String> {
+        let mut results = Vec::new();
+        for child in &self.extra_children {
+            if let ooxml_xml::RawXmlNode::Element(elem) = &child.node {
+                collect_txbx_texts_from_raw(elem, &mut results);
+            }
+        }
+        results
+    }
+}
+
+/// Recursively walk a raw XML element tree and collect text from every
+/// `w:txbxContent` element found anywhere in the subtree.
+#[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+fn collect_txbx_texts_from_raw(elem: &ooxml_xml::RawXmlElement, out: &mut Vec<String>) {
+    if local_name_of(&elem.name) == "txbxContent" {
+        // Found a text box content element — parse it and extract text.
+        match elem.parse_as::<types::CTTxbxContent>() {
+            Ok(content) => {
+                let text = txbx_content_text(&content);
+                out.push(text);
+            }
+            Err(_) => {
+                // Parsing failed; skip this element silently.
+            }
+        }
+        // Don't recurse into txbxContent children — we already parsed the whole subtree.
+        return;
+    }
+
+    for child in &elem.children {
+        if let ooxml_xml::RawXmlNode::Element(child_elem) = child {
+            collect_txbx_texts_from_raw(child_elem, out);
+        }
+    }
+}
+
+/// Extract plain text from a `CTTxbxContent` by walking its block content.
+#[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+fn txbx_content_text(content: &types::CTTxbxContent) -> String {
+    use crate::ext::{ParagraphExt, TableExt};
+    let parts: Vec<String> = content
+        .block_content
+        .iter()
+        .filter_map(|bc| match bc {
+            types::BlockContent::P(p) => Some(p.text()),
+            types::BlockContent::Tbl(t) => Some(t.text()),
+            _ => None,
+        })
+        .collect();
+    parts.join("\n")
+}
+
+// =============================================================================
+// PictExt (VML — legacy text boxes)
+// =============================================================================
+
+/// Extension methods for `CTPicture` — extract text from VML text boxes.
+///
+/// Legacy DOCX text boxes (VML) appear as:
+/// `<w:pict>` → `<v:shape>` → `<v:textbox>` → `<w:txbxContent>` → paragraphs
+///
+/// Since `CTPicture` captures all children as raw XML (`extra_children`), this
+/// trait walks the tree to find `w:txbxContent` and parses it.
+///
+/// ECMA-376 Part 1, §17.3.3.21 (pict).
+#[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+pub trait PictExt {
+    /// Extract the plain text of the first text box inside this picture element.
+    ///
+    /// VML picture elements typically contain at most one text box.
+    /// Returns `None` if no text box content is found.
+    fn text_box_text(&self) -> Option<String>;
+
+    /// Extract the plain text of all text boxes inside this picture element.
+    fn text_box_texts(&self) -> Vec<String>;
+}
+
+#[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+impl PictExt for types::CTPicture {
+    fn text_box_text(&self) -> Option<String> {
+        self.text_box_texts().into_iter().next()
+    }
+
+    fn text_box_texts(&self) -> Vec<String> {
+        let mut results = Vec::new();
+        for child in &self.extra_children {
+            if let ooxml_xml::RawXmlNode::Element(elem) = &child.node {
+                collect_txbx_texts_from_raw(elem, &mut results);
+            }
+        }
+        results
+    }
+}
+
+// =============================================================================
 // RunPropertiesExt
 // =============================================================================
 
@@ -2232,5 +2354,286 @@ mod tests {
         let runs = paras[0].runs();
         assert!(resolved.is_bold(runs[0]));
         assert!(!resolved.is_italic(runs[0]));
+    }
+
+    // -------------------------------------------------------------------------
+    // DrawingTextBoxExt tests
+    // -------------------------------------------------------------------------
+
+    /// Build a minimal `CTDrawing` whose `extra_children` contains a `<wp:anchor>`
+    /// that holds a `<w:txbxContent>` with the given paragraph text.
+    #[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+    fn make_drawing_with_textbox(text: &str) -> types::CTDrawing {
+        use ooxml_xml::{PositionedNode, RawXmlElement, RawXmlNode};
+
+        // Build the element tree bottom-up:
+        // <wp:anchor>
+        //   <wps:wsp>
+        //     <wps:txbx>
+        //       <w:txbxContent>
+        //         <w:p>
+        //           <w:r>
+        //             <w:t>text</w:t>
+        //           </w:r>
+        //         </w:p>
+        //       </w:txbxContent>
+        //     </wps:txbx>
+        //   </wps:wsp>
+        // </wp:anchor>
+
+        let t = RawXmlElement {
+            name: "w:t".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Text(text.to_string())],
+            self_closing: false,
+        };
+        let r = RawXmlElement {
+            name: "w:r".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(t)],
+            self_closing: false,
+        };
+        let p = RawXmlElement {
+            name: "w:p".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(r)],
+            self_closing: false,
+        };
+        let txbx_content = RawXmlElement {
+            name: "w:txbxContent".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(p)],
+            self_closing: false,
+        };
+        let txbx = RawXmlElement {
+            name: "wps:txbx".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(txbx_content)],
+            self_closing: false,
+        };
+        let wsp = RawXmlElement {
+            name: "wps:wsp".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(txbx)],
+            self_closing: false,
+        };
+        let anchor = RawXmlElement {
+            name: "wp:anchor".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(wsp)],
+            self_closing: false,
+        };
+
+        types::CTDrawing {
+            extra_children: vec![PositionedNode::new(0, RawXmlNode::Element(anchor))],
+        }
+    }
+
+    #[test]
+    #[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+    fn test_drawing_text_box_texts_single() {
+        use super::DrawingTextBoxExt;
+        let drawing = make_drawing_with_textbox("Hello from text box");
+        let texts = drawing.text_box_texts();
+        assert_eq!(texts.len(), 1);
+        assert_eq!(texts[0], "Hello from text box");
+    }
+
+    #[test]
+    #[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+    fn test_drawing_text_box_texts_empty() {
+        use super::DrawingTextBoxExt;
+        let drawing = types::CTDrawing {
+            extra_children: vec![],
+        };
+        let texts = drawing.text_box_texts();
+        assert!(texts.is_empty());
+    }
+
+    #[test]
+    #[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+    fn test_drawing_text_box_texts_multiple() {
+        use super::DrawingTextBoxExt;
+        use ooxml_xml::{PositionedNode, RawXmlElement, RawXmlNode};
+
+        // Build two anchors each with a text box.
+        fn make_anchor(text: &str) -> RawXmlElement {
+            let t = RawXmlElement {
+                name: "w:t".to_string(),
+                attributes: vec![],
+                children: vec![RawXmlNode::Text(text.to_string())],
+                self_closing: false,
+            };
+            let r = RawXmlElement {
+                name: "w:r".to_string(),
+                attributes: vec![],
+                children: vec![RawXmlNode::Element(t)],
+                self_closing: false,
+            };
+            let p = RawXmlElement {
+                name: "w:p".to_string(),
+                attributes: vec![],
+                children: vec![RawXmlNode::Element(r)],
+                self_closing: false,
+            };
+            let txbx_content = RawXmlElement {
+                name: "w:txbxContent".to_string(),
+                attributes: vec![],
+                children: vec![RawXmlNode::Element(p)],
+                self_closing: false,
+            };
+            RawXmlElement {
+                name: "wp:anchor".to_string(),
+                attributes: vec![],
+                children: vec![RawXmlNode::Element(txbx_content)],
+                self_closing: false,
+            }
+        }
+
+        let drawing = types::CTDrawing {
+            extra_children: vec![
+                PositionedNode::new(0, RawXmlNode::Element(make_anchor("First box"))),
+                PositionedNode::new(1, RawXmlNode::Element(make_anchor("Second box"))),
+            ],
+        };
+
+        let texts = drawing.text_box_texts();
+        assert_eq!(texts.len(), 2);
+        assert_eq!(texts[0], "First box");
+        assert_eq!(texts[1], "Second box");
+    }
+
+    // -------------------------------------------------------------------------
+    // PictExt tests (VML text boxes)
+    // -------------------------------------------------------------------------
+
+    /// Build a minimal `CTPicture` whose `extra_children` contains a `<v:shape>`
+    /// that holds a `<v:textbox>` which holds a `<w:txbxContent>`.
+    #[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+    fn make_pict_with_textbox(text: &str) -> types::CTPicture {
+        use ooxml_xml::{PositionedNode, RawXmlElement, RawXmlNode};
+
+        let t = RawXmlElement {
+            name: "w:t".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Text(text.to_string())],
+            self_closing: false,
+        };
+        let r = RawXmlElement {
+            name: "w:r".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(t)],
+            self_closing: false,
+        };
+        let p = RawXmlElement {
+            name: "w:p".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(r)],
+            self_closing: false,
+        };
+        let txbx_content = RawXmlElement {
+            name: "w:txbxContent".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(p)],
+            self_closing: false,
+        };
+        let textbox = RawXmlElement {
+            name: "v:textbox".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(txbx_content)],
+            self_closing: false,
+        };
+        let shape = RawXmlElement {
+            name: "v:shape".to_string(),
+            attributes: vec![("id".to_string(), "TextBox1".to_string())],
+            children: vec![RawXmlNode::Element(textbox)],
+            self_closing: false,
+        };
+
+        types::CTPicture {
+            #[cfg(feature = "wml-drawings")]
+            movie: None,
+            #[cfg(feature = "wml-drawings")]
+            control: None,
+            extra_children: vec![PositionedNode::new(0, RawXmlNode::Element(shape))],
+        }
+    }
+
+    #[test]
+    #[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+    fn test_pict_text_box_text() {
+        use super::PictExt;
+        let pict = make_pict_with_textbox("VML text box content");
+        assert_eq!(
+            pict.text_box_text(),
+            Some("VML text box content".to_string())
+        );
+    }
+
+    #[test]
+    #[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+    fn test_pict_text_box_text_none_when_empty() {
+        use super::PictExt;
+        let pict = types::CTPicture {
+            #[cfg(feature = "wml-drawings")]
+            movie: None,
+            #[cfg(feature = "wml-drawings")]
+            control: None,
+            extra_children: vec![],
+        };
+        assert_eq!(pict.text_box_text(), None);
+    }
+
+    #[test]
+    #[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+    fn test_pict_text_box_texts() {
+        use super::PictExt;
+        let pict = make_pict_with_textbox("Hello");
+        let texts = pict.text_box_texts();
+        assert_eq!(texts.len(), 1);
+        assert_eq!(texts[0], "Hello");
+    }
+
+    #[test]
+    #[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+    fn test_drawing_text_box_via_xml_parse() {
+        // Integration test: build the drawing from raw XML, then extract text.
+        use super::DrawingTextBoxExt;
+
+        let xml = r#"<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+          xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
+          xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">
+  <body>
+    <p>
+      <r>
+        <drawing>
+          <wp:anchor>
+            <wps:wsp>
+              <wps:txbx>
+                <txbxContent>
+                  <p><r><t>Anchored box text</t></r></p>
+                </txbxContent>
+              </wps:txbx>
+            </wps:wsp>
+          </wp:anchor>
+        </drawing>
+      </r>
+    </p>
+  </body>
+</document>"#;
+
+        let doc = parse_document(xml.as_bytes()).expect("parse");
+        let body = doc.body().expect("body");
+        let paras = body.paragraphs();
+        assert!(!paras.is_empty());
+
+        let run = &paras[0].runs()[0];
+        let drawings = run.drawings();
+        assert_eq!(drawings.len(), 1);
+
+        let texts = drawings[0].text_box_texts();
+        assert_eq!(texts.len(), 1);
+        assert_eq!(texts[0], "Anchored box text");
     }
 }
