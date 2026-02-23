@@ -972,6 +972,8 @@ pub struct SheetBuilder {
     conditional_formats: Vec<ConditionalFormat>,
     data_validations: Vec<DataValidationBuilder>,
     comments: Vec<CommentBuilder>,
+    /// Freeze pane: (frozen_rows, frozen_cols).
+    freeze_pane: Option<(u32, u32)>,
 }
 
 impl SheetBuilder {
@@ -985,6 +987,7 @@ impl SheetBuilder {
             conditional_formats: Vec::new(),
             data_validations: Vec::new(),
             comments: Vec::new(),
+            freeze_pane: None,
         }
     }
 
@@ -1122,6 +1125,42 @@ impl SheetBuilder {
     /// Set the height of a row (in points, Excel default is ~15).
     pub fn set_row_height(&mut self, row: u32, height: f64) {
         self.row_heights.push(RowHeight { row, height });
+    }
+
+    /// Freeze the top `rows` rows and left `cols` columns.
+    ///
+    /// Pass `0` for either dimension to freeze only the other axis.
+    /// For example, `set_freeze_pane(1, 0)` freezes the header row.
+    ///
+    /// This is equivalent to View → Freeze Panes in Excel.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// // Freeze the first row (common for headers)
+    /// sheet.set_freeze_pane(1, 0);
+    ///
+    /// // Freeze both first row and first column
+    /// sheet.set_freeze_pane(1, 1);
+    /// ```
+    pub fn set_freeze_pane(&mut self, rows: u32, cols: u32) {
+        self.freeze_pane = Some((rows, cols));
+    }
+
+    /// Freeze the top `n` rows (e.g., header rows).
+    ///
+    /// Shorthand for `set_freeze_pane(n, 0)`.
+    pub fn freeze_rows(&mut self, n: u32) {
+        let cols = self.freeze_pane.map_or(0, |(_, c)| c);
+        self.freeze_pane = Some((n, cols));
+    }
+
+    /// Freeze the left `n` columns.
+    ///
+    /// Shorthand for `set_freeze_pane(0, n)`.
+    pub fn freeze_cols(&mut self, n: u32) {
+        let rows = self.freeze_pane.map_or(0, |(r, _)| r);
+        self.freeze_pane = Some((rows, n));
     }
 
     /// Add conditional formatting to the sheet.
@@ -2150,6 +2189,9 @@ impl WorkbookBuilder {
             }))
         };
 
+        // Build sheet views (used for freeze panes, zoom, etc.)
+        let sheet_views = Self::build_sheet_views(sheet);
+
         // Build worksheet
         // Note: conditionalFormatting and dataValidations require more complex type
         // mapping and are left as manual XML appending for now (TODO: migrate these)
@@ -2157,7 +2199,7 @@ impl WorkbookBuilder {
             #[cfg(feature = "sml-styling")]
             sheet_properties: None,
             dimension: None,
-            sheet_views: None,
+            sheet_views,
             #[cfg(feature = "sml-styling")]
             sheet_format: None,
             #[cfg(feature = "sml-styling")]
@@ -2315,6 +2357,101 @@ impl WorkbookBuilder {
             #[cfg(feature = "extra-children")]
             extra_children: Vec::new(),
         }
+    }
+
+    /// Build sheet views (currently handles freeze panes).
+    fn build_sheet_views(sheet: &SheetBuilder) -> Option<Box<types::SheetViews>> {
+        #[cfg(feature = "sml-structure")]
+        if let Some((frozen_rows, frozen_cols)) = sheet.freeze_pane
+            && (frozen_rows > 0 || frozen_cols > 0)
+        {
+            // Determine which pane is active after freezing.
+            let active_pane = match (frozen_rows > 0, frozen_cols > 0) {
+                (true, true) => types::PaneType::BottomRight,
+                (true, false) => types::PaneType::BottomLeft,
+                (false, true) => types::PaneType::TopRight,
+                (false, false) => types::PaneType::TopLeft,
+            };
+            // topLeftCell is the first unfrozen cell (e.g., "B2" for 1 frozen row + 1 frozen col).
+            let top_left_col = if frozen_cols > 0 {
+                column_to_letter(frozen_cols + 1)
+            } else {
+                "A".to_string()
+            };
+            let top_left_row = frozen_rows + 1;
+            let top_left_cell = format!("{}{}", top_left_col, top_left_row);
+
+            let pane = types::Pane {
+                x_split: (frozen_cols > 0).then_some(frozen_cols as f64),
+                y_split: (frozen_rows > 0).then_some(frozen_rows as f64),
+                top_left_cell: Some(top_left_cell),
+                active_pane: Some(active_pane),
+                state: Some(types::PaneState::Frozen),
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+            };
+            let sheet_view = types::SheetView {
+                #[cfg(feature = "sml-protection")]
+                window_protection: None,
+                #[cfg(feature = "sml-formulas")]
+                show_formulas: None,
+                #[cfg(feature = "sml-styling")]
+                show_grid_lines: None,
+                #[cfg(feature = "sml-styling")]
+                show_row_col_headers: None,
+                #[cfg(feature = "sml-styling")]
+                show_zeros: None,
+                #[cfg(feature = "sml-i18n")]
+                right_to_left: None,
+                tab_selected: None,
+                #[cfg(feature = "sml-layout")]
+                show_ruler: None,
+                #[cfg(feature = "sml-structure")]
+                show_outline_symbols: None,
+                #[cfg(feature = "sml-styling")]
+                default_grid_color: None,
+                #[cfg(feature = "sml-layout")]
+                show_white_space: None,
+                view: None,
+                top_left_cell: None,
+                #[cfg(feature = "sml-styling")]
+                color_id: None,
+                zoom_scale: None,
+                zoom_scale_normal: None,
+                #[cfg(feature = "sml-layout")]
+                zoom_scale_sheet_layout_view: None,
+                #[cfg(feature = "sml-layout")]
+                zoom_scale_page_layout_view: None,
+                workbook_view_id: 0,
+                #[cfg(feature = "sml-structure")]
+                pane: Some(Box::new(pane)),
+                selection: vec![types::Selection {
+                    pane: Some(active_pane),
+                    active_cell: None,
+                    active_cell_id: None,
+                    square_reference: None,
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                }],
+                #[cfg(feature = "sml-pivot")]
+                pivot_selection: Vec::new(),
+                #[cfg(feature = "sml-extensions")]
+                extension_list: None,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+                #[cfg(feature = "extra-children")]
+                extra_children: Vec::new(),
+            };
+            return Some(Box::new(types::SheetViews {
+                sheet_view: vec![sheet_view],
+                extension_list: None,
+                #[cfg(feature = "extra-children")]
+                extra_children: Vec::new(),
+            }));
+        }
+        #[cfg(not(feature = "sml-structure"))]
+        let _ = sheet;
+        None
     }
 
     /// Build conditional formatting from builder data.
@@ -3286,6 +3423,81 @@ mod tests {
 
         let row2 = read_sheet.row(2).unwrap();
         assert_eq!(row2.height, Some(18.0));
+    }
+
+    #[test]
+    #[cfg(feature = "full")]
+    fn test_roundtrip_freeze_rows() {
+        use std::io::Cursor;
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Sheet1");
+        sheet.set_cell("A1", "Header");
+        sheet.freeze_rows(1);
+
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
+        let read_sheet = workbook.resolved_sheet(0).unwrap();
+
+        assert!(read_sheet.has_freeze_panes(), "Should have freeze panes");
+        let pane = read_sheet.freeze_pane().expect("Should have pane");
+        assert_eq!(pane.y_split, Some(1.0), "Should freeze 1 row");
+        assert_eq!(pane.x_split, None, "Should not freeze any columns");
+        assert_eq!(
+            pane.state,
+            Some(crate::types::PaneState::Frozen),
+            "State should be Frozen"
+        );
+    }
+
+    #[test]
+    #[cfg(feature = "full")]
+    fn test_roundtrip_freeze_cols() {
+        use std::io::Cursor;
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Sheet1");
+        sheet.set_cell("A1", "Row label");
+        sheet.freeze_cols(1);
+
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
+        let read_sheet = workbook.resolved_sheet(0).unwrap();
+
+        assert!(read_sheet.has_freeze_panes());
+        let pane = read_sheet.freeze_pane().expect("Should have pane");
+        assert_eq!(pane.x_split, Some(1.0), "Should freeze 1 column");
+        assert_eq!(pane.y_split, None, "Should not freeze any rows");
+    }
+
+    #[test]
+    #[cfg(feature = "full")]
+    fn test_roundtrip_freeze_both() {
+        use std::io::Cursor;
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Sheet1");
+        sheet.set_cell("A1", "Header");
+        sheet.set_freeze_pane(2, 1);
+
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
+        let read_sheet = workbook.resolved_sheet(0).unwrap();
+
+        assert!(read_sheet.has_freeze_panes());
+        let pane = read_sheet.freeze_pane().expect("Should have pane");
+        assert_eq!(pane.y_split, Some(2.0), "Should freeze 2 rows");
+        assert_eq!(pane.x_split, Some(1.0), "Should freeze 1 column");
+        assert_eq!(pane.active_pane, Some(crate::types::PaneType::BottomRight));
     }
 
     #[test]
