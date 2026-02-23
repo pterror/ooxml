@@ -146,6 +146,15 @@ pub trait BodyExt {
     /// detect paragraph styles; without it this always returns an empty vec.
     #[cfg(feature = "wml-styling")]
     fn table_of_contents(&self) -> Vec<TableOfContents>;
+
+    /// Extract all form fields from this body (ECMA-376 §17.5.2).
+    ///
+    /// Walks all block content recursively (including table cells) and
+    /// collects every SDT that has a recognisable form-field type.
+    /// Requires the `wml-settings` feature; without it always returns an
+    /// empty vec.
+    #[cfg(feature = "wml-settings")]
+    fn form_fields(&self) -> Vec<FormField>;
 }
 
 impl BodyExt for types::Body {
@@ -190,6 +199,11 @@ impl BodyExt for types::Body {
     #[cfg(feature = "wml-styling")]
     fn table_of_contents(&self) -> Vec<TableOfContents> {
         collect_tocs_from_block_content(&self.block_content)
+    }
+
+    #[cfg(feature = "wml-settings")]
+    fn form_fields(&self) -> Vec<FormField> {
+        collect_form_fields_from_block_content(&self.block_content)
     }
 }
 
@@ -1897,6 +1911,242 @@ impl BodyRevisionExt for types::Body {
 }
 
 // =============================================================================
+// Form Fields (ECMA-376 §17.5.2)
+// =============================================================================
+
+/// The kind of a Structured Document Tag form control (ECMA-376 §17.5.2).
+///
+/// Determined by which child element is present inside `<w:sdtPr>`.
+#[cfg(feature = "wml-settings")]
+#[derive(Debug, Clone, PartialEq)]
+pub enum FormFieldType {
+    /// Plain-text input control (`<w:text>`).
+    ///
+    /// `multi_line` is `true` when `w:multiLine` is "1", "true", or "on".
+    PlainText { multi_line: bool },
+    /// Rich-text area (`<w:richText>`).
+    RichText,
+    /// Combo box with a fixed list of choices (`<w:comboBox>`).
+    ComboBox { choices: Vec<String> },
+    /// Drop-down list (`<w:dropDownList>`).
+    DropDownList { choices: Vec<String> },
+    /// Date picker (`<w:date>`).
+    DatePicker { format: Option<String> },
+    /// SDT whose type was not recognised by this library.
+    Unknown,
+}
+
+/// A form field extracted from a Structured Document Tag (ECMA-376 §17.5.2).
+///
+/// Returned by [`FormFieldExt::form_field`] and collected by
+/// [`BodyExt::form_fields`].
+#[cfg(feature = "wml-settings")]
+#[derive(Debug, Clone)]
+pub struct FormField {
+    /// Human-readable label (`<w:alias w:val="…"/>`).
+    pub alias: Option<String>,
+    /// Machine-readable tag (`<w:tag w:val="…"/>`).
+    pub tag: Option<String>,
+    /// The kind of control inferred from `<w:sdtPr>`.
+    pub field_type: FormFieldType,
+    /// Current text content of the SDT, extracted from its `sdtContent`.
+    pub current_value: String,
+}
+
+/// Extract a [`FormField`] from an SDT properties block and its content text.
+///
+/// The `sdt_pr` argument must already be `Some`; call sites gate on that.
+#[cfg(feature = "wml-settings")]
+fn sdt_pr_to_form_field(sdt_pr: &types::CTSdtPr, current_value: String) -> FormField {
+    let alias = sdt_pr.alias.as_ref().map(|a| a.value.clone());
+    let tag = sdt_pr.tag.as_ref().map(|t| t.value.clone());
+
+    let field_type = if let Some(text_elem) = &sdt_pr.text {
+        let multi_line = text_elem
+            .multi_line
+            .as_deref()
+            .map(|v| matches!(v, "1" | "true" | "on"))
+            .unwrap_or(false);
+        FormFieldType::PlainText { multi_line }
+    } else if sdt_pr.rich_text.is_some() {
+        FormFieldType::RichText
+    } else if let Some(cb) = &sdt_pr.combo_box {
+        let choices = cb
+            .list_item
+            .iter()
+            .map(|item| {
+                item.display_text
+                    .clone()
+                    .or_else(|| item.value.clone())
+                    .unwrap_or_default()
+            })
+            .collect();
+        FormFieldType::ComboBox { choices }
+    } else if let Some(dd) = &sdt_pr.drop_down_list {
+        let choices = dd
+            .list_item
+            .iter()
+            .map(|item| {
+                item.display_text
+                    .clone()
+                    .or_else(|| item.value.clone())
+                    .unwrap_or_default()
+            })
+            .collect();
+        FormFieldType::DropDownList { choices }
+    } else if let Some(date) = &sdt_pr.date {
+        let format = date.date_format.as_ref().map(|df| df.value.clone());
+        FormFieldType::DatePicker { format }
+    } else {
+        FormFieldType::Unknown
+    };
+
+    FormField {
+        alias,
+        tag,
+        field_type,
+        current_value,
+    }
+}
+
+/// Extension trait for extracting a [`FormField`] from an SDT element.
+///
+/// Implemented for both block-level (`CTSdtBlock`) and inline (`CTSdtRun`)
+/// SDT variants. Returns `Some` whenever `sdt_pr` is present; returns `None`
+/// if there are no properties at all (which is unusual but spec-legal).
+///
+/// ECMA-376 §17.5.2.
+#[cfg(feature = "wml-settings")]
+pub trait FormFieldExt {
+    /// Extract a [`FormField`] if this SDT has `<w:sdtPr>` properties.
+    fn form_field(&self) -> Option<FormField>;
+}
+
+#[cfg(feature = "wml-settings")]
+impl FormFieldExt for types::CTSdtBlock {
+    fn form_field(&self) -> Option<FormField> {
+        let sdt_pr = self.sdt_pr.as_deref()?;
+        let value = extract_text_from_block_sdt_content(self.sdt_content.as_deref());
+        Some(sdt_pr_to_form_field(sdt_pr, value))
+    }
+}
+
+#[cfg(feature = "wml-settings")]
+impl FormFieldExt for types::CTSdtRun {
+    fn form_field(&self) -> Option<FormField> {
+        let sdt_pr = self.sdt_pr.as_deref()?;
+        let value = extract_text_from_run_sdt_content(self.sdt_content.as_deref());
+        Some(sdt_pr_to_form_field(sdt_pr, value))
+    }
+}
+
+/// Extract plain text from `CTSdtContentBlock` by walking its block content
+/// choices (paragraphs and nested tables).
+#[cfg(feature = "wml-settings")]
+fn extract_text_from_block_sdt_content(content: Option<&types::CTSdtContentBlock>) -> String {
+    let content = match content {
+        Some(c) => c,
+        None => return String::new(),
+    };
+    let parts: Vec<String> = content
+        .block_content
+        .iter()
+        .filter_map(|bc| match bc {
+            types::BlockContentChoice::P(p) => Some(p.text()),
+            types::BlockContentChoice::Tbl(t) => Some(t.text()),
+            _ => None,
+        })
+        .collect();
+    parts.join("\n")
+}
+
+/// Extract plain text from `CTSdtContentRun` by walking its paragraph content.
+#[cfg(feature = "wml-settings")]
+fn extract_text_from_run_sdt_content(content: Option<&types::CTSdtContentRun>) -> String {
+    let content = match content {
+        Some(c) => c,
+        None => return String::new(),
+    };
+    let mut out = String::new();
+    for item in &content.paragraph_content {
+        collect_text_from_paragraph_content(item, &mut out);
+    }
+    out
+}
+
+/// Collect all form fields from a slice of [`types::BlockContent`] items,
+/// recursing into tables and SDT block content.
+#[cfg(feature = "wml-settings")]
+fn collect_form_fields_from_block_content(blocks: &[types::BlockContent]) -> Vec<FormField> {
+    let mut result = Vec::new();
+    for block in blocks {
+        match block {
+            types::BlockContent::Sdt(sdt) => {
+                if let Some(field) = sdt.form_field() {
+                    result.push(field);
+                }
+                // Also look inside the SDT's block content for nested SDTs.
+                if let Some(content) = &sdt.sdt_content {
+                    for inner in &content.block_content {
+                        collect_form_fields_from_block_content_choice(inner, &mut result);
+                    }
+                }
+            }
+            types::BlockContent::Tbl(t) => {
+                for row in &t.rows {
+                    if let types::RowContent::Tr(tr) = row {
+                        for cell_content in &tr.cells {
+                            if let types::CellContent::Tc(tc) = cell_content {
+                                result.extend(collect_form_fields_from_block_content(
+                                    &tc.block_content,
+                                ));
+                            }
+                        }
+                    }
+                }
+            }
+            types::BlockContent::P(para) => {
+                // Inline (run-level) SDTs inside paragraphs.
+                for item in &para.paragraph_content {
+                    if let types::ParagraphContent::Sdt(sdt_run) = item
+                        && let Some(field) = sdt_run.form_field()
+                    {
+                        result.push(field);
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+    result
+}
+
+/// Helper: collect form fields from a single [`types::BlockContentChoice`].
+#[cfg(feature = "wml-settings")]
+fn collect_form_fields_from_block_content_choice(
+    item: &types::BlockContentChoice,
+    result: &mut Vec<FormField>,
+) {
+    match item {
+        types::BlockContentChoice::Sdt(sdt) => {
+            if let Some(field) = sdt.form_field() {
+                result.push(field);
+            }
+        }
+        types::BlockContentChoice::P(para) => {
+            for pc in &para.paragraph_content {
+                if let types::ParagraphContent::Sdt(sdt_run) = pc
+                    && let Some(field) = sdt_run.form_field()
+                {
+                    result.push(field);
+                }
+            }
+        }
+        _ => {}
+    }
+}
+
+// =============================================================================
 // Tests
 // =============================================================================
 
@@ -3447,5 +3697,344 @@ mod tests {
             extra_children: Vec::new(),
         };
         assert_eq!(body.accepted_text(), "hello world\n text");
+    }
+
+    // -------------------------------------------------------------------------
+    // FormFieldExt / BodyExt::form_fields tests
+    // -------------------------------------------------------------------------
+
+    /// Build a minimal `CTSdtPr` with only alias/tag set.
+    #[cfg(feature = "wml-settings")]
+    fn make_sdt_pr_base(alias: Option<&str>, tag: Option<&str>) -> types::CTSdtPr {
+        types::CTSdtPr {
+            r_pr: None,
+            alias: alias.map(|s| {
+                Box::new(types::CTString {
+                    value: s.to_string(),
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                })
+            }),
+            tag: tag.map(|s| {
+                Box::new(types::CTString {
+                    value: s.to_string(),
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                })
+            }),
+            id: None,
+            lock: None,
+            placeholder: None,
+            temporary: None,
+            showing_plc_hdr: None,
+            data_binding: None,
+            label: None,
+            tab_index: None,
+            equation: None,
+            combo_box: None,
+            date: None,
+            doc_part_obj: None,
+            doc_part_list: None,
+            drop_down_list: None,
+            picture: None,
+            rich_text: None,
+            text: None,
+            citation: None,
+            group: None,
+            bibliography: None,
+            #[cfg(feature = "extra-children")]
+            extra_children: Default::default(),
+        }
+    }
+
+    /// Build a `CTSdtRun` containing a run with the given text.
+    #[cfg(feature = "wml-settings")]
+    fn make_sdt_run(sdt_pr: types::CTSdtPr, value_text: &str) -> types::CTSdtRun {
+        let content = types::CTSdtContentRun {
+            paragraph_content: vec![types::ParagraphContent::R(Box::new(make_run(vec![
+                make_text(value_text),
+            ])))],
+            #[cfg(feature = "extra-children")]
+            extra_children: Default::default(),
+        };
+        types::CTSdtRun {
+            sdt_pr: Some(Box::new(sdt_pr)),
+            sdt_end_pr: None,
+            sdt_content: Some(Box::new(content)),
+            #[cfg(feature = "extra-children")]
+            extra_children: Default::default(),
+        }
+    }
+
+    /// Build a `CTSdtBlock` containing a paragraph with the given text.
+    #[cfg(feature = "wml-settings")]
+    fn make_sdt_block(sdt_pr: types::CTSdtPr, value_text: &str) -> types::CTSdtBlock {
+        let para = make_paragraph(vec![make_p_run(value_text)]);
+        let content = types::CTSdtContentBlock {
+            block_content: vec![types::BlockContentChoice::P(Box::new(para))],
+            #[cfg(feature = "extra-children")]
+            extra_children: Default::default(),
+        };
+        types::CTSdtBlock {
+            sdt_pr: Some(Box::new(sdt_pr)),
+            sdt_end_pr: None,
+            sdt_content: Some(Box::new(content)),
+            #[cfg(feature = "extra-children")]
+            extra_children: Default::default(),
+        }
+    }
+
+    #[test]
+    #[cfg(feature = "wml-settings")]
+    fn test_form_field_plain_text() {
+        use super::{FormFieldExt, FormFieldType};
+        let mut sdt_pr = make_sdt_pr_base(None, None);
+        sdt_pr.text = Some(Box::new(types::CTSdtText {
+            multi_line: None,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+        }));
+        let sdt_run = make_sdt_run(sdt_pr, "my value");
+        let field = sdt_run.form_field().expect("should have form field");
+        assert_eq!(
+            field.field_type,
+            FormFieldType::PlainText { multi_line: false }
+        );
+        assert_eq!(field.current_value, "my value");
+    }
+
+    #[test]
+    #[cfg(feature = "wml-settings")]
+    fn test_form_field_plain_text_multiline() {
+        use super::{FormFieldExt, FormFieldType};
+        let mut sdt_pr = make_sdt_pr_base(None, None);
+        sdt_pr.text = Some(Box::new(types::CTSdtText {
+            multi_line: Some("1".to_string()),
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+        }));
+        let sdt_run = make_sdt_run(sdt_pr, "line1");
+        let field = sdt_run.form_field().expect("should have form field");
+        assert_eq!(
+            field.field_type,
+            FormFieldType::PlainText { multi_line: true }
+        );
+    }
+
+    #[test]
+    #[cfg(feature = "wml-settings")]
+    fn test_form_field_combo_box() {
+        use super::{FormFieldExt, FormFieldType};
+        let mut sdt_pr = make_sdt_pr_base(None, None);
+        sdt_pr.combo_box = Some(Box::new(types::CTSdtComboBox {
+            last_value: Some("Option A".to_string()),
+            list_item: vec![
+                types::CTSdtListItem {
+                    display_text: Some("Option A".to_string()),
+                    value: Some("a".to_string()),
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                },
+                types::CTSdtListItem {
+                    display_text: Some("Option B".to_string()),
+                    value: Some("b".to_string()),
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                },
+            ],
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Default::default(),
+        }));
+        let sdt_block = make_sdt_block(sdt_pr, "Option A");
+        let field = sdt_block.form_field().expect("should have form field");
+        match &field.field_type {
+            FormFieldType::ComboBox { choices } => {
+                assert_eq!(
+                    choices,
+                    &vec!["Option A".to_string(), "Option B".to_string()]
+                );
+            }
+            other => panic!("expected ComboBox, got {other:?}"),
+        }
+        assert_eq!(field.current_value, "Option A");
+    }
+
+    #[test]
+    #[cfg(feature = "wml-settings")]
+    fn test_form_field_dropdown() {
+        use super::{FormFieldExt, FormFieldType};
+        let mut sdt_pr = make_sdt_pr_base(None, None);
+        sdt_pr.drop_down_list = Some(Box::new(types::CTSdtDropDownList {
+            last_value: None,
+            list_item: vec![
+                types::CTSdtListItem {
+                    display_text: Some("Red".to_string()),
+                    value: Some("red".to_string()),
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                },
+                types::CTSdtListItem {
+                    display_text: Some("Blue".to_string()),
+                    value: Some("blue".to_string()),
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                },
+            ],
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Default::default(),
+        }));
+        let sdt_block = make_sdt_block(sdt_pr, "Red");
+        let field = sdt_block.form_field().expect("should have form field");
+        match &field.field_type {
+            FormFieldType::DropDownList { choices } => {
+                assert_eq!(choices, &vec!["Red".to_string(), "Blue".to_string()]);
+            }
+            other => panic!("expected DropDownList, got {other:?}"),
+        }
+        assert_eq!(field.current_value, "Red");
+    }
+
+    #[test]
+    #[cfg(feature = "wml-settings")]
+    fn test_form_field_alias_and_tag() {
+        use super::{FormFieldExt, FormFieldType};
+        let mut sdt_pr = make_sdt_pr_base(Some("Full Name"), Some("fullName"));
+        sdt_pr.text = Some(Box::new(types::CTSdtText {
+            multi_line: None,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+        }));
+        let sdt_run = make_sdt_run(sdt_pr, "Jane Doe");
+        let field = sdt_run.form_field().expect("should have form field");
+        assert_eq!(field.alias.as_deref(), Some("Full Name"));
+        assert_eq!(field.tag.as_deref(), Some("fullName"));
+        assert_eq!(
+            field.field_type,
+            FormFieldType::PlainText { multi_line: false }
+        );
+        assert_eq!(field.current_value, "Jane Doe");
+    }
+
+    #[test]
+    #[cfg(feature = "wml-settings")]
+    fn test_form_field_rich_text() {
+        use super::{FormFieldExt, FormFieldType};
+        let mut sdt_pr = make_sdt_pr_base(None, None);
+        sdt_pr.rich_text = Some(Box::new(types::CTEmpty));
+        let sdt_block = make_sdt_block(sdt_pr, "rich content here");
+        let field = sdt_block.form_field().expect("should have form field");
+        assert_eq!(field.field_type, FormFieldType::RichText);
+        assert_eq!(field.current_value, "rich content here");
+    }
+
+    #[test]
+    #[cfg(feature = "wml-settings")]
+    fn test_form_field_date_picker() {
+        use super::{FormFieldExt, FormFieldType};
+        let mut sdt_pr = make_sdt_pr_base(None, None);
+        sdt_pr.date = Some(Box::new(types::CTSdtDate {
+            full_date: Some("2026-02-24T00:00:00Z".to_string()),
+            date_format: Some(Box::new(types::CTString {
+                value: "yyyy-MM-dd".to_string(),
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+            })),
+            lid: None,
+            store_mapped_data_as: None,
+            calendar: None,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Default::default(),
+        }));
+        let sdt_block = make_sdt_block(sdt_pr, "2026-02-24");
+        let field = sdt_block.form_field().expect("should have form field");
+        match &field.field_type {
+            FormFieldType::DatePicker { format } => {
+                assert_eq!(format.as_deref(), Some("yyyy-MM-dd"));
+            }
+            other => panic!("expected DatePicker, got {other:?}"),
+        }
+        assert_eq!(field.current_value, "2026-02-24");
+    }
+
+    #[test]
+    #[cfg(feature = "wml-settings")]
+    fn test_form_fields_from_body() {
+        use super::{BodyExt, FormFieldType};
+
+        // SDT 1: block-level plain text
+        let sdt_pr1 = {
+            let mut pr = make_sdt_pr_base(Some("First Name"), Some("firstName"));
+            pr.text = Some(Box::new(types::CTSdtText {
+                multi_line: None,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+            }));
+            pr
+        };
+        let block_sdt = make_sdt_block(sdt_pr1, "John");
+
+        // SDT 2: inline (run-level) combo box inside a paragraph
+        let sdt_pr2 = {
+            let mut pr = make_sdt_pr_base(Some("Color"), None);
+            pr.combo_box = Some(Box::new(types::CTSdtComboBox {
+                last_value: Some("Red".to_string()),
+                list_item: vec![types::CTSdtListItem {
+                    display_text: Some("Red".to_string()),
+                    value: Some("red".to_string()),
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                }],
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+                #[cfg(feature = "extra-children")]
+                extra_children: Default::default(),
+            }));
+            pr
+        };
+        let inline_sdt = make_sdt_run(sdt_pr2, "Red");
+        let para_with_sdt =
+            make_paragraph(vec![types::ParagraphContent::Sdt(Box::new(inline_sdt))]);
+
+        let body = make_body(vec![
+            types::BlockContent::Sdt(Box::new(block_sdt)),
+            types::BlockContent::P(Box::new(para_with_sdt)),
+        ]);
+
+        let fields = body.form_fields();
+        assert_eq!(fields.len(), 2);
+
+        assert_eq!(fields[0].alias.as_deref(), Some("First Name"));
+        assert_eq!(fields[0].tag.as_deref(), Some("firstName"));
+        assert_eq!(
+            fields[0].field_type,
+            FormFieldType::PlainText { multi_line: false }
+        );
+        assert_eq!(fields[0].current_value, "John");
+
+        assert_eq!(fields[1].alias.as_deref(), Some("Color"));
+        assert!(
+            matches!(&fields[1].field_type, FormFieldType::ComboBox { choices } if choices == &["Red"])
+        );
+        assert_eq!(fields[1].current_value, "Red");
+    }
+
+    #[test]
+    #[cfg(feature = "wml-settings")]
+    fn test_form_field_no_sdt_pr_returns_none() {
+        use super::FormFieldExt;
+        let sdt_run = types::CTSdtRun {
+            sdt_pr: None,
+            sdt_end_pr: None,
+            sdt_content: None,
+            #[cfg(feature = "extra-children")]
+            extra_children: Default::default(),
+        };
+        assert!(sdt_run.form_field().is_none());
     }
 }
