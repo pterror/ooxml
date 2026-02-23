@@ -813,6 +813,140 @@ impl PictExt for types::CTPicture {
 }
 
 // =============================================================================
+// MathExt (OMML — Office Math Markup Language)
+// =============================================================================
+
+/// A math expression extracted from an `<m:oMath>` element (ECMA-376 Part 1 §22.1).
+///
+/// The text approximation is produced by walking `<m:t>` elements in the OMML
+/// tree and concatenating their text content.  It is intentionally
+/// best-effort — accurate enough for search/indexing but not a LaTeX rendering.
+#[cfg(feature = "extra-children")]
+#[derive(Debug, Clone, PartialEq)]
+pub struct MathExpression {
+    /// Plain-text approximation (concatenated `m:t` text nodes).
+    pub text_approximation: String,
+    /// `true` for display (block) math (`<m:oMathPara>`), `false` for inline (`<m:oMath>`).
+    pub is_display: bool,
+}
+
+/// Extension methods for types that may contain OMML math (ECMA-376 Part 1 §22.1).
+///
+/// Math in DOCX uses `<m:oMath>` (inline) or `<m:oMathPara>` (display/block)
+/// elements from the namespace
+/// `http://schemas.openxmlformats.org/officeDocument/2006/math`.
+/// Because the OMML namespace is separate from the WordprocessingML namespace,
+/// the generated parser stores these elements in `extra_children` on
+/// `Paragraph`.  This trait walks those raw nodes to detect and extract math.
+#[cfg(feature = "extra-children")]
+pub trait MathExt {
+    /// Return all math expressions contained in this element.
+    fn math_expressions(&self) -> Vec<MathExpression>;
+
+    /// Return `true` if this element contains at least one math expression.
+    fn has_math(&self) -> bool {
+        !self.math_expressions().is_empty()
+    }
+}
+
+#[cfg(feature = "extra-children")]
+impl MathExt for types::Paragraph {
+    fn math_expressions(&self) -> Vec<MathExpression> {
+        let mut out = Vec::new();
+        for child in &self.extra_children {
+            if let ooxml_xml::RawXmlNode::Element(elem) = &child.node {
+                collect_math_from_raw(elem, &mut out);
+            }
+        }
+        out
+    }
+}
+
+#[cfg(feature = "extra-children")]
+impl MathExt for types::Body {
+    fn math_expressions(&self) -> Vec<MathExpression> {
+        let mut out = Vec::new();
+        for item in &self.block_content {
+            if let types::BlockContent::P(p) = item {
+                out.extend(p.math_expressions());
+            }
+        }
+        out
+    }
+}
+
+/// Walk a raw XML element and, when an `<m:oMath>` or `<m:oMathPara>` root is
+/// found, collect a `MathExpression` and append it to `out`.
+///
+/// The function does **not** recurse into `<m:oMath>` children once the root
+/// is identified — instead it hands the entire subtree to
+/// [`collect_math_text`] to gather text leaves.
+#[cfg(feature = "extra-children")]
+fn collect_math_from_raw(elem: &ooxml_xml::RawXmlElement, out: &mut Vec<MathExpression>) {
+    let local = math_local_name(&elem.name);
+    match local {
+        "oMathPara" => {
+            // Display math: collect text from all oMath children inside.
+            let mut text = String::new();
+            for child in &elem.children {
+                if let ooxml_xml::RawXmlNode::Element(child_elem) = child {
+                    collect_math_text(child_elem, &mut text);
+                }
+            }
+            out.push(MathExpression {
+                text_approximation: text,
+                is_display: true,
+            });
+        }
+        "oMath" => {
+            let mut text = String::new();
+            collect_math_text(elem, &mut text);
+            out.push(MathExpression {
+                text_approximation: text,
+                is_display: false,
+            });
+        }
+        _ => {
+            // Recurse into unrecognised wrapper elements.
+            for child in &elem.children {
+                if let ooxml_xml::RawXmlNode::Element(child_elem) = child {
+                    collect_math_from_raw(child_elem, out);
+                }
+            }
+        }
+    }
+}
+
+/// Recursively collect text from `<m:t>` leaves within an OMML subtree.
+#[cfg(feature = "extra-children")]
+fn collect_math_text(elem: &ooxml_xml::RawXmlElement, out: &mut String) {
+    if math_local_name(&elem.name) == "t" {
+        // Text leaf — collect direct text children.
+        for child in &elem.children {
+            if let ooxml_xml::RawXmlNode::Text(t) = child {
+                out.push_str(t);
+            }
+        }
+        return;
+    }
+    for child in &elem.children {
+        if let ooxml_xml::RawXmlNode::Element(child_elem) = child {
+            collect_math_text(child_elem, out);
+        }
+    }
+}
+
+/// Return the local name of a possibly-namespaced element name.
+///
+/// Handles both `m:oMath` (→ `"oMath"`) and bare `oMath`.  Strips any
+/// namespace prefix; does **not** validate that the prefix is actually `m:`.
+#[cfg(feature = "extra-children")]
+#[inline]
+fn math_local_name(name: &str) -> &str {
+    name.rsplit(':').next().unwrap_or(name)
+}
+
+// =============================================================================
 // RunPropertiesExt
 // =============================================================================
 
@@ -4036,5 +4170,225 @@ mod tests {
             extra_children: Default::default(),
         };
         assert!(sdt_run.form_field().is_none());
+    }
+
+    // -------------------------------------------------------------------------
+    // MathExt tests
+    // -------------------------------------------------------------------------
+
+    /// Build a `Paragraph` whose `extra_children` contains a minimal
+    /// `<m:oMath>` element with the supplied math text.
+    ///
+    /// Structure:
+    /// ```xml
+    /// <m:oMath>
+    ///   <m:r>
+    ///     <m:t>text</m:t>
+    ///   </m:r>
+    /// </m:oMath>
+    /// ```
+    #[cfg(feature = "extra-children")]
+    fn make_paragraph_with_inline_math(math_text: &str) -> types::Paragraph {
+        use ooxml_xml::{PositionedNode, RawXmlElement, RawXmlNode};
+
+        let t = RawXmlElement {
+            name: "m:t".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Text(math_text.to_string())],
+            self_closing: false,
+        };
+        let r = RawXmlElement {
+            name: "m:r".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(t)],
+            self_closing: false,
+        };
+        let o_math = RawXmlElement {
+            name: "m:oMath".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(r)],
+            self_closing: false,
+        };
+
+        types::Paragraph {
+            #[cfg(feature = "wml-track-changes")]
+            rsid_r_pr: None,
+            #[cfg(feature = "wml-track-changes")]
+            rsid_r: None,
+            #[cfg(feature = "wml-track-changes")]
+            rsid_del: None,
+            #[cfg(feature = "wml-track-changes")]
+            rsid_p: None,
+            #[cfg(feature = "wml-track-changes")]
+            rsid_r_default: None,
+            #[cfg(feature = "wml-styling")]
+            p_pr: None,
+            paragraph_content: vec![],
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            extra_children: vec![PositionedNode::new(0, RawXmlNode::Element(o_math))],
+        }
+    }
+
+    /// Build a `Paragraph` whose `extra_children` contains a display
+    /// `<m:oMathPara>` wrapping a `<m:oMath>`.
+    ///
+    /// Structure:
+    /// ```xml
+    /// <m:oMathPara>
+    ///   <m:oMath>
+    ///     <m:r><m:t>text</m:t></m:r>
+    ///   </m:oMath>
+    /// </m:oMathPara>
+    /// ```
+    #[cfg(feature = "extra-children")]
+    fn make_paragraph_with_display_math(math_text: &str) -> types::Paragraph {
+        use ooxml_xml::{PositionedNode, RawXmlElement, RawXmlNode};
+
+        let t = RawXmlElement {
+            name: "m:t".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Text(math_text.to_string())],
+            self_closing: false,
+        };
+        let r = RawXmlElement {
+            name: "m:r".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(t)],
+            self_closing: false,
+        };
+        let o_math = RawXmlElement {
+            name: "m:oMath".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(r)],
+            self_closing: false,
+        };
+        let o_math_para = RawXmlElement {
+            name: "m:oMathPara".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(o_math)],
+            self_closing: false,
+        };
+
+        types::Paragraph {
+            #[cfg(feature = "wml-track-changes")]
+            rsid_r_pr: None,
+            #[cfg(feature = "wml-track-changes")]
+            rsid_r: None,
+            #[cfg(feature = "wml-track-changes")]
+            rsid_del: None,
+            #[cfg(feature = "wml-track-changes")]
+            rsid_p: None,
+            #[cfg(feature = "wml-track-changes")]
+            rsid_r_default: None,
+            #[cfg(feature = "wml-styling")]
+            p_pr: None,
+            paragraph_content: vec![],
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            extra_children: vec![PositionedNode::new(0, RawXmlNode::Element(o_math_para))],
+        }
+    }
+
+    #[test]
+    #[cfg(feature = "extra-children")]
+    fn test_math_expression_inline() {
+        use super::MathExt;
+        let para = make_paragraph_with_inline_math("x+y");
+        let exprs = para.math_expressions();
+        assert_eq!(exprs.len(), 1);
+        assert_eq!(exprs[0].text_approximation, "x+y");
+        assert!(!exprs[0].is_display);
+    }
+
+    #[test]
+    #[cfg(feature = "extra-children")]
+    fn test_math_expression_display() {
+        use super::MathExt;
+        let para = make_paragraph_with_display_math("E=mc²");
+        let exprs = para.math_expressions();
+        assert_eq!(exprs.len(), 1);
+        assert_eq!(exprs[0].text_approximation, "E=mc²");
+        assert!(exprs[0].is_display);
+    }
+
+    #[test]
+    #[cfg(feature = "extra-children")]
+    fn test_has_math_true() {
+        use super::MathExt;
+        let para = make_paragraph_with_inline_math("a²+b²=c²");
+        assert!(para.has_math());
+    }
+
+    #[test]
+    #[cfg(feature = "extra-children")]
+    fn test_has_math_false() {
+        use super::MathExt;
+        // A paragraph with no math in extra_children.
+        let para = types::Paragraph {
+            #[cfg(feature = "wml-track-changes")]
+            rsid_r_pr: None,
+            #[cfg(feature = "wml-track-changes")]
+            rsid_r: None,
+            #[cfg(feature = "wml-track-changes")]
+            rsid_del: None,
+            #[cfg(feature = "wml-track-changes")]
+            rsid_p: None,
+            #[cfg(feature = "wml-track-changes")]
+            rsid_r_default: None,
+            #[cfg(feature = "wml-styling")]
+            p_pr: None,
+            paragraph_content: vec![],
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            extra_children: vec![],
+        };
+        assert!(!para.has_math());
+    }
+
+    #[test]
+    #[cfg(feature = "extra-children")]
+    fn test_body_math_expressions() {
+        use super::MathExt;
+
+        let para1 = make_paragraph_with_inline_math("x+y");
+        let para2 = make_paragraph_with_display_math("∫f(x)dx");
+        // A paragraph without math.
+        let para3 = types::Paragraph {
+            #[cfg(feature = "wml-track-changes")]
+            rsid_r_pr: None,
+            #[cfg(feature = "wml-track-changes")]
+            rsid_r: None,
+            #[cfg(feature = "wml-track-changes")]
+            rsid_del: None,
+            #[cfg(feature = "wml-track-changes")]
+            rsid_p: None,
+            #[cfg(feature = "wml-track-changes")]
+            rsid_r_default: None,
+            #[cfg(feature = "wml-styling")]
+            p_pr: None,
+            paragraph_content: vec![],
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            extra_children: vec![],
+        };
+
+        let body = types::Body {
+            block_content: vec![
+                types::BlockContent::P(Box::new(para1)),
+                types::BlockContent::P(Box::new(para3)),
+                types::BlockContent::P(Box::new(para2)),
+            ],
+            #[cfg(feature = "wml-layout")]
+            sect_pr: None,
+            extra_children: vec![],
+        };
+
+        let exprs = body.math_expressions();
+        assert_eq!(exprs.len(), 2);
+        assert_eq!(exprs[0].text_approximation, "x+y");
+        assert!(!exprs[0].is_display);
+        assert_eq!(exprs[1].text_approximation, "∫f(x)dx");
+        assert!(exprs[1].is_display);
     }
 }
