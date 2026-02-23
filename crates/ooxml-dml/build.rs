@@ -134,6 +134,7 @@ fn main() {
         feature_mappings,
         // DML uses a: namespace prefix when embedded in other formats
         xml_serialize_prefix: Some("a".to_string()),
+        warn_unmapped: true,
         ..Default::default()
     };
 

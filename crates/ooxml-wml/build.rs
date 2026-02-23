@@ -134,6 +134,7 @@ fn main() {
         feature_mappings,
         // WML uses w: namespace prefix in real DOCX files
         xml_serialize_prefix: Some("w".to_string()),
+        warn_unmapped: true,
         ..Default::default()
     };
 

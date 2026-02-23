@@ -135,6 +135,7 @@ fn main() {
         feature_mappings,
         // SML uses unprefixed elements in real XLSX files (default namespace convention)
         xml_serialize_prefix: None,
+        warn_unmapped: true,
         ..Default::default()
     };
 
