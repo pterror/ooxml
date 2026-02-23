@@ -1466,6 +1466,21 @@ impl SheetBuilder {
 }
 
 /// Builder for creating Excel workbooks.
+///
+/// # Why `WorkbookBuilder` doesn't hold `types::Workbook` directly
+///
+/// Unlike WML (`DocumentBuilder`) and PML (`PresentationBuilder`), this builder
+/// cannot eagerly hold a `types::Workbook` because cell style indices are
+/// cross-sheet: every `set_cell_style()` call on any sheet potentially adds a new
+/// entry to the shared `Stylesheet` (fonts, fills, borders, number formats), and
+/// the final deduplicated indices aren't known until all cells across all sheets
+/// have been added.  Baking those indices into `SheetData` rows upfront would
+/// require retroactively rewriting previously built rows when new styles appear.
+///
+/// Instead, `WorkbookBuilder` accumulates raw style values during building and
+/// resolves them to index-based `Stylesheet` + `SheetData` rows at `write()` time.
+/// `SheetBuilder` holds `types::Worksheet` directly for everything that doesn't
+/// depend on style resolution (merge cells, freeze panes, column widths, etc.).
 #[derive(Debug)]
 pub struct WorkbookBuilder {
     sheets: Vec<SheetBuilder>,
