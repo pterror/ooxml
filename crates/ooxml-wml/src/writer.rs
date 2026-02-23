@@ -3,6 +3,9 @@
 //! This module provides functionality for creating new Word documents
 //! using generated types and ToXml serializers.
 
+use crate::document::{
+    AppProperties, CoreProperties, serialize_app_properties, serialize_core_properties,
+};
 use crate::error::Result;
 use crate::generated_serializers::ToXml;
 use crate::types;
@@ -720,6 +723,10 @@ pub struct DocumentBuilder {
     endnotes: HashMap<i32, PendingEndnote>,
     /// Pending comments, keyed by ID.
     comments: HashMap<i32, PendingComment>,
+    /// Core document properties to write to docProps/core.xml.
+    core_properties: Option<CoreProperties>,
+    /// Extended application properties to write to docProps/app.xml.
+    app_properties: Option<AppProperties>,
     /// Counter for generating unique IDs.
     next_rel_id: u32,
     /// Counter for generating unique numbering IDs.
@@ -771,6 +778,8 @@ impl DocumentBuilder {
             footnotes: HashMap::new(),
             endnotes: HashMap::new(),
             comments: HashMap::new(),
+            core_properties: None,
+            app_properties: None,
             next_rel_id: 1,
             next_num_id: 1,
             next_header_id: 1,
@@ -1014,6 +1023,26 @@ impl DocumentBuilder {
         CommentBuilder { builder: self, id }
     }
 
+    /// Set the core document properties (title, author, dates, etc.).
+    ///
+    /// The properties will be written to `docProps/core.xml` when saved.
+    ///
+    /// ECMA-376 Part 2, Section 11 (Core Properties).
+    pub fn set_core_properties(&mut self, props: CoreProperties) -> &mut Self {
+        self.core_properties = Some(props);
+        self
+    }
+
+    /// Set the extended application properties (word count, page count, etc.).
+    ///
+    /// The properties will be written to `docProps/app.xml` when saved.
+    ///
+    /// ECMA-376 Part 2, Section 11.1 (Extended Properties).
+    pub fn set_app_properties(&mut self, props: AppProperties) -> &mut Self {
+        self.app_properties = Some(props);
+        self
+    }
+
     /// Get a mutable reference to the document body.
     pub fn body_mut(&mut self) -> &mut types::Body {
         self.document
@@ -1133,6 +1162,37 @@ impl DocumentBuilder {
             rel_type::OFFICE_DOCUMENT,
             "word/document.xml",
         ));
+
+        // Write core properties if set
+        if let Some(ref core_props) = self.core_properties {
+            let core_xml = serialize_core_properties(core_props)?;
+            pkg.add_part(
+                "docProps/core.xml",
+                content_type::CORE_PROPERTIES,
+                &core_xml,
+            )?;
+            pkg_rels.add(Relationship::new(
+                "rId2",
+                rel_type::CORE_PROPERTIES,
+                "docProps/core.xml",
+            ));
+        }
+
+        // Write app properties if set
+        if let Some(ref app_props) = self.app_properties {
+            let app_xml = serialize_app_properties(app_props)?;
+            pkg.add_part(
+                "docProps/app.xml",
+                content_type::EXTENDED_PROPERTIES,
+                &app_xml,
+            )?;
+            pkg_rels.add(Relationship::new(
+                "rId3",
+                rel_type::EXTENDED_PROPERTIES,
+                "docProps/app.xml",
+            ));
+        }
+
         pkg.add_part(
             "_rels/.rels",
             content_type::RELATIONSHIPS,
@@ -2168,6 +2228,46 @@ mod tests {
         #[cfg(feature = "extra-children")]
         assert_eq!(ct_drawing.extra_children.len(), 1);
         let _ = ct_drawing;
+    }
+
+    #[test]
+    fn test_core_and_app_properties_roundtrip() {
+        use crate::Document;
+        use crate::document::{AppProperties, CoreProperties};
+        use std::io::Cursor;
+
+        let mut builder = DocumentBuilder::new();
+        builder.add_paragraph("Hello");
+        builder.set_core_properties(CoreProperties {
+            title: Some("Test Doc".to_string()),
+            creator: Some("Test Author".to_string()),
+            created: Some("2024-01-01T00:00:00Z".to_string()),
+            ..Default::default()
+        });
+        builder.set_app_properties(AppProperties {
+            application: Some("ooxml-wml".to_string()),
+            pages: Some(1),
+            ..Default::default()
+        });
+
+        let mut buffer = Cursor::new(Vec::new());
+        builder.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let doc = Document::from_reader(buffer).unwrap();
+
+        let core = doc
+            .core_properties()
+            .expect("core properties should be present");
+        assert_eq!(core.title, Some("Test Doc".to_string()));
+        assert_eq!(core.creator, Some("Test Author".to_string()));
+        assert_eq!(core.created, Some("2024-01-01T00:00:00Z".to_string()));
+
+        let app = doc
+            .app_properties()
+            .expect("app properties should be present");
+        assert_eq!(app.application, Some("ooxml-wml".to_string()));
+        assert_eq!(app.pages, Some(1));
     }
 
     #[test]

@@ -930,6 +930,175 @@ fn parse_toggle_val(e: &quick_xml::events::BytesStart) -> bool {
 }
 
 // =============================================================================
+// Property serializers
+// =============================================================================
+
+use quick_xml::events::{BytesDecl, BytesEnd, BytesStart, BytesText, Event as XmlEvent};
+
+/// Write a simple text element: `<tag>text</tag>`.
+fn write_text_elem(writer: &mut quick_xml::Writer<Vec<u8>>, tag: &str, text: &str) -> Result<()> {
+    writer.write_event(XmlEvent::Start(BytesStart::new(tag)))?;
+    writer.write_event(XmlEvent::Text(BytesText::new(text)))?;
+    writer.write_event(XmlEvent::End(BytesEnd::new(tag)))?;
+    Ok(())
+}
+
+/// Write a text element with one attribute: `<tag attr="val">text</tag>`.
+fn write_text_elem_attr(
+    writer: &mut quick_xml::Writer<Vec<u8>>,
+    tag: &str,
+    attr_name: &str,
+    attr_val: &str,
+    text: &str,
+) -> Result<()> {
+    let mut start = BytesStart::new(tag);
+    start.push_attribute((attr_name, attr_val));
+    writer.write_event(XmlEvent::Start(start))?;
+    writer.write_event(XmlEvent::Text(BytesText::new(text)))?;
+    writer.write_event(XmlEvent::End(BytesEnd::new(tag)))?;
+    Ok(())
+}
+
+/// Serialize `CoreProperties` to `docProps/core.xml` bytes.
+///
+/// ECMA-376 Part 2, Section 11 (Core Properties).
+pub(crate) fn serialize_core_properties(props: &CoreProperties) -> Result<Vec<u8>> {
+    let mut writer = quick_xml::Writer::new(Vec::new());
+
+    writer.write_event(XmlEvent::Decl(BytesDecl::new(
+        "1.0",
+        Some("UTF-8"),
+        Some("yes"),
+    )))?;
+
+    let mut root = BytesStart::new("cp:coreProperties");
+    root.push_attribute((
+        "xmlns:cp",
+        "http://schemas.openxmlformats.org/package/2006/metadata/core-properties",
+    ));
+    root.push_attribute(("xmlns:dc", "http://purl.org/dc/elements/1.1/"));
+    root.push_attribute(("xmlns:dcterms", "http://purl.org/dc/terms/"));
+    root.push_attribute(("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance"));
+    writer.write_event(XmlEvent::Start(root))?;
+
+    if let Some(ref v) = props.title {
+        write_text_elem(&mut writer, "dc:title", v)?;
+    }
+    if let Some(ref v) = props.creator {
+        write_text_elem(&mut writer, "dc:creator", v)?;
+    }
+    if let Some(ref v) = props.subject {
+        write_text_elem(&mut writer, "dc:subject", v)?;
+    }
+    if let Some(ref v) = props.description {
+        write_text_elem(&mut writer, "dc:description", v)?;
+    }
+    if let Some(ref v) = props.keywords {
+        write_text_elem(&mut writer, "cp:keywords", v)?;
+    }
+    if let Some(ref v) = props.category {
+        write_text_elem(&mut writer, "cp:category", v)?;
+    }
+    if let Some(ref v) = props.last_modified_by {
+        write_text_elem(&mut writer, "cp:lastModifiedBy", v)?;
+    }
+    if let Some(ref v) = props.revision {
+        write_text_elem(&mut writer, "cp:revision", v)?;
+    }
+    if let Some(ref v) = props.created {
+        write_text_elem_attr(
+            &mut writer,
+            "dcterms:created",
+            "xsi:type",
+            "dcterms:W3CDTF",
+            v,
+        )?;
+    }
+    if let Some(ref v) = props.modified {
+        write_text_elem_attr(
+            &mut writer,
+            "dcterms:modified",
+            "xsi:type",
+            "dcterms:W3CDTF",
+            v,
+        )?;
+    }
+    if let Some(ref v) = props.content_status {
+        write_text_elem(&mut writer, "cp:contentStatus", v)?;
+    }
+
+    writer.write_event(XmlEvent::End(BytesEnd::new("cp:coreProperties")))?;
+    Ok(writer.into_inner())
+}
+
+/// Serialize `AppProperties` to `docProps/app.xml` bytes.
+///
+/// ECMA-376 Part 2, Section 11.1 (Extended Properties).
+pub(crate) fn serialize_app_properties(props: &AppProperties) -> Result<Vec<u8>> {
+    let mut writer = quick_xml::Writer::new(Vec::new());
+
+    writer.write_event(XmlEvent::Decl(BytesDecl::new(
+        "1.0",
+        Some("UTF-8"),
+        Some("yes"),
+    )))?;
+
+    let mut root = BytesStart::new("Properties");
+    root.push_attribute((
+        "xmlns",
+        "http://schemas.openxmlformats.org/officeDocument/2006/extended-properties",
+    ));
+    root.push_attribute((
+        "xmlns:vt",
+        "http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes",
+    ));
+    writer.write_event(XmlEvent::Start(root))?;
+
+    if let Some(ref v) = props.application {
+        write_text_elem(&mut writer, "Application", v)?;
+    }
+    if let Some(ref v) = props.app_version {
+        write_text_elem(&mut writer, "AppVersion", v)?;
+    }
+    if let Some(ref v) = props.company {
+        write_text_elem(&mut writer, "Company", v)?;
+    }
+    if let Some(ref v) = props.manager {
+        write_text_elem(&mut writer, "Manager", v)?;
+    }
+    if let Some(v) = props.total_time {
+        write_text_elem(&mut writer, "TotalTime", &v.to_string())?;
+    }
+    if let Some(v) = props.pages {
+        write_text_elem(&mut writer, "Pages", &v.to_string())?;
+    }
+    if let Some(v) = props.words {
+        write_text_elem(&mut writer, "Words", &v.to_string())?;
+    }
+    if let Some(v) = props.characters {
+        write_text_elem(&mut writer, "Characters", &v.to_string())?;
+    }
+    if let Some(v) = props.characters_with_spaces {
+        write_text_elem(&mut writer, "CharactersWithSpaces", &v.to_string())?;
+    }
+    if let Some(v) = props.paragraphs {
+        write_text_elem(&mut writer, "Paragraphs", &v.to_string())?;
+    }
+    if let Some(v) = props.lines {
+        write_text_elem(&mut writer, "Lines", &v.to_string())?;
+    }
+    if let Some(ref v) = props.template {
+        write_text_elem(&mut writer, "Template", v)?;
+    }
+    if let Some(v) = props.doc_security {
+        write_text_elem(&mut writer, "DocSecurity", &v.to_string())?;
+    }
+
+    writer.write_event(XmlEvent::End(BytesEnd::new("Properties")))?;
+    Ok(writer.into_inner())
+}
+
+// =============================================================================
 // Tests
 // =============================================================================
 
@@ -1010,6 +1179,67 @@ mod tests {
         assert_eq!(props.created, Some("2024-01-15T10:30:00Z".to_string()));
         assert_eq!(props.modified, Some("2024-01-16T14:45:00Z".to_string()));
         assert_eq!(props.content_status, Some("Draft".to_string()));
+    }
+
+    #[test]
+    fn test_serialize_core_properties() {
+        let props = CoreProperties {
+            title: Some("My Doc".to_string()),
+            creator: Some("Alice".to_string()),
+            created: Some("2024-01-01T00:00:00Z".to_string()),
+            modified: Some("2024-01-02T00:00:00Z".to_string()),
+            ..Default::default()
+        };
+
+        let bytes = serialize_core_properties(&props).unwrap();
+        let xml = String::from_utf8(bytes).unwrap();
+
+        assert!(xml.contains("<dc:title>My Doc</dc:title>"));
+        assert!(xml.contains("<dc:creator>Alice</dc:creator>"));
+        assert!(xml.contains(
+            r#"<dcterms:created xsi:type="dcterms:W3CDTF">2024-01-01T00:00:00Z</dcterms:created>"#
+        ));
+        assert!(xml.contains("cp:coreProperties"));
+
+        // Verify it roundtrips
+        let parsed = parse_core_properties(xml.as_bytes()).unwrap();
+        assert_eq!(parsed.title, Some("My Doc".to_string()));
+        assert_eq!(parsed.creator, Some("Alice".to_string()));
+        assert_eq!(parsed.created, Some("2024-01-01T00:00:00Z".to_string()));
+    }
+
+    #[test]
+    fn test_serialize_app_properties() {
+        let props = AppProperties {
+            application: Some("ooxml-wml".to_string()),
+            pages: Some(3),
+            words: Some(500),
+            ..Default::default()
+        };
+
+        let bytes = serialize_app_properties(&props).unwrap();
+        let xml = String::from_utf8(bytes).unwrap();
+
+        assert!(xml.contains("<Application>ooxml-wml</Application>"));
+        assert!(xml.contains("<Pages>3</Pages>"));
+        assert!(xml.contains("<Words>500</Words>"));
+
+        // Verify it roundtrips
+        let parsed = parse_app_properties(xml.as_bytes()).unwrap();
+        assert_eq!(parsed.application, Some("ooxml-wml".to_string()));
+        assert_eq!(parsed.pages, Some(3));
+        assert_eq!(parsed.words, Some(500));
+    }
+
+    #[test]
+    fn test_serialize_core_properties_xml_escape() {
+        let props = CoreProperties {
+            title: Some("A & B < C".to_string()),
+            ..Default::default()
+        };
+        let bytes = serialize_core_properties(&props).unwrap();
+        let xml = String::from_utf8(bytes).unwrap();
+        assert!(xml.contains("<dc:title>A &amp; B &lt; C</dc:title>"));
     }
 
     #[test]
