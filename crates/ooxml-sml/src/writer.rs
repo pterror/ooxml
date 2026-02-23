@@ -3625,29 +3625,31 @@ mod tests {
         let names = workbook.defined_names();
         assert_eq!(names.len(), 4);
 
+        use crate::DefinedNameExt;
+
         // Check global range
         let global = workbook.defined_name("GlobalRange").unwrap();
         assert_eq!(global.name, "GlobalRange");
-        assert_eq!(global.reference, "Sheet1!$A$1:$B$10");
+        assert_eq!(global.text.as_deref(), Some("Sheet1!$A$1:$B$10"));
         assert!(global.local_sheet_id.is_none());
 
         // Check sheet-scoped range
         let local = workbook.defined_name_in_sheet("LocalRange", 0).unwrap();
         assert_eq!(local.name, "LocalRange");
-        assert_eq!(local.reference, "Sheet1!$C$1:$D$5");
+        assert_eq!(local.text.as_deref(), Some("Sheet1!$C$1:$D$5"));
         assert_eq!(local.local_sheet_id, Some(0));
 
         // Check data range with comment
         let data = workbook.defined_name("DataRange").unwrap();
         assert_eq!(data.name, "DataRange");
-        assert_eq!(data.reference, "Sheet2!$A$1:$Z$100");
+        assert_eq!(data.text.as_deref(), Some("Sheet2!$A$1:$Z$100"));
         assert_eq!(data.comment.as_deref(), Some("Main data table"));
 
         // Check print area (built-in name)
         let print_area = workbook
             .defined_name_in_sheet("_xlnm.Print_Area", 0)
             .unwrap();
-        assert_eq!(print_area.reference, "Sheet1!$A$1:$G$20");
+        assert_eq!(print_area.text.as_deref(), Some("Sheet1!$A$1:$G$20"));
         assert!(print_area.is_builtin());
     }
 
