@@ -95,9 +95,9 @@ See [ECOSYSTEM.md](ECOSYSTEM.md) for details on fixtures and specs.
 
 ### v0.3 - Advanced Word
 
-- [ ] Track changes (revisions: w:ins, w:del)
-- [ ] Form fields
-- [ ] Math (OMML integration)
+- [x] Track changes (revisions: w:ins, w:del)
+- [x] Form fields
+- [x] Math (OMML integration)
 - [ ] SmartArt (limited)
 - [ ] Charts (limited)
 
