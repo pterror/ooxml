@@ -16,6 +16,9 @@
 //! ```
 
 use crate::error::Result;
+use crate::generated_serializers::ToXml;
+use crate::types;
+use ooxml_dml::types as dml;
 use ooxml_opc::PackageWriter;
 use std::fs::File;
 use std::io::{BufWriter, Seek, Write};
@@ -51,6 +54,104 @@ const NS_DRAWING: &str = "http://schemas.openxmlformats.org/drawingml/2006/main"
 const NS_REL: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
 const NS_P: &str = "http://schemas.openxmlformats.org/presentationml/2006/main";
 
+// Namespace declarations for PML slides
+const NS_DECLS_SLIDE: &[(&str, &str)] = &[
+    ("xmlns:a", NS_DRAWING),
+    ("xmlns:r", NS_REL),
+    ("xmlns:p", NS_PRES),
+];
+
+/// Serialize a `types::Slide` to XML bytes with PML namespace declarations.
+fn serialize_slide_xml(slide: &types::Slide) -> Result<Vec<u8>> {
+    use quick_xml::Writer;
+    use quick_xml::events::{BytesEnd, BytesStart, Event};
+
+    let inner = Vec::new();
+    let mut writer = Writer::new(inner);
+
+    let tag = "p:sld";
+    let start = BytesStart::new(tag);
+    let start = slide.write_attrs(start);
+    let mut start = start;
+    for &(key, val) in NS_DECLS_SLIDE {
+        start.push_attribute((key, val));
+    }
+
+    if slide.is_empty_element() {
+        writer.write_event(Event::Empty(start))?;
+    } else {
+        writer.write_event(Event::Start(start))?;
+        slide.write_children(&mut writer)?;
+        writer.write_event(Event::End(BytesEnd::new(tag)))?;
+    }
+
+    let inner = writer.into_inner();
+    let mut buf = Vec::with_capacity(
+        b"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n".len() + inner.len(),
+    );
+    buf.extend_from_slice(b"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
+    buf.extend_from_slice(&inner);
+    Ok(buf)
+}
+
+/// Construct a `CTNonVisualDrawingProps` with required fields.
+fn make_cnv_pr(id: u32, name: &str) -> Box<dml::CTNonVisualDrawingProps> {
+    Box::new(dml::CTNonVisualDrawingProps {
+        id,
+        name: name.to_string(),
+        descr: None,
+        hidden: None,
+        title: None,
+        hlink_click: None,
+        hlink_hover: None,
+        ext_lst: None,
+        extra_attrs: Default::default(),
+        extra_children: Default::default(),
+    })
+}
+
+/// Construct an empty `CTApplicationNonVisualDrawingProps`.
+fn make_nv_pr() -> Box<types::CTApplicationNonVisualDrawingProps> {
+    Box::new(types::CTApplicationNonVisualDrawingProps {
+        is_photo: None,
+        user_drawn: None,
+        ph: None,
+        cust_data_lst: None,
+        ext_lst: None,
+        extra_attrs: Default::default(),
+        extra_children: Default::default(),
+    })
+}
+
+/// Construct a `Transform2D` from position and size (all in EMUs / i64).
+fn make_xfrm(x: i64, y: i64, cx: i64, cy: i64) -> Box<dml::Transform2D> {
+    Box::new(dml::Transform2D {
+        offset: Some(Box::new(dml::Point2D {
+            x: x.to_string(),
+            y: y.to_string(),
+            extra_attrs: Default::default(),
+        })),
+        extents: Some(Box::new(dml::PositiveSize2D {
+            cx,
+            cy,
+            extra_attrs: Default::default(),
+        })),
+        ..Default::default()
+    })
+}
+
+/// Construct a preset rect geometry (prstGeom prst="rect").
+fn make_rect_geom() -> Box<dml::EGGeometry> {
+    Box::new(dml::EGGeometry::PrstGeom(Box::new(
+        dml::CTPresetGeometry2D {
+            preset: dml::STShapeType::Rect,
+            av_lst: None,
+            extra_attrs: Default::default(),
+            extra_children: Default::default(),
+        },
+    )))
+}
+
 /// A text run in a paragraph, optionally with a hyperlink.
 #[derive(Debug, Clone)]
 pub struct TextRun {
@@ -77,10 +178,9 @@ impl TextRun {
     }
 }
 
-/// A text element to add to a slide.
+/// A text element (used for shapes with hyperlinks, deferred until write time).
 #[derive(Debug, Clone)]
 struct TextElement {
-    /// Text runs (for supporting hyperlinks in part of text).
     runs: Vec<TextRun>,
     is_title: bool,
     x: i64,
@@ -90,7 +190,6 @@ struct TextElement {
 }
 
 impl TextElement {
-    /// Create a simple text element with a single run.
     fn simple(text: String, is_title: bool, x: i64, y: i64, width: i64, height: i64) -> Self {
         Self {
             runs: vec![TextRun {
@@ -103,6 +202,10 @@ impl TextElement {
             width,
             height,
         }
+    }
+
+    fn has_hyperlink(&self) -> bool {
+        self.runs.iter().any(|r| r.hyperlink.is_some())
     }
 }
 
@@ -149,15 +252,12 @@ impl ImageFormat {
         if data.len() < 4 {
             return None;
         }
-        // PNG: 89 50 4E 47
         if data.starts_with(&[0x89, 0x50, 0x4E, 0x47]) {
             return Some(ImageFormat::Png);
         }
-        // JPEG: FF D8 FF
         if data.starts_with(&[0xFF, 0xD8, 0xFF]) {
             return Some(ImageFormat::Jpeg);
         }
-        // GIF: 47 49 46 38 (GIF8)
         if data.starts_with(b"GIF8") {
             return Some(ImageFormat::Gif);
         }
@@ -168,40 +268,25 @@ impl ImageFormat {
 /// An image element to add to a slide.
 #[derive(Debug, Clone)]
 struct ImageElement {
-    /// Image data (raw bytes).
     data: Vec<u8>,
-    /// Image format.
     format: ImageFormat,
-    /// Position x in EMUs.
     x: i64,
-    /// Position y in EMUs.
     y: i64,
-    /// Width in EMUs.
     width: i64,
-    /// Height in EMUs.
     height: i64,
-    /// Description/alt text.
     description: Option<String>,
 }
 
 /// A table element to add to a slide.
 #[derive(Debug, Clone)]
 struct TableElement {
-    /// Table name.
     name: Option<String>,
-    /// Rows of cells.
     rows: Vec<Vec<String>>,
-    /// Column widths in EMUs.
     col_widths: Vec<i64>,
-    /// Row heights in EMUs.
     row_heights: Vec<i64>,
-    /// Position x in EMUs.
     x: i64,
-    /// Position y in EMUs.
     y: i64,
-    /// Total width in EMUs.
     width: i64,
-    /// Total height in EMUs.
     height: i64,
 }
 
@@ -268,18 +353,6 @@ impl Default for TableBuilder {
     }
 }
 
-/// A slide being built.
-#[derive(Debug)]
-pub struct SlideBuilder {
-    elements: Vec<TextElement>,
-    images: Vec<ImageElement>,
-    tables: Vec<TableElement>,
-    /// Speaker notes for this slide.
-    notes: Option<String>,
-    /// Slide transition.
-    transition: Option<SlideTransition>,
-}
-
 /// Slide transition settings for the writer.
 #[derive(Debug, Clone)]
 pub struct SlideTransition {
@@ -323,21 +396,441 @@ impl SlideTransition {
     }
 }
 
-impl SlideBuilder {
-    fn new() -> Self {
-        Self {
-            elements: Vec::new(),
-            images: Vec::new(),
-            tables: Vec::new(),
-            notes: None,
-            transition: None,
+/// A slide being built.
+#[derive(Debug)]
+pub struct SlideBuilder {
+    /// Images — raw bytes, need rId at write time.
+    images: Vec<ImageElement>,
+    /// Text elements containing hyperlinks — need rId at write time.
+    hyperlink_elements: Vec<TextElement>,
+    /// Speaker notes for this slide.
+    notes: Option<String>,
+    /// Shape ID counter: starts at 2 (1 is the group shape).
+    next_shape_id: usize,
+    /// The pre-built slide type.
+    slide: types::Slide,
+}
+
+/// Create an empty `types::Slide` with the required boilerplate shape tree.
+fn init_slide() -> types::Slide {
+    // Group transform: all zeros for a flat slide.
+    let grp_xfrm = dml::CTGroupTransform2D {
+        offset: Some(Box::new(dml::Point2D {
+            x: "0".to_string(),
+            y: "0".to_string(),
+            extra_attrs: Default::default(),
+        })),
+        extents: Some(Box::new(dml::PositiveSize2D {
+            cx: 0,
+            cy: 0,
+            extra_attrs: Default::default(),
+        })),
+        child_offset: Some(Box::new(dml::Point2D {
+            x: "0".to_string(),
+            y: "0".to_string(),
+            extra_attrs: Default::default(),
+        })),
+        child_extents: Some(Box::new(dml::PositiveSize2D {
+            cx: 0,
+            cy: 0,
+            extra_attrs: Default::default(),
+        })),
+        ..Default::default()
+    };
+
+    let grp_sp_pr = dml::CTGroupShapeProperties {
+        transform: Some(Box::new(grp_xfrm)),
+        ..Default::default()
+    };
+
+    let nv_grp = Box::new(types::CTGroupShapeNonVisual {
+        c_nv_pr: make_cnv_pr(1, ""),
+        c_nv_grp_sp_pr: Box::new(dml::CTNonVisualGroupDrawingShapeProps {
+            grp_sp_locks: None,
+            ext_lst: None,
+            extra_children: Default::default(),
+        }),
+        nv_pr: make_nv_pr(),
+        extra_children: Default::default(),
+    });
+
+    let shape_tree = Box::new(types::GroupShape {
+        non_visual_group_properties: nv_grp,
+        grp_sp_pr: Box::new(grp_sp_pr),
+        shape: Vec::new(),
+        group_shape: Vec::new(),
+        graphic_frame: Vec::new(),
+        connector: Vec::new(),
+        picture: Vec::new(),
+        content_part: Vec::new(),
+        ext_lst: None,
+        extra_children: Default::default(),
+    });
+
+    let common_slide_data = Box::new(types::CommonSlideData {
+        name: None,
+        bg: None,
+        shape_tree,
+        cust_data_lst: None,
+        controls: None,
+        ext_lst: None,
+        extra_attrs: Default::default(),
+        extra_children: Default::default(),
+    });
+
+    types::Slide {
+        show_master_sp: None,
+        show_master_ph_anim: None,
+        show: None,
+        common_slide_data,
+        clr_map_ovr: None,
+        transition: None,
+        timing: None,
+        ext_lst: None,
+        extra_attrs: Default::default(),
+        extra_children: Default::default(),
+    }
+}
+
+/// Build a `types::Shape` from a `TextElement`, resolving hyperlink rel IDs if provided.
+fn build_shape_impl(
+    element: &TextElement,
+    shape_id: usize,
+    hyperlink_rel_ids: Option<&std::collections::HashMap<&str, usize>>,
+) -> types::Shape {
+    let name = if element.is_title { "Title" } else { "Content" };
+    let font_size: i32 = if element.is_title { 4400 } else { 2400 };
+
+    let runs: Vec<dml::EGTextRun> = element
+        .runs
+        .iter()
+        .map(|run| {
+            // Build hyperlink if present and we have rel IDs
+            let hlink_click = run.hyperlink.as_deref().and_then(|url| {
+                hyperlink_rel_ids?.get(url).map(|&rel_id| {
+                    Box::new(dml::CTHyperlink {
+                        id: Some(format!("rId{}", rel_id)),
+                        ..Default::default()
+                    })
+                })
+            });
+
+            dml::EGTextRun::R(Box::new(dml::TextRun {
+                r_pr: Some(Box::new(dml::TextCharacterProperties {
+                    lang: Some("en-US".to_string()),
+                    sz: Some(font_size),
+                    hlink_click,
+                    ..Default::default()
+                })),
+                t: run.text.clone(),
+                extra_children: Default::default(),
+            }))
+        })
+        .collect();
+
+    let para = dml::TextParagraph {
+        text_run: runs,
+        ..Default::default()
+    };
+
+    let text_body = dml::TextBody {
+        body_pr: Box::default(),
+        lst_style: None,
+        p: vec![para],
+        extra_children: Default::default(),
+    };
+
+    let sp_pr = dml::CTShapeProperties {
+        transform: Some(make_xfrm(
+            element.x,
+            element.y,
+            element.width,
+            element.height,
+        )),
+        geometry: Some(make_rect_geom()),
+        ..Default::default()
+    };
+
+    let c_nv_sp_pr = dml::CTNonVisualDrawingShapeProps {
+        tx_box: Some(true),
+        ..Default::default()
+    };
+
+    types::Shape {
+        use_bg_fill: None,
+        non_visual_properties: Box::new(types::ShapeNonVisual {
+            c_nv_pr: make_cnv_pr(shape_id as u32, name),
+            c_nv_sp_pr: Box::new(c_nv_sp_pr),
+            nv_pr: make_nv_pr(),
+            extra_children: Default::default(),
+        }),
+        shape_properties: Box::new(sp_pr),
+        style: None,
+        text_body: Some(Box::new(text_body)),
+        ext_lst: None,
+        extra_attrs: Default::default(),
+        extra_children: Default::default(),
+    }
+}
+
+/// Build a `types::Picture` for an image element.
+fn build_picture(image: &ImageElement, shape_id: usize, rel_id: usize) -> types::Picture {
+    let pic_name = format!("Picture {}", shape_id);
+
+    let blip = dml::Blip {
+        embed: Some(format!("rId{}", rel_id)),
+        ..Default::default()
+    };
+
+    let stretch = dml::CTStretchInfoProperties {
+        fill_rect: Some(Box::default()),
+        extra_children: Default::default(),
+    };
+
+    let blip_fill = dml::BlipFillProperties {
+        blip: Some(Box::new(blip)),
+        fill_mode_properties: Some(Box::new(dml::EGFillModeProperties::Stretch(Box::new(
+            stretch,
+        )))),
+        ..Default::default()
+    };
+
+    let sp_pr = dml::CTShapeProperties {
+        transform: Some(make_xfrm(image.x, image.y, image.width, image.height)),
+        geometry: Some(make_rect_geom()),
+        ..Default::default()
+    };
+
+    let pic_locks = dml::CTPictureLocking {
+        no_change_aspect: Some(true),
+        ..Default::default()
+    };
+
+    let c_nv_pic_pr = dml::CTNonVisualPictureProperties {
+        pic_locks: Some(Box::new(pic_locks)),
+        ..Default::default()
+    };
+
+    let mut c_nv_pr = *make_cnv_pr(shape_id as u32, &pic_name);
+    c_nv_pr.descr = image.description.clone();
+
+    types::Picture {
+        non_visual_picture_properties: Box::new(types::CTPictureNonVisual {
+            c_nv_pr: Box::new(c_nv_pr),
+            c_nv_pic_pr: Box::new(c_nv_pic_pr),
+            nv_pr: make_nv_pr(),
+            extra_children: Default::default(),
+        }),
+        blip_fill: Box::new(blip_fill),
+        shape_properties: Box::new(sp_pr),
+        style: None,
+        ext_lst: None,
+        extra_children: Default::default(),
+    }
+}
+
+/// Build the raw XML string for `a:graphic/a:graphicData/a:tbl` table content.
+fn build_table_graphic_xml(table: &TableElement) -> String {
+    let mut xml = String::new();
+    xml.push_str(r#"<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">"#);
+    xml.push_str(r#"<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/table">"#);
+    xml.push_str("<a:tbl>");
+    xml.push_str(r#"<a:tblPr firstRow="1" bandRow="1"/>"#);
+    xml.push_str("<a:tblGrid>");
+    for col_width in &table.col_widths {
+        xml.push_str(&format!(r#"<a:gridCol w="{}"/>"#, col_width));
+    }
+    xml.push_str("</a:tblGrid>");
+    for (row_idx, row) in table.rows.iter().enumerate() {
+        let row_height = table.row_heights.get(row_idx).copied().unwrap_or(370840);
+        xml.push_str(&format!(r#"<a:tr h="{}">"#, row_height));
+        for cell_text in row {
+            xml.push_str("<a:tc>");
+            xml.push_str("<a:txBody>");
+            xml.push_str("<a:bodyPr/>");
+            xml.push_str("<a:lstStyle/>");
+            xml.push_str("<a:p>");
+            xml.push_str("<a:r>");
+            xml.push_str(r#"<a:rPr lang="en-US"/>"#);
+            xml.push_str(&format!("<a:t>{}</a:t>", escape_xml(cell_text)));
+            xml.push_str("</a:r>");
+            xml.push_str("</a:p>");
+            xml.push_str("</a:txBody>");
+            xml.push_str("<a:tcPr/>");
+            xml.push_str("</a:tc>");
+        }
+        xml.push_str("</a:tr>");
+    }
+    xml.push_str("</a:tbl>");
+    xml.push_str("</a:graphicData>");
+    xml.push_str("</a:graphic>");
+    xml
+}
+
+/// Parse a raw XML element into a `PositionedNode` for use in `extra_children`.
+///
+/// The `a:graphic` element is the top-level content inside a graphicFrame.
+/// It cannot be stored in a generated field because `GraphicalObjectFrame`
+/// has no `graphic` field in the generated PML type — the element is captured
+/// as an unknown child during parsing.
+fn parse_extra_child_xml(xml: &str) -> Vec<ooxml_xml::PositionedNode> {
+    use quick_xml::Reader;
+    use quick_xml::events::Event;
+
+    let mut reader = Reader::from_str(xml);
+    reader.config_mut().trim_text(false);
+
+    let mut buf = Vec::new();
+    let mut result = Vec::new();
+    let mut position = 0usize;
+
+    loop {
+        buf.clear();
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(ref e)) => {
+                match ooxml_xml::RawXmlElement::from_reader(&mut reader, e) {
+                    Ok(elem) => {
+                        result.push(ooxml_xml::PositionedNode::new(
+                            position,
+                            ooxml_xml::RawXmlNode::Element(elem),
+                        ));
+                        position += 1;
+                    }
+                    Err(_) => break,
+                }
+            }
+            Ok(Event::Empty(ref e)) => {
+                // Self-closing element — shouldn't appear for a:graphic but handle anyway
+                let name = String::from_utf8_lossy(e.name().as_ref()).to_string();
+                let attrs = e
+                    .attributes()
+                    .filter_map(|a| a.ok())
+                    .map(|a| {
+                        (
+                            String::from_utf8_lossy(a.key.as_ref()).to_string(),
+                            String::from_utf8_lossy(&a.value).to_string(),
+                        )
+                    })
+                    .collect();
+                let elem = ooxml_xml::RawXmlElement {
+                    name,
+                    attributes: attrs,
+                    children: Vec::new(),
+                    self_closing: true,
+                };
+                result.push(ooxml_xml::PositionedNode::new(
+                    position,
+                    ooxml_xml::RawXmlNode::Element(elem),
+                ));
+                position += 1;
+            }
+            Ok(Event::Eof) => break,
+            Err(_) => break,
+            _ => {}
         }
     }
 
-    /// Collect all hyperlinks from this slide's text elements.
+    result
+}
+
+/// Build a `types::GraphicalObjectFrame` for a table element.
+fn build_graphic_frame(table: &TableElement, shape_id: usize) -> types::GraphicalObjectFrame {
+    let name = table.name.as_deref().unwrap_or("Table");
+
+    let graphic_frame_locks = dml::CTGraphicalObjectFrameLocking {
+        no_grp: Some(true),
+        ..Default::default()
+    };
+
+    let c_nv_graphic_frame_pr = dml::CTNonVisualGraphicFrameProperties {
+        graphic_frame_locks: Some(Box::new(graphic_frame_locks)),
+        ..Default::default()
+    };
+
+    let nv_graphic_frame_pr = Box::new(types::CTGraphicalObjectFrameNonVisual {
+        c_nv_pr: make_cnv_pr(shape_id as u32, name),
+        c_nv_graphic_frame_pr: Box::new(c_nv_graphic_frame_pr),
+        nv_pr: make_nv_pr(),
+        extra_children: Default::default(),
+    });
+
+    let xfrm = make_xfrm(table.x, table.y, table.width, table.height);
+
+    // Build the a:graphic XML and store it in extra_children.
+    let graphic_xml = build_table_graphic_xml(table);
+    let extra_children = parse_extra_child_xml(&graphic_xml);
+
+    types::GraphicalObjectFrame {
+        bw_mode: None,
+        nv_graphic_frame_pr,
+        xfrm,
+        ext_lst: None,
+        extra_attrs: Default::default(),
+        extra_children,
+    }
+}
+
+/// Convert a `SlideTransition` builder into a generated `types::SlideTransition`.
+#[cfg(feature = "pml-transitions")]
+fn build_slide_transition(t: &SlideTransition) -> types::SlideTransition {
+    use crate::TransitionSpeed;
+    use crate::TransitionType;
+
+    let spd = Some(match t.speed {
+        TransitionSpeed::Slow => types::STTransitionSpeed::Slow,
+        TransitionSpeed::Medium => types::STTransitionSpeed::Med,
+        TransitionSpeed::Fast => types::STTransitionSpeed::Fast,
+    });
+
+    let mut st = types::SlideTransition {
+        spd,
+        adv_click: Some(t.advance_on_click),
+        adv_tm: t.advance_after_ms,
+        ..Default::default()
+    };
+
+    match &t.transition_type {
+        TransitionType::Fade => st.fade = Some(Box::default()),
+        TransitionType::Push => st.push = Some(Box::default()),
+        TransitionType::Wipe => st.wipe = Some(Box::default()),
+        TransitionType::Split => st.split = Some(Box::default()),
+        TransitionType::Blinds => st.blinds = Some(Box::default()),
+        TransitionType::Checker => st.checker = Some(Box::default()),
+        TransitionType::Circle => st.circle = Some(Box::default()),
+        TransitionType::Dissolve => st.dissolve = Some(Box::default()),
+        TransitionType::Comb => st.comb = Some(Box::default()),
+        TransitionType::Cover => st.cover = Some(Box::default()),
+        TransitionType::Cut => st.cut = Some(Box::default()),
+        TransitionType::Diamond => st.diamond = Some(Box::default()),
+        TransitionType::Plus => st.plus = Some(Box::default()),
+        TransitionType::Random => st.random = Some(Box::default()),
+        TransitionType::Strips => st.strips = Some(Box::default()),
+        TransitionType::Wedge => st.wedge = Some(Box::default()),
+        TransitionType::Wheel => st.wheel = Some(Box::default()),
+        TransitionType::Zoom => st.zoom = Some(Box::default()),
+        TransitionType::Other(_) => {
+            // Unknown transition — only timing attrs set, no child element.
+        }
+    }
+
+    st
+}
+
+impl SlideBuilder {
+    fn new() -> Self {
+        Self {
+            images: Vec::new(),
+            hyperlink_elements: Vec::new(),
+            notes: None,
+            next_shape_id: 2,
+            slide: init_slide(),
+        }
+    }
+
+    /// Collect all hyperlinks from this slide's deferred text elements.
     fn hyperlinks(&self) -> Vec<&str> {
         let mut links = Vec::new();
-        for element in &self.elements {
+        for element in &self.hyperlink_elements {
             for run in &element.runs {
                 if let Some(ref url) = run.hyperlink
                     && !links.contains(&url.as_str())
@@ -351,9 +844,7 @@ impl SlideBuilder {
 
     /// Check if this slide has hyperlinks.
     fn has_hyperlinks(&self) -> bool {
-        self.elements
-            .iter()
-            .any(|e| e.runs.iter().any(|r| r.hyperlink.is_some()))
+        !self.hyperlink_elements.is_empty()
     }
 
     /// Set speaker notes for this slide.
@@ -374,34 +865,26 @@ impl SlideBuilder {
 
     /// Add a title to the slide.
     pub fn add_title(&mut self, text: impl Into<String>) -> &mut Self {
-        self.elements.push(TextElement::simple(
-            text.into(),
-            true,    // is_title
-            457200,  // ~0.5 inch from left
-            274638,  // ~0.3 inch from top
-            8229600, // ~9 inches wide
-            1143000, // ~1.25 inches tall
-        ));
+        let element = TextElement::simple(text.into(), true, 457200, 274638, 8229600, 1143000);
+        self.push_text_element(element);
         self
     }
 
     /// Add text content to the slide.
     pub fn add_text(&mut self, text: impl Into<String>) -> &mut Self {
-        // Position below title area
-        let y_offset = if self.elements.iter().any(|e| e.is_title) {
-            1600200 // Below title
-        } else {
-            274638 // At title position if no title
-        };
+        let has_title = self
+            .slide
+            .common_slide_data
+            .shape_tree
+            .shape
+            .iter()
+            .any(|s| s.non_visual_properties.c_nv_pr.name == "Title")
+            || self.hyperlink_elements.iter().any(|e| e.is_title);
 
-        self.elements.push(TextElement::simple(
-            text.into(),
-            false,
-            457200,
-            y_offset,
-            8229600,
-            4525963,
-        ));
+        let y_offset = if has_title { 1600200 } else { 274638 };
+
+        let element = TextElement::simple(text.into(), false, 457200, y_offset, 8229600, 4525963);
+        self.push_text_element(element);
         self
     }
 
@@ -415,8 +898,8 @@ impl SlideBuilder {
         width: i64,
         height: i64,
     ) -> &mut Self {
-        self.elements
-            .push(TextElement::simple(text.into(), false, x, y, width, height));
+        let element = TextElement::simple(text.into(), false, x, y, width, height);
+        self.push_text_element(element);
         self
     }
 
@@ -432,7 +915,7 @@ impl SlideBuilder {
         width: i64,
         height: i64,
     ) -> &mut Self {
-        self.elements.push(TextElement {
+        let element = TextElement {
             runs: vec![TextRun {
                 text: text.into(),
                 hyperlink: Some(url.into()),
@@ -442,7 +925,8 @@ impl SlideBuilder {
             y,
             width,
             height,
-        });
+        };
+        self.hyperlink_elements.push(element);
         self
     }
 
@@ -457,15 +941,28 @@ impl SlideBuilder {
         width: i64,
         height: i64,
     ) -> &mut Self {
-        self.elements.push(TextElement {
+        let element = TextElement {
             runs,
             is_title: false,
             x,
             y,
             width,
             height,
-        });
+        };
+        self.push_text_element(element);
         self
+    }
+
+    /// Route a text element: defer if it has hyperlinks, build immediately otherwise.
+    fn push_text_element(&mut self, element: TextElement) {
+        if element.has_hyperlink() {
+            self.hyperlink_elements.push(element);
+        } else {
+            let shape_id = self.next_shape_id;
+            self.next_shape_id += 1;
+            let shape = build_shape_impl(&element, shape_id, None);
+            self.slide.common_slide_data.shape_tree.shape.push(shape);
+        }
     }
 
     /// Add an image to the slide.
@@ -582,20 +1079,17 @@ impl SlideBuilder {
         let num_cols = table.col_count();
         let num_rows = table.row_count();
 
-        // Calculate column widths
         let col_widths = if let Some(widths) = table.col_widths {
             widths
         } else {
-            // Distribute evenly
             let col_width = width / num_cols as i64;
             vec![col_width; num_cols]
         };
 
-        // Calculate row heights (distribute evenly)
         let row_height = height / num_rows as i64;
         let row_heights = vec![row_height; num_rows];
 
-        self.tables.push(TableElement {
+        let element = TableElement {
             name: table.name,
             rows: table.rows,
             col_widths,
@@ -604,30 +1098,91 @@ impl SlideBuilder {
             y,
             width,
             height,
-        });
+        };
+
+        let shape_id = self.next_shape_id;
+        self.next_shape_id += 1;
+        let frame = build_graphic_frame(&element, shape_id);
+        self.slide
+            .common_slide_data
+            .shape_tree
+            .graphic_frame
+            .push(frame);
         self
     }
 
     /// Check if this slide has tables.
     pub fn has_tables(&self) -> bool {
-        !self.tables.is_empty()
+        !self
+            .slide
+            .common_slide_data
+            .shape_tree
+            .graphic_frame
+            .is_empty()
     }
 
     /// Set a slide transition.
     pub fn set_transition(&mut self, transition: SlideTransition) -> &mut Self {
-        self.transition = Some(transition);
+        self.apply_transition(&transition);
         self
     }
 
     /// Set a simple fade transition.
     pub fn set_fade_transition(&mut self) -> &mut Self {
-        self.transition = Some(SlideTransition::new(crate::TransitionType::Fade));
+        let t = SlideTransition::new(crate::TransitionType::Fade);
+        self.apply_transition(&t);
         self
+    }
+
+    fn apply_transition(&mut self, t: &SlideTransition) {
+        #[cfg(feature = "pml-transitions")]
+        {
+            self.slide.transition = Some(Box::new(build_slide_transition(t)));
+        }
+        #[cfg(not(feature = "pml-transitions"))]
+        let _ = t;
     }
 
     /// Check if this slide has a transition.
     pub fn has_transition(&self) -> bool {
-        self.transition.is_some()
+        #[cfg(feature = "pml-transitions")]
+        return self.slide.transition.is_some();
+        #[cfg(not(feature = "pml-transitions"))]
+        return false;
+    }
+
+    /// Serialize this slide to XML bytes, resolving deferred images and hyperlinks.
+    fn serialize_slide(
+        &self,
+        image_start_rel_id: usize,
+        hyperlink_rel_ids: &std::collections::HashMap<&str, usize>,
+    ) -> Result<Vec<u8>> {
+        let mut slide = self.slide.clone();
+        let mut next_id = self.next_shape_id;
+
+        // Build hyperlink shapes (deferred — need rIds).
+        for element in &self.hyperlink_elements {
+            let shape = build_shape_impl(element, next_id, Some(hyperlink_rel_ids));
+            slide.common_slide_data.shape_tree.shape.push(shape);
+            next_id += 1;
+        }
+
+        // Build image pictures (deferred — need rIds).
+        for (i, image) in self.images.iter().enumerate() {
+            let rel_id = image_start_rel_id + i;
+            let picture = build_picture(image, next_id, rel_id);
+            slide.common_slide_data.shape_tree.picture.push(picture);
+            next_id += 1;
+        }
+
+        // Set clrMapOvr to masterClrMapping (always required for slides).
+        slide.clr_map_ovr = Some(Box::new(dml::CTColorMappingOverride {
+            master_clr_mapping: Some(Box::new(dml::CTEmptyElement)),
+            override_clr_mapping: None,
+            extra_children: Default::default(),
+        }));
+
+        serialize_slide_xml(&slide)
     }
 }
 
@@ -650,7 +1205,6 @@ impl PresentationBuilder {
     pub fn new() -> Self {
         Self {
             slides: Vec::new(),
-            // Default slide size: 10" x 7.5" (standard 4:3)
             slide_width: 9144000,
             slide_height: 6858000,
         }
@@ -665,8 +1219,8 @@ impl PresentationBuilder {
 
     /// Set slide size to widescreen (16:9).
     pub fn set_widescreen(&mut self) -> &mut Self {
-        self.slide_width = 12192000; // 13.333 inches
-        self.slide_height = 6858000; // 7.5 inches
+        self.slide_width = 12192000;
+        self.slide_height = 6858000;
         self
     }
 
@@ -692,11 +1246,9 @@ impl PresentationBuilder {
     pub fn write<W: Write + Seek>(self, writer: W) -> Result<()> {
         let mut pkg = PackageWriter::new(writer);
 
-        // Add default content types
         pkg.add_default_content_type("rels", CT_RELATIONSHIPS);
         pkg.add_default_content_type("xml", CT_XML);
 
-        // Add image content types if needed
         let has_images = self.slides.iter().any(|s| s.has_images());
         if has_images {
             pkg.add_default_content_type("jpeg", CT_JPEG);
@@ -705,7 +1257,6 @@ impl PresentationBuilder {
             pkg.add_default_content_type("gif", CT_GIF);
         }
 
-        // Build root relationships
         let root_rels = format!(
             r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
@@ -714,7 +1265,6 @@ impl PresentationBuilder {
             REL_OFFICE_DOCUMENT
         );
 
-        // Build presentation relationships
         let mut pres_rels = String::new();
         pres_rels.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
         pres_rels.push('\n');
@@ -722,7 +1272,6 @@ impl PresentationBuilder {
             r#"<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">"#,
         );
         pres_rels.push('\n');
-
         for i in 0..self.slides.len() {
             let rel_id = i + 1;
             pres_rels.push_str(&format!(
@@ -733,10 +1282,8 @@ impl PresentationBuilder {
         }
         pres_rels.push_str("</Relationships>");
 
-        // Build presentation.xml
         let presentation_xml = self.serialize_presentation();
 
-        // Write parts to package
         pkg.add_part("_rels/.rels", CT_RELATIONSHIPS, root_rels.as_bytes())?;
         pkg.add_part(
             "ppt/_rels/presentation.xml.rels",
@@ -749,17 +1296,11 @@ impl PresentationBuilder {
             presentation_xml.as_bytes(),
         )?;
 
-        // Global image counter for unique image names
         let mut global_image_num = 1;
 
-        // Write each slide, its images, hyperlinks, and notes
         for (i, slide) in self.slides.iter().enumerate() {
             let slide_num = i + 1;
-
-            // Collect hyperlinks for this slide (deduped, in order of first occurrence)
             let hyperlinks = slide.hyperlinks();
-
-            // Build slide relationships if we have images, notes, or hyperlinks
             let needs_rels = slide.has_images() || slide.has_notes() || slide.has_hyperlinks();
             let mut hyperlink_rel_ids: std::collections::HashMap<&str, usize> =
                 std::collections::HashMap::new();
@@ -775,7 +1316,6 @@ impl PresentationBuilder {
 
                 let mut rel_id = 1;
 
-                // Add notes relationship if present
                 if slide.has_notes() {
                     slide_rels.push_str(&format!(
                         r#"  <Relationship Id="rId{}" Type="{}" Target="../notesSlides/notesSlide{}.xml"/>"#,
@@ -785,7 +1325,6 @@ impl PresentationBuilder {
                     rel_id += 1;
                 }
 
-                // Add image relationships
                 let image_start_rel_id = rel_id;
                 for (img_idx, img) in slide.images.iter().enumerate() {
                     let ext = img.format.extension();
@@ -801,7 +1340,6 @@ impl PresentationBuilder {
                 }
                 rel_id += slide.images.len();
 
-                // Add hyperlink relationships (external, with TargetMode="External")
                 for url in &hyperlinks {
                     hyperlink_rel_ids.insert(url, rel_id);
                     slide_rels.push_str(&format!(
@@ -813,11 +1351,9 @@ impl PresentationBuilder {
                 }
 
                 slide_rels.push_str("</Relationships>");
-
                 let rels_name = format!("ppt/slides/_rels/slide{}.xml.rels", slide_num);
                 pkg.add_part(&rels_name, CT_RELATIONSHIPS, slide_rels.as_bytes())?;
 
-                // Write images to media folder
                 for (img_idx, img) in slide.images.iter().enumerate() {
                     let ext = img.format.extension();
                     let img_path = format!("ppt/media/image{}.{}", global_image_num + img_idx, ext);
@@ -825,17 +1361,13 @@ impl PresentationBuilder {
                 }
             }
 
-            // Serialize slide with image and hyperlink relationship IDs
             let image_start_rel_id = if slide.has_notes() { 2 } else { 1 };
-            let slide_xml =
-                self.serialize_slide(slide, slide_num, image_start_rel_id, &hyperlink_rel_ids);
+            let slide_xml = slide.serialize_slide(image_start_rel_id, &hyperlink_rel_ids)?;
             let part_name = format!("ppt/slides/slide{}.xml", slide_num);
-            pkg.add_part(&part_name, CT_SLIDE, slide_xml.as_bytes())?;
+            pkg.add_part(&part_name, CT_SLIDE, &slide_xml)?;
 
-            // Update global image counter
             global_image_num += slide.images.len();
 
-            // Write notes slide if present
             if slide.has_notes() {
                 let notes_xml = self.serialize_notes_slide(slide, slide_num);
                 let notes_name = format!("ppt/notesSlides/notesSlide{}.xml", slide_num);
@@ -857,25 +1389,19 @@ impl PresentationBuilder {
             NS_DRAWING, NS_REL, NS_P
         ));
         xml.push('\n');
-
-        // Slide size
         xml.push_str(&format!(
             r#"  <p:sldSz cx="{}" cy="{}"/>"#,
             self.slide_width, self.slide_height
         ));
         xml.push('\n');
-
-        // Notes size (same as slide)
         xml.push_str(&format!(
             r#"  <p:notesSz cx="{}" cy="{}"/>"#,
             self.slide_width, self.slide_height
         ));
         xml.push('\n');
-
-        // Slide list
         xml.push_str("  <p:sldIdLst>\n");
         for i in 0..self.slides.len() {
-            let slide_id = 256 + i as u32; // IDs start at 256
+            let slide_id = 256 + i as u32;
             let rel_id = i + 1;
             xml.push_str(&format!(
                 r#"    <p:sldId id="{}" r:id="rId{}"/>"#,
@@ -884,359 +1410,7 @@ impl PresentationBuilder {
             xml.push('\n');
         }
         xml.push_str("  </p:sldIdLst>\n");
-
         xml.push_str("</p:presentation>");
-        xml
-    }
-
-    /// Serialize a slide to XML.
-    fn serialize_slide(
-        &self,
-        slide: &SlideBuilder,
-        _slide_num: usize,
-        image_start_rel_id: usize,
-        hyperlink_rel_ids: &std::collections::HashMap<&str, usize>,
-    ) -> String {
-        let mut xml = String::new();
-        xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
-        xml.push('\n');
-        xml.push_str(&format!(
-            r#"<p:sld xmlns:a="{}" xmlns:r="{}" xmlns:p="{}">"#,
-            NS_DRAWING, NS_REL, NS_PRES
-        ));
-        xml.push('\n');
-
-        xml.push_str("  <p:cSld>\n");
-        xml.push_str("    <p:spTree>\n");
-
-        // Non-visual group shape properties
-        xml.push_str("      <p:nvGrpSpPr>\n");
-        xml.push_str(r#"        <p:cNvPr id="1" name=""/>"#);
-        xml.push('\n');
-        xml.push_str("        <p:cNvGrpSpPr/>\n");
-        xml.push_str("        <p:nvPr/>\n");
-        xml.push_str("      </p:nvGrpSpPr>\n");
-
-        // Group shape properties
-        xml.push_str("      <p:grpSpPr>\n");
-        xml.push_str("        <a:xfrm>\n");
-        xml.push_str(r#"          <a:off x="0" y="0"/>"#);
-        xml.push('\n');
-        xml.push_str(r#"          <a:ext cx="0" cy="0"/>"#);
-        xml.push('\n');
-        xml.push_str(r#"          <a:chOff x="0" y="0"/>"#);
-        xml.push('\n');
-        xml.push_str(r#"          <a:chExt cx="0" cy="0"/>"#);
-        xml.push('\n');
-        xml.push_str("        </a:xfrm>\n");
-        xml.push_str("      </p:grpSpPr>\n");
-
-        // Add shapes for each text element
-        let mut next_shape_id = 2; // Start at 2 (1 is the group)
-        for element in slide.elements.iter() {
-            xml.push_str(&self.serialize_text_shape(element, next_shape_id, hyperlink_rel_ids));
-            next_shape_id += 1;
-        }
-
-        // Add images
-        for (i, image) in slide.images.iter().enumerate() {
-            let rel_id = image_start_rel_id + i;
-            xml.push_str(&self.serialize_picture(image, next_shape_id, rel_id));
-            next_shape_id += 1;
-        }
-
-        // Add tables
-        for table in slide.tables.iter() {
-            xml.push_str(&self.serialize_table(table, next_shape_id));
-            next_shape_id += 1;
-        }
-
-        xml.push_str("    </p:spTree>\n");
-        xml.push_str("  </p:cSld>\n");
-        xml.push_str("  <p:clrMapOvr>\n");
-        xml.push_str("    <a:masterClrMapping/>\n");
-        xml.push_str("  </p:clrMapOvr>\n");
-
-        // Add transition if set
-        if let Some(ref transition) = slide.transition {
-            xml.push_str(&self.serialize_transition(transition));
-        }
-
-        xml.push_str("</p:sld>");
-        xml
-    }
-
-    /// Serialize a slide transition.
-    fn serialize_transition(&self, transition: &SlideTransition) -> String {
-        let mut xml = String::new();
-
-        // Build transition attributes
-        let mut attrs = format!(r#"spd="{}""#, transition.speed.to_xml_value());
-
-        if transition.advance_on_click {
-            attrs.push_str(r#" advClick="1""#);
-        } else {
-            attrs.push_str(r#" advClick="0""#);
-        }
-
-        if let Some(ms) = transition.advance_after_ms {
-            attrs.push_str(&format!(r#" advTm="{}""#, ms));
-        }
-
-        xml.push_str(&format!("  <p:transition {}>\n", attrs));
-        xml.push_str(&format!(
-            "    <p:{}/>\n",
-            transition.transition_type.to_xml_value()
-        ));
-        xml.push_str("  </p:transition>\n");
-
-        xml
-    }
-
-    /// Serialize a text shape.
-    fn serialize_text_shape(
-        &self,
-        element: &TextElement,
-        shape_id: usize,
-        hyperlink_rel_ids: &std::collections::HashMap<&str, usize>,
-    ) -> String {
-        let name = if element.is_title { "Title" } else { "Content" };
-        let font_size = if element.is_title { 4400 } else { 2400 }; // In hundredths of a point
-
-        let mut xml = String::new();
-        xml.push_str("      <p:sp>\n");
-
-        // Non-visual properties
-        xml.push_str("        <p:nvSpPr>\n");
-        xml.push_str(&format!(
-            r#"          <p:cNvPr id="{}" name="{}"/>"#,
-            shape_id, name
-        ));
-        xml.push('\n');
-        xml.push_str(r#"          <p:cNvSpPr txBox="1"/>"#);
-        xml.push('\n');
-        xml.push_str("          <p:nvPr/>\n");
-        xml.push_str("        </p:nvSpPr>\n");
-
-        // Shape properties
-        xml.push_str("        <p:spPr>\n");
-        xml.push_str("          <a:xfrm>\n");
-        xml.push_str(&format!(
-            r#"            <a:off x="{}" y="{}"/>"#,
-            element.x, element.y
-        ));
-        xml.push('\n');
-        xml.push_str(&format!(
-            r#"            <a:ext cx="{}" cy="{}"/>"#,
-            element.width, element.height
-        ));
-        xml.push('\n');
-        xml.push_str("          </a:xfrm>\n");
-        xml.push_str(r#"          <a:prstGeom prst="rect"><a:avLst/></a:prstGeom>"#);
-        xml.push('\n');
-        xml.push_str("        </p:spPr>\n");
-
-        // Text body
-        xml.push_str("        <p:txBody>\n");
-        xml.push_str(r#"          <a:bodyPr/>"#);
-        xml.push('\n');
-        xml.push_str(r#"          <a:lstStyle/>"#);
-        xml.push('\n');
-        xml.push_str("          <a:p>\n");
-
-        // Serialize each text run
-        for run in &element.runs {
-            xml.push_str("            <a:r>\n");
-
-            // Run properties with optional hyperlink
-            if let Some(ref url) = run.hyperlink {
-                if let Some(&rel_id) = hyperlink_rel_ids.get(url.as_str()) {
-                    xml.push_str(&format!(
-                        r#"              <a:rPr lang="en-US" sz="{}">"#,
-                        font_size
-                    ));
-                    xml.push('\n');
-                    xml.push_str(&format!(
-                        r#"                <a:hlinkClick r:id="rId{}"/>"#,
-                        rel_id
-                    ));
-                    xml.push('\n');
-                    xml.push_str("              </a:rPr>\n");
-                } else {
-                    xml.push_str(&format!(
-                        r#"              <a:rPr lang="en-US" sz="{}"/>"#,
-                        font_size
-                    ));
-                    xml.push('\n');
-                }
-            } else {
-                xml.push_str(&format!(
-                    r#"              <a:rPr lang="en-US" sz="{}"/>"#,
-                    font_size
-                ));
-                xml.push('\n');
-            }
-
-            xml.push_str(&format!(
-                "              <a:t>{}</a:t>\n",
-                escape_xml(&run.text)
-            ));
-            xml.push_str("            </a:r>\n");
-        }
-
-        xml.push_str("          </a:p>\n");
-        xml.push_str("        </p:txBody>\n");
-
-        xml.push_str("      </p:sp>\n");
-        xml
-    }
-
-    /// Serialize a picture (image) shape.
-    fn serialize_picture(&self, image: &ImageElement, shape_id: usize, rel_id: usize) -> String {
-        let name = format!("Picture {}", shape_id);
-        let desc = image.description.as_deref().unwrap_or("");
-
-        let mut xml = String::new();
-        xml.push_str("      <p:pic>\n");
-
-        // Non-visual properties
-        xml.push_str("        <p:nvPicPr>\n");
-        xml.push_str(&format!(
-            r#"          <p:cNvPr id="{}" name="{}" descr="{}"/>"#,
-            shape_id,
-            escape_xml(&name),
-            escape_xml(desc)
-        ));
-        xml.push('\n');
-        xml.push_str("          <p:cNvPicPr>\n");
-        xml.push_str("            <a:picLocks noChangeAspect=\"1\"/>\n");
-        xml.push_str("          </p:cNvPicPr>\n");
-        xml.push_str("          <p:nvPr/>\n");
-        xml.push_str("        </p:nvPicPr>\n");
-
-        // Blip fill (reference to image)
-        xml.push_str("        <p:blipFill>\n");
-        xml.push_str(&format!(r#"          <a:blip r:embed="rId{}"/>"#, rel_id));
-        xml.push('\n');
-        xml.push_str("          <a:stretch>\n");
-        xml.push_str("            <a:fillRect/>\n");
-        xml.push_str("          </a:stretch>\n");
-        xml.push_str("        </p:blipFill>\n");
-
-        // Shape properties
-        xml.push_str("        <p:spPr>\n");
-        xml.push_str("          <a:xfrm>\n");
-        xml.push_str(&format!(
-            r#"            <a:off x="{}" y="{}"/>"#,
-            image.x, image.y
-        ));
-        xml.push('\n');
-        xml.push_str(&format!(
-            r#"            <a:ext cx="{}" cy="{}"/>"#,
-            image.width, image.height
-        ));
-        xml.push('\n');
-        xml.push_str("          </a:xfrm>\n");
-        xml.push_str(r#"          <a:prstGeom prst="rect"><a:avLst/></a:prstGeom>"#);
-        xml.push('\n');
-        xml.push_str("        </p:spPr>\n");
-
-        xml.push_str("      </p:pic>\n");
-        xml
-    }
-
-    /// Serialize a table as a graphic frame.
-    fn serialize_table(&self, table: &TableElement, shape_id: usize) -> String {
-        let name = table.name.as_deref().unwrap_or("Table");
-
-        let mut xml = String::new();
-        xml.push_str("      <p:graphicFrame>\n");
-
-        // Non-visual properties
-        xml.push_str("        <p:nvGraphicFramePr>\n");
-        xml.push_str(&format!(
-            r#"          <p:cNvPr id="{}" name="{}"/>"#,
-            shape_id,
-            escape_xml(name)
-        ));
-        xml.push('\n');
-        xml.push_str("          <p:cNvGraphicFramePr>\n");
-        xml.push_str("            <a:graphicFrameLocks noGrp=\"1\"/>\n");
-        xml.push_str("          </p:cNvGraphicFramePr>\n");
-        xml.push_str("          <p:nvPr/>\n");
-        xml.push_str("        </p:nvGraphicFramePr>\n");
-
-        // Transform
-        xml.push_str("        <p:xfrm>\n");
-        xml.push_str(&format!(
-            r#"          <a:off x="{}" y="{}"/>"#,
-            table.x, table.y
-        ));
-        xml.push('\n');
-        xml.push_str(&format!(
-            r#"          <a:ext cx="{}" cy="{}"/>"#,
-            table.width, table.height
-        ));
-        xml.push('\n');
-        xml.push_str("        </p:xfrm>\n");
-
-        // Graphic element containing the table
-        xml.push_str("        <a:graphic>\n");
-        xml.push_str(
-            r#"          <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/table">"#,
-        );
-        xml.push('\n');
-
-        // The table itself
-        xml.push_str("            <a:tbl>\n");
-
-        // Table properties
-        xml.push_str("              <a:tblPr firstRow=\"1\" bandRow=\"1\"/>\n");
-
-        // Table grid (column definitions)
-        xml.push_str("              <a:tblGrid>\n");
-        for col_width in &table.col_widths {
-            xml.push_str(&format!(
-                r#"                <a:gridCol w="{}"/>"#,
-                col_width
-            ));
-            xml.push('\n');
-        }
-        xml.push_str("              </a:tblGrid>\n");
-
-        // Table rows
-        for (row_idx, row) in table.rows.iter().enumerate() {
-            let row_height = table.row_heights.get(row_idx).copied().unwrap_or(370840);
-            xml.push_str(&format!(r#"              <a:tr h="{}">"#, row_height));
-            xml.push('\n');
-
-            for cell_text in row {
-                xml.push_str("                <a:tc>\n");
-                xml.push_str("                  <a:txBody>\n");
-                xml.push_str("                    <a:bodyPr/>\n");
-                xml.push_str("                    <a:lstStyle/>\n");
-                xml.push_str("                    <a:p>\n");
-                xml.push_str("                      <a:r>\n");
-                xml.push_str(r#"                        <a:rPr lang="en-US"/>"#);
-                xml.push('\n');
-                xml.push_str(&format!(
-                    "                        <a:t>{}</a:t>\n",
-                    escape_xml(cell_text)
-                ));
-                xml.push_str("                      </a:r>\n");
-                xml.push_str("                    </a:p>\n");
-                xml.push_str("                  </a:txBody>\n");
-                xml.push_str("                  <a:tcPr/>\n");
-                xml.push_str("                </a:tc>\n");
-            }
-
-            xml.push_str("              </a:tr>\n");
-        }
-
-        xml.push_str("            </a:tbl>\n");
-        xml.push_str("          </a:graphicData>\n");
-        xml.push_str("        </a:graphic>\n");
-        xml.push_str("      </p:graphicFrame>\n");
         xml
     }
 
@@ -1252,19 +1426,14 @@ impl PresentationBuilder {
             NS_DRAWING, NS_REL, NS_PRES
         ));
         xml.push('\n');
-
         xml.push_str("  <p:cSld>\n");
         xml.push_str("    <p:spTree>\n");
-
-        // Non-visual group shape properties
         xml.push_str("      <p:nvGrpSpPr>\n");
         xml.push_str(r#"        <p:cNvPr id="1" name=""/>"#);
         xml.push('\n');
         xml.push_str("        <p:cNvGrpSpPr/>\n");
         xml.push_str("        <p:nvPr/>\n");
         xml.push_str("      </p:nvGrpSpPr>\n");
-
-        // Group shape properties
         xml.push_str("      <p:grpSpPr>\n");
         xml.push_str("        <a:xfrm>\n");
         xml.push_str(r#"          <a:off x="0" y="0"/>"#);
@@ -1277,8 +1446,6 @@ impl PresentationBuilder {
         xml.push('\n');
         xml.push_str("        </a:xfrm>\n");
         xml.push_str("      </p:grpSpPr>\n");
-
-        // Slide image placeholder (shape 2)
         xml.push_str("      <p:sp>\n");
         xml.push_str("        <p:nvSpPr>\n");
         xml.push_str(&format!(
@@ -1295,8 +1462,6 @@ impl PresentationBuilder {
         xml.push_str("        </p:nvSpPr>\n");
         xml.push_str("        <p:spPr/>\n");
         xml.push_str("      </p:sp>\n");
-
-        // Notes body placeholder (shape 3)
         xml.push_str("      <p:sp>\n");
         xml.push_str("        <p:nvSpPr>\n");
         xml.push_str(r#"          <p:cNvPr id="3" name="Notes Placeholder"/>"#);
@@ -1314,8 +1479,6 @@ impl PresentationBuilder {
         xml.push('\n');
         xml.push_str(r#"          <a:lstStyle/>"#);
         xml.push('\n');
-
-        // Write notes text, each line as a paragraph
         for line in notes_text.lines() {
             xml.push_str("          <a:p>\n");
             xml.push_str("            <a:r>\n");
@@ -1325,15 +1488,11 @@ impl PresentationBuilder {
             xml.push_str("            </a:r>\n");
             xml.push_str("          </a:p>\n");
         }
-
-        // If no text, add empty paragraph
         if notes_text.is_empty() {
             xml.push_str("          <a:p/>\n");
         }
-
         xml.push_str("        </p:txBody>\n");
         xml.push_str("      </p:sp>\n");
-
         xml.push_str("    </p:spTree>\n");
         xml.push_str("  </p:cSld>\n");
         xml.push_str("</p:notes>");
@@ -1373,17 +1532,13 @@ mod tests {
         slide.add_title("Hello World");
         slide.add_text("This is a test presentation");
 
-        // Write to memory
         let mut buffer = Cursor::new(Vec::new());
         pres.write(&mut buffer).unwrap();
 
-        // Read back - just verify structure, not content
-        // (content verification needs XML namespace fixes)
         buffer.set_position(0);
         let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
         assert_eq!(presentation.slide_count(), 1);
 
-        // Verify slide can be loaded (even if shapes not parsed yet)
         let _read_slide = presentation.slide(0).unwrap();
     }
 
@@ -1416,16 +1571,13 @@ mod tests {
 
         slide.add_table(table, 914400, 1828800, 7315200, 1828800);
 
-        // Write to memory
         let mut buffer = Cursor::new(Vec::new());
         pres.write(&mut buffer).unwrap();
 
-        // Read back
         buffer.set_position(0);
         let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
         assert_eq!(presentation.slide_count(), 1);
 
-        // Verify slide has the table
         let read_slide = presentation.slide(0).unwrap();
         assert!(read_slide.has_tables());
         assert_eq!(read_slide.table_count(), 1);
@@ -1434,7 +1586,6 @@ mod tests {
         assert_eq!(table.row_count(), 3);
         assert_eq!(table.col_count(), 2);
 
-        // Verify cell content
         assert_eq!(table.cell(0, 0).unwrap().text(), "Name");
         assert_eq!(table.cell(0, 1).unwrap().text(), "Value");
         assert_eq!(table.cell(1, 0).unwrap().text(), "Alpha");
@@ -1457,25 +1608,20 @@ mod tests {
             457200,
         );
 
-        // Write to memory
         let mut buffer = Cursor::new(Vec::new());
         pres.write(&mut buffer).unwrap();
 
-        // Read back
         buffer.set_position(0);
         let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
         assert_eq!(presentation.slide_count(), 1);
 
-        // Verify slide has the hyperlink
         let read_slide = presentation.slide(0).unwrap();
         assert!(read_slide.has_hyperlinks());
 
-        // Get the hyperlinks
         let links = read_slide.hyperlinks();
         assert_eq!(links.len(), 1);
         assert_eq!(links[0].text, "Click here to visit Rust");
 
-        // Resolve the hyperlink to get URL
         let url = presentation
             .resolve_hyperlink(&read_slide, &links[0].rel_id)
             .unwrap();
@@ -1501,16 +1647,13 @@ mod tests {
             457200,
         );
 
-        // Write to memory
         let mut buffer = Cursor::new(Vec::new());
         pres.write(&mut buffer).unwrap();
 
-        // Read back
         buffer.set_position(0);
         let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
         let read_slide = presentation.slide(0).unwrap();
 
-        // Should have one hyperlink
         assert!(read_slide.has_hyperlinks());
         let links = read_slide.hyperlinks();
         assert_eq!(links.len(), 1);
@@ -1531,16 +1674,13 @@ mod tests {
                 .with_advance_after(3000),
         );
 
-        // Write to memory
         let mut buffer = Cursor::new(Vec::new());
         pres.write(&mut buffer).unwrap();
 
-        // Read back
         buffer.set_position(0);
         let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
         let read_slide = presentation.slide(0).unwrap();
 
-        // Verify transition was read back
         let transition = read_slide.transition();
         assert!(transition.is_some());
         let t = transition.unwrap();

@@ -24,6 +24,10 @@ pub enum Error {
     /// Unsupported feature.
     #[error("Unsupported feature: {0}")]
     Unsupported(String),
+
+    /// XML serialization error.
+    #[error("Serialize error: {0}")]
+    Serialize(#[from] crate::generated_serializers::SerializeError),
 }
 
 /// Result type for PresentationML operations.
