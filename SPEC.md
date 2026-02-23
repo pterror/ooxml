@@ -88,10 +88,10 @@ See [ECOSYSTEM.md](ECOSYSTEM.md) for details on fixtures and specs.
 
 ### v0.2 - Extended Word (Writing)
 
-- [ ] Headers and footers creation
-- [ ] Footnotes and endnotes creation
-- [ ] Comments creation
-- [ ] Anchored/floating images
+- [x] Headers and footers creation
+- [x] Footnotes and endnotes creation
+- [x] Comments creation
+- [x] Anchored/floating images
 
 ### v0.3 - Advanced Word
 
