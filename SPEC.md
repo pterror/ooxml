@@ -73,10 +73,10 @@ See [ECOSYSTEM.md](ECOSYSTEM.md) for details on fixtures and specs.
 
 - [x] Headers and footers
 - [x] Footnotes and endnotes
-- [ ] Table of contents (read)
-- [ ] Bookmarks
+- [x] Table of contents (read)
+- [x] Bookmarks
 - [x] Complex tables (merged cells, nested tables)
-- [ ] Text boxes
+- [x] Text boxes
 - [x] Tabs and tab stops
 - [x] Borders and shading
 - [x] Table borders

@@ -85,6 +85,37 @@ impl DocumentExt for types::Document {
 }
 
 // =============================================================================
+// Table of Contents types
+// =============================================================================
+
+/// A single entry in a Table of Contents (ECMA-376 §17.12).
+///
+/// TOC entries use paragraph styles "TOC 1" through "TOC 9" (or "toc1"–"toc9").
+/// The `level` is derived from the numeral in the style name.
+#[derive(Debug, Clone, PartialEq)]
+pub struct TocEntry {
+    /// Heading level (1–9), derived from the paragraph style name.
+    pub level: u8,
+    /// Display text of the entry, extracted from paragraph runs.
+    pub text: String,
+    /// Page number, if present as the last numeric token in the paragraph.
+    /// May be `None` or `0` for unsaved or newly-created documents.
+    pub page: Option<u32>,
+    /// Bookmark name if the entry is hyperlinked to a heading.
+    /// Found in `ParagraphContent::BookmarkStart` inside the paragraph.
+    pub bookmark: Option<String>,
+}
+
+/// A parsed Table of Contents (ECMA-376 §17.12.1).
+///
+/// Returned by [`BodyExt::table_of_contents`].
+#[derive(Debug, Clone, PartialEq)]
+pub struct TableOfContents {
+    /// Ordered list of entries extracted from TOC-style paragraphs.
+    pub entries: Vec<TocEntry>,
+}
+
+// =============================================================================
 // BodyExt
 // =============================================================================
 
@@ -102,6 +133,19 @@ pub trait BodyExt {
     /// Get the document-level section properties (layout info).
     #[cfg(feature = "wml-layout")]
     fn section_properties(&self) -> Option<&types::SectionProperties>;
+
+    /// Extract all Tables of Contents from this body.
+    ///
+    /// Scans the body for both SDT-wrapped and field-based TOCs.
+    /// Each group of contiguous TOC-style paragraphs (or paragraphs inside
+    /// an SDT that contains TOC entries) is returned as a separate
+    /// [`TableOfContents`].
+    ///
+    /// TOC paragraphs use styles "TOC 1"–"TOC 9" or "toc1"–"toc9"
+    /// (ECMA-376 §17.12.1).  Requires the `wml-styling` feature to
+    /// detect paragraph styles; without it this always returns an empty vec.
+    #[cfg(feature = "wml-styling")]
+    fn table_of_contents(&self) -> Vec<TableOfContents>;
 }
 
 impl BodyExt for types::Body {
@@ -142,6 +186,188 @@ impl BodyExt for types::Body {
     fn section_properties(&self) -> Option<&types::SectionProperties> {
         self.sect_pr.as_deref()
     }
+
+    #[cfg(feature = "wml-styling")]
+    fn table_of_contents(&self) -> Vec<TableOfContents> {
+        collect_tocs_from_block_content(&self.block_content)
+    }
+}
+
+// =============================================================================
+// TOC helpers (private)
+// =============================================================================
+
+/// Return the TOC level (1–9) for a paragraph style name, or `None` if not a
+/// TOC style.
+///
+/// Recognises both display names ("TOC 1"–"TOC 9") and style IDs
+/// ("toc1"–"toc9"), case-insensitively.
+#[cfg(feature = "wml-styling")]
+fn toc_style_level(style: &str) -> Option<u8> {
+    let s = style.trim();
+
+    // "TOC 1" … "TOC 9"  (display name, space-separated)
+    if let Some(rest) = s.strip_prefix("TOC ").or_else(|| s.strip_prefix("toc "))
+        && let Ok(n) = rest.trim().parse::<u8>()
+        && (1..=9).contains(&n)
+    {
+        return Some(n);
+    }
+
+    // "toc1" … "toc9"  (style ID, no space)
+    if let Some(rest) = s
+        .strip_prefix("TOC")
+        .or_else(|| s.strip_prefix("toc"))
+        .filter(|r| r.len() == 1)
+        && let Ok(n) = rest.parse::<u8>()
+        && (1..=9).contains(&n)
+    {
+        return Some(n);
+    }
+
+    None
+}
+
+/// Return the TOC level for a paragraph, or `None` if it is not a TOC entry.
+#[cfg(feature = "wml-styling")]
+fn paragraph_toc_level(para: &types::Paragraph) -> Option<u8> {
+    let style = para.p_pr.as_ref()?.paragraph_style.as_ref()?.value.as_str();
+    toc_style_level(style)
+}
+
+/// Extract the text of a paragraph, stripping the trailing page number.
+///
+/// TOC paragraphs typically look like:  "Heading text\t42"
+/// The page number is the last tab-separated token if it parses as a number.
+/// Returns the trimmed text before the page number and the page number itself.
+#[cfg(feature = "wml-styling")]
+fn extract_toc_text_and_page(para: &types::Paragraph) -> (String, Option<u32>) {
+    // Collect all run text first.
+    let mut full = String::new();
+    for content in &para.paragraph_content {
+        collect_text_from_paragraph_content(content, &mut full);
+    }
+
+    // Split on the last tab and try to parse the tail as a page number.
+    if let Some(tab_pos) = full.rfind('\t') {
+        let tail = full[tab_pos + 1..].trim();
+        if let Ok(page) = tail.parse::<u32>() {
+            let text = full[..tab_pos].trim().to_string();
+            return (text, Some(page));
+        }
+    }
+
+    (full.trim().to_string(), None)
+}
+
+/// Find the first bookmark name embedded in a paragraph's content.
+///
+/// Hyperlinked TOC entries wrap their content in a `<w:hyperlink>` whose
+/// anchor points to a bookmark on the heading.  The bookmark name is stored
+/// in a `BookmarkStart` item at the paragraph level.
+#[cfg(feature = "wml-styling")]
+fn paragraph_bookmark(para: &types::Paragraph) -> Option<String> {
+    for content in &para.paragraph_content {
+        if let types::ParagraphContent::BookmarkStart(bm) = content {
+            let name = bm.name.clone();
+            if !name.is_empty() {
+                return Some(name);
+            }
+        }
+    }
+    None
+}
+
+/// Convert a paragraph with a TOC style into a [`TocEntry`].
+#[cfg(feature = "wml-styling")]
+fn paragraph_to_toc_entry(para: &types::Paragraph, level: u8) -> TocEntry {
+    let (text, page) = extract_toc_text_and_page(para);
+    let bookmark = paragraph_bookmark(para);
+    TocEntry {
+        level,
+        text,
+        page,
+        bookmark,
+    }
+}
+
+/// Collect all TOC entries from a flat slice of [`BlockContent`] items.
+///
+/// Both SDT-wrapped and bare (field-based) TOC entries are detected.
+/// Contiguous runs of TOC paragraphs (or SDTs containing TOC paragraphs) are
+/// each returned as a separate [`TableOfContents`].
+#[cfg(feature = "wml-styling")]
+fn collect_tocs_from_block_content(blocks: &[types::BlockContent]) -> Vec<TableOfContents> {
+    let mut result: Vec<TableOfContents> = Vec::new();
+    // Accumulator for the current run of bare (non-SDT) TOC paragraphs.
+    let mut current_entries: Vec<TocEntry> = Vec::new();
+
+    for block in blocks {
+        match block {
+            types::BlockContent::P(para) => {
+                if let Some(level) = paragraph_toc_level(para) {
+                    current_entries.push(paragraph_to_toc_entry(para, level));
+                } else {
+                    // Non-TOC paragraph: flush any accumulated entries.
+                    flush_toc(&mut current_entries, &mut result);
+                }
+            }
+            types::BlockContent::Sdt(sdt) => {
+                // Flush bare entries before handling the SDT.
+                flush_toc(&mut current_entries, &mut result);
+
+                // Extract TOC entries from the SDT content.
+                let sdt_entries = collect_toc_entries_from_sdt(sdt);
+                if !sdt_entries.is_empty() {
+                    result.push(TableOfContents {
+                        entries: sdt_entries,
+                    });
+                }
+            }
+            _ => {
+                // Any other block (table, custom XML, …) ends a bare TOC run.
+                flush_toc(&mut current_entries, &mut result);
+            }
+        }
+    }
+
+    // Flush any trailing bare entries.
+    flush_toc(&mut current_entries, &mut result);
+
+    result
+}
+
+/// Flush accumulated TOC entries into the result list.
+#[cfg(feature = "wml-styling")]
+fn flush_toc(entries: &mut Vec<TocEntry>, result: &mut Vec<TableOfContents>) {
+    if !entries.is_empty() {
+        result.push(TableOfContents {
+            entries: std::mem::take(entries),
+        });
+    }
+}
+
+/// Collect all TOC entries from the content of an SDT block.
+///
+/// The `sdt_content` field holds [`BlockContentChoice`] items.  We walk those,
+/// extracting paragraphs with TOC styles.
+#[cfg(feature = "wml-styling")]
+fn collect_toc_entries_from_sdt(sdt: &types::CTSdtBlock) -> Vec<TocEntry> {
+    let content = match &sdt.sdt_content {
+        Some(c) => c,
+        None => return Vec::new(),
+    };
+
+    content
+        .block_content
+        .iter()
+        .filter_map(|bc| match bc {
+            types::BlockContentChoice::P(para) => {
+                paragraph_toc_level(para).map(|lvl| paragraph_to_toc_entry(para, lvl))
+            }
+            _ => None,
+        })
+        .collect()
 }
 
 // =============================================================================
@@ -2635,5 +2861,145 @@ mod tests {
         let texts = drawings[0].text_box_texts();
         assert_eq!(texts.len(), 1);
         assert_eq!(texts[0], "Anchored box text");
+    }
+
+    // =========================================================================
+    // TOC tests
+    // =========================================================================
+
+    /// Build a minimal paragraph XML with the given style name and run text.
+    #[cfg(feature = "wml-styling")]
+    fn toc_para_xml(style: &str, text: &str) -> String {
+        format!(
+            r#"<w:p xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:pPr><w:pStyle w:val="{style}"/></w:pPr>
+  <w:r><w:t>{text}</w:t></w:r>
+</w:p>"#,
+        )
+    }
+
+    /// Build a document XML with the given body XML (pre-formatted).
+    #[cfg(feature = "wml-styling")]
+    fn doc_with_body(body_inner: &str) -> String {
+        format!(
+            r#"<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    {body_inner}
+  </w:body>
+</w:document>"#,
+        )
+    }
+
+    #[test]
+    #[cfg(feature = "wml-styling")]
+    fn test_toc_no_entries() {
+        // A body with no TOC-style paragraphs returns an empty vec.
+        let xml = doc_with_body(
+            r#"<w:p><w:pPr><w:pStyle w:val="Normal"/></w:pPr><w:r><w:t>Hello</w:t></w:r></w:p>"#,
+        );
+        let doc = parse_document(xml.as_bytes()).expect("parse");
+        let body = doc.body().expect("body");
+        let tocs = body.table_of_contents();
+        assert!(tocs.is_empty(), "expected no TOCs, got: {tocs:?}");
+    }
+
+    #[test]
+    #[cfg(feature = "wml-styling")]
+    fn test_toc_levels() {
+        // Three consecutive TOC-style paragraphs form a single TOC with correct levels.
+        let p1 = toc_para_xml("TOC 1", "Chapter One");
+        let p2 = toc_para_xml("TOC 2", "Section 1.1");
+        let p3 = toc_para_xml("TOC 3", "Subsection 1.1.1");
+        let xml = doc_with_body(&format!("{p1}{p2}{p3}"));
+        let doc = parse_document(xml.as_bytes()).expect("parse");
+        let body = doc.body().expect("body");
+        let tocs = body.table_of_contents();
+        assert_eq!(tocs.len(), 1);
+        let toc = &tocs[0];
+        assert_eq!(toc.entries.len(), 3);
+        assert_eq!(toc.entries[0].level, 1);
+        assert_eq!(toc.entries[0].text, "Chapter One");
+        assert_eq!(toc.entries[1].level, 2);
+        assert_eq!(toc.entries[1].text, "Section 1.1");
+        assert_eq!(toc.entries[2].level, 3);
+        assert_eq!(toc.entries[2].text, "Subsection 1.1.1");
+    }
+
+    #[test]
+    #[cfg(feature = "wml-styling")]
+    fn test_toc_style_id_form() {
+        // Style IDs "toc1"/"toc2" (no space) are also recognised.
+        let p1 = toc_para_xml("toc1", "First");
+        let p2 = toc_para_xml("toc2", "Second");
+        let xml = doc_with_body(&format!("{p1}{p2}"));
+        let doc = parse_document(xml.as_bytes()).expect("parse");
+        let body = doc.body().expect("body");
+        let tocs = body.table_of_contents();
+        assert_eq!(tocs.len(), 1);
+        assert_eq!(tocs[0].entries[0].level, 1);
+        assert_eq!(tocs[0].entries[1].level, 2);
+    }
+
+    #[test]
+    #[cfg(feature = "wml-styling")]
+    fn test_toc_entry_from_sdt() {
+        // TOC entries inside an SDT block are extracted as a separate TableOfContents.
+        let xml = doc_with_body(
+            r#"<w:sdt xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:sdtContent>
+    <w:p><w:pPr><w:pStyle w:val="TOC 1"/></w:pPr><w:r><w:t>Alpha</w:t></w:r></w:p>
+    <w:p><w:pPr><w:pStyle w:val="TOC 2"/></w:pPr><w:r><w:t>Beta</w:t></w:r></w:p>
+  </w:sdtContent>
+</w:sdt>"#,
+        );
+        let doc = parse_document(xml.as_bytes()).expect("parse");
+        let body = doc.body().expect("body");
+        let tocs = body.table_of_contents();
+        assert_eq!(tocs.len(), 1, "expected 1 TOC from SDT, got: {tocs:?}");
+        assert_eq!(tocs[0].entries.len(), 2);
+        assert_eq!(tocs[0].entries[0].level, 1);
+        assert_eq!(tocs[0].entries[0].text, "Alpha");
+        assert_eq!(tocs[0].entries[1].level, 2);
+        assert_eq!(tocs[0].entries[1].text, "Beta");
+    }
+
+    #[test]
+    #[cfg(feature = "wml-styling")]
+    fn test_toc_page_number_extraction() {
+        // A page number after a tab stop is extracted as `page`.
+        let xml = doc_with_body(
+            r#"<w:p xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:pPr><w:pStyle w:val="TOC 1"/></w:pPr>
+  <w:r><w:t>My Chapter</w:t></w:r>
+  <w:r><w:tab/></w:r>
+  <w:r><w:t>42</w:t></w:r>
+</w:p>"#,
+        );
+        let doc = parse_document(xml.as_bytes()).expect("parse");
+        let body = doc.body().expect("body");
+        let tocs = body.table_of_contents();
+        assert_eq!(tocs.len(), 1);
+        let entry = &tocs[0].entries[0];
+        assert_eq!(entry.text, "My Chapter");
+        assert_eq!(entry.page, Some(42));
+    }
+
+    #[test]
+    #[cfg(feature = "wml-styling")]
+    fn test_toc_non_toc_para_splits_groups() {
+        // A non-TOC paragraph between two TOC runs produces two separate TOCs.
+        let p1 = toc_para_xml("TOC 1", "First TOC entry");
+        let normal = r#"<w:p xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:pPr><w:pStyle w:val="Normal"/></w:pPr>
+  <w:r><w:t>Regular text</w:t></w:r>
+</w:p>"#;
+        let p2 = toc_para_xml("TOC 1", "Second TOC entry");
+        let xml = doc_with_body(&format!("{p1}{normal}{p2}"));
+        let doc = parse_document(xml.as_bytes()).expect("parse");
+        let body = doc.body().expect("body");
+        let tocs = body.table_of_contents();
+        assert_eq!(tocs.len(), 2, "expected 2 separate TOCs");
+        assert_eq!(tocs[0].entries[0].text, "First TOC entry");
+        assert_eq!(tocs[1].entries[0].text, "Second TOC entry");
     }
 }
