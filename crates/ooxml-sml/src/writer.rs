@@ -49,6 +49,8 @@ const REL_STYLES: &str =
     "http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles";
 const REL_COMMENTS: &str =
     "http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments";
+const REL_HYPERLINK: &str =
+    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink";
 
 // Namespaces
 const NS_SPREADSHEET: &str = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
@@ -944,6 +946,25 @@ impl CommentBuilder {
     }
 }
 
+/// Destination of a hyperlink.
+#[derive(Debug, Clone)]
+enum HyperlinkDest {
+    /// External URL — needs a relationship entry in sheet rels.
+    External(String),
+    /// Internal reference (e.g. `"Sheet2!A1"`) — no relationship needed.
+    Internal(String),
+}
+
+/// A hyperlink to be written in a sheet.
+#[derive(Debug, Clone)]
+struct HyperlinkEntry {
+    /// Cell reference the hyperlink is attached to (e.g. `"A1"`).
+    reference: String,
+    dest: HyperlinkDest,
+    tooltip: Option<String>,
+    display: Option<String>,
+}
+
 /// A sheet being built.
 #[derive(Debug)]
 pub struct SheetBuilder {
@@ -954,6 +975,8 @@ pub struct SheetBuilder {
     row_heights: HashMap<u32, f64>,
     /// Comments go into a separate XML file, not into Worksheet.
     comments: Vec<CommentBuilder>,
+    /// Hyperlinks, resolved to worksheet XML + sheet rels at write time.
+    hyperlinks: Vec<HyperlinkEntry>,
     /// All other worksheet state lives here directly; mutated by setter methods.
     worksheet: types::Worksheet,
 }
@@ -1051,6 +1074,7 @@ impl SheetBuilder {
             cells: HashMap::new(),
             row_heights: HashMap::new(),
             comments: Vec::new(),
+            hyperlinks: Vec::new(),
             worksheet: init_worksheet(),
         }
     }
@@ -1459,6 +1483,87 @@ impl SheetBuilder {
         self.comments.push(comment);
     }
 
+    /// Enable auto-filter dropdowns on a header range (e.g. `"A1:D1"`).
+    ///
+    /// Excel will add dropdown buttons to every column in the range.  Callers
+    /// typically set this on the same row as their column headers.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// sheet.set_cell("A1", "Name");
+    /// sheet.set_cell("B1", "Score");
+    /// sheet.set_auto_filter("A1:B1");
+    /// ```
+    pub fn set_auto_filter(&mut self, range: &str) {
+        #[cfg(feature = "sml-filtering")]
+        {
+            self.worksheet.auto_filter = Some(Box::new(types::AutoFilter {
+                reference: Some(range.to_string()),
+                filter_column: Vec::new(),
+                sort_state: None,
+                #[cfg(feature = "sml-extensions")]
+                extension_list: None,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+                #[cfg(feature = "extra-children")]
+                extra_children: Vec::new(),
+            }));
+        }
+        #[cfg(not(feature = "sml-filtering"))]
+        let _ = range;
+    }
+
+    /// Add an external hyperlink on a cell (e.g. a URL).
+    ///
+    /// The URL is written as a relationship in the sheet's `.rels` file, and
+    /// the `<hyperlink>` element references it by `r:id`.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// sheet.set_cell("A1", "Visit us");
+    /// sheet.add_hyperlink("A1", "https://example.com");
+    /// ```
+    pub fn add_hyperlink(&mut self, reference: &str, url: &str) {
+        self.hyperlinks.push(HyperlinkEntry {
+            reference: reference.to_string(),
+            dest: HyperlinkDest::External(url.to_string()),
+            tooltip: None,
+            display: None,
+        });
+    }
+
+    /// Set a tooltip on the last-added hyperlink.
+    ///
+    /// Call immediately after [`add_hyperlink`](Self::add_hyperlink) or
+    /// [`add_internal_hyperlink`](Self::add_internal_hyperlink).
+    pub fn set_last_hyperlink_tooltip(&mut self, tooltip: &str) {
+        if let Some(h) = self.hyperlinks.last_mut() {
+            h.tooltip = Some(tooltip.to_string());
+        }
+    }
+
+    /// Add an internal hyperlink that navigates to another location in the
+    /// workbook (e.g. `"Sheet2!A1"`).
+    ///
+    /// Internal hyperlinks do not need a relationship — the location is stored
+    /// inline in the `<hyperlink>` element.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// sheet.add_internal_hyperlink("B1", "Sheet2!A1");
+    /// ```
+    pub fn add_internal_hyperlink(&mut self, reference: &str, location: &str) {
+        self.hyperlinks.push(HyperlinkEntry {
+            reference: reference.to_string(),
+            dest: HyperlinkDest::Internal(location.to_string()),
+            tooltip: None,
+            display: None,
+        });
+    }
+
     /// Get the sheet name.
     pub fn name(&self) -> &str {
         &self.name
@@ -1817,29 +1922,72 @@ impl WorkbookBuilder {
             pkg.add_part("xl/styles.xml", CT_STYLES, &styles_xml)?;
         }
 
-        // Write each sheet and its related parts (comments, etc.)
+        // Write each sheet and its related parts (comments, hyperlinks, etc.)
         for (i, sheet) in self.sheets.iter().enumerate() {
             let sheet_num = i + 1;
-            let sheet_xml = self.serialize_sheet(sheet)?;
+            let has_comments = !sheet.comments.is_empty();
+
+            // Collect external hyperlink URLs (need relationship entries).
+            let ext_hyperlinks: Vec<&str> = sheet
+                .hyperlinks
+                .iter()
+                .filter_map(|h| {
+                    if let HyperlinkDest::External(url) = &h.dest {
+                        Some(url.as_str())
+                    } else {
+                        None
+                    }
+                })
+                .collect();
+
+            let needs_rels = has_comments || !ext_hyperlinks.is_empty();
+
+            if needs_rels {
+                let mut sheet_rels = String::new();
+                sheet_rels.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
+                sheet_rels.push('\n');
+                sheet_rels.push_str(
+                    r#"<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">"#,
+                );
+                sheet_rels.push('\n');
+
+                let mut rel_id = 1usize;
+
+                if has_comments {
+                    sheet_rels.push_str(&format!(
+                        r#"  <Relationship Id="rId{}" Type="{}" Target="../comments{}.xml"/>"#,
+                        rel_id, REL_COMMENTS, sheet_num
+                    ));
+                    sheet_rels.push('\n');
+                    rel_id += 1;
+                }
+
+                for url in &ext_hyperlinks {
+                    sheet_rels.push_str(&format!(
+                        r#"  <Relationship Id="rId{}" Type="{}" Target="{}" TargetMode="External"/>"#,
+                        rel_id,
+                        REL_HYPERLINK,
+                        escape_xml(url)
+                    ));
+                    sheet_rels.push('\n');
+                    rel_id += 1;
+                }
+
+                sheet_rels.push_str("</Relationships>");
+                let rels_part = format!("xl/worksheets/_rels/sheet{}.xml.rels", sheet_num);
+                pkg.add_part(&rels_part, CT_RELATIONSHIPS, sheet_rels.as_bytes())?;
+            }
+
+            // rId1 is taken by comments when present; hyperlinks follow after.
+            let hyperlink_rel_id_start = if has_comments { 2 } else { 1 };
+            let sheet_xml = self.serialize_sheet(sheet, hyperlink_rel_id_start)?;
             let part_name = format!("xl/worksheets/sheet{}.xml", sheet_num);
             pkg.add_part(&part_name, CT_WORKSHEET, &sheet_xml)?;
 
-            // Write comments if the sheet has any
-            if !sheet.comments.is_empty() {
+            if has_comments {
                 let comments_xml = self.serialize_comments(sheet)?;
                 let comments_part = format!("xl/comments{}.xml", sheet_num);
                 pkg.add_part(&comments_part, CT_COMMENTS, &comments_xml)?;
-
-                // Write sheet relationships (for comments)
-                let sheet_rels = format!(
-                    r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId1" Type="{}" Target="../comments{}.xml"/>
-</Relationships>"#,
-                    REL_COMMENTS, sheet_num
-                );
-                let rels_part = format!("xl/worksheets/_rels/sheet{}.xml.rels", sheet_num);
-                pkg.add_part(&rels_part, CT_RELATIONSHIPS, sheet_rels.as_bytes())?;
             }
         }
 
@@ -2329,7 +2477,15 @@ impl WorkbookBuilder {
     }
 
     /// Serialize a sheet to XML using generated types.
-    fn serialize_sheet(&self, sheet: &SheetBuilder) -> Result<Vec<u8>> {
+    ///
+    /// `hyperlink_rel_id_start` is the first relationship ID available for
+    /// external hyperlinks (1-based; accounts for comments occupying rId1
+    /// when present).
+    fn serialize_sheet(
+        &self,
+        sheet: &SheetBuilder,
+        hyperlink_rel_id_start: usize,
+    ) -> Result<Vec<u8>> {
         // Build row height lookup (already a HashMap now)
         #[cfg(feature = "sml-styling")]
         let row_heights = &sheet.row_heights;
@@ -2399,6 +2555,45 @@ impl WorkbookBuilder {
             #[cfg(feature = "extra-children")]
             extra_children: Vec::new(),
         });
+
+        // Inject hyperlinks (external ones carry their rId; internal ones use location).
+        #[cfg(feature = "sml-hyperlinks")]
+        if !sheet.hyperlinks.is_empty() {
+            let mut rel_id = hyperlink_rel_id_start;
+            let hyperlink_list: Vec<types::Hyperlink> = sheet
+                .hyperlinks
+                .iter()
+                .map(|h| {
+                    let (id, location) = match &h.dest {
+                        HyperlinkDest::External(_) => {
+                            let r = Some(format!("rId{}", rel_id));
+                            rel_id += 1;
+                            (r, None)
+                        }
+                        HyperlinkDest::Internal(loc) => (None, Some(loc.clone())),
+                    };
+                    types::Hyperlink {
+                        reference: h.reference.clone(),
+                        id,
+                        #[cfg(feature = "sml-hyperlinks")]
+                        location,
+                        #[cfg(feature = "sml-hyperlinks")]
+                        tooltip: h.tooltip.clone(),
+                        #[cfg(feature = "sml-hyperlinks")]
+                        display: h.display.clone(),
+                        #[cfg(feature = "extra-attrs")]
+                        extra_attrs: Default::default(),
+                    }
+                })
+                .collect();
+            worksheet.hyperlinks = Some(Box::new(types::Hyperlinks {
+                hyperlink: hyperlink_list,
+                #[cfg(feature = "extra-children")]
+                extra_children: Vec::new(),
+            }));
+        }
+        #[cfg(not(feature = "sml-hyperlinks"))]
+        let _ = hyperlink_rel_id_start;
 
         serialize_with_namespaces(&worksheet, "worksheet")
     }
@@ -2816,6 +3011,14 @@ fn parse_cell_reference(reference: &str) -> Option<(u32, u32)> {
     let row: u32 = row_part.parse().ok()?;
 
     Some((row, col))
+}
+
+/// Escape XML special characters in attribute values (used in .rels files).
+fn escape_xml(s: &str) -> String {
+    s.replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
 }
 
 /// Convert column letters to number (A=1, B=2, ..., Z=26, AA=27).
@@ -3706,5 +3909,105 @@ mod tests {
         assert!(read_sheet.has_comment("A1"));
         assert!(read_sheet.has_comment("B1"));
         assert!(!read_sheet.has_comment("D1"));
+    }
+
+    #[cfg(feature = "sml-filtering")]
+    #[test]
+    fn test_roundtrip_auto_filter() {
+        use std::io::Cursor;
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Data");
+        sheet.set_cell("A1", "Name");
+        sheet.set_cell("B1", "Score");
+        sheet.set_cell("A2", "Alice");
+        sheet.set_cell("B2", 95.0);
+        sheet.set_auto_filter("A1:B1");
+
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
+        let read_sheet = workbook.resolved_sheet(0).unwrap();
+
+        assert!(read_sheet.has_auto_filter());
+        let af = read_sheet.auto_filter().unwrap();
+        assert_eq!(af.reference.as_deref(), Some("A1:B1"));
+    }
+
+    #[cfg(feature = "sml-hyperlinks")]
+    #[test]
+    fn test_roundtrip_hyperlinks() {
+        use std::io::Cursor;
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Links");
+        sheet.set_cell("A1", "External");
+        sheet.add_hyperlink("A1", "https://example.com");
+        sheet.set_cell("B1", "Internal");
+        sheet.add_internal_hyperlink("B1", "Sheet2!A1");
+
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
+        let read_sheet = workbook.resolved_sheet(0).unwrap();
+
+        // Check the raw hyperlinks from the worksheet
+        let ws = read_sheet.worksheet();
+        let hyperlinks = ws.hyperlinks.as_deref().unwrap();
+        assert_eq!(hyperlinks.hyperlink.len(), 2);
+
+        let ext = hyperlinks
+            .hyperlink
+            .iter()
+            .find(|h| h.reference == "A1")
+            .unwrap();
+        // External hyperlink has a relationship ID, no inline location
+        assert!(ext.id.is_some());
+        assert!(ext.location.as_deref().unwrap_or("").is_empty());
+
+        let int = hyperlinks
+            .hyperlink
+            .iter()
+            .find(|h| h.reference == "B1")
+            .unwrap();
+        // Internal hyperlink has no relationship ID, just a location
+        assert!(int.id.is_none());
+        assert_eq!(int.location.as_deref(), Some("Sheet2!A1"));
+    }
+
+    #[cfg(all(feature = "sml-hyperlinks", feature = "sml-comments"))]
+    #[test]
+    fn test_roundtrip_hyperlinks_with_comments() {
+        use std::io::Cursor;
+
+        // Verifies that rel IDs are assigned correctly when a sheet has both
+        // comments (rId1) and external hyperlinks (rId2, rId3...).
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Sheet1");
+        sheet.set_cell("A1", "Click me");
+        sheet.add_hyperlink("A1", "https://example.com");
+        sheet.add_comment("A1", "Visit the site");
+
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
+        let read_sheet = workbook.resolved_sheet(0).unwrap();
+
+        // Comment should be preserved
+        let c = read_sheet.comment("A1").unwrap();
+        assert_eq!(c.text, "Visit the site");
+
+        // Hyperlink should be preserved
+        let ws = read_sheet.worksheet();
+        let hyperlinks = ws.hyperlinks.as_deref().unwrap();
+        assert_eq!(hyperlinks.hyperlink.len(), 1);
+        assert_eq!(hyperlinks.hyperlink[0].reference, "A1");
+        assert!(hyperlinks.hyperlink[0].id.is_some());
     }
 }
