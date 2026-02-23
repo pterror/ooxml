@@ -860,20 +860,36 @@ fn parse_notes_slide(xml: &[u8]) -> Option<String> {
 // Utilities
 // ============================================================================
 
-/// Resolve a relative path against a base path.
+/// Resolve a relative path against a base path, normalizing `..` segments.
 fn resolve_path(base: &str, target: &str) -> String {
     if target.starts_with('/') {
+        // Absolute target — return as-is (preserve leading slash per OPC spec).
         return target.to_string();
     }
 
     // Get the directory of the base path
     let base_dir = if let Some(idx) = base.rfind('/') {
-        &base[..=idx]
+        &base[..idx + 1]
     } else {
-        "/"
+        ""
     };
 
-    format!("{}{}", base_dir, target)
+    normalize_path(&format!("{}{}", base_dir, target))
+}
+
+/// Normalize a path by resolving `..` and `.` segments.
+fn normalize_path(path: &str) -> String {
+    let mut parts: Vec<&str> = Vec::new();
+    for segment in path.split('/') {
+        match segment {
+            ".." => {
+                parts.pop();
+            }
+            "." | "" => {}
+            _ => parts.push(segment),
+        }
+    }
+    parts.join("/")
 }
 
 /// Determine content type from file path extension.
@@ -1198,6 +1214,21 @@ mod tests {
         assert_eq!(
             resolve_path("ppt/presentation.xml", "/ppt/slides/slide1.xml"),
             "/ppt/slides/slide1.xml"
+        );
+        // Relative path with parent navigation (../ used in master → layout refs)
+        assert_eq!(
+            resolve_path(
+                "ppt/slideMasters/slideMaster1.xml",
+                "../slideLayouts/slideLayout1.xml"
+            ),
+            "ppt/slideLayouts/slideLayout1.xml"
+        );
+        assert_eq!(
+            resolve_path(
+                "ppt/slideLayouts/slideLayout1.xml",
+                "../slideMasters/slideMaster1.xml"
+            ),
+            "ppt/slideMasters/slideMaster1.xml"
         );
     }
 }

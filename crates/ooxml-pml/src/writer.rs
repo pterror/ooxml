@@ -47,6 +47,10 @@ const REL_NOTES_SLIDE: &str =
 const REL_IMAGE: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image";
 const REL_HYPERLINK: &str =
     "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink";
+const REL_SLIDE_MASTER: &str =
+    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster";
+const REL_SLIDE_LAYOUT: &str =
+    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout";
 
 // Namespaces
 const NS_PRES: &str = "http://schemas.openxmlformats.org/presentationml/2006/main";
@@ -59,6 +63,62 @@ const NS_DECLS_SLIDE: &[(&str, &str)] = &[
     ("xmlns:r", NS_REL),
     ("xmlns:p", NS_PRES),
 ];
+
+/// Build a minimal slide master XML string.
+///
+/// The master contains an empty shape tree and the required color map.  A
+/// single slide layout (rId1 → slideLayout1.xml) is listed in the layout id
+/// list so that slides can reference it.
+fn build_slide_master_xml() -> &'static str {
+    r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<p:sldMaster xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+  <p:cSld>
+    <p:spTree>
+      <p:nvGrpSpPr>
+        <p:cNvPr id="1" name=""/>
+        <p:cNvGrpSpPr/>
+        <p:nvPr/>
+      </p:nvGrpSpPr>
+      <p:grpSpPr>
+        <a:xfrm>
+          <a:off x="0" y="0"/>
+          <a:ext cx="0" cy="0"/>
+          <a:chOff x="0" y="0"/>
+          <a:chExt cx="0" cy="0"/>
+        </a:xfrm>
+      </p:grpSpPr>
+    </p:spTree>
+  </p:cSld>
+  <p:clrMap bg1="lt1" tx1="dk1" bg2="lt2" tx2="dk2" accent1="accent1" accent2="accent2" accent3="accent3" accent4="accent4" accent5="accent5" accent6="accent6" hlink="hlink" folHlink="folHlink"/>
+  <p:sldLayoutIdLst>
+    <p:sldLayoutId id="2147483648" r:id="rId1"/>
+  </p:sldLayoutIdLst>
+</p:sldMaster>"#
+}
+
+/// Build a minimal blank slide layout XML string.
+fn build_slide_layout_xml() -> &'static str {
+    r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<p:sldLayout xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" type="blank" preserve="1">
+  <p:cSld name="Blank">
+    <p:spTree>
+      <p:nvGrpSpPr>
+        <p:cNvPr id="1" name=""/>
+        <p:cNvGrpSpPr/>
+        <p:nvPr/>
+      </p:nvGrpSpPr>
+      <p:grpSpPr>
+        <a:xfrm>
+          <a:off x="0" y="0"/>
+          <a:ext cx="0" cy="0"/>
+          <a:chOff x="0" y="0"/>
+          <a:chExt cx="0" cy="0"/>
+        </a:xfrm>
+      </p:grpSpPr>
+    </p:spTree>
+  </p:cSld>
+</p:sldLayout>"#
+}
 
 /// Serialize any `ToXml` type to XML bytes with a given tag name and PML namespace declarations.
 fn serialize_pml_xml<T: ToXml>(value: &T, tag: &str) -> Result<Vec<u8>> {
@@ -845,11 +905,6 @@ impl SlideBuilder {
         links
     }
 
-    /// Check if this slide has hyperlinks.
-    fn has_hyperlinks(&self) -> bool {
-        !self.hyperlink_elements.is_empty()
-    }
-
     /// Set speaker notes for this slide.
     pub fn set_notes(&mut self, notes: impl Into<String>) -> &mut Self {
         self.notes = Some(notes.into());
@@ -1268,6 +1323,8 @@ impl PresentationBuilder {
             REL_OFFICE_DOCUMENT
         );
 
+        // presentation.xml.rels: slides (rId1..rIdN) + slide master (rId{N+1})
+        let master_rel_id = self.slides.len() + 1;
         let mut pres_rels = String::new();
         pres_rels.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
         pres_rels.push('\n');
@@ -1283,9 +1340,15 @@ impl PresentationBuilder {
             ));
             pres_rels.push('\n');
         }
+        pres_rels.push_str(&format!(
+            r#"  <Relationship Id="rId{}" Type="{}" Target="slideMasters/slideMaster1.xml"/>"#,
+            master_rel_id, REL_SLIDE_MASTER
+        ));
+        pres_rels.push('\n');
         pres_rels.push_str("</Relationships>");
 
-        let presentation_xml = serialize_pml_xml(&self.build_presentation(), "p:presentation")?;
+        let presentation_xml =
+            serialize_pml_xml(&self.build_presentation(master_rel_id), "p:presentation")?;
 
         pkg.add_part("_rels/.rels", CT_RELATIONSHIPS, root_rels.as_bytes())?;
         pkg.add_part(
@@ -1295,16 +1358,58 @@ impl PresentationBuilder {
         )?;
         pkg.add_part("ppt/presentation.xml", CT_PRESENTATION, &presentation_xml)?;
 
+        // Write slide master and its single blank layout.
+        const CT_SLIDE_MASTER: &str =
+            "application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml";
+        const CT_SLIDE_LAYOUT: &str =
+            "application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml";
+
+        let master_rels = format!(
+            r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="{}" Target="../slideLayouts/slideLayout1.xml"/>
+</Relationships>"#,
+            REL_SLIDE_LAYOUT
+        );
+        let layout_rels = format!(
+            r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="{}" Target="../slideMasters/slideMaster1.xml"/>
+</Relationships>"#,
+            REL_SLIDE_MASTER
+        );
+
+        pkg.add_part(
+            "ppt/slideMasters/slideMaster1.xml",
+            CT_SLIDE_MASTER,
+            build_slide_master_xml().as_bytes(),
+        )?;
+        pkg.add_part(
+            "ppt/slideMasters/_rels/slideMaster1.xml.rels",
+            CT_RELATIONSHIPS,
+            master_rels.as_bytes(),
+        )?;
+        pkg.add_part(
+            "ppt/slideLayouts/slideLayout1.xml",
+            CT_SLIDE_LAYOUT,
+            build_slide_layout_xml().as_bytes(),
+        )?;
+        pkg.add_part(
+            "ppt/slideLayouts/_rels/slideLayout1.xml.rels",
+            CT_RELATIONSHIPS,
+            layout_rels.as_bytes(),
+        )?;
+
         let mut global_image_num = 1;
 
         for (i, slide) in self.slides.iter().enumerate() {
             let slide_num = i + 1;
             let hyperlinks = slide.hyperlinks();
-            let needs_rels = slide.has_images() || slide.has_notes() || slide.has_hyperlinks();
             let mut hyperlink_rel_ids: std::collections::HashMap<&str, usize> =
                 std::collections::HashMap::new();
 
-            if needs_rels {
+            // Every slide always has a rels file (at minimum for the layout reference).
+            {
                 let mut slide_rels = String::new();
                 slide_rels.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
                 slide_rels.push('\n');
@@ -1313,7 +1418,14 @@ impl PresentationBuilder {
                 );
                 slide_rels.push('\n');
 
-                let mut rel_id = 1;
+                // rId1: slide layout (always present)
+                slide_rels.push_str(&format!(
+                    r#"  <Relationship Id="rId1" Type="{}" Target="../slideLayouts/slideLayout1.xml"/>"#,
+                    REL_SLIDE_LAYOUT
+                ));
+                slide_rels.push('\n');
+
+                let mut rel_id = 2usize;
 
                 if slide.has_notes() {
                     slide_rels.push_str(&format!(
@@ -1360,7 +1472,8 @@ impl PresentationBuilder {
                 }
             }
 
-            let image_start_rel_id = if slide.has_notes() { 2 } else { 1 };
+            // rId1=layout, rId2=notes (if any), then images start.
+            let image_start_rel_id = if slide.has_notes() { 3 } else { 2 };
             let slide_xml = slide.serialize_slide(image_start_rel_id, &hyperlink_rel_ids)?;
             let part_name = format!("ppt/slides/slide{}.xml", slide_num);
             pkg.add_part(&part_name, CT_SLIDE, &slide_xml)?;
@@ -1380,7 +1493,7 @@ impl PresentationBuilder {
     }
 
     /// Serialize presentation.xml
-    fn build_presentation(&self) -> types::Presentation {
+    fn build_presentation(&self, master_rel_id: usize) -> types::Presentation {
         let sld_id_lst = types::SlideIdList {
             sld_id: self
                 .slides
@@ -1402,13 +1515,29 @@ impl PresentationBuilder {
             extra_children: Default::default(),
         };
 
+        // Build the slide master id list (one entry for our minimal master).
+        let mut master_entry = types::CTSlideMasterIdListEntry {
+            id: Some(2147483647),
+            ext_lst: None,
+            extra_attrs: Default::default(),
+            extra_children: Default::default(),
+        };
+        master_entry
+            .extra_attrs
+            .insert("r:id".to_string(), format!("rId{}", master_rel_id));
+        let sld_master_id_lst = types::CTSlideMasterIdList {
+            sld_master_id: vec![master_entry],
+            #[cfg(feature = "extra-children")]
+            extra_children: Default::default(),
+        };
+
         types::Presentation {
             first_slide_num: None,
             remove_personal_info_on_save: None,
             compat_mode: None,
             bookmark_id_seed: None,
             conformance: None,
-            sld_master_id_lst: None,
+            sld_master_id_lst: Some(Box::new(sld_master_id_lst)),
             sld_id_lst: Some(Box::new(sld_id_lst)),
             sld_sz: Some(Box::new(types::CTSlideSize {
                 cx: self.slide_width as i32,
@@ -1783,6 +1912,34 @@ mod tests {
         let links = read_slide.hyperlinks();
         assert_eq!(links.len(), 1);
         assert_eq!(links[0].text, "documentation");
+    }
+
+    #[test]
+    fn test_roundtrip_slide_master_layout() {
+        use std::io::Cursor;
+
+        // Verify that written PPTX files contain a slide master and layout,
+        // so they render correctly in PowerPoint instead of using fallbacks.
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.add_title("Master Test");
+        slide.add_text("Slide with layout");
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let presentation = crate::Presentation::from_reader(buffer).unwrap();
+
+        // Exactly one slide master should be present.
+        assert_eq!(presentation.slide_masters().len(), 1);
+
+        // The master should reference at least one layout.
+        let master = &presentation.slide_masters()[0];
+        assert_eq!(master.layout_count(), 1);
+
+        // Layouts should be loaded too.
+        assert_eq!(presentation.slide_layouts().len(), 1);
     }
 
     #[cfg(feature = "pml-transitions")]
