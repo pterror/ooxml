@@ -48,8 +48,8 @@ See [ECOSYSTEM.md](ECOSYSTEM.md) for details on fixtures and specs.
 - [x] OPC packaging (ZIP read/write)
 - [x] Relationships (.rels files)
 - [x] Content types ([Content_Types].xml)
-- [ ] Core properties (docProps/core.xml)
-- [ ] App properties (docProps/app.xml)
+- [x] Core properties (docProps/core.xml)
+- [x] App properties (docProps/app.xml)
 
 **ooxml-wml (WordprocessingML):**
 - [x] Document structure (document.xml)
