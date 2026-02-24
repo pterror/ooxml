@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <sheetData>
+    <row r="1"><c r="A1" t="n"><v>10</v></c></row>
+    <row r="2"><c r="A2" t="n"><v>50</v></c></row>
+    <row r="3"><c r="A3" t="n"><v>100</v></c></row>
+  </sheetData>
+  <conditionalFormatting sqref="A1:A3">
+    <cfRule type="colorScale" priority="1">
+      <colorScale>
+        <cfvo type="min"/>
+        <cfvo type="max"/>
+        <color rgb="FF63BE7B"/>
+        <color rgb="FFFFF8C"/>
+      </colorScale>
+    </cfRule>
+  </conditionalFormatting>
+</worksheet>

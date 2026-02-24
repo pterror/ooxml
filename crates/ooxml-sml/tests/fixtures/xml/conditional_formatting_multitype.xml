@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <sheetData/>
+  <conditionalFormatting sqref="A1:A10">
+    <cfRule type="top10" priority="1" percent="0" rank="5"/>
+    <cfRule type="aboveAverage" priority="2" aboveAverage="1"/>
+    <cfRule type="duplicateValues" priority="3"/>
+    <cfRule type="containsText" operator="containsText" priority="4" text="error">
+      <formula>NOT(ISERROR(SEARCH("error",A1)))</formula>
+    </cfRule>
+  </conditionalFormatting>
+</worksheet>

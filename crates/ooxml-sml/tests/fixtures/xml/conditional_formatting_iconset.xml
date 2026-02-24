@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <sheetData>
+    <row r="1"><c r="A1" t="n"><v>10</v></c></row>
+    <row r="2"><c r="A2" t="n"><v>50</v></c></row>
+    <row r="3"><c r="A3" t="n"><v>90</v></c></row>
+  </sheetData>
+  <conditionalFormatting sqref="A1:A3">
+    <cfRule type="iconSet" priority="1">
+      <iconSet>
+        <cfvo type="percent" val="0"/>
+        <cfvo type="percent" val="33"/>
+        <cfvo type="percent" val="67"/>
+      </iconSet>
+    </cfRule>
+  </conditionalFormatting>
+</worksheet>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<pivotTableDefinition xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+  name="PivotTable1" cacheId="1" dataCaption="Values">
+  <location ref="A1:D10" firstHeaderRow="1" firstDataRow="2" firstDataCol="0"/>
+  <pivotFields count="3">
+    <pivotField axis="axisRow" showAll="0"/>
+    <pivotField axis="axisCol" showAll="0"/>
+    <pivotField dataField="1" showAll="0"/>
+  </pivotFields>
+  <rowFields count="1">
+    <field x="0"/>
+  </rowFields>
+  <colFields count="1">
+    <field x="1"/>
+  </colFields>
+  <dataFields count="1">
+    <dataField name="Sum of Sales" fld="2" subtotal="sum"/>
+  </dataFields>
+</pivotTableDefinition>

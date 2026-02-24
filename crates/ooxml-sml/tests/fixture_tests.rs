@@ -211,6 +211,101 @@ fn test_fixture_conditional_formatting() {
 }
 
 #[test]
+fn test_fixture_conditional_formatting_colorscale() {
+    let xml = load_fixture("conditional_formatting_colorscale");
+    let ws = parse_worksheet(&xml).expect("should parse conditional_formatting_colorscale");
+
+    use ooxml_sml::types::ConditionalType;
+
+    let cfs = &ws.conditional_formatting;
+    assert_eq!(cfs.len(), 1, "expected 1 conditional formatting block");
+
+    let cf = &cfs[0];
+    assert_eq!(cf.square_reference.as_deref(), Some("A1:A3"));
+    assert_eq!(cf.cf_rule.len(), 1);
+
+    let rule = &cf.cf_rule[0];
+    assert_eq!(rule.r#type, Some(ConditionalType::ColorScale));
+    assert_eq!(rule.priority, 1);
+    assert!(
+        rule.color_scale.is_some(),
+        "expected color_scale child element"
+    );
+    assert!(rule.data_bar.is_none());
+    assert!(rule.icon_set.is_none());
+}
+
+#[test]
+fn test_fixture_conditional_formatting_databar() {
+    let xml = load_fixture("conditional_formatting_databar");
+    let ws = parse_worksheet(&xml).expect("should parse conditional_formatting_databar");
+
+    use ooxml_sml::types::ConditionalType;
+
+    let cfs = &ws.conditional_formatting;
+    assert_eq!(cfs.len(), 1);
+    assert_eq!(cfs[0].square_reference.as_deref(), Some("A1:A2"));
+
+    let rule = &cfs[0].cf_rule[0];
+    assert_eq!(rule.r#type, Some(ConditionalType::DataBar));
+    assert_eq!(rule.priority, 1);
+    assert!(rule.data_bar.is_some(), "expected data_bar child element");
+    assert!(rule.color_scale.is_none());
+    assert!(rule.icon_set.is_none());
+}
+
+#[test]
+fn test_fixture_conditional_formatting_iconset() {
+    let xml = load_fixture("conditional_formatting_iconset");
+    let ws = parse_worksheet(&xml).expect("should parse conditional_formatting_iconset");
+
+    use ooxml_sml::types::ConditionalType;
+
+    let cfs = &ws.conditional_formatting;
+    assert_eq!(cfs.len(), 1);
+    assert_eq!(cfs[0].square_reference.as_deref(), Some("A1:A3"));
+
+    let rule = &cfs[0].cf_rule[0];
+    assert_eq!(rule.r#type, Some(ConditionalType::IconSet));
+    assert_eq!(rule.priority, 1);
+    assert!(rule.icon_set.is_some(), "expected icon_set child element");
+    assert!(rule.color_scale.is_none());
+    assert!(rule.data_bar.is_none());
+}
+
+#[test]
+fn test_fixture_conditional_formatting_multitype() {
+    let xml = load_fixture("conditional_formatting_multitype");
+    let ws = parse_worksheet(&xml).expect("should parse conditional_formatting_multitype");
+
+    use ooxml_sml::types::ConditionalType;
+
+    let cfs = &ws.conditional_formatting;
+    assert_eq!(cfs.len(), 1, "expected 1 conditional formatting block");
+
+    let cf = &cfs[0];
+    assert_eq!(cf.square_reference.as_deref(), Some("A1:A10"));
+    assert_eq!(cf.cf_rule.len(), 4, "expected 4 rules");
+
+    // Verify each rule's type and priority
+    assert_eq!(cf.cf_rule[0].r#type, Some(ConditionalType::Top10));
+    assert_eq!(cf.cf_rule[0].priority, 1);
+
+    assert_eq!(cf.cf_rule[1].r#type, Some(ConditionalType::AboveAverage));
+    assert_eq!(cf.cf_rule[1].priority, 2);
+
+    assert_eq!(cf.cf_rule[2].r#type, Some(ConditionalType::DuplicateValues));
+    assert_eq!(cf.cf_rule[2].priority, 3);
+
+    assert_eq!(cf.cf_rule[3].r#type, Some(ConditionalType::ContainsText));
+    assert_eq!(cf.cf_rule[3].priority, 4);
+
+    // ContainsText rule should have one formula child
+    assert_eq!(cf.cf_rule[3].formula.len(), 1);
+    assert!(cf.cf_rule[3].formula[0].contains("SEARCH"));
+}
+
+#[test]
 fn test_fixture_hyperlinks() {
     let xml = load_fixture("hyperlinks");
     let ws = parse_worksheet(&xml).expect("should parse hyperlinks");
