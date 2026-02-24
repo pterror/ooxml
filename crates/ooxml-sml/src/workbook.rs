@@ -381,7 +381,6 @@ impl<R: Read + Seek> Workbook<R> {
             }
 
             // Load pivot tables from sheet relationships
-            // Load pivot tables from sheet relationships
             #[cfg(feature = "sml-pivot")]
             for rel in sheet_rels.get_all_by_type(REL_PIVOT_TABLE) {
                 let pt_path = resolve_path(&path, &rel.target);
