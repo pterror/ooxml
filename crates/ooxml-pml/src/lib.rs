@@ -52,9 +52,11 @@ pub mod generated_serializers;
 pub use generated_serializers as serializers;
 
 pub use error::{Error, Result};
+#[cfg(feature = "pml-charts")]
+pub use presentation::SmartArtParts;
 pub use presentation::{
-    Hyperlink, ImageData, Presentation, Slide, SlideLayout, SlideLayoutType, SlideMaster, Table,
-    Transition, TransitionSpeed, TransitionType,
+    DiagramRelIds, Hyperlink, ImageData, Presentation, Slide, SlideLayout, SlideLayoutType,
+    SlideMaster, Table, Transition, TransitionSpeed, TransitionType,
 };
 // Re-export generated types that replace handwritten ones
 pub use types::{Picture, Shape};

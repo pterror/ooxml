@@ -330,6 +330,9 @@ impl<R: Read + Seek> Presentation<R> {
         // Extract tables from graphic frames
         let tables = extract_tables_from_slide(&inner);
 
+        // Extract chart and SmartArt relationship IDs from graphic frames
+        let (chart_rel_ids, smartart_rel_ids) = extract_charts_and_smartart_from_slide(&inner);
+
         // Build the slide wrapper
         let mut slide = Slide {
             inner,
@@ -338,6 +341,8 @@ impl<R: Read + Seek> Presentation<R> {
             notes: None,
             layout_rel_id: info.layout_rel_id.clone(),
             tables,
+            chart_rel_ids,
+            smartart_rel_ids,
         };
 
         // Try to load speaker notes
@@ -423,6 +428,134 @@ impl<R: Read + Seek> Presentation<R> {
 
         Ok(results)
     }
+
+    /// Load and parse a chart by its relationship ID.
+    ///
+    /// Use [`Slide::chart_rel_ids`] to get the relationship IDs for all charts
+    /// on a given slide, then pass each ID here to load the full chart definition.
+    ///
+    /// Requires the `pml-charts` feature.
+    ///
+    /// ECMA-376 Part 1, §21.2.2.29 (chartSpace).
+    #[cfg(feature = "pml-charts")]
+    pub fn get_chart(
+        &mut self,
+        slide: &Slide,
+        rel_id: &str,
+    ) -> Result<ooxml_dml::types::ChartSpace> {
+        // Resolve the chart part path via slide relationships
+        let slide_rels = self
+            .package
+            .read_part_relationships(slide.slide_path())
+            .map_err(|_| Error::Invalid("Failed to read slide relationships".into()))?;
+
+        let rel = slide_rels
+            .get(rel_id)
+            .ok_or_else(|| Error::Invalid(format!("Chart relationship {} not found", rel_id)))?;
+
+        let chart_path = resolve_path(slide.slide_path(), &rel.target);
+        let chart_xml = self.package.read_part(&chart_path)?;
+
+        parse_chart(&chart_xml)
+    }
+
+    /// Load all four SmartArt parts for a diagram.
+    ///
+    /// Use [`Slide::smartart_rel_ids`] to get the relationship ID sets for all
+    /// SmartArt diagrams on a given slide, then pass each [`DiagramRelIds`] here.
+    ///
+    /// The data model is always loaded (returns an error if it fails). The layout,
+    /// colors, and style parts are loaded gracefully — failures produce `None` rather
+    /// than propagating an error, since callers typically only need the data model.
+    ///
+    /// Requires the `pml-charts` feature.
+    ///
+    /// ECMA-376 Part 1, §21.4 (DrawingML — Diagrams).
+    #[cfg(feature = "pml-charts")]
+    pub fn get_smartart(
+        &mut self,
+        slide: &Slide,
+        rel_ids: &DiagramRelIds,
+    ) -> Result<SmartArtParts> {
+        let slide_rels = self
+            .package
+            .read_part_relationships(slide.slide_path())
+            .map_err(|_| Error::Invalid("Failed to read slide relationships".into()))?;
+
+        // Helper: resolve a relationship ID to a path.
+        let resolve_rel = |rel_id: &str| -> Option<String> {
+            slide_rels
+                .get(rel_id)
+                .map(|r| resolve_path(slide.slide_path(), &r.target))
+        };
+
+        // Data model (dm) — required.
+        let dm_path = resolve_rel(&rel_ids.dm).ok_or_else(|| {
+            Error::Invalid(format!(
+                "SmartArt data model relationship {} not found",
+                rel_ids.dm
+            ))
+        })?;
+        let dm_xml = self.package.read_part(&dm_path)?;
+        let data = parse_data_model(&dm_xml)?;
+
+        // Layout definition (lo) — optional/graceful.
+        let layout = resolve_rel(&rel_ids.lo)
+            .and_then(|path| self.package.read_part(&path).ok())
+            .and_then(|xml| parse_diagram_definition(&xml).ok());
+
+        // Colors (cs) — optional/graceful.
+        let colors = resolve_rel(&rel_ids.cs)
+            .and_then(|path| self.package.read_part(&path).ok())
+            .and_then(|xml| parse_diagram_colors(&xml).ok());
+
+        // Quick style (qs) — optional/graceful.
+        let style = resolve_rel(&rel_ids.qs)
+            .and_then(|path| self.package.read_part(&path).ok())
+            .and_then(|xml| parse_diagram_style(&xml).ok());
+
+        Ok(SmartArtParts {
+            data,
+            layout,
+            colors,
+            style,
+        })
+    }
+}
+
+/// Relationship IDs for a SmartArt diagram's four constituent parts.
+///
+/// SmartArt in a slide is represented by four separate XML parts:
+/// data model, layout definition, quick style, and colors.
+/// The `dgm:relIds` element in the slide XML contains the relationship IDs
+/// pointing to each part.
+///
+/// ECMA-376 Part 1, §21.4.2.20 (relIds).
+#[derive(Debug, Clone)]
+pub struct DiagramRelIds {
+    /// Relationship ID for the diagram data model part (`dgm:dataModel`).
+    pub dm: String,
+    /// Relationship ID for the diagram layout definition part (`dgm:layoutDef`).
+    pub lo: String,
+    /// Relationship ID for the diagram quick style part (`dgm:styleDef`).
+    pub qs: String,
+    /// Relationship ID for the diagram colors part (`dgm:colorsDef`).
+    pub cs: String,
+}
+
+/// The four constituent parts of a SmartArt diagram, loaded and parsed.
+///
+/// Obtained from [`Presentation::get_smartart`].
+#[cfg(feature = "pml-charts")]
+pub struct SmartArtParts {
+    /// The diagram data model (always present — contains the actual content nodes).
+    pub data: ooxml_dml::types::DataModel,
+    /// The layout definition (may be absent or fail to parse gracefully).
+    pub layout: Option<ooxml_dml::types::DiagramDefinition>,
+    /// The color transform definition (may be absent or fail to parse gracefully).
+    pub colors: Option<ooxml_dml::types::DiagramColorTransform>,
+    /// The style definition (may be absent or fail to parse gracefully).
+    pub style: Option<ooxml_dml::types::DiagramStyleDefinition>,
 }
 
 /// A slide in the presentation.
@@ -444,6 +577,10 @@ pub struct Slide {
     layout_rel_id: Option<String>,
     /// Tables extracted from graphic frames.
     tables: Vec<Table>,
+    /// Relationship IDs for charts embedded in this slide (via `c:chart r:id`).
+    chart_rel_ids: Vec<String>,
+    /// Relationship ID sets for SmartArt diagrams embedded in this slide (via `dgm:relIds`).
+    smartart_rel_ids: Vec<DiagramRelIds>,
 }
 
 /// Slide transition effect.
@@ -688,6 +825,22 @@ impl Slide {
     /// Get a table by index (0-based).
     pub fn table(&self, index: usize) -> Option<&Table> {
         self.tables.get(index)
+    }
+
+    /// Get the relationship IDs of all charts embedded in this slide.
+    ///
+    /// Each ID can be passed to [`Presentation::get_chart`] to load and parse
+    /// the corresponding `ChartSpace`.
+    pub fn chart_rel_ids(&self) -> &[String] {
+        &self.chart_rel_ids
+    }
+
+    /// Get the relationship ID sets for all SmartArt diagrams on this slide.
+    ///
+    /// Each entry can be passed to [`Presentation::get_smartart`] to load and
+    /// parse all four SmartArt parts.
+    pub fn smartart_rel_ids(&self) -> &[DiagramRelIds] {
+        &self.smartart_rel_ids
     }
 }
 
@@ -1201,6 +1354,235 @@ fn wrap_ct_table(ct_table: ooxml_dml::types::CTTable, name: Option<String>) -> T
     }
 }
 
+// ============================================================================
+// Chart and SmartArt extraction
+// ============================================================================
+
+/// Extract chart rel IDs and SmartArt rel ID sets from graphic frames in a slide.
+///
+/// Charts live in `p:graphicFrame/a:graphic/a:graphicData[@uri=".../chart"]/c:chart[@r:id="..."]`.
+/// SmartArt lives in `p:graphicFrame/a:graphic/a:graphicData[@uri=".../diagram"]/dgm:relIds`.
+#[cfg(feature = "extra-children")]
+fn extract_charts_and_smartart_from_slide(
+    slide: &types::Slide,
+) -> (Vec<String>, Vec<DiagramRelIds>) {
+    let mut chart_ids = Vec::new();
+    let mut smartart_ids = Vec::new();
+
+    for frame in &slide.common_slide_data.shape_tree.graphic_frame {
+        for node in &frame.extra_children {
+            collect_chart_and_smartart_ids(&node.node, &mut chart_ids, &mut smartart_ids);
+        }
+    }
+
+    (chart_ids, smartart_ids)
+}
+
+/// Stub when extra-children feature is disabled.
+#[cfg(not(feature = "extra-children"))]
+fn extract_charts_and_smartart_from_slide(
+    _slide: &types::Slide,
+) -> (Vec<String>, Vec<DiagramRelIds>) {
+    (Vec::new(), Vec::new())
+}
+
+/// Recursively walk a raw XML node tree collecting chart `r:id` values and
+/// SmartArt `dgm:relIds` attribute sets.
+#[cfg(feature = "extra-children")]
+fn collect_chart_and_smartart_ids(
+    node: &ooxml_xml::RawXmlNode,
+    chart_ids: &mut Vec<String>,
+    smartart_ids: &mut Vec<DiagramRelIds>,
+) {
+    use ooxml_xml::RawXmlNode;
+
+    if let RawXmlNode::Element(elem) = node {
+        let local = elem.name.split(':').next_back().unwrap_or(&elem.name);
+        match local {
+            // <c:chart r:id="rIdN"/> — chart reference
+            "chart" => {
+                for (attr_name, attr_val) in &elem.attributes {
+                    let attr_local = attr_name.split(':').next_back().unwrap_or(attr_name);
+                    if attr_local == "id" {
+                        chart_ids.push(attr_val.clone());
+                    }
+                }
+            }
+            // <dgm:relIds r:dm="..." r:lo="..." r:qs="..." r:cs="..."/>
+            "relIds" => {
+                let mut dm = None;
+                let mut lo = None;
+                let mut qs = None;
+                let mut cs = None;
+                for (attr_name, attr_val) in &elem.attributes {
+                    let attr_local = attr_name.split(':').next_back().unwrap_or(attr_name);
+                    match attr_local {
+                        "dm" => dm = Some(attr_val.clone()),
+                        "lo" => lo = Some(attr_val.clone()),
+                        "qs" => qs = Some(attr_val.clone()),
+                        "cs" => cs = Some(attr_val.clone()),
+                        _ => {}
+                    }
+                }
+                if let (Some(dm), Some(lo), Some(qs), Some(cs)) = (dm, lo, qs, cs) {
+                    smartart_ids.push(DiagramRelIds { dm, lo, qs, cs });
+                }
+            }
+            // Any other element — recurse into children
+            _ => {
+                for child in &elem.children {
+                    collect_chart_and_smartart_ids(child, chart_ids, smartart_ids);
+                }
+            }
+        }
+    }
+}
+
+// ============================================================================
+// Chart and SmartArt part parsers
+// ============================================================================
+
+/// Parse a chart XML part into a `ChartSpace`.
+///
+/// Requires the `pml-charts` feature (which enables `ooxml-dml/dml-charts`).
+/// ECMA-376 Part 1, §21.2.2.29 (CT_ChartSpace).
+#[cfg(feature = "pml-charts")]
+fn parse_chart(xml: &[u8]) -> Result<ooxml_dml::types::ChartSpace> {
+    use ooxml_dml::parsers::FromXml as DmlFromXml;
+    let mut reader = Reader::from_reader(Cursor::new(xml));
+    let mut buf = Vec::new();
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => {
+                return ooxml_dml::types::ChartSpace::from_xml(&mut reader, &e, false)
+                    .map_err(|e| Error::Invalid(format!("Failed to parse chartSpace: {}", e)));
+            }
+            Ok(Event::Empty(e)) => {
+                return ooxml_dml::types::ChartSpace::from_xml(&mut reader, &e, true)
+                    .map_err(|e| Error::Invalid(format!("Failed to parse chartSpace: {}", e)));
+            }
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(Error::Xml(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+    Err(Error::Invalid("No chartSpace element found".into()))
+}
+
+/// Parse a SmartArt data model XML part into a `DataModel`.
+///
+/// ECMA-376 Part 1, §21.4.2.8 (CT_DataModel).
+#[cfg(feature = "pml-charts")]
+fn parse_data_model(xml: &[u8]) -> Result<ooxml_dml::types::DataModel> {
+    use ooxml_dml::parsers::FromXml as DmlFromXml;
+    let mut reader = Reader::from_reader(Cursor::new(xml));
+    let mut buf = Vec::new();
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => {
+                return ooxml_dml::types::DataModel::from_xml(&mut reader, &e, false)
+                    .map_err(|e| Error::Invalid(format!("Failed to parse dataModel: {}", e)));
+            }
+            Ok(Event::Empty(e)) => {
+                return ooxml_dml::types::DataModel::from_xml(&mut reader, &e, true)
+                    .map_err(|e| Error::Invalid(format!("Failed to parse dataModel: {}", e)));
+            }
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(Error::Xml(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+    Err(Error::Invalid("No dataModel element found".into()))
+}
+
+/// Parse a SmartArt layout definition XML part into a `DiagramDefinition`.
+///
+/// ECMA-376 Part 1, §21.4.3 (layoutDef).
+#[cfg(feature = "pml-charts")]
+fn parse_diagram_definition(xml: &[u8]) -> Result<ooxml_dml::types::DiagramDefinition> {
+    use ooxml_dml::parsers::FromXml as DmlFromXml;
+    let mut reader = Reader::from_reader(Cursor::new(xml));
+    let mut buf = Vec::new();
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => {
+                return ooxml_dml::types::DiagramDefinition::from_xml(&mut reader, &e, false)
+                    .map_err(|e| Error::Invalid(format!("Failed to parse layoutDef: {}", e)));
+            }
+            Ok(Event::Empty(e)) => {
+                return ooxml_dml::types::DiagramDefinition::from_xml(&mut reader, &e, true)
+                    .map_err(|e| Error::Invalid(format!("Failed to parse layoutDef: {}", e)));
+            }
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(Error::Xml(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+    Err(Error::Invalid("No layoutDef element found".into()))
+}
+
+/// Parse a SmartArt colors XML part into a `DiagramColorTransform`.
+///
+/// ECMA-376 Part 1, §21.4.4 (colorsDef).
+#[cfg(feature = "pml-charts")]
+fn parse_diagram_colors(xml: &[u8]) -> Result<ooxml_dml::types::DiagramColorTransform> {
+    use ooxml_dml::parsers::FromXml as DmlFromXml;
+    let mut reader = Reader::from_reader(Cursor::new(xml));
+    let mut buf = Vec::new();
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => {
+                return ooxml_dml::types::DiagramColorTransform::from_xml(&mut reader, &e, false)
+                    .map_err(|e| Error::Invalid(format!("Failed to parse colorsDef: {}", e)));
+            }
+            Ok(Event::Empty(e)) => {
+                return ooxml_dml::types::DiagramColorTransform::from_xml(&mut reader, &e, true)
+                    .map_err(|e| Error::Invalid(format!("Failed to parse colorsDef: {}", e)));
+            }
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(Error::Xml(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+    Err(Error::Invalid("No colorsDef element found".into()))
+}
+
+/// Parse a SmartArt style definition XML part into a `DiagramStyleDefinition`.
+///
+/// ECMA-376 Part 1, §21.4.5 (styleDef).
+#[cfg(feature = "pml-charts")]
+fn parse_diagram_style(xml: &[u8]) -> Result<ooxml_dml::types::DiagramStyleDefinition> {
+    use ooxml_dml::parsers::FromXml as DmlFromXml;
+    let mut reader = Reader::from_reader(Cursor::new(xml));
+    let mut buf = Vec::new();
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => {
+                return ooxml_dml::types::DiagramStyleDefinition::from_xml(&mut reader, &e, false)
+                    .map_err(|e| Error::Invalid(format!("Failed to parse styleDef: {}", e)));
+            }
+            Ok(Event::Empty(e)) => {
+                return ooxml_dml::types::DiagramStyleDefinition::from_xml(&mut reader, &e, true)
+                    .map_err(|e| Error::Invalid(format!("Failed to parse styleDef: {}", e)));
+            }
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(Error::Xml(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+    Err(Error::Invalid("No styleDef element found".into()))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1230,5 +1612,122 @@ mod tests {
             ),
             "ppt/slideMasters/slideMaster1.xml"
         );
+    }
+
+    /// Build a `RawXmlElement` by parsing a simple XML string using quick-xml.
+    ///
+    /// This is a test helper only — it handles single top-level elements without
+    /// nested namespaced children by walking quick-xml events.
+    #[cfg(feature = "extra-children")]
+    fn build_raw_element_from_xml(xml: &str) -> ooxml_xml::RawXmlElement {
+        use ooxml_xml::{RawXmlElement, RawXmlNode};
+
+        let mut reader = Reader::from_reader(Cursor::new(xml.as_bytes()));
+        reader.config_mut().trim_text(false);
+        let mut buf = Vec::new();
+        let mut stack: Vec<RawXmlElement> = Vec::new();
+        let mut root: Option<RawXmlElement> = None;
+
+        loop {
+            match reader.read_event_into(&mut buf) {
+                Ok(Event::Start(e)) => {
+                    let name = String::from_utf8_lossy(e.name().as_ref()).into_owned();
+                    let attrs: Vec<(String, String)> = e
+                        .attributes()
+                        .filter_map(|a| a.ok())
+                        .map(|attr| {
+                            let k = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                            let v = String::from_utf8_lossy(&attr.value).into_owned();
+                            (k, v)
+                        })
+                        .collect();
+                    stack.push(RawXmlElement {
+                        name,
+                        attributes: attrs,
+                        children: Vec::new(),
+                        self_closing: false,
+                    });
+                }
+                Ok(Event::Empty(e)) => {
+                    let name = String::from_utf8_lossy(e.name().as_ref()).into_owned();
+                    let attrs: Vec<(String, String)> = e
+                        .attributes()
+                        .filter_map(|a| a.ok())
+                        .map(|attr| {
+                            let k = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                            let v = String::from_utf8_lossy(&attr.value).into_owned();
+                            (k, v)
+                        })
+                        .collect();
+                    let elem = RawXmlElement {
+                        name,
+                        attributes: attrs,
+                        children: Vec::new(),
+                        self_closing: true,
+                    };
+                    if let Some(parent) = stack.last_mut() {
+                        parent.children.push(RawXmlNode::Element(elem));
+                    } else {
+                        root = Some(elem);
+                    }
+                }
+                Ok(Event::End(_)) => {
+                    if let Some(finished) = stack.pop() {
+                        if let Some(parent) = stack.last_mut() {
+                            parent.children.push(RawXmlNode::Element(finished));
+                        } else {
+                            root = Some(finished);
+                        }
+                    }
+                }
+                Ok(Event::Eof) => break,
+                _ => {}
+            }
+            buf.clear();
+        }
+
+        root.expect("test XML must have a root element")
+    }
+
+    /// Verify that chart r:id values are extracted from an XML node tree containing
+    /// `<a:graphic>/<a:graphicData>/<c:chart r:id="rId5"/>`.
+    #[cfg(feature = "extra-children")]
+    #[test]
+    fn test_extract_chart_rel_id() {
+        use ooxml_xml::RawXmlNode;
+
+        let xml = r#"<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:chart r:id="rId5"/></a:graphicData></a:graphic>"#;
+        let elem = build_raw_element_from_xml(xml);
+        let node = RawXmlNode::Element(elem);
+
+        let mut chart_ids = Vec::new();
+        let mut smartart_ids = Vec::new();
+        collect_chart_and_smartart_ids(&node, &mut chart_ids, &mut smartart_ids);
+
+        assert_eq!(chart_ids, vec!["rId5".to_string()]);
+        assert!(smartart_ids.is_empty());
+    }
+
+    /// Verify that SmartArt dgm:relIds attribute sets are extracted from an XML
+    /// node tree containing `<a:graphic>/<a:graphicData>/<dgm:relIds r:dm="..." .../>`.
+    #[cfg(feature = "extra-children")]
+    #[test]
+    fn test_extract_smartart_rel_ids() {
+        use ooxml_xml::RawXmlNode;
+
+        let xml = r#"<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:dgm="http://schemas.openxmlformats.org/drawingml/2006/diagram" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/diagram"><dgm:relIds r:dm="rId4" r:lo="rId5" r:qs="rId6" r:cs="rId7"/></a:graphicData></a:graphic>"#;
+        let elem = build_raw_element_from_xml(xml);
+        let node = RawXmlNode::Element(elem);
+
+        let mut chart_ids = Vec::new();
+        let mut smartart_ids = Vec::new();
+        collect_chart_and_smartart_ids(&node, &mut chart_ids, &mut smartart_ids);
+
+        assert!(chart_ids.is_empty());
+        assert_eq!(smartart_ids.len(), 1);
+        assert_eq!(smartart_ids[0].dm, "rId4");
+        assert_eq!(smartart_ids[0].lo, "rId5");
+        assert_eq!(smartart_ids[0].qs, "rId6");
+        assert_eq!(smartart_ids[0].cs, "rId7");
     }
 }

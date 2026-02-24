@@ -19,12 +19,14 @@ full = [
     "pml-media",
     "pml-external",
     "pml-extensions",
+    "pml-charts",
     "extra-attrs",
     "extra-children",
     "dml-tables",
 ]
 # Individual feature flags (see spec/ooxml-features.yaml)
 pml-transitions = []     # Slide transitions
+pml-charts = ["ooxml-dml/dml-charts", "ooxml-dml/dml-diagrams"]  # Chart and SmartArt reading
 dml-tables = ["ooxml-dml/dml-tables"]  # DML table support
 pml-animations = []      # Slide timing/animations
 pml-notes = []           # Speaker notes

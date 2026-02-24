@@ -300,6 +300,22 @@ pub mod rel_type {
     /// Extended properties.
     pub const EXTENDED_PROPERTIES: &str =
         "http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties";
+
+    /// SmartArt diagram data part.
+    pub const DIAGRAM_DATA: &str =
+        "http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramData";
+
+    /// SmartArt diagram layout definition part.
+    pub const DIAGRAM_LAYOUT: &str =
+        "http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramLayout";
+
+    /// SmartArt diagram quick style part.
+    pub const DIAGRAM_QUICK_STYLE: &str =
+        "http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramQuickStyle";
+
+    /// SmartArt diagram colors part.
+    pub const DIAGRAM_COLORS: &str =
+        "http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramColors";
 }
 
 /// Get the relationships file path for a given part.
