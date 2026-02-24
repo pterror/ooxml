@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "slide_count"
+    }
+  ],
+  "description": "3x3 table",
+  "format": "pml",
+  "version": 1
+}

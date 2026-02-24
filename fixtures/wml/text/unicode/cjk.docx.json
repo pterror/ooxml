@@ -1,0 +1,13 @@
+{
+  "assertions": [
+    {
+      "expected": "中文日本語한국어",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    }
+  ],
+  "description": "Run with CJK characters",
+  "format": "wml",
+  "version": 1
+}

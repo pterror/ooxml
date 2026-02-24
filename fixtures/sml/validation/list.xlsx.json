@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "sheet_count"
+    }
+  ],
+  "description": "Dropdown list validation on A1",
+  "format": "sml",
+  "version": 1
+}

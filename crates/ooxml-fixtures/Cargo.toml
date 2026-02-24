@@ -1,0 +1,22 @@
+[package]
+name = "ooxml-fixtures"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "CC0 test fixture generation for the ooxml library"
+
+[[bin]]
+name = "generate-fixtures"
+path = "src/main.rs"
+
+[dependencies]
+ooxml-wml = { workspace = true, features = ["full"] }
+ooxml-sml = { workspace = true, features = ["full"] }
+ooxml-pml = { workspace = true, features = ["full"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+[build-dependencies]
+serde_yaml = { workspace = true }
+serde = { workspace = true }

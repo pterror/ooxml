@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "slide_count"
+    }
+  ],
+  "description": "Shape with red line color and 38100 EMU width",
+  "format": "pml",
+  "version": 1
+}

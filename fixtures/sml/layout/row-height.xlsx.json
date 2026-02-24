@@ -1,0 +1,18 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "sheet_count"
+    },
+    {
+      "expected": 30.0,
+      "row": 0,
+      "sheet": 0,
+      "tolerance": 0.5,
+      "type": "row_height"
+    }
+  ],
+  "description": "Custom row height 30pt",
+  "format": "sml",
+  "version": 1
+}

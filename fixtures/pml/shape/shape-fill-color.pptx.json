@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "slide_count"
+    }
+  ],
+  "description": "Shape with solid fill color 4472C4",
+  "format": "pml",
+  "version": 1
+}

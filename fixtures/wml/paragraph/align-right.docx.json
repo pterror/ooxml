@@ -1,0 +1,18 @@
+{
+  "assertions": [
+    {
+      "expected": "right",
+      "para": 0,
+      "type": "paragraph_align"
+    },
+    {
+      "expected": "right",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    }
+  ],
+  "description": "Right-aligned paragraph",
+  "format": "wml",
+  "version": 1
+}

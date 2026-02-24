@@ -1,0 +1,26 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "sheet_count"
+    },
+    {
+      "col": 0,
+      "expected": "number",
+      "row": 0,
+      "sheet": 0,
+      "type": "cell_type"
+    },
+    {
+      "col": 0,
+      "expected": "1000000000",
+      "row": 0,
+      "sheet": 0,
+      "tolerance": 0.0,
+      "type": "cell_value"
+    }
+  ],
+  "description": "Large integer cell value",
+  "format": "sml",
+  "version": 1
+}

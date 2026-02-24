@@ -1,0 +1,13 @@
+{
+  "assertions": [
+    {
+      "expected": "",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    }
+  ],
+  "description": "A run with empty text",
+  "format": "wml",
+  "version": 1
+}

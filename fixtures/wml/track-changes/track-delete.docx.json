@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "paragraph_count"
+    }
+  ],
+  "description": "Document with a tracked deletion",
+  "format": "wml",
+  "version": 1
+}

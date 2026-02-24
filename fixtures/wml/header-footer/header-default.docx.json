@@ -1,0 +1,13 @@
+{
+  "assertions": [
+    {
+      "expected": "body",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    }
+  ],
+  "description": "Document with a default header",
+  "format": "wml",
+  "version": 1
+}

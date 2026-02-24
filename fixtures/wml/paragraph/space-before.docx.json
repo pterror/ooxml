@@ -1,0 +1,13 @@
+{
+  "assertions": [
+    {
+      "expected": "space before",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    }
+  ],
+  "description": "Paragraph with 240 twips space before",
+  "format": "wml",
+  "version": 1
+}

@@ -1,0 +1,547 @@
+version: 1
+fixtures:
+  # ---------------------------------------------------------------------------
+  # wml/text/ — run-level formatting (boolean)
+  # ---------------------------------------------------------------------------
+  - id: fixture_wml_text_bold
+    format: wml
+    path: wml/text/bold.docx
+    description: "Bold run"
+    template: wml_run_bool
+    params:
+      setter: set_bold
+      assertion_type: RunBold
+      text: "bold"
+      expected: true
+
+  - id: fixture_wml_text_italic
+    format: wml
+    path: wml/text/italic.docx
+    description: "Italic run"
+    template: wml_run_bool
+    params:
+      setter: set_italic
+      assertion_type: RunItalic
+      text: "italic"
+      expected: true
+
+  - id: fixture_wml_text_strikethrough
+    format: wml
+    path: wml/text/strikethrough.docx
+    description: "Strikethrough run"
+    template: wml_run_bool
+    params:
+      setter: set_strikethrough
+      assertion_type: RunStrikethrough
+      text: "struck"
+      expected: true
+
+  - id: fixture_wml_text_underline
+    format: wml
+    path: wml/text/underline.docx
+    description: "Underlined run"
+    template: custom
+    custom_fn: fixture_wml_text_underline
+
+  - id: fixture_wml_text_double_strike
+    format: wml
+    path: wml/text/double-strike.docx
+    description: "Double strikethrough run"
+    template: custom
+    custom_fn: fixture_wml_text_double_strike
+
+  - id: fixture_wml_text_small_caps
+    format: wml
+    path: wml/text/small-caps.docx
+    description: "Small caps run"
+    template: custom
+    custom_fn: fixture_wml_text_small_caps
+
+  - id: fixture_wml_text_all_caps
+    format: wml
+    path: wml/text/all-caps.docx
+    description: "All caps run"
+    template: custom
+    custom_fn: fixture_wml_text_all_caps
+
+  - id: fixture_wml_text_shadow
+    format: wml
+    path: wml/text/shadow.docx
+    description: "Shadow text effect run"
+    template: custom
+    custom_fn: fixture_wml_text_shadow
+
+  - id: fixture_wml_text_emboss
+    format: wml
+    path: wml/text/emboss.docx
+    description: "Emboss text effect run"
+    template: custom
+    custom_fn: fixture_wml_text_emboss
+
+  - id: fixture_wml_text_outline
+    format: wml
+    path: wml/text/outline.docx
+    description: "Outline (hollow) text effect run"
+    template: custom
+    custom_fn: fixture_wml_text_outline
+
+  - id: fixture_wml_text_imprint
+    format: wml
+    path: wml/text/imprint.docx
+    description: "Imprint (engrave) text effect run"
+    template: custom
+    custom_fn: fixture_wml_text_imprint
+
+  - id: fixture_wml_text_vanish
+    format: wml
+    path: wml/text/vanish.docx
+    description: "Hidden (vanish) run"
+    template: custom
+    custom_fn: fixture_wml_text_vanish
+
+  - id: fixture_wml_text_color
+    format: wml
+    path: wml/text/color.docx
+    description: "Red colored run (FF0000)"
+    template: custom
+    custom_fn: fixture_wml_text_color
+
+  - id: fixture_wml_text_font_size
+    format: wml
+    path: wml/text/font-size.docx
+    description: "Run with 24pt font size"
+    template: custom
+    custom_fn: fixture_wml_text_font_size
+
+  - id: fixture_wml_text_font_name
+    format: wml
+    path: wml/text/font-name.docx
+    description: "Run with Arial font"
+    template: custom
+    custom_fn: fixture_wml_text_font_name
+
+  - id: fixture_wml_text_bold_italic
+    format: wml
+    path: wml/text/bold-italic.docx
+    description: "Run with both bold and italic"
+    template: custom
+    custom_fn: fixture_wml_text_bold_italic
+
+  # ---------------------------------------------------------------------------
+  # wml/text/unicode/
+  # ---------------------------------------------------------------------------
+  - id: fixture_wml_text_unicode_latin_extended
+    format: wml
+    path: wml/text/unicode/latin-extended.docx
+    description: "Run with Latin extended characters"
+    template: custom
+    custom_fn: fixture_wml_text_unicode_latin_extended
+
+  - id: fixture_wml_text_unicode_cjk
+    format: wml
+    path: wml/text/unicode/cjk.docx
+    description: "Run with CJK characters"
+    template: custom
+    custom_fn: fixture_wml_text_unicode_cjk
+
+  - id: fixture_wml_text_unicode_arabic
+    format: wml
+    path: wml/text/unicode/arabic.docx
+    description: "Run with Arabic text"
+    template: custom
+    custom_fn: fixture_wml_text_unicode_arabic
+
+  - id: fixture_wml_text_unicode_emoji
+    format: wml
+    path: wml/text/unicode/emoji.docx
+    description: "Run with emoji characters"
+    template: custom
+    custom_fn: fixture_wml_text_unicode_emoji
+
+  - id: fixture_wml_text_xml_special_chars
+    format: wml
+    path: wml/text/unicode/xml-special-chars.docx
+    description: "Run with XML special characters that must round-trip safely"
+    template: custom
+    custom_fn: fixture_wml_text_xml_special_chars
+
+  - id: fixture_wml_text_empty_run
+    format: wml
+    path: wml/text/unicode/empty-run.docx
+    description: "A run with empty text"
+    template: custom
+    custom_fn: fixture_wml_text_empty_run
+
+  # ---------------------------------------------------------------------------
+  # wml/paragraph/
+  # ---------------------------------------------------------------------------
+  - id: fixture_wml_paragraph_align_left
+    format: wml
+    path: wml/paragraph/align-left.docx
+    description: "Left-aligned paragraph"
+    template: custom
+    custom_fn: fixture_wml_paragraph_align_left
+
+  - id: fixture_wml_paragraph_align_center
+    format: wml
+    path: wml/paragraph/align-center.docx
+    description: "Center-aligned paragraph"
+    template: custom
+    custom_fn: fixture_wml_paragraph_align_center
+
+  - id: fixture_wml_paragraph_align_right
+    format: wml
+    path: wml/paragraph/align-right.docx
+    description: "Right-aligned paragraph"
+    template: custom
+    custom_fn: fixture_wml_paragraph_align_right
+
+  - id: fixture_wml_paragraph_align_justify
+    format: wml
+    path: wml/paragraph/align-justify.docx
+    description: "Justified paragraph"
+    template: custom
+    custom_fn: fixture_wml_paragraph_align_justify
+
+  - id: fixture_wml_paragraph_space_before
+    format: wml
+    path: wml/paragraph/space-before.docx
+    description: "Paragraph with 240 twips space before"
+    template: custom
+    custom_fn: fixture_wml_paragraph_space_before
+
+  - id: fixture_wml_paragraph_space_after
+    format: wml
+    path: wml/paragraph/space-after.docx
+    description: "Paragraph with 240 twips space after"
+    template: custom
+    custom_fn: fixture_wml_paragraph_space_after
+
+  - id: fixture_wml_paragraph_line_spacing
+    format: wml
+    path: wml/paragraph/line-spacing.docx
+    description: "Paragraph with 360 twips (1.5x) line spacing"
+    template: custom
+    custom_fn: fixture_wml_paragraph_line_spacing
+
+  - id: fixture_wml_paragraph_indent_left
+    format: wml
+    path: wml/paragraph/indent-left.docx
+    description: "Paragraph with 720 twips left indent"
+    template: custom
+    custom_fn: fixture_wml_paragraph_indent_left
+
+  - id: fixture_wml_paragraph_indent_first_line
+    format: wml
+    path: wml/paragraph/indent-first-line.docx
+    description: "Paragraph with 360 twips first-line indent"
+    template: custom
+    custom_fn: fixture_wml_paragraph_indent_first_line
+
+  - id: fixture_wml_paragraph_outline_level_1
+    format: wml
+    path: wml/paragraph/outline-level-1.docx
+    description: "Paragraph at outline level 1"
+    template: custom
+    custom_fn: fixture_wml_paragraph_outline_level_1
+
+  - id: fixture_wml_paragraph_outline_level_2
+    format: wml
+    path: wml/paragraph/outline-level-2.docx
+    description: "Paragraph at outline level 2"
+    template: custom
+    custom_fn: fixture_wml_paragraph_outline_level_2
+
+  - id: fixture_wml_paragraph_outline_level_3
+    format: wml
+    path: wml/paragraph/outline-level-3.docx
+    description: "Paragraph at outline level 3"
+    template: custom
+    custom_fn: fixture_wml_paragraph_outline_level_3
+
+  - id: fixture_wml_paragraph_page_break
+    format: wml
+    path: wml/paragraph/page-break.docx
+    description: "Paragraph containing a page break"
+    template: custom
+    custom_fn: fixture_wml_paragraph_page_break
+
+  - id: fixture_wml_paragraph_column_break
+    format: wml
+    path: wml/paragraph/column-break.docx
+    description: "Paragraph containing a column break"
+    template: custom
+    custom_fn: fixture_wml_paragraph_column_break
+
+  # ---------------------------------------------------------------------------
+  # wml/list/
+  # ---------------------------------------------------------------------------
+  - id: fixture_wml_list_bullet_single
+    format: wml
+    path: wml/list/bullet-single.docx
+    description: "Single-item bulleted list"
+    template: custom
+    custom_fn: fixture_wml_list_bullet_single
+
+  - id: fixture_wml_list_decimal_single
+    format: wml
+    path: wml/list/decimal-single.docx
+    description: "Single-item numbered list"
+    template: custom
+    custom_fn: fixture_wml_list_decimal_single
+
+  - id: fixture_wml_list_bullet_nested_2
+    format: wml
+    path: wml/list/bullet-nested-2.docx
+    description: "Two-level nested bullet list"
+    template: custom
+    custom_fn: fixture_wml_list_bullet_nested_2
+
+  - id: fixture_wml_list_custom_numbering
+    format: wml
+    path: wml/list/custom-numbering.docx
+    description: "Custom decimal list with %1. format"
+    template: custom
+    custom_fn: fixture_wml_list_custom_numbering
+
+  # ---------------------------------------------------------------------------
+  # wml/table/
+  # ---------------------------------------------------------------------------
+  - id: fixture_wml_table_basic_1x1
+    format: wml
+    path: wml/table/basic-1x1.docx
+    description: "Basic 1-row 1-col table"
+    template: custom
+    custom_fn: fixture_wml_table_basic_1x1
+
+  - id: fixture_wml_table_basic_2x3
+    format: wml
+    path: wml/table/basic-2x3.docx
+    description: "Basic 2-row 3-col table"
+    template: custom
+    custom_fn: fixture_wml_table_basic_2x3
+
+  - id: fixture_wml_table_merged_horizontal
+    format: wml
+    path: wml/table/merged-horizontal.docx
+    description: "Table row with two columns merged horizontally"
+    template: custom
+    custom_fn: fixture_wml_table_merged_horizontal
+
+  - id: fixture_wml_table_merged_vertical
+    format: wml
+    path: wml/table/merged-vertical.docx
+    description: "Table column spanning two rows vertically"
+    template: custom
+    custom_fn: fixture_wml_table_merged_vertical
+
+  - id: fixture_wml_table_cell_background
+    format: wml
+    path: wml/table/cell-background.docx
+    description: "Table cell with background color"
+    template: custom
+    custom_fn: fixture_wml_table_cell_background
+
+  - id: fixture_wml_table_cell_borders
+    format: wml
+    path: wml/table/cell-borders.docx
+    description: "Table cell with explicit borders"
+    template: custom
+    custom_fn: fixture_wml_table_cell_borders
+
+  - id: fixture_wml_table_cell_padding
+    format: wml
+    path: wml/table/cell-padding.docx
+    description: "Table cell with custom padding"
+    template: custom
+    custom_fn: fixture_wml_table_cell_padding
+
+  - id: fixture_wml_table_row_height
+    format: wml
+    path: wml/table/row-height.docx
+    description: "Table row with explicit height"
+    template: custom
+    custom_fn: fixture_wml_table_row_height
+
+  - id: fixture_wml_table_table_width
+    format: wml
+    path: wml/table/table-width.docx
+    description: "Table with explicit width"
+    template: custom
+    custom_fn: fixture_wml_table_table_width
+
+  # ---------------------------------------------------------------------------
+  # wml/hyperlink/
+  # ---------------------------------------------------------------------------
+  - id: fixture_wml_hyperlink_external
+    format: wml
+    path: wml/hyperlink/hyperlink-external.docx
+    description: "Paragraph with external hyperlink"
+    template: custom
+    custom_fn: fixture_wml_hyperlink_external
+
+  # ---------------------------------------------------------------------------
+  # wml/image/
+  # ---------------------------------------------------------------------------
+  - id: fixture_wml_image_inline
+    format: wml
+    path: wml/image/image-inline.docx
+    description: "Inline PNG image"
+    template: custom
+    custom_fn: fixture_wml_image_inline
+
+  - id: fixture_wml_image_anchored
+    format: wml
+    path: wml/image/image-anchored.docx
+    description: "Anchored (floating) PNG image"
+    template: custom
+    custom_fn: fixture_wml_image_anchored
+
+  # ---------------------------------------------------------------------------
+  # wml/header-footer/
+  # ---------------------------------------------------------------------------
+  - id: fixture_wml_header_default
+    format: wml
+    path: wml/header-footer/header-default.docx
+    description: "Document with a default header"
+    template: custom
+    custom_fn: fixture_wml_header_default
+
+  - id: fixture_wml_footer_default
+    format: wml
+    path: wml/header-footer/footer-default.docx
+    description: "Document with a default footer"
+    template: custom
+    custom_fn: fixture_wml_footer_default
+
+  - id: fixture_wml_header_first_page
+    format: wml
+    path: wml/header-footer/header-first-page.docx
+    description: "Document with a first-page header"
+    template: custom
+    custom_fn: fixture_wml_header_first_page
+
+  # ---------------------------------------------------------------------------
+  # wml/footnote/
+  # ---------------------------------------------------------------------------
+  - id: fixture_wml_footnote_basic
+    format: wml
+    path: wml/footnote/footnote-basic.docx
+    description: "Paragraph with one footnote"
+    template: custom
+    custom_fn: fixture_wml_footnote_basic
+
+  - id: fixture_wml_endnote_basic
+    format: wml
+    path: wml/footnote/endnote-basic.docx
+    description: "Paragraph with one endnote"
+    template: custom
+    custom_fn: fixture_wml_endnote_basic
+
+  # ---------------------------------------------------------------------------
+  # wml/comment/
+  # ---------------------------------------------------------------------------
+  - id: fixture_wml_comment_basic
+    format: wml
+    path: wml/comment/comment-basic.docx
+    description: "Paragraph with one comment"
+    template: custom
+    custom_fn: fixture_wml_comment_basic
+
+  # ---------------------------------------------------------------------------
+  # wml/track-changes/
+  # ---------------------------------------------------------------------------
+  - id: fixture_wml_track_insert
+    format: wml
+    path: wml/track-changes/track-insert.docx
+    description: "Document with a tracked insertion"
+    template: custom
+    custom_fn: fixture_wml_track_insert
+
+  - id: fixture_wml_track_delete
+    format: wml
+    path: wml/track-changes/track-delete.docx
+    description: "Document with a tracked deletion"
+    template: custom
+    custom_fn: fixture_wml_track_delete
+
+  # ---------------------------------------------------------------------------
+  # wml/field/
+  # ---------------------------------------------------------------------------
+  - id: fixture_wml_field_toc_basic
+    format: wml
+    path: wml/field/toc-basic.docx
+    description: "Document with a basic TOC field"
+    template: custom
+    custom_fn: fixture_wml_field_toc_basic
+
+  # ---------------------------------------------------------------------------
+  # wml/form/
+  # ---------------------------------------------------------------------------
+  - id: fixture_wml_form_text
+    format: wml
+    path: wml/form/form-text.docx
+    description: "Document with a plain-text form field"
+    template: custom
+    custom_fn: fixture_wml_form_text
+
+  - id: fixture_wml_form_dropdown
+    format: wml
+    path: wml/form/form-dropdown.docx
+    description: "Document with a dropdown list form field with 3 options"
+    template: custom
+    custom_fn: fixture_wml_form_dropdown
+
+  # ---------------------------------------------------------------------------
+  # wml/math/
+  # ---------------------------------------------------------------------------
+  - id: fixture_wml_math_plain
+    format: wml
+    path: wml/math/math-plain.docx
+    description: "Paragraph with plain math expression"
+    template: custom
+    custom_fn: fixture_wml_math_plain
+
+  - id: fixture_wml_math_fraction
+    format: wml
+    path: wml/math/math-fraction.docx
+    description: "Paragraph with a fraction math expression"
+    template: custom
+    custom_fn: fixture_wml_math_fraction
+
+  # ---------------------------------------------------------------------------
+  # wml/bookmark/
+  # ---------------------------------------------------------------------------
+  - id: fixture_wml_bookmark_basic
+    format: wml
+    path: wml/bookmark/bookmark-basic.docx
+    description: "Paragraph with a bookmark start and end"
+    template: custom
+    custom_fn: fixture_wml_bookmark_basic
+
+  # ---------------------------------------------------------------------------
+  # wml/settings/
+  # ---------------------------------------------------------------------------
+  - id: fixture_wml_settings_tab_stop
+    format: wml
+    path: wml/settings/settings-tab-stop.docx
+    description: "Document with default tab stop set to 720 twips"
+    template: custom
+    custom_fn: fixture_wml_settings_tab_stop
+
+  - id: fixture_wml_settings_even_odd_headers
+    format: wml
+    path: wml/settings/settings-even-odd-headers.docx
+    description: "Document with even-and-odd headers enabled"
+    template: custom
+    custom_fn: fixture_wml_settings_even_odd_headers
+
+  # ---------------------------------------------------------------------------
+  # wml/text-box/
+  # ---------------------------------------------------------------------------
+  - id: fixture_wml_textbox_basic
+    format: wml
+    path: wml/text-box/textbox-basic.docx
+    description: "Paragraph containing a Drawing text box"
+    template: custom
+    custom_fn: fixture_wml_textbox_basic

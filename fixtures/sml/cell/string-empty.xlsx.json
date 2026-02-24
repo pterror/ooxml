@@ -1,0 +1,26 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "sheet_count"
+    },
+    {
+      "col": 0,
+      "expected": "string",
+      "row": 0,
+      "sheet": 0,
+      "type": "cell_type"
+    },
+    {
+      "col": 0,
+      "expected": "",
+      "row": 0,
+      "sheet": 0,
+      "tolerance": 0.0,
+      "type": "cell_value"
+    }
+  ],
+  "description": "Empty string cell value",
+  "format": "sml",
+  "version": 1
+}

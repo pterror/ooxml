@@ -1,0 +1,21 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "slide_count"
+    },
+    {
+      "expected": true,
+      "slide": 0,
+      "type": "slide_has_notes"
+    },
+    {
+      "expected": "Speaker notes here",
+      "slide": 0,
+      "type": "notes_text"
+    }
+  ],
+  "description": "Slide with basic speaker notes",
+  "format": "pml",
+  "version": 1
+}

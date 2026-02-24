@@ -1,0 +1,13 @@
+{
+  "assertions": [
+    {
+      "expected": "shadow",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    }
+  ],
+  "description": "Shadow text effect run",
+  "format": "wml",
+  "version": 1
+}

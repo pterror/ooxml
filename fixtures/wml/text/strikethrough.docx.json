@@ -1,0 +1,19 @@
+{
+  "assertions": [
+    {
+      "expected": "struck",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    },
+    {
+      "expected": true,
+      "para": 0,
+      "run": 0,
+      "type": "run_strikethrough"
+    }
+  ],
+  "description": "Strikethrough run",
+  "format": "wml",
+  "version": 1
+}

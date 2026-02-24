@@ -1,0 +1,16 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "slide_count"
+    },
+    {
+      "expected": true,
+      "slide": 0,
+      "type": "has_transition"
+    }
+  ],
+  "description": "Slide with fade transition",
+  "format": "pml",
+  "version": 1
+}

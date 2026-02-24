@@ -1,0 +1,13 @@
+{
+  "assertions": [
+    {
+      "expected": "Heading 3",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    }
+  ],
+  "description": "Paragraph at outline level 3",
+  "format": "wml",
+  "version": 1
+}

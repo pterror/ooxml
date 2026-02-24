@@ -1,0 +1,14 @@
+{
+  "assertions": [
+    {
+      "col": 0,
+      "expected": "wide table",
+      "row": 0,
+      "table": 0,
+      "type": "table_cell_text"
+    }
+  ],
+  "description": "Table with explicit width",
+  "format": "wml",
+  "version": 1
+}

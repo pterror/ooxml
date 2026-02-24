@@ -1,0 +1,25 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "sheet_count"
+    },
+    {
+      "col": 0,
+      "expected": true,
+      "row": 0,
+      "sheet": 0,
+      "type": "cell_bold"
+    },
+    {
+      "col": 0,
+      "expected": true,
+      "row": 0,
+      "sheet": 0,
+      "type": "cell_italic"
+    }
+  ],
+  "description": "Bold and italic font cell",
+  "format": "sml",
+  "version": 1
+}

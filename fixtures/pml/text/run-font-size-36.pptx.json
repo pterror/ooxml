@@ -1,0 +1,20 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "slide_count"
+    },
+    {
+      "expected": 36.0,
+      "para": 0,
+      "run": 0,
+      "shape": 0,
+      "slide": 0,
+      "tolerance": 0.5,
+      "type": "pml_run_font_size"
+    }
+  ],
+  "description": "Shape with 36pt font size run",
+  "format": "pml",
+  "version": 1
+}

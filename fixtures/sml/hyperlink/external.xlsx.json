@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "sheet_count"
+    }
+  ],
+  "description": "External hyperlink on cell A1",
+  "format": "sml",
+  "version": 1
+}

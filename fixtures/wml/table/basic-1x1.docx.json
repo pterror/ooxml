@@ -1,0 +1,25 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "table": 0,
+      "type": "table_rows"
+    },
+    {
+      "expected": 1,
+      "row": 0,
+      "table": 0,
+      "type": "table_cols"
+    },
+    {
+      "col": 0,
+      "expected": "cell",
+      "row": 0,
+      "table": 0,
+      "type": "table_cell_text"
+    }
+  ],
+  "description": "Basic 1-row 1-col table",
+  "format": "wml",
+  "version": 1
+}

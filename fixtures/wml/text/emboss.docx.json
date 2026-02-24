@@ -1,0 +1,13 @@
+{
+  "assertions": [
+    {
+      "expected": "emboss",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    }
+  ],
+  "description": "Emboss text effect run",
+  "format": "wml",
+  "version": 1
+}

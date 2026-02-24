@@ -1,0 +1,19 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "sheet_count"
+    },
+    {
+      "col": 0,
+      "expected": "Red text",
+      "row": 0,
+      "sheet": 0,
+      "tolerance": 0.0,
+      "type": "cell_value"
+    }
+  ],
+  "description": "Colored font cell",
+  "format": "sml",
+  "version": 1
+}

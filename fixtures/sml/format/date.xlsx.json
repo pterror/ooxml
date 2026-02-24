@@ -1,0 +1,26 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "sheet_count"
+    },
+    {
+      "col": 0,
+      "expected": "44927",
+      "row": 0,
+      "sheet": 0,
+      "tolerance": 0.0,
+      "type": "cell_value"
+    },
+    {
+      "col": 0,
+      "expected": "MM/DD/YYYY",
+      "row": 0,
+      "sheet": 0,
+      "type": "cell_format_code"
+    }
+  ],
+  "description": "Date number format",
+  "format": "sml",
+  "version": 1
+}

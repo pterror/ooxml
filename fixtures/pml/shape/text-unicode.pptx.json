@@ -1,0 +1,17 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "slide_count"
+    },
+    {
+      "expected": "café 中文 🌍",
+      "shape": 0,
+      "slide": 0,
+      "type": "shape_text"
+    }
+  ],
+  "description": "Shape with unicode text including emoji",
+  "format": "pml",
+  "version": 1
+}

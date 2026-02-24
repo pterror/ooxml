@@ -1,0 +1,19 @@
+{
+  "assertions": [
+    {
+      "expected": "red text",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    },
+    {
+      "expected": "FF0000",
+      "para": 0,
+      "run": 0,
+      "type": "run_color"
+    }
+  ],
+  "description": "Red colored run (FF0000)",
+  "format": "wml",
+  "version": 1
+}

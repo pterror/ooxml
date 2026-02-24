@@ -1,0 +1,20 @@
+{
+  "assertions": [
+    {
+      "expected": "big text",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    },
+    {
+      "expected": 24.0,
+      "para": 0,
+      "run": 0,
+      "tolerance": 0.5,
+      "type": "run_font_size"
+    }
+  ],
+  "description": "Run with 24pt font size",
+  "format": "wml",
+  "version": 1
+}

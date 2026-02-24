@@ -1,0 +1,29 @@
+{
+  "assertions": [
+    {
+      "expected": 3,
+      "type": "slide_count"
+    },
+    {
+      "expected": "Slide one",
+      "shape": 0,
+      "slide": 0,
+      "type": "shape_text"
+    },
+    {
+      "expected": "Slide two",
+      "shape": 0,
+      "slide": 1,
+      "type": "shape_text"
+    },
+    {
+      "expected": "Slide three",
+      "shape": 0,
+      "slide": 2,
+      "type": "shape_text"
+    }
+  ],
+  "description": "Presentation with three slides with different text",
+  "format": "pml",
+  "version": 1
+}

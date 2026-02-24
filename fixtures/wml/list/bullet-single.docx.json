@@ -1,0 +1,18 @@
+{
+  "assertions": [
+    {
+      "expected": "bullet item",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    },
+    {
+      "expected": 0,
+      "para": 0,
+      "type": "paragraph_list_level"
+    }
+  ],
+  "description": "Single-item bulleted list",
+  "format": "wml",
+  "version": 1
+}

@@ -1,0 +1,26 @@
+{
+  "assertions": [
+    {
+      "expected": 3,
+      "type": "sheet_count"
+    },
+    {
+      "expected": "Alpha",
+      "sheet": 0,
+      "type": "sheet_name"
+    },
+    {
+      "expected": "Beta",
+      "sheet": 1,
+      "type": "sheet_name"
+    },
+    {
+      "expected": "Gamma",
+      "sheet": 2,
+      "type": "sheet_name"
+    }
+  ],
+  "description": "Workbook with three sheets Alpha, Beta, Gamma",
+  "format": "sml",
+  "version": 1
+}

@@ -1,0 +1,19 @@
+{
+  "assertions": [
+    {
+      "expected": "Arial text",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    },
+    {
+      "expected": "Arial",
+      "para": 0,
+      "run": 0,
+      "type": "run_font_name"
+    }
+  ],
+  "description": "Run with Arial font",
+  "format": "wml",
+  "version": 1
+}

@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "slide_count"
+    }
+  ],
+  "description": "Shape with underlined text run",
+  "format": "pml",
+  "version": 1
+}

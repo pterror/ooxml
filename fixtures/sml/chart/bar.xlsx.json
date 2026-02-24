@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "sheet_count"
+    }
+  ],
+  "description": "Minimal embedded bar chart",
+  "format": "sml",
+  "version": 1
+}

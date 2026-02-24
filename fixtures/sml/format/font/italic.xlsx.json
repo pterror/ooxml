@@ -1,0 +1,26 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "sheet_count"
+    },
+    {
+      "col": 0,
+      "expected": "42",
+      "row": 0,
+      "sheet": 0,
+      "tolerance": 0.0,
+      "type": "cell_value"
+    },
+    {
+      "col": 0,
+      "expected": true,
+      "row": 0,
+      "sheet": 0,
+      "type": "cell_italic"
+    }
+  ],
+  "description": "Italic font cell",
+  "format": "sml",
+  "version": 1
+}

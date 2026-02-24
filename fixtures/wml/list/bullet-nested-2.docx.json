@@ -1,0 +1,29 @@
+{
+  "assertions": [
+    {
+      "expected": "top level",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    },
+    {
+      "expected": "nested level",
+      "para": 1,
+      "run": 0,
+      "type": "run_text"
+    },
+    {
+      "expected": 0,
+      "para": 0,
+      "type": "paragraph_list_level"
+    },
+    {
+      "expected": 1,
+      "para": 1,
+      "type": "paragraph_list_level"
+    }
+  ],
+  "description": "Two-level nested bullet list",
+  "format": "wml",
+  "version": 1
+}

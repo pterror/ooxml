@@ -1,0 +1,17 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "slide_count"
+    },
+    {
+      "expected": "Hello World",
+      "shape": 0,
+      "slide": 0,
+      "type": "shape_text"
+    }
+  ],
+  "description": "Basic text shape with Hello World",
+  "format": "pml",
+  "version": 1
+}

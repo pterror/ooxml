@@ -1,0 +1,29 @@
+{
+  "assertions": [
+    {
+      "expected": 3,
+      "type": "slide_count"
+    },
+    {
+      "expected": "First",
+      "shape": 0,
+      "slide": 0,
+      "type": "shape_text"
+    },
+    {
+      "expected": "Second",
+      "shape": 0,
+      "slide": 1,
+      "type": "shape_text"
+    },
+    {
+      "expected": "Third",
+      "shape": 0,
+      "slide": 2,
+      "type": "shape_text"
+    }
+  ],
+  "description": "Slides with text First, Second, Third in order",
+  "format": "pml",
+  "version": 1
+}

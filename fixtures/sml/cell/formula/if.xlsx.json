@@ -1,0 +1,18 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "sheet_count"
+    },
+    {
+      "col": 1,
+      "expected": "IF(A1>0,\"pos\",\"neg\")",
+      "row": 0,
+      "sheet": 0,
+      "type": "cell_formula"
+    }
+  ],
+  "description": "IF formula",
+  "format": "sml",
+  "version": 1
+}

@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "sheet_count"
+    }
+  ],
+  "description": "Integer range validation 1-100 on A1",
+  "format": "sml",
+  "version": 1
+}

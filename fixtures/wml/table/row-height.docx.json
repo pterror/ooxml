@@ -1,0 +1,14 @@
+{
+  "assertions": [
+    {
+      "col": 0,
+      "expected": "tall row",
+      "row": 0,
+      "table": 0,
+      "type": "table_cell_text"
+    }
+  ],
+  "description": "Table row with explicit height",
+  "format": "wml",
+  "version": 1
+}

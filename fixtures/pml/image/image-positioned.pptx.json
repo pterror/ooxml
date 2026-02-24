@@ -1,0 +1,16 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "slide_count"
+    },
+    {
+      "expected": 1,
+      "slide": 0,
+      "type": "pml_image_count"
+    }
+  ],
+  "description": "Slide with an image at a specific position",
+  "format": "pml",
+  "version": 1
+}

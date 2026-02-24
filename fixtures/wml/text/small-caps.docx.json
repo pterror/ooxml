@@ -1,0 +1,13 @@
+{
+  "assertions": [
+    {
+      "expected": "small caps",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    }
+  ],
+  "description": "Small caps run",
+  "format": "wml",
+  "version": 1
+}

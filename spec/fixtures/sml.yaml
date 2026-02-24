@@ -1,0 +1,502 @@
+version: 1
+fixtures:
+  # ---------------------------------------------------------------------------
+  # sml/cell — cell value types
+  # ---------------------------------------------------------------------------
+  - id: fixture_sml_cell_integer
+    format: sml
+    path: sml/cell/integer.xlsx
+    description: "Integer cell value"
+    template: sml_cell_value
+    params:
+      value: "42"
+      cell_type: "number"
+      tolerance: 0.0
+
+  - id: fixture_sml_cell_float
+    format: sml
+    path: sml/cell/float.xlsx
+    description: "Float cell value"
+    template: sml_cell_value
+    params:
+      value: "3.14"
+      cell_type: "number"
+      tolerance: 1.0e-9
+
+  - id: fixture_sml_cell_negative
+    format: sml
+    path: sml/cell/negative.xlsx
+    description: "Negative float cell value"
+    template: sml_cell_value
+    params:
+      value: "-273.15"
+      cell_type: "number"
+      tolerance: 1.0e-9
+
+  - id: fixture_sml_cell_zero
+    format: sml
+    path: sml/cell/zero.xlsx
+    description: "Zero cell value"
+    template: sml_cell_value
+    params:
+      value: "0"
+      cell_type: "number"
+      tolerance: 0.0
+
+  - id: fixture_sml_cell_large_number
+    format: sml
+    path: sml/cell/large-number.xlsx
+    description: "Large integer cell value"
+    template: sml_cell_value
+    params:
+      value: "1000000000"
+      cell_type: "number"
+      tolerance: 0.0
+
+  - id: fixture_sml_cell_small_float
+    format: sml
+    path: sml/cell/small-float.xlsx
+    description: "Very small float cell value"
+    template: sml_cell_value
+    params:
+      value: "0.000001"
+      cell_type: "number"
+      tolerance: 1.0e-15
+
+  - id: fixture_sml_cell_string
+    format: sml
+    path: sml/cell/string.xlsx
+    description: "String cell value"
+    template: sml_cell_value
+    params:
+      value: "Hello World"
+      cell_type: "string"
+      tolerance: 0.0
+
+  - id: fixture_sml_cell_string_empty
+    format: sml
+    path: sml/cell/string-empty.xlsx
+    description: "Empty string cell value"
+    template: sml_cell_value
+    params:
+      value: ""
+      cell_type: "string"
+      tolerance: 0.0
+
+  - id: fixture_sml_cell_boolean_true
+    format: sml
+    path: sml/cell/boolean-true.xlsx
+    description: "Boolean true cell value"
+    template: sml_cell_value
+    params:
+      value: "true"
+      cell_type: "boolean"
+      tolerance: 0.0
+
+  - id: fixture_sml_cell_boolean_false
+    format: sml
+    path: sml/cell/boolean-false.xlsx
+    description: "Boolean false cell value"
+    template: sml_cell_value
+    params:
+      value: "false"
+      cell_type: "boolean"
+      tolerance: 0.0
+
+  # ---------------------------------------------------------------------------
+  # sml/cell — special string values (custom)
+  # ---------------------------------------------------------------------------
+  - id: fixture_sml_cell_string_unicode
+    format: sml
+    path: sml/cell/string-unicode.xlsx
+    description: "Unicode string cell value"
+    template: custom
+    custom_fn: fixture_sml_cell_string_unicode
+
+  - id: fixture_sml_cell_string_xml_special
+    format: sml
+    path: sml/cell/string-xml-special.xlsx
+    description: "XML special characters in string cell"
+    template: custom
+    custom_fn: fixture_sml_cell_string_xml_special
+
+  # ---------------------------------------------------------------------------
+  # sml/cell/formula — formula cells (custom)
+  # ---------------------------------------------------------------------------
+  - id: fixture_sml_cell_formula_sum
+    format: sml
+    path: sml/cell/formula/sum.xlsx
+    description: "SUM formula over A1:A3"
+    template: custom
+    custom_fn: fixture_sml_cell_formula_sum
+
+  - id: fixture_sml_cell_formula_if
+    format: sml
+    path: sml/cell/formula/if.xlsx
+    description: "IF formula"
+    template: custom
+    custom_fn: fixture_sml_cell_formula_if
+
+  - id: fixture_sml_cell_formula_concat
+    format: sml
+    path: sml/cell/formula/concat.xlsx
+    description: "String concatenation formula"
+    template: custom
+    custom_fn: fixture_sml_cell_formula_concat
+
+  - id: fixture_sml_cell_formula_reference
+    format: sml
+    path: sml/cell/formula/reference.xlsx
+    description: "Cell reference formula"
+    template: custom
+    custom_fn: fixture_sml_cell_formula_reference
+
+  # ---------------------------------------------------------------------------
+  # sml/format — number formatting (custom)
+  # ---------------------------------------------------------------------------
+  - id: fixture_sml_format_integer
+    format: sml
+    path: sml/format/integer.xlsx
+    description: "Integer number format"
+    template: custom
+    custom_fn: fixture_sml_format_integer
+
+  - id: fixture_sml_format_decimal
+    format: sml
+    path: sml/format/decimal.xlsx
+    description: "Decimal number format with thousands separator"
+    template: custom
+    custom_fn: fixture_sml_format_decimal
+
+  - id: fixture_sml_format_percent
+    format: sml
+    path: sml/format/percent.xlsx
+    description: "Percentage number format"
+    template: custom
+    custom_fn: fixture_sml_format_percent
+
+  - id: fixture_sml_format_currency
+    format: sml
+    path: sml/format/currency.xlsx
+    description: "Currency number format"
+    template: custom
+    custom_fn: fixture_sml_format_currency
+
+  - id: fixture_sml_format_date
+    format: sml
+    path: sml/format/date.xlsx
+    description: "Date number format"
+    template: custom
+    custom_fn: fixture_sml_format_date
+
+  - id: fixture_sml_format_scientific
+    format: sml
+    path: sml/format/scientific.xlsx
+    description: "Scientific notation number format"
+    template: custom
+    custom_fn: fixture_sml_format_scientific
+
+  # ---------------------------------------------------------------------------
+  # sml/format/font — font formatting (custom)
+  # ---------------------------------------------------------------------------
+  - id: fixture_sml_format_font_bold
+    format: sml
+    path: sml/format/font/bold.xlsx
+    description: "Bold font cell"
+    template: custom
+    custom_fn: fixture_sml_format_font_bold
+
+  - id: fixture_sml_format_font_italic
+    format: sml
+    path: sml/format/font/italic.xlsx
+    description: "Italic font cell"
+    template: custom
+    custom_fn: fixture_sml_format_font_italic
+
+  - id: fixture_sml_format_font_bold_italic
+    format: sml
+    path: sml/format/font/bold-italic.xlsx
+    description: "Bold and italic font cell"
+    template: custom
+    custom_fn: fixture_sml_format_font_bold_italic
+
+  - id: fixture_sml_format_font_color
+    format: sml
+    path: sml/format/font/color.xlsx
+    description: "Colored font cell"
+    template: custom
+    custom_fn: fixture_sml_format_font_color
+
+  - id: fixture_sml_format_font_size
+    format: sml
+    path: sml/format/font/size.xlsx
+    description: "Font size 14pt cell"
+    template: custom
+    custom_fn: fixture_sml_format_font_size
+
+  # ---------------------------------------------------------------------------
+  # sml/format/fill — fill formatting (custom)
+  # ---------------------------------------------------------------------------
+  - id: fixture_sml_format_fill_solid_red
+    format: sml
+    path: sml/format/fill/solid-red.xlsx
+    description: "Solid red fill cell"
+    template: custom
+    custom_fn: fixture_sml_format_fill_solid_red
+
+  - id: fixture_sml_format_fill_solid_yellow
+    format: sml
+    path: sml/format/fill/solid-yellow.xlsx
+    description: "Solid yellow fill cell"
+    template: custom
+    custom_fn: fixture_sml_format_fill_solid_yellow
+
+  # ---------------------------------------------------------------------------
+  # sml/format/border — border formatting (custom)
+  # ---------------------------------------------------------------------------
+  - id: fixture_sml_format_border_all
+    format: sml
+    path: sml/format/border/all.xlsx
+    description: "All borders thin black"
+    template: custom
+    custom_fn: fixture_sml_format_border_all
+
+  - id: fixture_sml_format_border_outline
+    format: sml
+    path: sml/format/border/outline.xlsx
+    description: "Outer borders only"
+    template: custom
+    custom_fn: fixture_sml_format_border_outline
+
+  # ---------------------------------------------------------------------------
+  # sml/layout — sheet layout (custom)
+  # ---------------------------------------------------------------------------
+  - id: fixture_sml_layout_freeze_pane
+    format: sml
+    path: sml/layout/freeze-pane.xlsx
+    description: "Freeze pane at row 1"
+    template: custom
+    custom_fn: fixture_sml_layout_freeze_pane
+
+  - id: fixture_sml_layout_auto_filter
+    format: sml
+    path: sml/layout/auto-filter.xlsx
+    description: "Auto-filter on header row A1:D1"
+    template: custom
+    custom_fn: fixture_sml_layout_auto_filter
+
+  - id: fixture_sml_layout_page_setup_landscape
+    format: sml
+    path: sml/layout/page-setup-landscape.xlsx
+    description: "Landscape page orientation"
+    template: custom
+    custom_fn: fixture_sml_layout_page_setup_landscape
+
+  - id: fixture_sml_layout_page_margins
+    format: sml
+    path: sml/layout/page-margins.xlsx
+    description: "Custom page margins"
+    template: custom
+    custom_fn: fixture_sml_layout_page_margins
+
+  - id: fixture_sml_layout_row_height
+    format: sml
+    path: sml/layout/row-height.xlsx
+    description: "Custom row height 30pt"
+    template: custom
+    custom_fn: fixture_sml_layout_row_height
+
+  - id: fixture_sml_layout_col_width
+    format: sml
+    path: sml/layout/col-width.xlsx
+    description: "Custom column width 20 character units"
+    template: custom
+    custom_fn: fixture_sml_layout_col_width
+
+  - id: fixture_sml_layout_row_outline
+    format: sml
+    path: sml/layout/row-outline.xlsx
+    description: "Row with outline level 1"
+    template: custom
+    custom_fn: fixture_sml_layout_row_outline
+
+  - id: fixture_sml_layout_col_outline
+    format: sml
+    path: sml/layout/col-outline.xlsx
+    description: "Column with outline level 1"
+    template: custom
+    custom_fn: fixture_sml_layout_col_outline
+
+  - id: fixture_sml_layout_tab_color
+    format: sml
+    path: sml/layout/tab-color.xlsx
+    description: "Sheet tab color red"
+    template: custom
+    custom_fn: fixture_sml_layout_tab_color
+
+  - id: fixture_sml_layout_hidden_row
+    format: sml
+    path: sml/layout/hidden-row.xlsx
+    description: "Sheet with a collapsed/hidden row"
+    template: custom
+    custom_fn: fixture_sml_layout_hidden_row
+
+  - id: fixture_sml_layout_hidden_col
+    format: sml
+    path: sml/layout/hidden-col.xlsx
+    description: "Sheet with a collapsed/hidden column"
+    template: custom
+    custom_fn: fixture_sml_layout_hidden_col
+
+  # ---------------------------------------------------------------------------
+  # sml/merge — merged cells (custom)
+  # ---------------------------------------------------------------------------
+  - id: fixture_sml_merge_horizontal
+    format: sml
+    path: sml/merge/horizontal.xlsx
+    description: "Horizontally merged cells A1:B1"
+    template: custom
+    custom_fn: fixture_sml_merge_horizontal
+
+  - id: fixture_sml_merge_2x2
+    format: sml
+    path: sml/merge/2x2.xlsx
+    description: "2x2 merged cell block A1:B2"
+    template: custom
+    custom_fn: fixture_sml_merge_2x2
+
+  # ---------------------------------------------------------------------------
+  # sml/hyperlink — hyperlinks (custom)
+  # ---------------------------------------------------------------------------
+  - id: fixture_sml_hyperlink_external
+    format: sml
+    path: sml/hyperlink/external.xlsx
+    description: "External hyperlink on cell A1"
+    template: custom
+    custom_fn: fixture_sml_hyperlink_external
+
+  - id: fixture_sml_hyperlink_internal
+    format: sml
+    path: sml/hyperlink/internal.xlsx
+    description: "Internal hyperlink to Sheet2!A1"
+    template: custom
+    custom_fn: fixture_sml_hyperlink_internal
+
+  # ---------------------------------------------------------------------------
+  # sml/comment — cell comments (custom)
+  # ---------------------------------------------------------------------------
+  - id: fixture_sml_comment_plain
+    format: sml
+    path: sml/comment/plain.xlsx
+    description: "Plain text comment on cell A1"
+    template: custom
+    custom_fn: fixture_sml_comment_plain
+
+  - id: fixture_sml_comment_rich
+    format: sml
+    path: sml/comment/rich.xlsx
+    description: "Rich text comment on cell A1"
+    template: custom
+    custom_fn: fixture_sml_comment_rich
+
+  # ---------------------------------------------------------------------------
+  # sml/validation — data validation (custom)
+  # ---------------------------------------------------------------------------
+  - id: fixture_sml_validation_list
+    format: sml
+    path: sml/validation/list.xlsx
+    description: "Dropdown list validation on A1"
+    template: custom
+    custom_fn: fixture_sml_validation_list
+
+  - id: fixture_sml_validation_integer_range
+    format: sml
+    path: sml/validation/integer-range.xlsx
+    description: "Integer range validation 1-100 on A1"
+    template: custom
+    custom_fn: fixture_sml_validation_integer_range
+
+  - id: fixture_sml_validation_ignored_error
+    format: sml
+    path: sml/validation/ignored-error.xlsx
+    description: "Ignored number-stored-as-text error on A1"
+    template: custom
+    custom_fn: fixture_sml_validation_ignored_error
+
+  # ---------------------------------------------------------------------------
+  # sml/filtering — auto-filter and sort (custom)
+  # ---------------------------------------------------------------------------
+  - id: fixture_sml_filtering_auto_filter
+    format: sml
+    path: sml/filtering/auto-filter.xlsx
+    description: "Auto-filter on A1:C1"
+    template: custom
+    custom_fn: fixture_sml_filtering_auto_filter
+
+  - id: fixture_sml_filtering_sort_state
+    format: sml
+    path: sml/filtering/sort-state.xlsx
+    description: "Sort state ascending on column A"
+    template: custom
+    custom_fn: fixture_sml_filtering_sort_state
+
+  # ---------------------------------------------------------------------------
+  # sml/structure — workbook structure (custom)
+  # ---------------------------------------------------------------------------
+  - id: fixture_sml_structure_multiple_sheets
+    format: sml
+    path: sml/structure/multiple-sheets.xlsx
+    description: "Workbook with three sheets Alpha, Beta, Gamma"
+    template: custom
+    custom_fn: fixture_sml_structure_multiple_sheets
+
+  - id: fixture_sml_structure_defined_name
+    format: sml
+    path: sml/structure/defined-name.xlsx
+    description: "Workbook with defined name MyRange"
+    template: custom
+    custom_fn: fixture_sml_structure_defined_name
+
+  - id: fixture_sml_structure_print_area
+    format: sml
+    path: sml/structure/print-area.xlsx
+    description: "Sheet with print area set"
+    template: custom
+    custom_fn: fixture_sml_structure_print_area
+
+  # ---------------------------------------------------------------------------
+  # sml/protection — protection (custom)
+  # ---------------------------------------------------------------------------
+  - id: fixture_sml_protection_sheet
+    format: sml
+    path: sml/protection/sheet.xlsx
+    description: "Sheet protection with no password"
+    template: custom
+    custom_fn: fixture_sml_protection_sheet
+
+  - id: fixture_sml_protection_workbook
+    format: sml
+    path: sml/protection/workbook.xlsx
+    description: "Workbook protection with lock_structure"
+    template: custom
+    custom_fn: fixture_sml_protection_workbook
+
+  # ---------------------------------------------------------------------------
+  # sml/pivot — pivot tables (custom)
+  # ---------------------------------------------------------------------------
+  - id: fixture_sml_pivot_basic
+    format: sml
+    path: sml/pivot/basic.xlsx
+    description: "Simple pivot table with row field and data field"
+    template: custom
+    custom_fn: fixture_sml_pivot_basic
+
+  # ---------------------------------------------------------------------------
+  # sml/chart — embedded charts (custom)
+  # ---------------------------------------------------------------------------
+  - id: fixture_sml_chart_bar
+    format: sml
+    path: sml/chart/bar.xlsx
+    description: "Minimal embedded bar chart"
+    template: custom
+    custom_fn: fixture_sml_chart_bar

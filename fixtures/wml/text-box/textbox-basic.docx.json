@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "paragraph_count"
+    }
+  ],
+  "description": "Paragraph containing a Drawing text box",
+  "format": "wml",
+  "version": 1
+}
