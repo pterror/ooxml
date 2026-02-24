@@ -1889,6 +1889,7 @@ fn list_type_to_num_fmt_and_text(list_type: ListType) -> (types::STNumberFormat,
 }
 
 /// Map ListType to STNumberFormat.
+#[cfg(feature = "wml-numbering")]
 fn list_type_to_num_fmt(list_type: ListType) -> types::STNumberFormat {
     match list_type {
         ListType::Bullet => types::STNumberFormat::Bullet,
@@ -1902,8 +1903,11 @@ fn list_type_to_num_fmt(list_type: ListType) -> types::STNumberFormat {
 
 /// Build a single `Level` from a `NumberingLevel` spec.
 fn build_level_from_spec(spec: &NumberingLevel) -> types::Level {
+    #[cfg(feature = "wml-numbering")]
     let is_bullet = spec.format == ListType::Bullet;
+    #[cfg(feature = "wml-numbering")]
     let indent_left = spec.indent_left.unwrap_or(720 * (spec.ilvl + 1));
+    #[cfg(feature = "wml-numbering")]
     let hanging = spec.hanging.unwrap_or(360);
 
     types::Level {

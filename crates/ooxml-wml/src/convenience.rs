@@ -5,7 +5,9 @@
 //! They are allowed because the generated types are in the same crate.
 
 use crate::types;
-use ooxml_xml::{PositionedNode, RawXmlElement, RawXmlNode};
+#[cfg(feature = "extra-children")]
+use ooxml_xml::PositionedNode;
+use ooxml_xml::{RawXmlElement, RawXmlNode};
 
 // =============================================================================
 // Body

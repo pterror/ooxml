@@ -500,7 +500,9 @@ fn make_nv_pr() -> Box<types::CTApplicationNonVisualDrawingProps> {
         ph: None,
         cust_data_lst: None,
         ext_lst: None,
+        #[cfg(feature = "extra-attrs")]
         extra_attrs: Default::default(),
+        #[cfg(feature = "extra-children")]
         extra_children: Default::default(),
     })
 }
@@ -804,13 +806,10 @@ fn make_solid_fill(rgb: &str) -> Box<dml::EGFillProperties> {
                 dml::SrgbColor {
                     value: hex_to_bytes(rgb),
                     color_transform: Vec::new(),
-                    #[cfg(feature = "extra-attrs")]
                     extra_attrs: Default::default(),
-                    #[cfg(feature = "extra-children")]
                     extra_children: Default::default(),
                 },
             )))),
-            #[cfg(feature = "extra-children")]
             extra_children: Default::default(),
         },
     )))
@@ -1256,6 +1255,7 @@ fn init_slide() -> types::Slide {
             extra_children: Default::default(),
         }),
         nv_pr: make_nv_pr(),
+        #[cfg(feature = "extra-children")]
         extra_children: Default::default(),
     });
 
@@ -1267,32 +1267,49 @@ fn init_slide() -> types::Slide {
         graphic_frame: Vec::new(),
         connector: Vec::new(),
         picture: Vec::new(),
+        #[cfg(feature = "pml-external")]
         content_part: Vec::new(),
+        #[cfg(feature = "pml-extensions")]
         ext_lst: None,
+        #[cfg(feature = "extra-children")]
         extra_children: Default::default(),
     });
 
     let common_slide_data = Box::new(types::CommonSlideData {
         name: None,
+        #[cfg(feature = "pml-styling")]
         bg: None,
         shape_tree,
+        #[cfg(feature = "pml-external")]
         cust_data_lst: None,
+        #[cfg(feature = "pml-external")]
         controls: None,
+        #[cfg(feature = "pml-extensions")]
         ext_lst: None,
+        #[cfg(feature = "extra-attrs")]
         extra_attrs: Default::default(),
+        #[cfg(feature = "extra-children")]
         extra_children: Default::default(),
     });
 
     types::Slide {
+        #[cfg(feature = "pml-masters")]
         show_master_sp: None,
+        #[cfg(feature = "pml-masters")]
         show_master_ph_anim: None,
         show: None,
         common_slide_data,
+        #[cfg(feature = "pml-styling")]
         clr_map_ovr: None,
+        #[cfg(feature = "pml-transitions")]
         transition: None,
+        #[cfg(feature = "pml-animations")]
         timing: None,
+        #[cfg(feature = "pml-extensions")]
         ext_lst: None,
+        #[cfg(feature = "extra-attrs")]
         extra_attrs: Default::default(),
+        #[cfg(feature = "extra-children")]
         extra_children: Default::default(),
     }
 }
@@ -1400,13 +1417,10 @@ fn build_shape_impl(
                             dml::SrgbColor {
                                 value: hex_to_bytes(rgb),
                                 color_transform: Vec::new(),
-                                #[cfg(feature = "extra-attrs")]
                                 extra_attrs: Default::default(),
-                                #[cfg(feature = "extra-children")]
                                 extra_children: Default::default(),
                             },
                         )))),
-                        #[cfg(feature = "extra-children")]
                         extra_children: Default::default(),
                     },
                 )))
@@ -1446,18 +1460,24 @@ fn build_shape_impl(
     };
 
     types::Shape {
+        #[cfg(feature = "pml-styling")]
         use_bg_fill: None,
         non_visual_properties: Box::new(types::ShapeNonVisual {
             c_nv_pr: make_cnv_pr(shape_id as u32, name),
             c_nv_sp_pr: Box::new(c_nv_sp_pr),
             nv_pr: make_nv_pr(),
+            #[cfg(feature = "extra-children")]
             extra_children: Default::default(),
         }),
         shape_properties: Box::new(sp_pr),
+        #[cfg(feature = "pml-styling")]
         style: None,
         text_body: Some(Box::new(text_body)),
+        #[cfg(feature = "pml-extensions")]
         ext_lst: None,
+        #[cfg(feature = "extra-attrs")]
         extra_attrs: Default::default(),
+        #[cfg(feature = "extra-children")]
         extra_children: Default::default(),
     }
 }
@@ -1508,12 +1528,16 @@ fn build_picture(image: &ImageElement, shape_id: usize, rel_id: usize) -> types:
             c_nv_pr: Box::new(c_nv_pr),
             c_nv_pic_pr: Box::new(c_nv_pic_pr),
             nv_pr: make_nv_pr(),
+            #[cfg(feature = "extra-children")]
             extra_children: Default::default(),
         }),
         blip_fill: Box::new(blip_fill),
         shape_properties: Box::new(sp_pr),
+        #[cfg(feature = "pml-styling")]
         style: None,
+        #[cfg(feature = "pml-extensions")]
         ext_lst: None,
+        #[cfg(feature = "extra-children")]
         extra_children: Default::default(),
     }
 }
@@ -1561,13 +1585,10 @@ fn build_connector_impl(elem: &ConnectorElement, shape_id: usize) -> types::Conn
                     dml::SrgbColor {
                         value: hex_to_bytes(rgb),
                         color_transform: Vec::new(),
-                        #[cfg(feature = "extra-attrs")]
                         extra_attrs: Default::default(),
-                        #[cfg(feature = "extra-children")]
                         extra_children: Default::default(),
                     },
                 )))),
-                #[cfg(feature = "extra-children")]
                 extra_children: Default::default(),
             },
         )))
@@ -1597,6 +1618,7 @@ fn build_connector_impl(elem: &ConnectorElement, shape_id: usize) -> types::Conn
                 ..Default::default()
             }),
             nv_pr: make_nv_pr(),
+            #[cfg(feature = "extra-children")]
             extra_children: Default::default(),
         }),
         shape_properties: Box::new(sp_pr),
@@ -1604,6 +1626,7 @@ fn build_connector_impl(elem: &ConnectorElement, shape_id: usize) -> types::Conn
         style: None,
         #[cfg(feature = "pml-extensions")]
         ext_lst: None,
+        #[cfg(feature = "extra-children")]
         extra_children: Default::default(),
     }
 }
@@ -1764,6 +1787,7 @@ impl<'a> GroupBuilder<'a> {
                     extra_children: Default::default(),
                 }),
                 nv_pr: make_nv_pr(),
+                #[cfg(feature = "extra-children")]
                 extra_children: Default::default(),
             }),
             grp_sp_pr: Box::new(grp_sp_pr),
@@ -1772,8 +1796,11 @@ impl<'a> GroupBuilder<'a> {
             graphic_frame: Vec::new(),
             connector: connectors,
             picture: Vec::new(),
+            #[cfg(feature = "pml-external")]
             content_part: Vec::new(),
+            #[cfg(feature = "pml-extensions")]
             ext_lst: None,
+            #[cfg(feature = "extra-children")]
             extra_children: Default::default(),
         };
 
@@ -1909,6 +1936,7 @@ fn build_graphic_frame(table: &TableElement, shape_id: usize) -> types::Graphica
         c_nv_pr: make_cnv_pr(shape_id as u32, name),
         c_nv_graphic_frame_pr: Box::new(c_nv_graphic_frame_pr),
         nv_pr: make_nv_pr(),
+        #[cfg(feature = "extra-children")]
         extra_children: Default::default(),
     });
 
@@ -1916,14 +1944,19 @@ fn build_graphic_frame(table: &TableElement, shape_id: usize) -> types::Graphica
 
     // Build the a:graphic XML and store it in extra_children.
     let graphic_xml = build_table_graphic_xml(table);
+    #[cfg(feature = "extra-children")]
     let extra_children = parse_extra_child_xml(&graphic_xml);
 
     types::GraphicalObjectFrame {
+        #[cfg(feature = "pml-styling")]
         bw_mode: None,
         nv_graphic_frame_pr,
         xfrm,
+        #[cfg(feature = "pml-extensions")]
         ext_lst: None,
+        #[cfg(feature = "extra-attrs")]
         extra_attrs: Default::default(),
+        #[cfg(feature = "extra-children")]
         extra_children,
     }
 }
@@ -2862,11 +2895,14 @@ impl SlideBuilder {
         }
 
         // Set clrMapOvr to masterClrMapping (always required for slides).
-        slide.clr_map_ovr = Some(Box::new(dml::CTColorMappingOverride {
-            master_clr_mapping: Some(Box::new(dml::CTEmptyElement)),
-            override_clr_mapping: None,
-            extra_children: Default::default(),
-        }));
+        #[cfg(feature = "pml-styling")]
+        {
+            slide.clr_map_ovr = Some(Box::new(dml::CTColorMappingOverride {
+                master_clr_mapping: Some(Box::new(dml::CTEmptyElement)),
+                override_clr_mapping: None,
+                extra_children: Default::default(),
+            }));
+        }
 
         serialize_slide_xml(&slide)
     }
@@ -3395,15 +3431,19 @@ impl PresentationBuilder {
                     let mut entry = types::CTSlideIdListEntry {
                         id: 256 + i as u32,
                         ext_lst: None,
+                        #[cfg(feature = "extra-attrs")]
                         extra_attrs: Default::default(),
+                        #[cfg(feature = "extra-children")]
                         extra_children: Default::default(),
                     };
+                    #[cfg(feature = "extra-attrs")]
                     entry
                         .extra_attrs
                         .insert("r:id".to_string(), format!("rId{}", i + 1));
                     entry
                 })
                 .collect(),
+            #[cfg(feature = "extra-children")]
             extra_children: Default::default(),
         };
 
@@ -3411,9 +3451,12 @@ impl PresentationBuilder {
         let mut master_entry = types::CTSlideMasterIdListEntry {
             id: Some(2147483647),
             ext_lst: None,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
             extra_children: Default::default(),
         };
+        #[cfg(feature = "extra-attrs")]
         master_entry
             .extra_attrs
             .insert("r:id".to_string(), format!("rId{}", master_rel_id));
@@ -3435,6 +3478,7 @@ impl PresentationBuilder {
                 cx: self.slide_width as i32,
                 cy: self.slide_height as i32,
                 r#type: None,
+                #[cfg(feature = "extra-attrs")]
                 extra_attrs: Default::default(),
             })),
             #[cfg(feature = "pml-notes")]
@@ -3477,7 +3521,9 @@ impl PresentationBuilder {
             photo_album: None,
             #[cfg(feature = "pml-extensions")]
             ext_lst: None,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
             extra_children: Default::default(),
         }
     }
@@ -3488,6 +3534,7 @@ impl PresentationBuilder {
 
         // Slide image placeholder shape (id=2).
         let sld_img_shape = types::Shape {
+            #[cfg(feature = "pml-styling")]
             use_bg_fill: None,
             non_visual_properties: Box::new(types::ShapeNonVisual {
                 c_nv_pr: make_cnv_pr(2, &format!("Slide Image Placeholder {}", slide_num)),
@@ -3507,13 +3554,18 @@ impl PresentationBuilder {
                     })),
                     ..Default::default()
                 }),
+                #[cfg(feature = "extra-children")]
                 extra_children: Default::default(),
             }),
             shape_properties: Box::new(dml::CTShapeProperties::default()),
+            #[cfg(feature = "pml-styling")]
             style: None,
             text_body: None,
+            #[cfg(feature = "pml-extensions")]
             ext_lst: None,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
             extra_children: Default::default(),
         };
 
@@ -3539,6 +3591,7 @@ impl PresentationBuilder {
 
         // Notes body placeholder shape (id=3).
         let notes_shape = types::Shape {
+            #[cfg(feature = "pml-styling")]
             use_bg_fill: None,
             non_visual_properties: Box::new(types::ShapeNonVisual {
                 c_nv_pr: make_cnv_pr(3, "Notes Placeholder"),
@@ -3557,9 +3610,11 @@ impl PresentationBuilder {
                     })),
                     ..Default::default()
                 }),
+                #[cfg(feature = "extra-children")]
                 extra_children: Default::default(),
             }),
             shape_properties: Box::new(dml::CTShapeProperties::default()),
+            #[cfg(feature = "pml-styling")]
             style: None,
             text_body: Some(Box::new(dml::TextBody {
                 body_pr: Box::default(),
@@ -3567,8 +3622,11 @@ impl PresentationBuilder {
                 p: paragraphs,
                 extra_children: Default::default(),
             })),
+            #[cfg(feature = "pml-extensions")]
             ext_lst: None,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
             extra_children: Default::default(),
         };
 
@@ -3605,6 +3663,7 @@ impl PresentationBuilder {
                     extra_children: Default::default(),
                 }),
                 nv_pr: make_nv_pr(),
+                #[cfg(feature = "extra-children")]
                 extra_children: Default::default(),
             }),
             grp_sp_pr: Box::new(dml::CTGroupShapeProperties {
@@ -3616,20 +3675,29 @@ impl PresentationBuilder {
             connector: Vec::new(),
             group_shape: Vec::new(),
             graphic_frame: Vec::new(),
+            #[cfg(feature = "pml-external")]
             content_part: Vec::new(),
+            #[cfg(feature = "pml-extensions")]
             ext_lst: None,
+            #[cfg(feature = "extra-children")]
             extra_children: Default::default(),
         });
 
         types::NotesSlide {
             common_slide_data: Box::new(types::CommonSlideData {
                 name: None,
+                #[cfg(feature = "pml-styling")]
                 bg: None,
                 shape_tree,
+                #[cfg(feature = "pml-external")]
                 cust_data_lst: None,
+                #[cfg(feature = "pml-external")]
                 controls: None,
+                #[cfg(feature = "pml-extensions")]
                 ext_lst: None,
+                #[cfg(feature = "extra-attrs")]
                 extra_attrs: Default::default(),
+                #[cfg(feature = "extra-children")]
                 extra_children: Default::default(),
             }),
             #[cfg(feature = "pml-notes")]
@@ -3640,7 +3708,9 @@ impl PresentationBuilder {
             clr_map_ovr: None,
             #[cfg(feature = "pml-extensions")]
             ext_lst: None,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
             extra_children: Default::default(),
         }
     }

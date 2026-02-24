@@ -2183,8 +2183,8 @@ impl SheetBuilder {
     ///     ..Default::default()
     /// });
     /// ```
+    #[cfg(feature = "sml-protection")]
     pub fn set_sheet_protection(&mut self, opts: SheetProtectionOptions) {
-        #[cfg(feature = "sml-protection")]
         {
             let password = opts
                 .password
@@ -2238,8 +2238,6 @@ impl SheetBuilder {
                 extra_attrs: Default::default(),
             }));
         }
-        #[cfg(not(feature = "sml-protection"))]
-        let _ = opts;
     }
 
     // -------------------------------------------------------------------------
@@ -2351,11 +2349,9 @@ impl SheetBuilder {
     /// cross-linked via the workbook `<pivotCaches>` element.
     ///
     /// Requires the `sml-pivot` feature.
+    #[cfg(feature = "sml-pivot")]
     pub fn add_pivot_table(&mut self, opts: PivotTableOptions) -> &mut Self {
-        #[cfg(feature = "sml-pivot")]
         self.pivot_tables.push(PivotEntry { opts });
-        #[cfg(not(feature = "sml-pivot"))]
-        let _ = opts;
         self
     }
 
