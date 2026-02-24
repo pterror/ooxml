@@ -1,0 +1,13 @@
+{
+  "assertions": [
+    {
+      "expected": "1.5x spacing",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    }
+  ],
+  "description": "Paragraph with 360 twips (1.5x) line spacing",
+  "format": "wml",
+  "version": 1
+}

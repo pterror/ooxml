@@ -1,0 +1,13 @@
+{
+  "assertions": [
+    {
+      "expected": "مرحبا بالعالم",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    }
+  ],
+  "description": "Run with Arabic text",
+  "format": "wml",
+  "version": 1
+}

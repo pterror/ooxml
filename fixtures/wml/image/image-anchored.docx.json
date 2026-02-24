@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "image_count"
+    }
+  ],
+  "description": "Anchored (floating) PNG image",
+  "format": "wml",
+  "version": 1
+}

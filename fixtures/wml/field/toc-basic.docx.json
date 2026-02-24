@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 2,
+      "type": "paragraph_count"
+    }
+  ],
+  "description": "Document with a basic TOC field",
+  "format": "wml",
+  "version": 1
+}

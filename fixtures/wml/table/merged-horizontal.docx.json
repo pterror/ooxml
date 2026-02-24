@@ -1,0 +1,26 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "table": 0,
+      "type": "table_rows"
+    },
+    {
+      "col": 0,
+      "expected": 2,
+      "row": 0,
+      "table": 0,
+      "type": "table_cell_colspan"
+    },
+    {
+      "col": 0,
+      "expected": "merged",
+      "row": 0,
+      "table": 0,
+      "type": "table_cell_text"
+    }
+  ],
+  "description": "Table row with two columns merged horizontally",
+  "format": "wml",
+  "version": 1
+}

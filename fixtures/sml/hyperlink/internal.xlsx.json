@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 2,
+      "type": "sheet_count"
+    }
+  ],
+  "description": "Internal hyperlink to Sheet2!A1",
+  "format": "sml",
+  "version": 1
+}

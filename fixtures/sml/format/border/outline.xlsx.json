@@ -1,0 +1,19 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "sheet_count"
+    },
+    {
+      "col": 0,
+      "expected": "Outline",
+      "row": 0,
+      "sheet": 0,
+      "tolerance": 0.0,
+      "type": "cell_value"
+    }
+  ],
+  "description": "Outer borders only",
+  "format": "sml",
+  "version": 1
+}

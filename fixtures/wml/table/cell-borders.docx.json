@@ -1,0 +1,14 @@
+{
+  "assertions": [
+    {
+      "col": 0,
+      "expected": "bordered",
+      "row": 0,
+      "table": 0,
+      "type": "table_cell_text"
+    }
+  ],
+  "description": "Table cell with explicit borders",
+  "format": "wml",
+  "version": 1
+}

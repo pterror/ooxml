@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "slide_count"
+    }
+  ],
+  "description": "Shape with empty string text",
+  "format": "pml",
+  "version": 1
+}

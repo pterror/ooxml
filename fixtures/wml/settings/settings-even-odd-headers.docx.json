@@ -1,0 +1,13 @@
+{
+  "assertions": [
+    {
+      "expected": "even odd doc",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    }
+  ],
+  "description": "Document with even-and-odd headers enabled",
+  "format": "wml",
+  "version": 1
+}

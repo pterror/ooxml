@@ -1,0 +1,14 @@
+{
+  "assertions": [
+    {
+      "col": 0,
+      "expected": "gold cell",
+      "row": 0,
+      "table": 0,
+      "type": "table_cell_text"
+    }
+  ],
+  "description": "Table cell with background color",
+  "format": "wml",
+  "version": 1
+}

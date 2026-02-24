@@ -1,0 +1,19 @@
+{
+  "assertions": [
+    {
+      "expected": 2,
+      "table": 0,
+      "type": "table_rows"
+    },
+    {
+      "col": 0,
+      "expected": "merged",
+      "row": 0,
+      "table": 0,
+      "type": "table_cell_text"
+    }
+  ],
+  "description": "Table column spanning two rows vertically",
+  "format": "wml",
+  "version": 1
+}

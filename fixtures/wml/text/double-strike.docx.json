@@ -1,0 +1,13 @@
+{
+  "assertions": [
+    {
+      "expected": "double-struck",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    }
+  ],
+  "description": "Double strikethrough run",
+  "format": "wml",
+  "version": 1
+}

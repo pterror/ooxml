@@ -746,6 +746,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "ooxml-fixtures"
+version = "0.1.0"
+dependencies = [
+ "ooxml-pml",
+ "ooxml-sml",
+ "ooxml-wml",
+ "serde",
+ "serde_json",
+ "serde_yaml",
+]
+
+[[package]]
 name = "ooxml-omml"
 version = "0.1.0"
 dependencies = [

@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "slide_count"
+    }
+  ],
+  "description": "Shape with AfterPrevious trigger animation",
+  "format": "pml",
+  "version": 1
+}

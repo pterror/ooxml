@@ -1,0 +1,17 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "slide_count"
+    },
+    {
+      "expected": "rect",
+      "shape": 0,
+      "slide": 0,
+      "type": "shape_type"
+    }
+  ],
+  "description": "Shape with Rect geometry at explicit position",
+  "format": "pml",
+  "version": 1
+}

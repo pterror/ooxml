@@ -10,9 +10,11 @@ node_modules/
 docs/.vitepress/cache/
 docs/.vitepress/dist/
 
-# Spec downloads (large PDFs, but keep our config YAMLs)
+# Spec downloads (large PDFs, but keep our config YAMLs and fixture specs)
 /spec/*
 !spec/*.yaml
+!spec/fixtures/
+!spec/fixtures/*.yaml
 
 # External corpora (NapierOne, docx-corpus, etc.)
 # These are large and downloaded separately - see ECOSYSTEM.md

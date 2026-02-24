@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "slide_count"
+    }
+  ],
+  "description": "Group containing two text shapes",
+  "format": "pml",
+  "version": 1
+}

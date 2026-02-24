@@ -1,0 +1,19 @@
+{
+  "assertions": [
+    {
+      "expected": "bookmarked text",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    },
+    {
+      "expected": [
+        "my_bookmark"
+      ],
+      "type": "bookmark_names"
+    }
+  ],
+  "description": "Paragraph with a bookmark start and end",
+  "format": "wml",
+  "version": 1
+}

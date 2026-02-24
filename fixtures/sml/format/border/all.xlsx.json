@@ -1,0 +1,19 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "sheet_count"
+    },
+    {
+      "col": 0,
+      "expected": "Bordered",
+      "row": 0,
+      "sheet": 0,
+      "tolerance": 0.0,
+      "type": "cell_value"
+    }
+  ],
+  "description": "All borders thin black",
+  "format": "sml",
+  "version": 1
+}

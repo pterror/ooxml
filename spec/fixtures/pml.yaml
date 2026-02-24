@@ -1,0 +1,381 @@
+version: 1
+fixtures:
+  # ---------------------------------------------------------------------------
+  # pml/structure/ — presentation and slide structure
+  # ---------------------------------------------------------------------------
+  - id: fixture_pml_structure_single_slide
+    format: pml
+    path: pml/structure/single-slide.pptx
+    description: "Presentation with exactly one slide"
+    template: custom
+    custom_fn: fixture_pml_structure_single_slide
+
+  - id: fixture_pml_structure_multi_slide
+    format: pml
+    path: pml/structure/multi-slide.pptx
+    description: "Presentation with three slides with different text"
+    template: custom
+    custom_fn: fixture_pml_structure_multi_slide
+
+  - id: fixture_pml_structure_slide_order
+    format: pml
+    path: pml/structure/slide-order.pptx
+    description: "Slides with text First, Second, Third in order"
+    template: custom
+    custom_fn: fixture_pml_structure_slide_order
+
+  # ---------------------------------------------------------------------------
+  # pml/shape/ — shape types and properties
+  # ---------------------------------------------------------------------------
+  - id: fixture_pml_shape_text_basic
+    format: pml
+    path: pml/shape/text-basic.pptx
+    description: "Basic text shape with Hello World"
+    template: pml_shape_text
+    params:
+      text: "Hello World"
+
+  - id: fixture_pml_shape_text_unicode
+    format: pml
+    path: pml/shape/text-unicode.pptx
+    description: "Shape with unicode text including emoji"
+    template: custom
+    custom_fn: fixture_pml_shape_text_unicode
+
+  - id: fixture_pml_shape_text_xml_special
+    format: pml
+    path: pml/shape/text-xml-special.pptx
+    description: "Shape with XML special characters"
+    template: custom
+    custom_fn: fixture_pml_shape_text_xml_special
+
+  - id: fixture_pml_shape_text_empty
+    format: pml
+    path: pml/shape/text-empty.pptx
+    description: "Shape with empty string text"
+    template: custom
+    custom_fn: fixture_pml_shape_text_empty
+
+  - id: fixture_pml_shape_rect
+    format: pml
+    path: pml/shape/shape-rect.pptx
+    description: "Shape with Rect geometry at explicit position"
+    template: custom
+    custom_fn: fixture_pml_shape_rect
+
+  - id: fixture_pml_shape_ellipse
+    format: pml
+    path: pml/shape/shape-ellipse.pptx
+    description: "Shape with Ellipse preset geometry"
+    template: custom
+    custom_fn: fixture_pml_shape_ellipse
+
+  - id: fixture_pml_shape_roundrect
+    format: pml
+    path: pml/shape/shape-roundrect.pptx
+    description: "Shape with RoundRect preset geometry"
+    template: custom
+    custom_fn: fixture_pml_shape_roundrect
+
+  - id: fixture_pml_shape_triangle
+    format: pml
+    path: pml/shape/shape-triangle.pptx
+    description: "Shape with Triangle preset geometry"
+    template: custom
+    custom_fn: fixture_pml_shape_triangle
+
+  - id: fixture_pml_shape_fill_color
+    format: pml
+    path: pml/shape/shape-fill-color.pptx
+    description: "Shape with solid fill color 4472C4"
+    template: custom
+    custom_fn: fixture_pml_shape_fill_color
+
+  - id: fixture_pml_shape_line_color
+    format: pml
+    path: pml/shape/shape-line-color.pptx
+    description: "Shape with red line color and 38100 EMU width"
+    template: custom
+    custom_fn: fixture_pml_shape_line_color
+
+  - id: fixture_pml_shape_position
+    format: pml
+    path: pml/shape/shape-position.pptx
+    description: "Shape positioned at 1 inch from each edge"
+    template: custom
+    custom_fn: fixture_pml_shape_position
+
+  - id: fixture_pml_shape_connector_basic
+    format: pml
+    path: pml/shape/connector-basic.pptx
+    description: "Slide with a basic connector"
+    template: custom
+    custom_fn: fixture_pml_shape_connector_basic
+
+  - id: fixture_pml_shape_connector_colored
+    format: pml
+    path: pml/shape/connector-colored.pptx
+    description: "Connector with red color"
+    template: custom
+    custom_fn: fixture_pml_shape_connector_colored
+
+  - id: fixture_pml_shape_group_basic
+    format: pml
+    path: pml/shape/group-basic.pptx
+    description: "Group containing two text shapes"
+    template: custom
+    custom_fn: fixture_pml_shape_group_basic
+
+  # ---------------------------------------------------------------------------
+  # pml/text/ — text run formatting
+  # ---------------------------------------------------------------------------
+  - id: fixture_pml_text_run_bold
+    format: pml
+    path: pml/text/run-bold.pptx
+    description: "Shape with bold text run"
+    template: custom
+    custom_fn: fixture_pml_text_run_bold
+
+  - id: fixture_pml_text_run_italic
+    format: pml
+    path: pml/text/run-italic.pptx
+    description: "Shape with italic text run"
+    template: custom
+    custom_fn: fixture_pml_text_run_italic
+
+  - id: fixture_pml_text_run_bold_italic
+    format: pml
+    path: pml/text/run-bold-italic.pptx
+    description: "Shape with bold and italic text run"
+    template: custom
+    custom_fn: fixture_pml_text_run_bold_italic
+
+  - id: fixture_pml_text_run_color
+    format: pml
+    path: pml/text/run-color.pptx
+    description: "Shape with red colored text run"
+    template: custom
+    custom_fn: fixture_pml_text_run_color
+
+  - id: fixture_pml_text_run_font_size_24
+    format: pml
+    path: pml/text/run-font-size-24.pptx
+    description: "Shape with 24pt font size run"
+    template: custom
+    custom_fn: fixture_pml_text_run_font_size_24
+
+  - id: fixture_pml_text_run_font_size_36
+    format: pml
+    path: pml/text/run-font-size-36.pptx
+    description: "Shape with 36pt font size run"
+    template: custom
+    custom_fn: fixture_pml_text_run_font_size_36
+
+  - id: fixture_pml_text_run_underline
+    format: pml
+    path: pml/text/run-underline.pptx
+    description: "Shape with underlined text run"
+    template: custom
+    custom_fn: fixture_pml_text_run_underline
+
+  - id: fixture_pml_text_paragraph_align_left
+    format: pml
+    path: pml/text/paragraph-align-left.pptx
+    description: "Shape with left-aligned paragraph"
+    template: custom
+    custom_fn: fixture_pml_text_paragraph_align_left
+
+  - id: fixture_pml_text_paragraph_align_center
+    format: pml
+    path: pml/text/paragraph-align-center.pptx
+    description: "Shape with center-aligned paragraph"
+    template: custom
+    custom_fn: fixture_pml_text_paragraph_align_center
+
+  - id: fixture_pml_text_paragraph_align_right
+    format: pml
+    path: pml/text/paragraph-align-right.pptx
+    description: "Shape with right-aligned paragraph"
+    template: custom
+    custom_fn: fixture_pml_text_paragraph_align_right
+
+  - id: fixture_pml_text_multi_paragraph
+    format: pml
+    path: pml/text/multi-paragraph.pptx
+    description: "Shape with three paragraphs"
+    template: custom
+    custom_fn: fixture_pml_text_multi_paragraph
+
+  # ---------------------------------------------------------------------------
+  # pml/image/ — embedded images
+  # ---------------------------------------------------------------------------
+  - id: fixture_pml_image_inline
+    format: pml
+    path: pml/image/image-inline.pptx
+    description: "Slide with an embedded inline image"
+    template: custom
+    custom_fn: fixture_pml_image_inline
+
+  - id: fixture_pml_image_positioned
+    format: pml
+    path: pml/image/image-positioned.pptx
+    description: "Slide with an image at a specific position"
+    template: custom
+    custom_fn: fixture_pml_image_positioned
+
+  # ---------------------------------------------------------------------------
+  # pml/table/ — tables
+  # ---------------------------------------------------------------------------
+  - id: fixture_pml_table_2x2
+    format: pml
+    path: pml/table/table-2x2.pptx
+    description: "2x2 table with text in each cell"
+    template: custom
+    custom_fn: fixture_pml_table_2x2
+
+  - id: fixture_pml_table_3x3
+    format: pml
+    path: pml/table/table-3x3.pptx
+    description: "3x3 table"
+    template: custom
+    custom_fn: fixture_pml_table_3x3
+
+  - id: fixture_pml_table_header_row
+    format: pml
+    path: pml/table/table-header-row.pptx
+    description: "Table with styled header row"
+    template: custom
+    custom_fn: fixture_pml_table_header_row
+
+  # ---------------------------------------------------------------------------
+  # pml/hyperlink/ — hyperlinks
+  # ---------------------------------------------------------------------------
+  - id: fixture_pml_hyperlink_external
+    format: pml
+    path: pml/hyperlink/hyperlink-external.pptx
+    description: "Run with external hyperlink to example.com"
+    template: custom
+    custom_fn: fixture_pml_hyperlink_external
+
+  - id: fixture_pml_hyperlink_internal
+    format: pml
+    path: pml/hyperlink/hyperlink-internal.pptx
+    description: "Run with internal hyperlink to slide 2"
+    template: custom
+    custom_fn: fixture_pml_hyperlink_internal
+
+  # ---------------------------------------------------------------------------
+  # pml/notes/ — speaker notes
+  # ---------------------------------------------------------------------------
+  - id: fixture_pml_notes_basic
+    format: pml
+    path: pml/notes/notes-basic.pptx
+    description: "Slide with basic speaker notes"
+    template: custom
+    custom_fn: fixture_pml_notes_basic
+
+  - id: fixture_pml_notes_long
+    format: pml
+    path: pml/notes/notes-long.pptx
+    description: "Slide with multi-sentence speaker notes"
+    template: custom
+    custom_fn: fixture_pml_notes_long
+
+  # ---------------------------------------------------------------------------
+  # pml/transition/ — slide transitions
+  # ---------------------------------------------------------------------------
+  - id: fixture_pml_transition_fade
+    format: pml
+    path: pml/transition/transition-fade.pptx
+    description: "Slide with fade transition"
+    template: custom
+    custom_fn: fixture_pml_transition_fade
+
+  - id: fixture_pml_transition_push
+    format: pml
+    path: pml/transition/transition-push.pptx
+    description: "Slide with push transition"
+    template: custom
+    custom_fn: fixture_pml_transition_push
+
+  - id: fixture_pml_transition_wipe
+    format: pml
+    path: pml/transition/transition-wipe.pptx
+    description: "Slide with wipe transition"
+    template: custom
+    custom_fn: fixture_pml_transition_wipe
+
+  # ---------------------------------------------------------------------------
+  # pml/animation/ — animations (requires pml-animations feature)
+  # ---------------------------------------------------------------------------
+  - id: fixture_pml_animation_appear
+    format: pml
+    path: pml/animation/animation-appear.pptx
+    description: "Shape with Appear animation on click"
+    template: custom
+    custom_fn: fixture_pml_animation_appear
+
+  - id: fixture_pml_animation_fade_in
+    format: pml
+    path: pml/animation/animation-fade-in.pptx
+    description: "Shape with FadeIn animation"
+    template: custom
+    custom_fn: fixture_pml_animation_fade_in
+
+  - id: fixture_pml_animation_fly_in_left
+    format: pml
+    path: pml/animation/animation-fly-in-left.pptx
+    description: "Shape with FlyInFromLeft animation"
+    template: custom
+    custom_fn: fixture_pml_animation_fly_in_left
+
+  - id: fixture_pml_animation_after_previous
+    format: pml
+    path: pml/animation/animation-after-previous.pptx
+    description: "Shape with AfterPrevious trigger animation"
+    template: custom
+    custom_fn: fixture_pml_animation_after_previous
+
+  # ---------------------------------------------------------------------------
+  # pml/master/ — slide masters and layouts
+  # ---------------------------------------------------------------------------
+  - id: fixture_pml_master_custom_master
+    format: pml
+    path: pml/master/custom-master.pptx
+    description: "Presentation with a custom slide master"
+    template: custom
+    custom_fn: fixture_pml_master_custom_master
+
+  - id: fixture_pml_master_layout_title_slide
+    format: pml
+    path: pml/master/layout-title-slide.pptx
+    description: "Presentation using TitleSlide layout"
+    template: custom
+    custom_fn: fixture_pml_master_layout_title_slide
+
+  - id: fixture_pml_master_layout_title_content
+    format: pml
+    path: pml/master/layout-title-content.pptx
+    description: "Presentation using TitleContent layout"
+    template: custom
+    custom_fn: fixture_pml_master_layout_title_content
+
+  # ---------------------------------------------------------------------------
+  # pml/chart/ — embedded charts
+  # ---------------------------------------------------------------------------
+  - id: fixture_pml_chart_embedded
+    format: pml
+    path: pml/chart/chart-embedded.pptx
+    description: "Slide with an embedded bar chart"
+    template: custom
+    custom_fn: fixture_pml_chart_embedded
+
+  # ---------------------------------------------------------------------------
+  # pml/background/ — slide background
+  # ---------------------------------------------------------------------------
+  - id: fixture_pml_background_color
+    format: pml
+    path: pml/background/background-color.pptx
+    description: "Slide with solid background color 1F497D"
+    template: custom
+    custom_fn: fixture_pml_background_color

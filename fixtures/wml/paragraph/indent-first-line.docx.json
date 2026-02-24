@@ -1,0 +1,13 @@
+{
+  "assertions": [
+    {
+      "expected": "first line indent",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    }
+  ],
+  "description": "Paragraph with 360 twips first-line indent",
+  "format": "wml",
+  "version": 1
+}

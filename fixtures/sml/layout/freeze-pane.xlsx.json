@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "sheet_count"
+    }
+  ],
+  "description": "Freeze pane at row 1",
+  "format": "sml",
+  "version": 1
+}

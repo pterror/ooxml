@@ -1,0 +1,18 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "sheet_count"
+    },
+    {
+      "col": 2,
+      "expected": "A1+B1",
+      "row": 0,
+      "sheet": 0,
+      "type": "cell_formula"
+    }
+  ],
+  "description": "Cell reference formula",
+  "format": "sml",
+  "version": 1
+}

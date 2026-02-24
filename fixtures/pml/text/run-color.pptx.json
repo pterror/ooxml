@@ -1,0 +1,19 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "slide_count"
+    },
+    {
+      "expected": "FF0000",
+      "para": 0,
+      "run": 0,
+      "shape": 0,
+      "slide": 0,
+      "type": "pml_run_color"
+    }
+  ],
+  "description": "Shape with red colored text run",
+  "format": "pml",
+  "version": 1
+}

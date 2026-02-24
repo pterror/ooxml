@@ -1,0 +1,19 @@
+{
+  "assertions": [
+    {
+      "expected": "italic",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    },
+    {
+      "expected": true,
+      "para": 0,
+      "run": 0,
+      "type": "run_italic"
+    }
+  ],
+  "description": "Italic run",
+  "format": "wml",
+  "version": 1
+}

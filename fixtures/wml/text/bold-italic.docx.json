@@ -1,0 +1,25 @@
+{
+  "assertions": [
+    {
+      "expected": "bold italic",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    },
+    {
+      "expected": true,
+      "para": 0,
+      "run": 0,
+      "type": "run_bold"
+    },
+    {
+      "expected": true,
+      "para": 0,
+      "run": 0,
+      "type": "run_italic"
+    }
+  ],
+  "description": "Run with both bold and italic",
+  "format": "wml",
+  "version": 1
+}

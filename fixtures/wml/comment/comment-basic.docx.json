@@ -1,0 +1,13 @@
+{
+  "assertions": [
+    {
+      "expected": "commented text",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    }
+  ],
+  "description": "Paragraph with one comment",
+  "format": "wml",
+  "version": 1
+}

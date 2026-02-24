@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 2,
+      "type": "slide_count"
+    }
+  ],
+  "description": "Run with internal hyperlink to slide 2",
+  "format": "pml",
+  "version": 1
+}

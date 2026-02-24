@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "sheet_count"
+    }
+  ],
+  "description": "Sheet with print area set",
+  "format": "sml",
+  "version": 1
+}

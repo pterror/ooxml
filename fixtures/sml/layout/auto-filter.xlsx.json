@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "sheet_count"
+    }
+  ],
+  "description": "Auto-filter on header row A1:D1",
+  "format": "sml",
+  "version": 1
+}

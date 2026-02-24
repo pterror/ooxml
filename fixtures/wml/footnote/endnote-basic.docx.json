@@ -1,0 +1,13 @@
+{
+  "assertions": [
+    {
+      "expected": "text",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    }
+  ],
+  "description": "Paragraph with one endnote",
+  "format": "wml",
+  "version": 1
+}

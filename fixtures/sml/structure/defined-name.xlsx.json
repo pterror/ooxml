@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "sheet_count"
+    }
+  ],
+  "description": "Workbook with defined name MyRange",
+  "format": "sml",
+  "version": 1
+}

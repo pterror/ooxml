@@ -1,0 +1,13 @@
+{
+  "assertions": [
+    {
+      "expected": "outline",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    }
+  ],
+  "description": "Outline (hollow) text effect run",
+  "format": "wml",
+  "version": 1
+}

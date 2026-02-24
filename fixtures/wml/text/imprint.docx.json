@@ -1,0 +1,13 @@
+{
+  "assertions": [
+    {
+      "expected": "imprint",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    }
+  ],
+  "description": "Imprint (engrave) text effect run",
+  "format": "wml",
+  "version": 1
+}

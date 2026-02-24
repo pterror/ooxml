@@ -1,0 +1,32 @@
+{
+  "assertions": [
+    {
+      "expected": 2,
+      "table": 0,
+      "type": "table_rows"
+    },
+    {
+      "expected": 3,
+      "row": 0,
+      "table": 0,
+      "type": "table_cols"
+    },
+    {
+      "col": 0,
+      "expected": "r0c0",
+      "row": 0,
+      "table": 0,
+      "type": "table_cell_text"
+    },
+    {
+      "col": 2,
+      "expected": "r1c2",
+      "row": 1,
+      "table": 0,
+      "type": "table_cell_text"
+    }
+  ],
+  "description": "Basic 2-row 3-col table",
+  "format": "wml",
+  "version": 1
+}

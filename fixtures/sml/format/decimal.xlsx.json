@@ -1,0 +1,26 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "sheet_count"
+    },
+    {
+      "col": 0,
+      "expected": "1234.5",
+      "row": 0,
+      "sheet": 0,
+      "tolerance": 1e-9,
+      "type": "cell_value"
+    },
+    {
+      "col": 0,
+      "expected": "#,##0.00",
+      "row": 0,
+      "sheet": 0,
+      "type": "cell_format_code"
+    }
+  ],
+  "description": "Decimal number format with thousands separator",
+  "format": "sml",
+  "version": 1
+}

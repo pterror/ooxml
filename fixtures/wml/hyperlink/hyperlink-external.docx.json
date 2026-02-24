@@ -1,0 +1,13 @@
+{
+  "assertions": [
+    {
+      "expected": "https://example.com",
+      "para": 0,
+      "run": 0,
+      "type": "hyperlink_url"
+    }
+  ],
+  "description": "Paragraph with external hyperlink",
+  "format": "wml",
+  "version": 1
+}

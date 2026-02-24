@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "sheet_count"
+    }
+  ],
+  "description": "Ignored number-stored-as-text error on A1",
+  "format": "sml",
+  "version": 1
+}

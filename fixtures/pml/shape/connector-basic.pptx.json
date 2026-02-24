@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "slide_count"
+    }
+  ],
+  "description": "Slide with a basic connector",
+  "format": "pml",
+  "version": 1
+}

@@ -1,0 +1,17 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "slide_count"
+    },
+    {
+      "expected": "roundRect",
+      "shape": 0,
+      "slide": 0,
+      "type": "shape_type"
+    }
+  ],
+  "description": "Shape with RoundRect preset geometry",
+  "format": "pml",
+  "version": 1
+}

@@ -1,0 +1,27 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "slide_count"
+    },
+    {
+      "expected": true,
+      "para": 0,
+      "run": 0,
+      "shape": 0,
+      "slide": 0,
+      "type": "pml_run_bold"
+    },
+    {
+      "expected": "bold",
+      "para": 0,
+      "run": 0,
+      "shape": 0,
+      "slide": 0,
+      "type": "pml_run_text"
+    }
+  ],
+  "description": "Shape with bold text run",
+  "format": "pml",
+  "version": 1
+}

@@ -1,0 +1,11 @@
+{
+  "assertions": [
+    {
+      "expected": 1,
+      "type": "sheet_count"
+    }
+  ],
+  "description": "Auto-filter on A1:C1",
+  "format": "sml",
+  "version": 1
+}

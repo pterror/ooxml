@@ -1,0 +1,13 @@
+{
+  "assertions": [
+    {
+      "expected": "tab stop doc",
+      "para": 0,
+      "run": 0,
+      "type": "run_text"
+    }
+  ],
+  "description": "Document with default tab stop set to 720 twips",
+  "format": "wml",
+  "version": 1
+}
