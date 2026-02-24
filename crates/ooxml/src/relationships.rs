@@ -289,6 +289,10 @@ pub mod rel_type {
     pub const COMMENTS: &str =
         "http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments";
 
+    /// Chart.
+    pub const CHART: &str =
+        "http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart";
+
     /// Core properties.
     pub const CORE_PROPERTIES: &str =
         "http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties";

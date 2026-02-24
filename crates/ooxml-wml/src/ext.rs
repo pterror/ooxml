@@ -691,6 +691,79 @@ fn collect_blip_rel_ids<'a>(elem: &'a ooxml_xml::RawXmlElement, ids: &mut Vec<&'
 }
 
 // =============================================================================
+// DrawingChartExt — extract chart relationship IDs from CTDrawing
+// =============================================================================
+
+/// Extension methods for `CTDrawing` — extract chart relationship IDs from raw XML.
+///
+/// Charts in DOCX appear in `<wp:inline>` or `<wp:anchor>` elements inside
+/// `<a:graphic>` → `<a:graphicData>` → `<c:chart r:id="rId..."/>`.
+///
+/// ECMA-376 Part 1, §20.4.2.8 (inline), §20.4.2.3 (anchor), §21.2.2.27 (chart).
+#[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+pub trait DrawingChartExt {
+    /// Get relationship IDs for charts in inline drawings (`<wp:inline>`).
+    fn inline_chart_rel_ids(&self) -> Vec<&str>;
+
+    /// Get relationship IDs for charts in anchored drawings (`<wp:anchor>`).
+    fn anchored_chart_rel_ids(&self) -> Vec<&str>;
+
+    /// Get all chart relationship IDs (inline + anchored).
+    fn all_chart_rel_ids(&self) -> Vec<&str>;
+}
+
+#[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+impl DrawingChartExt for types::CTDrawing {
+    fn inline_chart_rel_ids(&self) -> Vec<&str> {
+        let mut ids = Vec::new();
+        for child in &self.extra_children {
+            if let ooxml_xml::RawXmlNode::Element(elem) = &child.node
+                && local_name_of(&elem.name) == "inline"
+            {
+                collect_chart_rel_ids(elem, &mut ids);
+            }
+        }
+        ids
+    }
+
+    fn anchored_chart_rel_ids(&self) -> Vec<&str> {
+        let mut ids = Vec::new();
+        for child in &self.extra_children {
+            if let ooxml_xml::RawXmlNode::Element(elem) = &child.node
+                && local_name_of(&elem.name) == "anchor"
+            {
+                collect_chart_rel_ids(elem, &mut ids);
+            }
+        }
+        ids
+    }
+
+    fn all_chart_rel_ids(&self) -> Vec<&str> {
+        let mut ids = self.inline_chart_rel_ids();
+        ids.extend(self.anchored_chart_rel_ids());
+        ids
+    }
+}
+
+/// Recursively walk a raw XML element tree and collect `r:id` attribute values
+/// from `<c:chart>` elements.
+#[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+fn collect_chart_rel_ids<'a>(elem: &'a ooxml_xml::RawXmlElement, ids: &mut Vec<&'a str>) {
+    if local_name_of(&elem.name) == "chart" {
+        for (attr_name, attr_val) in &elem.attributes {
+            if attr_name == "r:id" || local_name_of(attr_name) == "id" {
+                ids.push(attr_val.as_str());
+            }
+        }
+    }
+    for child in &elem.children {
+        if let ooxml_xml::RawXmlNode::Element(child_elem) = child {
+            collect_chart_rel_ids(child_elem, ids);
+        }
+    }
+}
+
+// =============================================================================
 // TextBoxExt (DrawingML — modern text boxes)
 // =============================================================================
 
@@ -1703,6 +1776,39 @@ pub fn parse_comments(xml: &[u8]) -> Result<types::Comments, ParseError> {
     }
     Err(ParseError::UnexpectedElement(
         "no comments element found".to_string(),
+    ))
+}
+
+/// Parse a chart part from XML bytes using the `ooxml_dml` generated `FromXml` parser.
+///
+/// This is used by `Document::get_chart()` to parse `word/charts/chartN.xml` parts.
+/// Requires the `wml-charts` feature.
+///
+/// ECMA-376 Part 1, §21.2.2.27 (chartSpace).
+#[cfg(feature = "wml-charts")]
+pub(crate) fn parse_chart(xml: &[u8]) -> Result<ooxml_dml::types::ChartSpace, ParseError> {
+    use ooxml_dml::parsers::FromXml as DmlFromXml;
+    let mut reader = Reader::from_reader(Cursor::new(xml));
+    let mut buf = Vec::new();
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => {
+                return ooxml_dml::types::ChartSpace::from_xml(&mut reader, &e, false)
+                    .map_err(|e| ParseError::UnexpectedElement(e.to_string()));
+            }
+            Ok(Event::Empty(e)) => {
+                return ooxml_dml::types::ChartSpace::from_xml(&mut reader, &e, true)
+                    .map_err(|e| ParseError::UnexpectedElement(e.to_string()));
+            }
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(ParseError::Xml(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+    Err(ParseError::UnexpectedElement(
+        "no chartSpace element found".to_string(),
     ))
 }
 
@@ -3213,6 +3319,85 @@ mod tests {
         let runs = paras[0].runs();
         assert!(resolved.is_bold(runs[0]));
         assert!(!resolved.is_italic(runs[0]));
+    }
+
+    // -------------------------------------------------------------------------
+    // DrawingChartExt tests
+    // -------------------------------------------------------------------------
+
+    #[test]
+    #[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+    fn test_drawing_chart_rel_ids() {
+        use super::DrawingChartExt;
+        use ooxml_xml::{PositionedNode, RawXmlElement, RawXmlNode};
+
+        // Build: wp:anchor → a:graphic → a:graphicData → c:chart r:id="rId5"
+        let chart = RawXmlElement {
+            name: "c:chart".to_string(),
+            attributes: vec![("r:id".to_string(), "rId5".to_string())],
+            children: vec![],
+            self_closing: true,
+        };
+        let graphic_data = RawXmlElement {
+            name: "a:graphicData".to_string(),
+            attributes: vec![(
+                "uri".to_string(),
+                "http://schemas.openxmlformats.org/drawingml/2006/chart".to_string(),
+            )],
+            children: vec![RawXmlNode::Element(chart)],
+            self_closing: false,
+        };
+        let graphic = RawXmlElement {
+            name: "a:graphic".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(graphic_data)],
+            self_closing: false,
+        };
+        let anchor = RawXmlElement {
+            name: "wp:anchor".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(graphic)],
+            self_closing: false,
+        };
+
+        let drawing = types::CTDrawing {
+            extra_children: vec![PositionedNode::new(0, RawXmlNode::Element(anchor))],
+        };
+
+        let ids = drawing.all_chart_rel_ids();
+        assert_eq!(ids, vec!["rId5"]);
+
+        // anchored_chart_rel_ids should also return it
+        assert_eq!(drawing.anchored_chart_rel_ids(), vec!["rId5"]);
+        // inline should be empty
+        assert!(drawing.inline_chart_rel_ids().is_empty());
+    }
+
+    #[test]
+    #[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+    fn test_drawing_no_charts() {
+        use super::DrawingChartExt;
+        use ooxml_xml::{PositionedNode, RawXmlElement, RawXmlNode};
+
+        // Build an anchor with a blip (image), but no chart
+        let blip = RawXmlElement {
+            name: "a:blip".to_string(),
+            attributes: vec![("r:embed".to_string(), "rId1".to_string())],
+            children: vec![],
+            self_closing: true,
+        };
+        let anchor = RawXmlElement {
+            name: "wp:anchor".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(blip)],
+            self_closing: false,
+        };
+
+        let drawing = types::CTDrawing {
+            extra_children: vec![PositionedNode::new(0, RawXmlNode::Element(anchor))],
+        };
+
+        assert!(drawing.all_chart_rel_ids().is_empty());
     }
 
     // -------------------------------------------------------------------------

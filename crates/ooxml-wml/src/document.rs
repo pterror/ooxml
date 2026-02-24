@@ -324,6 +324,30 @@ impl<R: Read + Seek> Document<R> {
         parse_settings(&settings_xml)
     }
 
+    /// Load a chart part by its relationship ID.
+    ///
+    /// Looks up the chart relationship in the document's `.rels` file, reads the
+    /// chart XML part (e.g. `word/charts/chart1.xml`), and parses it as a
+    /// `ChartSpace` using the `ooxml-dml` generated parser.
+    ///
+    /// Chart relationship IDs can be found by walking drawing elements with
+    /// `DrawingChartExt::all_chart_rel_ids()`.
+    ///
+    /// Requires the `wml-charts` feature.
+    ///
+    /// ECMA-376 Part 1, §21.2.2.27 (chartSpace).
+    #[cfg(feature = "wml-charts")]
+    pub fn get_chart(&mut self, rel_id: &str) -> Result<ooxml_dml::types::ChartSpace> {
+        let rel = self
+            .doc_rels
+            .get(rel_id)
+            .ok_or_else(|| Error::MissingPart(format!("chart relationship {}", rel_id)))?;
+
+        let chart_path = resolve_path(&self.doc_path, &rel.target);
+        let chart_xml = self.package.read_part(&chart_path)?;
+        ext::parse_chart(&chart_xml).map_err(|e| Error::Invalid(e.to_string()))
+    }
+
     /// Save the document to a file.
     ///
     /// This serializes the current state of the generated types (`gen_doc`,

@@ -797,6 +797,7 @@ version = "0.1.0"
 dependencies = [
  "base64",
  "ooxml-codegen",
+ "ooxml-dml",
  "ooxml-omml",
  "ooxml-opc",
  "ooxml-xml",
