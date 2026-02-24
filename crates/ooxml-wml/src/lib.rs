@@ -54,7 +54,8 @@ pub use ooxml_xml::{PositionedAttr, PositionedNode, RawXmlElement, RawXmlNode};
 // Writer types.
 pub use writer::{
     AnchoredImage, CommentBuilder, DocumentBuilder, Drawing, EndnoteBuilder, FooterBuilder,
-    FootnoteBuilder, HeaderBuilder, HeaderFooterType, InlineImage, ListType, WrapType,
+    FootnoteBuilder, HeaderBuilder, HeaderFooterType, InlineImage, ListType, NumberingLevel,
+    TextBox, WrapType,
 };
 
 // Re-export commonly used generated types at the crate root.

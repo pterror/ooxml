@@ -74,6 +74,22 @@ impl types::Paragraph {
     }
 
     /// Add a bookmark start marker.
+    ///
+    /// This version accepts a `u32` id for ergonomic use in writer APIs.
+    /// ECMA-376 Part 1, Section 17.13.6.1 (`w:bookmarkStart`).
+    pub fn add_bookmark_start_u32(&mut self, id: u32, name: &str) {
+        self.add_bookmark_start(id as i64, name);
+    }
+
+    /// Add a bookmark end marker.
+    ///
+    /// This version accepts a `u32` id for ergonomic use in writer APIs.
+    /// ECMA-376 Part 1, Section 17.13.6.2 (`w:bookmarkEnd`).
+    pub fn add_bookmark_end_u32(&mut self, id: u32) {
+        self.add_bookmark_end(id as i64);
+    }
+
+    /// Add a bookmark start marker.
     pub fn add_bookmark_start(&mut self, id: i64, name: &str) {
         let bookmark = types::Bookmark {
             id,
@@ -766,6 +782,247 @@ impl types::TableCell {
     }
 }
 
+/// Border style for table cell borders.
+///
+/// ECMA-376 Part 1, Section 17.18.2 (`ST_Border`).
+#[cfg(feature = "wml-tables")]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BorderStyle {
+    /// No border.
+    None,
+    /// Single solid line.
+    Single,
+    /// Double solid lines.
+    Double,
+    /// Dashed line.
+    Dashed,
+    /// Dotted line.
+    Dotted,
+    /// Thick solid line.
+    Thick,
+}
+
+#[cfg(feature = "wml-tables")]
+impl BorderStyle {
+    fn to_st_border(self) -> types::STBorder {
+        match self {
+            BorderStyle::None => types::STBorder::None,
+            BorderStyle::Single => types::STBorder::Single,
+            BorderStyle::Double => types::STBorder::Double,
+            BorderStyle::Dashed => types::STBorder::Dashed,
+            BorderStyle::Dotted => types::STBorder::Dotted,
+            BorderStyle::Thick => types::STBorder::Thick,
+        }
+    }
+}
+
+/// Table width unit.
+///
+/// ECMA-376 Part 1, Section 17.18.87 (`ST_TblWidth`).
+#[cfg(feature = "wml-tables")]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TableWidthUnit {
+    /// Twips (twentieths of a point). 1440 = 1 inch.
+    Dxa,
+    /// Percent in fiftieths (5000 = 100%, 2500 = 50%).
+    Pct,
+}
+
+#[cfg(feature = "wml-tables")]
+impl types::CTRow {
+    /// Set the row height in twips.
+    ///
+    /// Maps to `<w:trPr><w:trHeight w:val="..." w:hRule="exact"/></w:trPr>`.
+    /// ECMA-376 Part 1, Section 17.4.81 (`w:trHeight`).
+    pub fn set_height(&mut self, twips: u32) {
+        let row_pr = self
+            .row_properties
+            .get_or_insert_with(|| Box::new(types::TableRowProperties::default()));
+        row_pr.tr_height = Some(Box::new(types::CTHeight {
+            value: Some(twips.to_string()),
+            #[cfg(feature = "wml-tables")]
+            h_rule: Some(types::STHeightRule::Exact),
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+        }));
+    }
+}
+
+#[cfg(feature = "wml-tables")]
+impl types::TableCell {
+    /// Set the background (shading) color of this cell.
+    ///
+    /// The `rgb` value should be a hex string (e.g., `"FF0000"` for red, `"auto"` for automatic).
+    /// Maps to `<w:tcPr><w:shd w:val="clear" w:fill="..." w:color="auto"/></w:tcPr>`.
+    /// ECMA-376 Part 1, Section 17.4.32 (`w:shd`).
+    pub fn set_background_color(&mut self, rgb: &str) {
+        let tcpr = self
+            .cell_properties
+            .get_or_insert_with(|| Box::new(types::TableCellProperties::default()));
+        tcpr.shading = Some(Box::new(types::CTShd {
+            value: types::STShd::Clear,
+            #[cfg(feature = "wml-styling")]
+            fill: Some(rgb.to_string()),
+            #[cfg(feature = "wml-styling")]
+            color: Some("auto".to_string()),
+            #[cfg(feature = "wml-styling")]
+            theme_color: None,
+            #[cfg(feature = "wml-styling")]
+            theme_tint: None,
+            #[cfg(feature = "wml-styling")]
+            theme_shade: None,
+            #[cfg(feature = "wml-styling")]
+            theme_fill: None,
+            #[cfg(feature = "wml-styling")]
+            theme_fill_tint: None,
+            #[cfg(feature = "wml-styling")]
+            theme_fill_shade: None,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+        }));
+    }
+
+    /// Set all four borders of this cell at once.
+    ///
+    /// `style` is the border style, `width_eights` is the width in eighths of a point
+    /// (e.g., 4 = half a point = 0.5pt), and `color` is a hex color string (e.g., `"000000"`).
+    ///
+    /// ECMA-376 Part 1, Section 17.4.5 (`w:tcBorders`).
+    pub fn set_borders(&mut self, style: BorderStyle, width_eights: u32, color: &str) {
+        self.set_border_top(style, width_eights, color);
+        self.set_border_bottom(style, width_eights, color);
+        self.set_border_left(style, width_eights, color);
+        self.set_border_right(style, width_eights, color);
+    }
+
+    /// Set the top border of this cell.
+    ///
+    /// ECMA-376 Part 1, Section 17.4.5 (`w:tcBorders`).
+    pub fn set_border_top(&mut self, style: BorderStyle, width_eights: u32, color: &str) {
+        let tcpr = self
+            .cell_properties
+            .get_or_insert_with(|| Box::new(types::TableCellProperties::default()));
+        let borders = tcpr
+            .tc_borders
+            .get_or_insert_with(|| Box::new(types::CTTcBorders::default()));
+        borders.top = Some(Box::new(make_cell_border(style, width_eights, color)));
+    }
+
+    /// Set the bottom border of this cell.
+    ///
+    /// ECMA-376 Part 1, Section 17.4.5 (`w:tcBorders`).
+    pub fn set_border_bottom(&mut self, style: BorderStyle, width_eights: u32, color: &str) {
+        let tcpr = self
+            .cell_properties
+            .get_or_insert_with(|| Box::new(types::TableCellProperties::default()));
+        let borders = tcpr
+            .tc_borders
+            .get_or_insert_with(|| Box::new(types::CTTcBorders::default()));
+        borders.bottom = Some(Box::new(make_cell_border(style, width_eights, color)));
+    }
+
+    /// Set the left border of this cell.
+    ///
+    /// ECMA-376 Part 1, Section 17.4.5 (`w:tcBorders`).
+    pub fn set_border_left(&mut self, style: BorderStyle, width_eights: u32, color: &str) {
+        let tcpr = self
+            .cell_properties
+            .get_or_insert_with(|| Box::new(types::TableCellProperties::default()));
+        let borders = tcpr
+            .tc_borders
+            .get_or_insert_with(|| Box::new(types::CTTcBorders::default()));
+        borders.left = Some(Box::new(make_cell_border(style, width_eights, color)));
+    }
+
+    /// Set the right border of this cell.
+    ///
+    /// ECMA-376 Part 1, Section 17.4.5 (`w:tcBorders`).
+    pub fn set_border_right(&mut self, style: BorderStyle, width_eights: u32, color: &str) {
+        let tcpr = self
+            .cell_properties
+            .get_or_insert_with(|| Box::new(types::TableCellProperties::default()));
+        let borders = tcpr
+            .tc_borders
+            .get_or_insert_with(|| Box::new(types::CTTcBorders::default()));
+        borders.right = Some(Box::new(make_cell_border(style, width_eights, color)));
+    }
+
+    /// Set cell padding (margins) in twips.
+    ///
+    /// Maps to `<w:tcPr><w:tcMar .../></w:tcPr>`.
+    /// ECMA-376 Part 1, Section 17.4.44 (`w:tcMar`).
+    pub fn set_padding(&mut self, top: u32, bottom: u32, left: u32, right: u32) {
+        let tcpr = self
+            .cell_properties
+            .get_or_insert_with(|| Box::new(types::TableCellProperties::default()));
+        tcpr.tc_mar = Some(Box::new(types::CTTcMar {
+            top: Some(Box::new(make_tbl_width(top, types::STTblWidth::Dxa))),
+            bottom: Some(Box::new(make_tbl_width(bottom, types::STTblWidth::Dxa))),
+            left: Some(Box::new(make_tbl_width(left, types::STTblWidth::Dxa))),
+            right: Some(Box::new(make_tbl_width(right, types::STTblWidth::Dxa))),
+            #[cfg(feature = "wml-tables")]
+            start: None,
+            #[cfg(feature = "wml-tables")]
+            end: None,
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        }));
+    }
+}
+
+#[cfg(feature = "wml-tables")]
+impl types::Table {
+    /// Set the preferred width of this table.
+    ///
+    /// `width` is the measurement value; `unit` is the unit type.
+    /// Maps to `<w:tblPr><w:tblW w:w="..." w:type="..."/></w:tblPr>`.
+    /// ECMA-376 Part 1, Section 17.4.63 (`w:tblW`).
+    pub fn set_width(&mut self, width: u32, unit: TableWidthUnit) {
+        let type_ = match unit {
+            TableWidthUnit::Dxa => types::STTblWidth::Dxa,
+            TableWidthUnit::Pct => types::STTblWidth::Pct,
+        };
+        self.table_properties.tbl_w = Some(Box::new(make_tbl_width(width, type_)));
+    }
+}
+
+/// Build a `CTBorder` with the given style, width, and color.
+#[cfg(feature = "wml-tables")]
+fn make_cell_border(style: BorderStyle, width_eights: u32, color: &str) -> types::CTBorder {
+    types::CTBorder {
+        value: style.to_st_border(),
+        #[cfg(feature = "wml-styling")]
+        color: Some(color.to_string()),
+        #[cfg(feature = "wml-styling")]
+        size: Some(width_eights as u64),
+        #[cfg(feature = "wml-styling")]
+        space: Some(0u64),
+        #[cfg(feature = "wml-styling")]
+        theme_color: None,
+        #[cfg(feature = "wml-styling")]
+        theme_tint: None,
+        #[cfg(feature = "wml-styling")]
+        theme_shade: None,
+        #[cfg(feature = "wml-styling")]
+        shadow: None,
+        #[cfg(feature = "wml-styling")]
+        frame: None,
+        #[cfg(feature = "extra-attrs")]
+        extra_attrs: Default::default(),
+    }
+}
+
+/// Build a `CTTblWidth` with the given value and type.
+#[cfg(feature = "wml-tables")]
+fn make_tbl_width(width: u32, type_: types::STTblWidth) -> types::CTTblWidth {
+    types::CTTblWidth {
+        width: Some(width.to_string()),
+        r#type: Some(type_),
+        #[cfg(feature = "extra-attrs")]
+        extra_attrs: Default::default(),
+    }
+}
+
 // =============================================================================
 // Header/Footer (HeaderFooter)
 // =============================================================================
@@ -1341,5 +1598,241 @@ mod tests {
             tcpr.vertical_merge.as_ref().unwrap().value,
             Some(crate::types::STMerge::Restart)
         );
+    }
+
+    // -------------------------------------------------------------------------
+    // Bookmarks (u32 wrappers)
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_add_bookmark_start_u32() {
+        let mut para = types::Paragraph::default();
+        para.add_bookmark_start_u32(1, "myBookmark");
+
+        assert_eq!(para.paragraph_content.len(), 1);
+        match &para.paragraph_content[0] {
+            types::ParagraphContent::BookmarkStart(bm) => {
+                assert_eq!(bm.id, 1);
+                assert_eq!(bm.name, "myBookmark");
+            }
+            _ => panic!("expected BookmarkStart"),
+        }
+    }
+
+    #[test]
+    fn test_add_bookmark_end_u32() {
+        let mut para = types::Paragraph::default();
+        para.add_bookmark_end_u32(42);
+
+        assert_eq!(para.paragraph_content.len(), 1);
+        match &para.paragraph_content[0] {
+            types::ParagraphContent::BookmarkEnd(bm) => {
+                assert_eq!(bm.id, 42);
+            }
+            _ => panic!("expected BookmarkEnd"),
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Table row height
+    // -------------------------------------------------------------------------
+
+    #[test]
+    #[cfg(feature = "wml-tables")]
+    fn test_row_set_height() {
+        let mut row = types::CTRow::default();
+        row.set_height(720);
+
+        let row_pr = row.row_properties.as_ref().unwrap();
+        let height = row_pr.tr_height.as_ref().unwrap();
+        assert_eq!(height.value.as_deref(), Some("720"));
+        assert_eq!(height.h_rule, Some(types::STHeightRule::Exact));
+    }
+
+    // -------------------------------------------------------------------------
+    // Table cell background color
+    // -------------------------------------------------------------------------
+
+    #[test]
+    #[cfg(feature = "wml-tables")]
+    fn test_cell_set_background_color() {
+        let mut cell = types::TableCell::default();
+        cell.set_background_color("FF0000");
+
+        let tcpr = cell.cell_properties.as_ref().unwrap();
+        let shd = tcpr.shading.as_ref().unwrap();
+        assert_eq!(shd.value, types::STShd::Clear);
+        #[cfg(feature = "wml-styling")]
+        assert_eq!(shd.fill.as_deref(), Some("FF0000"));
+    }
+
+    // -------------------------------------------------------------------------
+    // Table cell borders
+    // -------------------------------------------------------------------------
+
+    #[test]
+    #[cfg(feature = "wml-tables")]
+    fn test_cell_set_borders() {
+        let mut cell = types::TableCell::default();
+        cell.set_borders(BorderStyle::Single, 4, "000000");
+
+        let tcpr = cell.cell_properties.as_ref().unwrap();
+        let borders = tcpr.tc_borders.as_ref().unwrap();
+        assert!(borders.top.is_some());
+        assert!(borders.bottom.is_some());
+        assert!(borders.left.is_some());
+        assert!(borders.right.is_some());
+        let top = borders.top.as_ref().unwrap();
+        assert_eq!(top.value, types::STBorder::Single);
+        #[cfg(feature = "wml-styling")]
+        assert_eq!(top.size, Some(4u64));
+    }
+
+    #[test]
+    #[cfg(feature = "wml-tables")]
+    fn test_cell_set_border_top_only() {
+        let mut cell = types::TableCell::default();
+        cell.set_border_top(BorderStyle::Dashed, 8, "AABBCC");
+
+        let tcpr = cell.cell_properties.as_ref().unwrap();
+        let borders = tcpr.tc_borders.as_ref().unwrap();
+        assert!(borders.top.is_some());
+        assert!(borders.bottom.is_none());
+        assert!(borders.left.is_none());
+        assert!(borders.right.is_none());
+    }
+
+    // -------------------------------------------------------------------------
+    // Table cell padding
+    // -------------------------------------------------------------------------
+
+    #[test]
+    #[cfg(feature = "wml-tables")]
+    fn test_cell_set_padding() {
+        let mut cell = types::TableCell::default();
+        cell.set_padding(100, 100, 200, 200);
+
+        let tcpr = cell.cell_properties.as_ref().unwrap();
+        let mar = tcpr.tc_mar.as_ref().unwrap();
+        let top = mar.top.as_ref().unwrap();
+        assert_eq!(top.width.as_deref(), Some("100"));
+        assert_eq!(top.r#type, Some(types::STTblWidth::Dxa));
+        let left = mar.left.as_ref().unwrap();
+        assert_eq!(left.width.as_deref(), Some("200"));
+    }
+
+    // -------------------------------------------------------------------------
+    // Table width
+    // -------------------------------------------------------------------------
+
+    #[test]
+    #[cfg(feature = "wml-tables")]
+    fn test_table_set_width_dxa() {
+        let table = types::Table {
+            range_markup: Vec::new(),
+            table_properties: Box::new(types::TableProperties::default()),
+            tbl_grid: Box::new(types::TableGrid::default()),
+            rows: Vec::new(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        };
+        let mut body = types::Body::default();
+        body.block_content
+            .push(types::BlockContent::Tbl(Box::new(table)));
+        let tbl = match body.block_content.last_mut().unwrap() {
+            types::BlockContent::Tbl(t) => t.as_mut(),
+            _ => unreachable!(),
+        };
+        tbl.set_width(9360, TableWidthUnit::Dxa); // 6.5 inches
+
+        let tbl_w = tbl.table_properties.tbl_w.as_ref().unwrap();
+        assert_eq!(tbl_w.width.as_deref(), Some("9360"));
+        assert_eq!(tbl_w.r#type, Some(types::STTblWidth::Dxa));
+    }
+
+    #[test]
+    #[cfg(feature = "wml-tables")]
+    fn test_table_set_width_pct() {
+        let table = types::Table {
+            range_markup: Vec::new(),
+            table_properties: Box::new(types::TableProperties::default()),
+            tbl_grid: Box::new(types::TableGrid::default()),
+            rows: Vec::new(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        };
+        let mut body = types::Body::default();
+        body.block_content
+            .push(types::BlockContent::Tbl(Box::new(table)));
+        let tbl = match body.block_content.last_mut().unwrap() {
+            types::BlockContent::Tbl(t) => t.as_mut(),
+            _ => unreachable!(),
+        };
+        tbl.set_width(5000, TableWidthUnit::Pct); // 100%
+
+        let tbl_w = tbl.table_properties.tbl_w.as_ref().unwrap();
+        assert_eq!(tbl_w.width.as_deref(), Some("5000"));
+        assert_eq!(tbl_w.r#type, Some(types::STTblWidth::Pct));
+    }
+
+    // -------------------------------------------------------------------------
+    // Roundtrip: table cell styling
+    // -------------------------------------------------------------------------
+
+    #[test]
+    #[cfg(all(
+        feature = "wml-tables",
+        feature = "wml-styling",
+        feature = "extra-attrs",
+        feature = "extra-children"
+    ))]
+    fn test_roundtrip_cell_background_and_borders() {
+        use crate::Document;
+        use crate::ext::BodyExt;
+        use crate::writer::DocumentBuilder;
+        use std::io::Cursor;
+
+        let mut builder = DocumentBuilder::new();
+        {
+            let body = builder.body_mut();
+            let tbl = body.add_table();
+            let row = tbl.add_row();
+            let cell = row.add_cell();
+            cell.set_background_color("FFFF00");
+            cell.set_borders(BorderStyle::Single, 4, "000000");
+            cell.set_padding(72, 72, 144, 144);
+            cell.add_paragraph().add_run().set_text("styled");
+        }
+
+        let mut buf = Cursor::new(Vec::new());
+        builder.write(&mut buf).unwrap();
+
+        buf.set_position(0);
+        let doc = Document::from_reader(buf).unwrap();
+        let body_ref = doc.body();
+        assert!(!body_ref.tables().is_empty());
+
+        let tbl = body_ref.tables()[0];
+        let row = match &tbl.rows[0] {
+            crate::types::RowContent::Tr(r) => r,
+            _ => panic!("expected Tr"),
+        };
+        let cell = match &row.cells[0] {
+            crate::types::CellContent::Tc(c) => c,
+            _ => panic!("expected Tc"),
+        };
+        let tcpr = cell.cell_properties.as_ref().unwrap();
+        let shd = tcpr.shading.as_ref().unwrap();
+        assert_eq!(shd.value, crate::types::STShd::Clear);
+        assert_eq!(shd.fill.as_deref(), Some("FFFF00"));
+
+        let borders = tcpr.tc_borders.as_ref().unwrap();
+        assert!(borders.top.is_some());
+        let top = borders.top.as_ref().unwrap();
+        assert_eq!(top.value, crate::types::STBorder::Single);
+
+        let mar = tcpr.tc_mar.as_ref().unwrap();
+        let left = mar.left.as_ref().unwrap();
+        assert_eq!(left.width.as_deref(), Some("144"));
     }
 }

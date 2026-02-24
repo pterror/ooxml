@@ -26,6 +26,10 @@ pub const NS_WP: &str = "http://schemas.openxmlformats.org/drawingml/2006/wordpr
 pub const NS_A: &str = "http://schemas.openxmlformats.org/drawingml/2006/main";
 /// Picture namespace.
 pub const NS_PIC: &str = "http://schemas.openxmlformats.org/drawingml/2006/picture";
+/// Word Processing Shapes namespace (text boxes).
+pub const NS_WPS: &str = "http://schemas.microsoft.com/office/word/2010/wordprocessingShape";
+/// Markup Compatibility namespace.
+pub const NS_MC: &str = "http://schemas.openxmlformats.org/markup-compatibility/2006";
 
 /// Standard namespace declarations used on root elements.
 const NS_DECLS: &[(&str, &str)] = &[
@@ -82,8 +86,59 @@ pub struct PendingNumbering {
     pub abstract_num_id: u32,
     /// Concrete numbering ID (used in numPr).
     pub num_id: u32,
-    /// List type.
-    pub list_type: ListType,
+    /// List type (None when using custom levels).
+    pub list_type: Option<ListType>,
+    /// Custom levels (None when using simple list_type).
+    pub custom_levels: Option<Vec<NumberingLevel>>,
+}
+
+/// A numbering level definition for custom lists.
+///
+/// Used with `DocumentBuilder::add_custom_list()` to create multi-level
+/// or custom-formatted numbered/bulleted lists.
+///
+/// ECMA-376 Part 1, Section 17.9.6 (`w:lvl`).
+#[derive(Debug, Clone)]
+pub struct NumberingLevel {
+    /// Level index (0-based). Level 0 is the outermost list level.
+    pub ilvl: u32,
+    /// Number format (e.g., Decimal, LowerRoman, Bullet).
+    pub format: ListType,
+    /// Starting value for this level.
+    pub start: u32,
+    /// Level text pattern, e.g., `"%1."` for "1.", `"%1.%2."` for nested.
+    /// For bullet lists, use the bullet character directly (e.g., `"\u{2022}"`).
+    pub text: String,
+    /// Left indentation in twips for this level (default: 720 × (ilvl + 1)).
+    pub indent_left: Option<u32>,
+    /// Hanging indentation in twips (default: 360).
+    pub hanging: Option<u32>,
+}
+
+impl NumberingLevel {
+    /// Create a bullet level at the given depth.
+    pub fn bullet(ilvl: u32) -> Self {
+        Self {
+            ilvl,
+            format: ListType::Bullet,
+            start: 1,
+            text: "\u{2022}".to_string(),
+            indent_left: Some(720 * (ilvl + 1)),
+            hanging: Some(360),
+        }
+    }
+
+    /// Create a decimal (numbered) level at the given depth.
+    pub fn decimal(ilvl: u32) -> Self {
+        Self {
+            ilvl,
+            format: ListType::Decimal,
+            start: 1,
+            text: format!("%{}.", ilvl + 1),
+            indent_left: Some(720 * (ilvl + 1)),
+            hanging: Some(360),
+        }
+    }
 }
 
 /// Type of header or footer.
@@ -386,6 +441,55 @@ impl<'a> CommentBuilder<'a> {
 // Drawing types (writer-only, produce DrawingML XML for images)
 // =============================================================================
 
+/// A text box embedded in a drawing.
+///
+/// Produces `<wps:wsp>` inside a `<wp:inline>` drawing element.
+/// ECMA-376 Part 1 §20.4; WPS namespace §§ (Word Processing Shapes).
+#[derive(Debug, Clone)]
+pub struct TextBox {
+    /// Text content of the box.
+    pub text: String,
+    /// Width in EMUs (914400 = 1 inch). Defaults to 1 inch.
+    pub width_emu: i64,
+    /// Height in EMUs. Defaults to 0.5 inch.
+    pub height_emu: i64,
+}
+
+impl TextBox {
+    /// Create a new text box with the given content.
+    pub fn new(text: impl Into<String>) -> Self {
+        Self {
+            text: text.into(),
+            width_emu: 914400,  // 1 inch
+            height_emu: 457200, // 0.5 inch
+        }
+    }
+
+    /// Set the width in EMUs.
+    pub fn set_width_emu(&mut self, emu: i64) -> &mut Self {
+        self.width_emu = emu;
+        self
+    }
+
+    /// Set the height in EMUs.
+    pub fn set_height_emu(&mut self, emu: i64) -> &mut Self {
+        self.height_emu = emu;
+        self
+    }
+
+    /// Set the width in inches.
+    pub fn set_width_inches(&mut self, inches: f64) -> &mut Self {
+        self.width_emu = (inches * 914400.0) as i64;
+        self
+    }
+
+    /// Set the height in inches.
+    pub fn set_height_inches(&mut self, inches: f64) -> &mut Self {
+        self.height_emu = (inches * 914400.0) as i64;
+        self
+    }
+}
+
 /// A drawing container for images.
 ///
 /// This is a writer-side helper that produces the DrawingML XML for inline
@@ -397,6 +501,8 @@ pub struct Drawing {
     images: Vec<InlineImage>,
     /// Anchored (floating) images in this drawing.
     anchored_images: Vec<AnchoredImage>,
+    /// Text boxes in this drawing.
+    text_boxes: Vec<TextBox>,
 }
 
 impl Drawing {
@@ -437,6 +543,31 @@ impl Drawing {
         self.anchored_images.last_mut().unwrap()
     }
 
+    /// Add a text box to this drawing.
+    ///
+    /// Returns a mutable reference to the `TextBox` for further configuration.
+    /// The text box is rendered as a `<wps:wsp>` element inside a `<wp:inline>` wrapper.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use ooxml_wml::writer::Drawing;
+    ///
+    /// let mut drawing = Drawing::new();
+    /// drawing.add_text_box("Hello from a text box")
+    ///        .set_width_inches(2.0)
+    ///        .set_height_inches(1.0);
+    /// ```
+    pub fn add_text_box(&mut self, text: impl Into<String>) -> &mut TextBox {
+        self.text_boxes.push(TextBox::new(text));
+        self.text_boxes.last_mut().unwrap()
+    }
+
+    /// Get text boxes in this drawing.
+    pub fn text_boxes(&self) -> &[TextBox] {
+        &self.text_boxes
+    }
+
     /// Convert this drawing to a generated `CTDrawing` type.
     ///
     /// The `doc_id` counter is incremented for each image to produce unique IDs.
@@ -453,6 +584,13 @@ impl Drawing {
 
         for image in &self.anchored_images {
             let elem = build_anchored_image_element(image, *doc_id);
+            children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+            child_idx += 1;
+            *doc_id += 1;
+        }
+
+        for text_box in &self.text_boxes {
+            let elem = build_text_box_element(text_box, *doc_id);
             children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
             child_idx += 1;
             *doc_id += 1;
@@ -848,7 +986,57 @@ impl DocumentBuilder {
             PendingNumbering {
                 abstract_num_id: num_id, // Use same ID for simplicity
                 num_id,
-                list_type,
+                list_type: Some(list_type),
+                custom_levels: None,
+            },
+        );
+
+        num_id
+    }
+
+    /// Create a custom multi-level list definition and return its numbering ID.
+    ///
+    /// Each `NumberingLevel` defines formatting for a single list level (0-based).
+    /// Use the returned num_id in NumberingProperties when adding list items.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use ooxml_wml::writer::{DocumentBuilder, NumberingLevel, ListType};
+    ///
+    /// let mut builder = DocumentBuilder::new();
+    /// let num_id = builder.add_custom_list(vec![
+    ///     NumberingLevel {
+    ///         ilvl: 0,
+    ///         format: ListType::Decimal,
+    ///         start: 1,
+    ///         text: "%1.".to_string(),
+    ///         indent_left: Some(720),
+    ///         hanging: Some(360),
+    ///     },
+    ///     NumberingLevel {
+    ///         ilvl: 1,
+    ///         format: ListType::LowerLetter,
+    ///         start: 1,
+    ///         text: "%2.".to_string(),
+    ///         indent_left: Some(1440),
+    ///         hanging: Some(360),
+    ///     },
+    /// ]);
+    /// ```
+    ///
+    /// ECMA-376 Part 1, Section 17.9 (Numbering Definitions).
+    pub fn add_custom_list(&mut self, levels: Vec<NumberingLevel>) -> u32 {
+        let num_id = self.next_num_id;
+        self.next_num_id += 1;
+
+        self.numberings.insert(
+            num_id,
+            PendingNumbering {
+                abstract_num_id: num_id,
+                num_id,
+                list_type: None,
+                custom_levels: Some(levels),
             },
         );
 
@@ -1571,6 +1759,105 @@ fn list_type_to_num_fmt_and_text(list_type: ListType) -> (types::STNumberFormat,
     }
 }
 
+/// Map ListType to STNumberFormat.
+fn list_type_to_num_fmt(list_type: ListType) -> types::STNumberFormat {
+    match list_type {
+        ListType::Bullet => types::STNumberFormat::Bullet,
+        ListType::Decimal => types::STNumberFormat::Decimal,
+        ListType::LowerLetter => types::STNumberFormat::LowerLetter,
+        ListType::UpperLetter => types::STNumberFormat::UpperLetter,
+        ListType::LowerRoman => types::STNumberFormat::LowerRoman,
+        ListType::UpperRoman => types::STNumberFormat::UpperRoman,
+    }
+}
+
+/// Build a single `Level` from a `NumberingLevel` spec.
+fn build_level_from_spec(spec: &NumberingLevel) -> types::Level {
+    let is_bullet = spec.format == ListType::Bullet;
+    let indent_left = spec.indent_left.unwrap_or(720 * (spec.ilvl + 1));
+    let hanging = spec.hanging.unwrap_or(360);
+
+    types::Level {
+        ilvl: spec.ilvl as i64,
+        #[cfg(feature = "wml-numbering")]
+        tplc: None,
+        #[cfg(feature = "wml-numbering")]
+        tentative: None,
+        #[cfg(feature = "wml-numbering")]
+        start: Some(Box::new(types::CTDecimalNumber {
+            value: spec.start as i64,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: std::collections::HashMap::new(),
+        })),
+        #[cfg(feature = "wml-numbering")]
+        num_fmt: Some(Box::new(types::CTNumFmt {
+            value: list_type_to_num_fmt(spec.format),
+            format: None,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: std::collections::HashMap::new(),
+        })),
+        #[cfg(feature = "wml-numbering")]
+        lvl_restart: None,
+        #[cfg(feature = "wml-numbering")]
+        paragraph_style: None,
+        #[cfg(feature = "wml-numbering")]
+        is_lgl: None,
+        #[cfg(feature = "wml-numbering")]
+        suff: None,
+        #[cfg(feature = "wml-numbering")]
+        lvl_text: Some(Box::new(types::CTLevelText {
+            value: Some(spec.text.clone()),
+            null: None,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: std::collections::HashMap::new(),
+        })),
+        #[cfg(feature = "wml-numbering")]
+        lvl_pic_bullet_id: None,
+        #[cfg(feature = "wml-numbering")]
+        legacy: None,
+        #[cfg(feature = "wml-numbering")]
+        lvl_jc: Some(Box::new(types::CTJc {
+            value: types::STJc::Left,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: std::collections::HashMap::new(),
+        })),
+        #[cfg(feature = "wml-numbering")]
+        p_pr: Some(Box::new(build_level_paragraph_properties(
+            indent_left,
+            hanging,
+        ))),
+        #[cfg(feature = "wml-numbering")]
+        r_pr: if is_bullet {
+            Some(Box::new(build_bullet_run_properties()))
+        } else {
+            None
+        },
+        #[cfg(feature = "extra-attrs")]
+        extra_attrs: std::collections::HashMap::new(),
+        #[cfg(feature = "extra-children")]
+        extra_children: Vec::new(),
+    }
+}
+
+/// Build paragraph properties for a numbering level (indentation).
+#[cfg(feature = "wml-numbering")]
+fn build_level_paragraph_properties(indent_left: u32, hanging: u32) -> types::CTPPrGeneral {
+    let ind = types::CTInd {
+        #[cfg(feature = "wml-styling")]
+        left: Some(indent_left.to_string()),
+        #[cfg(feature = "wml-styling")]
+        hanging: Some(hanging.to_string()),
+        ..Default::default()
+    };
+    // Suppress unused variable warnings when wml-styling is off
+    let _ = indent_left;
+    let _ = hanging;
+    types::CTPPrGeneral {
+        indentation: Some(Box::new(ind)),
+        ..Default::default()
+    }
+}
+
 /// Build a Numbering type from pending numbering definitions.
 fn build_numbering(numberings: &HashMap<u32, PendingNumbering>) -> types::Numbering {
     let mut numbering = types::Numbering {
@@ -1589,65 +1876,23 @@ fn build_numbering(numberings: &HashMap<u32, PendingNumbering>) -> types::Number
     sorted.sort_by_key(|n| n.num_id);
 
     for pn in &sorted {
-        let (_num_fmt, _lvl_text) = list_type_to_num_fmt_and_text(pn.list_type);
-
-        let level = types::Level {
-            ilvl: 0,
-            #[cfg(feature = "wml-numbering")]
-            tplc: None,
-            #[cfg(feature = "wml-numbering")]
-            tentative: None,
-            #[cfg(feature = "wml-numbering")]
-            start: Some(Box::new(types::CTDecimalNumber {
-                value: 1,
-                #[cfg(feature = "extra-attrs")]
-                extra_attrs: std::collections::HashMap::new(),
-            })),
-            #[cfg(feature = "wml-numbering")]
-            num_fmt: Some(Box::new(types::CTNumFmt {
-                value: _num_fmt,
-                format: None,
-                #[cfg(feature = "extra-attrs")]
-                extra_attrs: std::collections::HashMap::new(),
-            })),
-            #[cfg(feature = "wml-numbering")]
-            lvl_restart: None,
-            #[cfg(feature = "wml-numbering")]
-            paragraph_style: None,
-            #[cfg(feature = "wml-numbering")]
-            is_lgl: None,
-            #[cfg(feature = "wml-numbering")]
-            suff: None,
-            #[cfg(feature = "wml-numbering")]
-            lvl_text: Some(Box::new(types::CTLevelText {
-                value: Some(_lvl_text.to_string()),
-                null: None,
-                #[cfg(feature = "extra-attrs")]
-                extra_attrs: std::collections::HashMap::new(),
-            })),
-            #[cfg(feature = "wml-numbering")]
-            lvl_pic_bullet_id: None,
-            #[cfg(feature = "wml-numbering")]
-            legacy: None,
-            #[cfg(feature = "wml-numbering")]
-            lvl_jc: Some(Box::new(types::CTJc {
-                value: types::STJc::Left,
-                #[cfg(feature = "extra-attrs")]
-                extra_attrs: std::collections::HashMap::new(),
-            })),
-            #[cfg(feature = "wml-numbering")]
-            p_pr: None,
-            #[cfg(feature = "wml-numbering")]
-            r_pr: if pn.list_type == ListType::Bullet {
-                // For bullet lists, use Symbol font
-                Some(Box::new(build_bullet_run_properties()))
-            } else {
-                None
-            },
-            #[cfg(feature = "extra-attrs")]
-            extra_attrs: std::collections::HashMap::new(),
-            #[cfg(feature = "extra-children")]
-            extra_children: Vec::new(),
+        let levels: Vec<types::Level> = if let Some(ref custom_levels) = pn.custom_levels {
+            // Custom multi-level list
+            custom_levels.iter().map(build_level_from_spec).collect()
+        } else if let Some(list_type) = pn.list_type {
+            // Simple single-level list (backwards-compatible path)
+            let (_num_fmt, _lvl_text) = list_type_to_num_fmt_and_text(list_type);
+            let spec = NumberingLevel {
+                ilvl: 0,
+                format: list_type,
+                start: 1,
+                text: _lvl_text.to_string(),
+                indent_left: Some(720),
+                hanging: Some(360),
+            };
+            vec![build_level_from_spec(&spec)]
+        } else {
+            Vec::new()
         };
 
         let abs = types::AbstractNumbering {
@@ -1664,7 +1909,7 @@ fn build_numbering(numberings: &HashMap<u32, PendingNumbering>) -> types::Number
             style_link: None,
             #[cfg(feature = "wml-numbering")]
             num_style_link: None,
-            lvl: vec![level],
+            lvl: levels,
             #[cfg(feature = "extra-attrs")]
             extra_attrs: std::collections::HashMap::new(),
             #[cfg(feature = "extra-children")]
@@ -2143,6 +2388,180 @@ fn build_anchored_image_element(image: &AnchoredImage, doc_id: usize) -> RawXmlE
 }
 
 // =============================================================================
+// Text box element builder
+// =============================================================================
+
+/// Build a `wp:inline` element containing a `wps:wsp` text box.
+///
+/// Produces the minimal structure required by Word:
+/// ```xml
+/// <wp:inline>
+///   <wp:extent cx="..." cy="..."/>
+///   <wp:docPr id="..." name="Text Box ..."/>
+///   <a:graphic>
+///     <a:graphicData uri="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">
+///       <wps:wsp>
+///         <wps:spPr>
+///           <a:xfrm><a:off x="0" y="0"/><a:ext cx="..." cy="..."/></a:xfrm>
+///           <a:prstGeom prst="rect"><a:avLst/></a:prstGeom>
+///         </wps:spPr>
+///         <wps:txbx>
+///           <w:txbxContent>
+///             <w:p><w:r><w:t>...</w:t></w:r></w:p>
+///           </w:txbxContent>
+///         </wps:txbx>
+///       </wps:wsp>
+///     </a:graphicData>
+///   </a:graphic>
+/// </wp:inline>
+/// ```
+///
+/// ECMA-376 Part 1 §20.4; Word Processing Shapes spec.
+fn build_text_box_element(text_box: &TextBox, doc_id: usize) -> RawXmlElement {
+    let w = text_box.width_emu;
+    let h = text_box.height_emu;
+
+    // wps:spPr children
+    let off = RawXmlElement {
+        name: "a:off".to_string(),
+        attributes: vec![
+            ("x".to_string(), "0".to_string()),
+            ("y".to_string(), "0".to_string()),
+        ],
+        children: vec![],
+        self_closing: true,
+    };
+    let ext = RawXmlElement {
+        name: "a:ext".to_string(),
+        attributes: vec![
+            ("cx".to_string(), w.to_string()),
+            ("cy".to_string(), h.to_string()),
+        ],
+        children: vec![],
+        self_closing: true,
+    };
+    let xfrm = RawXmlElement {
+        name: "a:xfrm".to_string(),
+        attributes: vec![],
+        children: vec![RawXmlNode::Element(off), RawXmlNode::Element(ext)],
+        self_closing: false,
+    };
+    let av_lst = RawXmlElement {
+        name: "a:avLst".to_string(),
+        attributes: vec![],
+        children: vec![],
+        self_closing: true,
+    };
+    let prst_geom = RawXmlElement {
+        name: "a:prstGeom".to_string(),
+        attributes: vec![("prst".to_string(), "rect".to_string())],
+        children: vec![RawXmlNode::Element(av_lst)],
+        self_closing: false,
+    };
+    let sp_pr = RawXmlElement {
+        name: "wps:spPr".to_string(),
+        attributes: vec![],
+        children: vec![RawXmlNode::Element(xfrm), RawXmlNode::Element(prst_geom)],
+        self_closing: false,
+    };
+
+    // wps:txbx > w:txbxContent > w:p > w:r > w:t
+    let t_node = RawXmlElement {
+        name: "w:t".to_string(),
+        attributes: vec![("xml:space".to_string(), "preserve".to_string())],
+        children: vec![RawXmlNode::Text(text_box.text.clone())],
+        self_closing: false,
+    };
+    let r_node = RawXmlElement {
+        name: "w:r".to_string(),
+        attributes: vec![],
+        children: vec![RawXmlNode::Element(t_node)],
+        self_closing: false,
+    };
+    let p_node = RawXmlElement {
+        name: "w:p".to_string(),
+        attributes: vec![],
+        children: vec![RawXmlNode::Element(r_node)],
+        self_closing: false,
+    };
+    let txbx_content = RawXmlElement {
+        name: "w:txbxContent".to_string(),
+        attributes: vec![],
+        children: vec![RawXmlNode::Element(p_node)],
+        self_closing: false,
+    };
+    let txbx = RawXmlElement {
+        name: "wps:txbx".to_string(),
+        attributes: vec![],
+        children: vec![RawXmlNode::Element(txbx_content)],
+        self_closing: false,
+    };
+
+    // wps:wsp
+    let wsp = RawXmlElement {
+        name: "wps:wsp".to_string(),
+        attributes: vec![],
+        children: vec![RawXmlNode::Element(sp_pr), RawXmlNode::Element(txbx)],
+        self_closing: false,
+    };
+
+    // a:graphicData
+    let graphic_data = RawXmlElement {
+        name: "a:graphicData".to_string(),
+        attributes: vec![("uri".to_string(), NS_WPS.to_string())],
+        children: vec![RawXmlNode::Element(wsp)],
+        self_closing: false,
+    };
+
+    // a:graphic
+    let graphic = RawXmlElement {
+        name: "a:graphic".to_string(),
+        attributes: vec![],
+        children: vec![RawXmlNode::Element(graphic_data)],
+        self_closing: false,
+    };
+
+    // wp:docPr
+    let doc_pr = RawXmlElement {
+        name: "wp:docPr".to_string(),
+        attributes: vec![
+            ("id".to_string(), doc_id.to_string()),
+            ("name".to_string(), format!("Text Box {}", doc_id)),
+        ],
+        children: vec![],
+        self_closing: true,
+    };
+
+    // wp:extent
+    let extent = RawXmlElement {
+        name: "wp:extent".to_string(),
+        attributes: vec![
+            ("cx".to_string(), w.to_string()),
+            ("cy".to_string(), h.to_string()),
+        ],
+        children: vec![],
+        self_closing: true,
+    };
+
+    // wp:inline
+    RawXmlElement {
+        name: "wp:inline".to_string(),
+        attributes: vec![
+            ("distT".to_string(), "0".to_string()),
+            ("distB".to_string(), "0".to_string()),
+            ("distL".to_string(), "0".to_string()),
+            ("distR".to_string(), "0".to_string()),
+        ],
+        children: vec![
+            RawXmlNode::Element(extent),
+            RawXmlNode::Element(doc_pr),
+            RawXmlNode::Element(graphic),
+        ],
+        self_closing: false,
+    }
+}
+
+// =============================================================================
 // Utility functions
 // =============================================================================
 
@@ -2228,6 +2647,136 @@ mod tests {
         #[cfg(feature = "extra-children")]
         assert_eq!(ct_drawing.extra_children.len(), 1);
         let _ = ct_drawing;
+    }
+
+    #[test]
+    fn test_text_box_build() {
+        let mut drawing = Drawing::new();
+        drawing
+            .add_text_box("Hello, text box!")
+            .set_width_inches(2.0)
+            .set_height_inches(1.0);
+
+        assert_eq!(drawing.text_boxes().len(), 1);
+        assert_eq!(drawing.text_boxes()[0].text, "Hello, text box!");
+        assert_eq!(drawing.text_boxes()[0].width_emu, (2.0 * 914400.0) as i64);
+
+        let mut doc_id = 1;
+        let ct_drawing = drawing.build(&mut doc_id);
+        assert_eq!(doc_id, 2);
+        #[cfg(feature = "extra-children")]
+        assert_eq!(ct_drawing.extra_children.len(), 1);
+        let _ = ct_drawing;
+    }
+
+    #[test]
+    #[cfg(all(feature = "extra-attrs", feature = "extra-children"))]
+    fn test_roundtrip_with_text_box() {
+        use crate::Document;
+        use std::io::Cursor;
+
+        let mut builder = DocumentBuilder::new();
+        {
+            let body = builder.body_mut();
+            let para = body.add_paragraph();
+            let run = para.add_run();
+            // Build drawing inline
+            let mut drawing = Drawing::new();
+            drawing.add_text_box("My text box content");
+            let ct = drawing.build(&mut 1usize.clone());
+            run.add_drawing(ct);
+        }
+
+        let mut buf = Cursor::new(Vec::new());
+        builder.write(&mut buf).unwrap();
+
+        // Verify the document can be read back
+        buf.set_position(0);
+        let doc = Document::from_reader(buf).unwrap();
+        // Document should have 1 paragraph
+        let body = doc.body();
+        assert_eq!(body.block_content.len(), 1);
+    }
+
+    #[test]
+    fn test_add_custom_list() {
+        let mut builder = DocumentBuilder::new();
+        let num_id = builder.add_custom_list(vec![
+            NumberingLevel {
+                ilvl: 0,
+                format: ListType::Decimal,
+                start: 1,
+                text: "%1.".to_string(),
+                indent_left: Some(720),
+                hanging: Some(360),
+            },
+            NumberingLevel {
+                ilvl: 1,
+                format: ListType::LowerLetter,
+                start: 1,
+                text: "%2.".to_string(),
+                indent_left: Some(1440),
+                hanging: Some(360),
+            },
+        ]);
+        assert_eq!(num_id, 1);
+        assert!(builder.numberings.contains_key(&1));
+        let pn = &builder.numberings[&1];
+        assert!(pn.custom_levels.is_some());
+        assert_eq!(pn.custom_levels.as_ref().unwrap().len(), 2);
+    }
+
+    #[test]
+    fn test_numbering_level_helpers() {
+        let bullet = NumberingLevel::bullet(0);
+        assert_eq!(bullet.ilvl, 0);
+        assert_eq!(bullet.format, ListType::Bullet);
+        assert_eq!(bullet.start, 1);
+        assert_eq!(bullet.indent_left, Some(720));
+
+        let decimal = NumberingLevel::decimal(2);
+        assert_eq!(decimal.ilvl, 2);
+        assert_eq!(decimal.format, ListType::Decimal);
+        assert_eq!(decimal.indent_left, Some(2160));
+    }
+
+    #[test]
+    #[cfg(all(
+        feature = "wml-numbering",
+        feature = "extra-attrs",
+        feature = "extra-children"
+    ))]
+    fn test_roundtrip_custom_list() {
+        use crate::Document;
+        use crate::ext::BodyExt;
+        use std::io::Cursor;
+
+        let mut builder = DocumentBuilder::new();
+        let num_id = builder.add_custom_list(vec![NumberingLevel {
+            ilvl: 0,
+            format: ListType::Decimal,
+            start: 1,
+            text: "%1.".to_string(),
+            indent_left: Some(720),
+            hanging: Some(360),
+        }]);
+
+        {
+            let body = builder.body_mut();
+            let para = body.add_paragraph();
+            #[cfg(feature = "wml-styling")]
+            para.set_numbering(num_id, 0);
+            para.add_run().set_text("Item one");
+        }
+
+        let mut buf = Cursor::new(Vec::new());
+        builder.write(&mut buf).unwrap();
+
+        buf.set_position(0);
+        let doc = Document::from_reader(buf).unwrap();
+        assert_eq!(doc.body().paragraphs().len(), 1);
+        // Ensure the document serialized OK (numbering.xml was written)
+        let _ = num_id;
     }
 
     #[test]

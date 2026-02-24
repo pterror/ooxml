@@ -205,14 +205,172 @@ fn make_xfrm(x: i64, y: i64, cx: i64, cy: i64) -> Box<dml::Transform2D> {
 
 /// Construct a preset rect geometry (prstGeom prst="rect").
 fn make_rect_geom() -> Box<dml::EGGeometry> {
+    make_preset_geom(dml::STShapeType::Rect)
+}
+
+/// Construct a preset geometry from a given `STShapeType`.
+fn make_preset_geom(preset: dml::STShapeType) -> Box<dml::EGGeometry> {
     Box::new(dml::EGGeometry::PrstGeom(Box::new(
         dml::CTPresetGeometry2D {
-            preset: dml::STShapeType::Rect,
+            preset,
             av_lst: None,
             extra_attrs: Default::default(),
             extra_children: Default::default(),
         },
     )))
+}
+
+/// Preset shape geometry for use with [`ShapeBuilder::set_geometry`].
+///
+/// Each variant maps to an OOXML preset geometry name (`prst` attribute on `<a:prstGeom>`).
+/// ECMA-376 Part 1, Section 20.1.9.18 (prstGeom).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum PresetGeometry {
+    /// Rectangle (`rect`).
+    Rect,
+    /// Rounded rectangle (`roundRect`).
+    RoundRect,
+    /// Ellipse (`ellipse`).
+    Ellipse,
+    /// Triangle (`triangle`).
+    Triangle,
+    /// Right triangle (`rtTriangle`).
+    RightTriangle,
+    /// Diamond (`diamond`).
+    Diamond,
+    /// Pentagon (`pentagon`).
+    Pentagon,
+    /// Hexagon (`hexagon`).
+    Hexagon,
+    /// Heptagon (`heptagon`).
+    Heptagon,
+    /// Octagon (`octagon`).
+    Octagon,
+    /// 4-pointed star (`star4`).
+    Star4,
+    /// 5-pointed star (`star5`).
+    Star5,
+    /// 6-pointed star (`star6`).
+    Star6,
+    /// 7-pointed star (`star7`).
+    Star7,
+    /// 8-pointed star (`star8`).
+    Star8,
+    /// Right arrow (`rightArrow`).
+    Arrow,
+    /// Left arrow (`leftArrow`).
+    LeftArrow,
+    /// Up arrow (`upArrow`).
+    UpArrow,
+    /// Down arrow (`downArrow`).
+    DownArrow,
+    /// Rectangle callout (`callout1`).
+    CalloutRect,
+    /// Wedge rect callout (`wedgeRectCallout`).
+    WedgeRectCallout,
+    /// Cloud (`cloud`).
+    Cloud,
+    /// Heart (`heart`).
+    Heart,
+    /// Lightning bolt (`lightningBolt`).
+    Lightning,
+    /// Straight line — use as a connector geometry (`line`).
+    Line,
+    /// Arbitrary preset name for shapes not in this enum.
+    Custom(String),
+}
+
+impl PresetGeometry {
+    fn to_shape_type(&self) -> dml::STShapeType {
+        match self {
+            PresetGeometry::Rect => dml::STShapeType::Rect,
+            PresetGeometry::RoundRect => dml::STShapeType::RoundRect,
+            PresetGeometry::Ellipse => dml::STShapeType::Ellipse,
+            PresetGeometry::Triangle => dml::STShapeType::Triangle,
+            PresetGeometry::RightTriangle => dml::STShapeType::RtTriangle,
+            PresetGeometry::Diamond => dml::STShapeType::Diamond,
+            PresetGeometry::Pentagon => dml::STShapeType::Pentagon,
+            PresetGeometry::Hexagon => dml::STShapeType::Hexagon,
+            PresetGeometry::Heptagon => dml::STShapeType::Heptagon,
+            PresetGeometry::Octagon => dml::STShapeType::Octagon,
+            PresetGeometry::Star4 => dml::STShapeType::Star4,
+            PresetGeometry::Star5 => dml::STShapeType::Star5,
+            PresetGeometry::Star6 => dml::STShapeType::Star6,
+            PresetGeometry::Star7 => dml::STShapeType::Star7,
+            PresetGeometry::Star8 => dml::STShapeType::Star8,
+            PresetGeometry::Arrow => dml::STShapeType::RightArrow,
+            PresetGeometry::LeftArrow => dml::STShapeType::LeftArrow,
+            PresetGeometry::UpArrow => dml::STShapeType::UpArrow,
+            PresetGeometry::DownArrow => dml::STShapeType::DownArrow,
+            PresetGeometry::CalloutRect => dml::STShapeType::Callout1,
+            PresetGeometry::WedgeRectCallout => dml::STShapeType::WedgeRectCallout,
+            PresetGeometry::Cloud => dml::STShapeType::Cloud,
+            PresetGeometry::Heart => dml::STShapeType::Heart,
+            PresetGeometry::Lightning => dml::STShapeType::LightningBolt,
+            PresetGeometry::Line => dml::STShapeType::Line,
+            PresetGeometry::Custom(s) => s.parse().unwrap_or(dml::STShapeType::Rect),
+        }
+    }
+}
+
+/// Paragraph alignment for text inside a shape.
+///
+/// Maps to the `algn` attribute on `<a:pPr>`.
+/// ECMA-376 Part 1, Section 21.1.2.2.7 (pPr).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TextAlign {
+    /// Left alignment (`l`).
+    Left,
+    /// Center alignment (`ctr`).
+    Center,
+    /// Right alignment (`r`).
+    Right,
+    /// Justify (`just`).
+    Justify,
+}
+
+impl TextAlign {
+    fn to_dml(self) -> dml::STTextAlignType {
+        match self {
+            TextAlign::Left => dml::STTextAlignType::L,
+            TextAlign::Center => dml::STTextAlignType::Ctr,
+            TextAlign::Right => dml::STTextAlignType::R,
+            TextAlign::Justify => dml::STTextAlignType::Just,
+        }
+    }
+}
+
+/// A paragraph inside a shape, containing text runs and optional alignment.
+///
+/// Use [`Paragraph::new`] or [`Paragraph::with_runs`] to build paragraphs.
+/// Add to a [`ShapeBuilder`] via [`ShapeBuilder::add_paragraph`].
+#[derive(Debug, Clone)]
+pub struct Paragraph {
+    /// The text runs in this paragraph.
+    pub runs: Vec<TextRun>,
+    /// Paragraph-level alignment (maps to `<a:pPr algn="...">`).
+    pub align: Option<TextAlign>,
+}
+
+impl Paragraph {
+    /// Create a new paragraph with a single plain-text run.
+    pub fn new(text: impl Into<String>) -> Self {
+        Self {
+            runs: vec![TextRun::text(text)],
+            align: None,
+        }
+    }
+
+    /// Create a paragraph with multiple runs.
+    pub fn with_runs(runs: Vec<TextRun>) -> Self {
+        Self { runs, align: None }
+    }
+
+    /// Set the paragraph alignment.
+    pub fn set_align(mut self, align: TextAlign) -> Self {
+        self.align = Some(align);
+        self
+    }
 }
 
 /// A text run in a paragraph, optionally with a hyperlink and formatting.
@@ -346,6 +504,8 @@ fn make_solid_fill(rgb: &str) -> Box<dml::EGFillProperties> {
 pub struct ShapeBuilder<'a> {
     slide: &'a mut SlideBuilder,
     runs: Vec<TextRun>,
+    /// Additional paragraphs beyond the first (built from `runs`).
+    extra_paragraphs: Vec<Paragraph>,
     is_title: bool,
     x: i64,
     y: i64,
@@ -354,6 +514,10 @@ pub struct ShapeBuilder<'a> {
     fill_color: Option<String>,
     line_color: Option<String>,
     line_width: Option<i64>,
+    /// Preset shape geometry (defaults to `Rect` if not set).
+    geometry: Option<PresetGeometry>,
+    /// Alignment for the initial paragraph (the one built from `runs`).
+    align: Option<TextAlign>,
 }
 
 impl<'a> ShapeBuilder<'a> {
@@ -394,11 +558,42 @@ impl<'a> ShapeBuilder<'a> {
         self
     }
 
+    /// Set the preset shape geometry.
+    ///
+    /// By default shapes use `Rect`. Use this to produce other shapes such as
+    /// `Ellipse`, `RoundRect`, `Star5`, etc.
+    ///
+    /// Sets `spPr/prstGeom@prst`.
+    /// ECMA-376 Part 1, Section 20.1.9.18 (prstGeom).
+    pub fn set_geometry(mut self, geom: PresetGeometry) -> Self {
+        self.geometry = Some(geom);
+        self
+    }
+
+    /// Set paragraph-level text alignment for the initial paragraph.
+    ///
+    /// Sets `<a:pPr algn="..."/>` on the first paragraph of the text body.
+    /// ECMA-376 Part 1, Section 21.1.2.2.7 (pPr).
+    pub fn set_text_align(mut self, align: TextAlign) -> Self {
+        self.align = Some(align);
+        self
+    }
+
+    /// Add an additional paragraph to the shape's text body.
+    ///
+    /// This enables multiple paragraphs in a single shape, which can have
+    /// different text runs, formatting, and alignment.
+    pub fn add_paragraph(mut self, para: Paragraph) -> Self {
+        self.extra_paragraphs.push(para);
+        self
+    }
+
     /// Finalize the shape and add it to the slide.
     pub fn add(self) {
         let ShapeBuilder {
             slide,
             runs,
+            extra_paragraphs,
             is_title,
             x,
             y,
@@ -407,10 +602,17 @@ impl<'a> ShapeBuilder<'a> {
             fill_color,
             line_color,
             line_width,
+            geometry,
+            align,
         } = self;
 
+        // Build the first paragraph from the initial `runs`.
+        let first_para = Paragraph { runs, align };
+        let mut paragraphs = vec![first_para];
+        paragraphs.extend(extra_paragraphs);
+
         let element = TextElement {
-            runs,
+            paragraphs,
             is_title,
             x,
             y,
@@ -419,6 +621,7 @@ impl<'a> ShapeBuilder<'a> {
             fill_color,
             line_color,
             line_width,
+            geometry,
         };
         slide.push_text_element(element);
     }
@@ -427,7 +630,8 @@ impl<'a> ShapeBuilder<'a> {
 /// A text element (used for shapes with hyperlinks, deferred until write time).
 #[derive(Debug, Clone)]
 struct TextElement {
-    runs: Vec<TextRun>,
+    /// Paragraphs in the text body (at least one).
+    paragraphs: Vec<Paragraph>,
     is_title: bool,
     x: i64,
     y: i64,
@@ -439,20 +643,25 @@ struct TextElement {
     line_color: Option<String>,
     /// Optional shape border width in EMUs.
     line_width: Option<i64>,
+    /// Optional preset shape geometry. Defaults to `Rect` if `None`.
+    geometry: Option<PresetGeometry>,
 }
 
 impl TextElement {
     fn simple(text: String, is_title: bool, x: i64, y: i64, width: i64, height: i64) -> Self {
         Self {
-            runs: vec![TextRun {
-                text,
-                hyperlink: None,
-                tooltip: None,
-                font_size: None,
-                color: None,
-                bold: None,
-                italic: None,
-                underline: false,
+            paragraphs: vec![Paragraph {
+                runs: vec![TextRun {
+                    text,
+                    hyperlink: None,
+                    tooltip: None,
+                    font_size: None,
+                    color: None,
+                    bold: None,
+                    italic: None,
+                    underline: false,
+                }],
+                align: None,
             }],
             is_title,
             x,
@@ -462,11 +671,14 @@ impl TextElement {
             fill_color: None,
             line_color: None,
             line_width: None,
+            geometry: None,
         }
     }
 
     fn has_hyperlink(&self) -> bool {
-        self.runs.iter().any(|r| r.hyperlink.is_some())
+        self.paragraphs
+            .iter()
+            .any(|p| p.runs.iter().any(|r| r.hyperlink.is_some()))
     }
 }
 
@@ -755,18 +967,13 @@ fn init_slide() -> types::Slide {
     }
 }
 
-/// Build a `types::Shape` from a `TextElement`, resolving hyperlink rel IDs if provided.
-fn build_shape_impl(
-    element: &TextElement,
-    shape_id: usize,
+/// Build DML text runs from a slice of `TextRun`s, resolving hyperlink rel IDs.
+fn build_dml_runs(
+    runs: &[TextRun],
+    default_font_size: i32,
     hyperlink_rel_ids: Option<&std::collections::HashMap<&str, usize>>,
-) -> types::Shape {
-    let name = if element.is_title { "Title" } else { "Content" };
-    let default_font_size: i32 = if element.is_title { 4400 } else { 2400 };
-
-    let runs: Vec<dml::EGTextRun> = element
-        .runs
-        .iter()
+) -> Vec<dml::EGTextRun> {
+    runs.iter()
         .map(|run| {
             // Build hyperlink if present and we have rel IDs
             let hlink_click = run.hyperlink.as_deref().and_then(|url| {
@@ -808,17 +1015,44 @@ fn build_shape_impl(
                 extra_children: Default::default(),
             }))
         })
-        .collect();
+        .collect()
+}
 
-    let para = dml::TextParagraph {
-        text_run: runs,
-        ..Default::default()
-    };
+/// Build a `types::Shape` from a `TextElement`, resolving hyperlink rel IDs if provided.
+fn build_shape_impl(
+    element: &TextElement,
+    shape_id: usize,
+    hyperlink_rel_ids: Option<&std::collections::HashMap<&str, usize>>,
+) -> types::Shape {
+    let name = if element.is_title { "Title" } else { "Content" };
+    let default_font_size: i32 = if element.is_title { 4400 } else { 2400 };
+
+    // Build all paragraphs.
+    let dml_paragraphs: Vec<dml::TextParagraph> = element
+        .paragraphs
+        .iter()
+        .map(|para| {
+            let runs = build_dml_runs(&para.runs, default_font_size, hyperlink_rel_ids);
+            // Build paragraph properties if alignment is set.
+            // dml-text is always on in DML's default feature set, so p_pr is always available.
+            let p_pr = para.align.map(|align| {
+                Box::new(dml::TextParagraphProperties {
+                    algn: Some(align.to_dml()),
+                    ..Default::default()
+                })
+            });
+            dml::TextParagraph {
+                text_run: runs,
+                p_pr,
+                ..Default::default()
+            }
+        })
+        .collect();
 
     let text_body = dml::TextBody {
         body_pr: Box::default(),
         lst_style: None,
-        p: vec![para],
+        p: dml_paragraphs,
         extra_children: Default::default(),
     };
 
@@ -857,6 +1091,12 @@ fn build_shape_impl(
         }
     };
 
+    // Shape geometry: use explicit override or default to Rect.
+    let geom = match &element.geometry {
+        Some(g) => make_preset_geom(g.to_shape_type()),
+        None => make_rect_geom(),
+    };
+
     let sp_pr = dml::CTShapeProperties {
         transform: Some(make_xfrm(
             element.x,
@@ -864,7 +1104,7 @@ fn build_shape_impl(
             element.width,
             element.height,
         )),
-        geometry: Some(make_rect_geom()),
+        geometry: Some(geom),
         fill_properties,
         line,
         ..Default::default()
@@ -945,6 +1185,275 @@ fn build_picture(image: &ImageElement, shape_id: usize, rel_id: usize) -> types:
         style: None,
         ext_lst: None,
         extra_children: Default::default(),
+    }
+}
+
+/// A connector element stored on the slide.
+#[derive(Debug, Clone)]
+struct ConnectorElement {
+    x1: i64,
+    y1: i64,
+    x2: i64,
+    y2: i64,
+    line_color: Option<String>,
+}
+
+/// Build a `types::Connector` from a `ConnectorElement`.
+///
+/// A connector spans from (x1, y1) to (x2, y2). The bounding box origin is the
+/// top-left corner (min x, min y) and the extents are (|dx|, |dy|).  When the
+/// line runs right-to-left or bottom-to-top we set `flipH`/`flipV` so that the
+/// geometry is rendered in the correct direction.
+///
+/// ECMA-376 Part 1, Section 19.3.1.19 (cxnSp).
+fn build_connector_impl(elem: &ConnectorElement, shape_id: usize) -> types::Connector {
+    let dx = elem.x2 - elem.x1;
+    let dy = elem.y2 - elem.y1;
+
+    let bx = elem.x1.min(elem.x2);
+    let by = elem.y1.min(elem.y2);
+    let bw = dx.unsigned_abs() as i64;
+    let bh = dy.unsigned_abs() as i64;
+
+    let mut xfrm = *make_xfrm(bx, by, bw, bh);
+    // flipH if the line goes right-to-left, flipV if it goes bottom-to-top.
+    if dx < 0 {
+        xfrm.flip_h = Some(true);
+    }
+    if dy < 0 {
+        xfrm.flip_v = Some(true);
+    }
+
+    let line_fill = elem.line_color.as_deref().map(|rgb| {
+        Box::new(dml::EGLineFillProperties::SolidFill(Box::new(
+            dml::SolidColorFill {
+                color_choice: Some(Box::new(dml::EGColorChoice::SrgbClr(Box::new(
+                    dml::SrgbColor {
+                        value: hex_to_bytes(rgb),
+                        color_transform: Vec::new(),
+                        #[cfg(feature = "extra-attrs")]
+                        extra_attrs: Default::default(),
+                        #[cfg(feature = "extra-children")]
+                        extra_children: Default::default(),
+                    },
+                )))),
+                #[cfg(feature = "extra-children")]
+                extra_children: Default::default(),
+            },
+        )))
+    });
+
+    let line = if line_fill.is_some() {
+        Some(Box::new(dml::LineProperties {
+            line_fill_properties: line_fill,
+            ..Default::default()
+        }))
+    } else {
+        None
+    };
+
+    let sp_pr = dml::CTShapeProperties {
+        transform: Some(Box::new(xfrm)),
+        geometry: Some(make_preset_geom(dml::STShapeType::Line)),
+        line,
+        ..Default::default()
+    };
+
+    let name = format!("Connector {}", shape_id);
+    types::Connector {
+        non_visual_connector_properties: Box::new(types::CTConnectorNonVisual {
+            c_nv_pr: make_cnv_pr(shape_id as u32, &name),
+            c_nv_cxn_sp_pr: Box::new(dml::CTNonVisualConnectorProperties {
+                ..Default::default()
+            }),
+            nv_pr: make_nv_pr(),
+            extra_children: Default::default(),
+        }),
+        shape_properties: Box::new(sp_pr),
+        #[cfg(feature = "pml-styling")]
+        style: None,
+        #[cfg(feature = "pml-extensions")]
+        ext_lst: None,
+        extra_children: Default::default(),
+    }
+}
+
+/// A pending group of shapes to be wrapped in `<p:grpSp>`.
+#[derive(Debug)]
+pub struct GroupBuilder<'a> {
+    slide: &'a mut SlideBuilder,
+    shapes: Vec<types::Shape>,
+    connectors: Vec<types::Connector>,
+    name: Option<String>,
+}
+
+impl<'a> GroupBuilder<'a> {
+    /// Set the group name (stored in `nvGrpSpPr/cNvPr@name`).
+    pub fn set_name(mut self, name: impl Into<String>) -> Self {
+        self.name = Some(name.into());
+        self
+    }
+
+    /// Add a plain-text shape to the group.
+    ///
+    /// Position and size are in EMUs.
+    pub fn add_text(
+        mut self,
+        text: impl Into<String>,
+        x: i64,
+        y: i64,
+        width: i64,
+        height: i64,
+    ) -> Self {
+        let element = TextElement::simple(text.into(), false, x, y, width, height);
+        let shape_id = self.slide.next_shape_id;
+        self.slide.next_shape_id += 1;
+        self.shapes.push(build_shape_impl(&element, shape_id, None));
+        self
+    }
+
+    /// Add a connector to the group.
+    pub fn add_connector(mut self, x1: i64, y1: i64, x2: i64, y2: i64) -> Self {
+        let elem = ConnectorElement {
+            x1,
+            y1,
+            x2,
+            y2,
+            line_color: None,
+        };
+        let shape_id = self.slide.next_shape_id;
+        self.slide.next_shape_id += 1;
+        self.connectors.push(build_connector_impl(&elem, shape_id));
+        self
+    }
+
+    /// Finalize the group and add it to the slide.
+    ///
+    /// Computes the bounding box from all child shapes and writes a `<p:grpSp>`
+    /// element with `<p:grpSpPr>` defining the group transform.
+    /// ECMA-376 Part 1, Section 19.3.1.22 (grpSp).
+    pub fn finish(self) -> &'a mut SlideBuilder {
+        let GroupBuilder {
+            slide,
+            shapes,
+            connectors,
+            name,
+        } = self;
+
+        if shapes.is_empty() && connectors.is_empty() {
+            return slide;
+        }
+
+        let group_id = slide.next_shape_id;
+        slide.next_shape_id += 1;
+
+        let group_name = name.unwrap_or_else(|| format!("Group {}", group_id));
+
+        // Compute bounding box from child shape transforms.
+        let mut min_x = i64::MAX;
+        let mut min_y = i64::MAX;
+        let mut max_x = i64::MIN;
+        let mut max_y = i64::MIN;
+
+        for shape in &shapes {
+            if let Some(xfrm) = &shape.shape_properties.transform
+                && let Some(off) = &xfrm.offset
+            {
+                let x: i64 = off.x.parse().unwrap_or(0);
+                let y: i64 = off.y.parse().unwrap_or(0);
+                min_x = min_x.min(x);
+                min_y = min_y.min(y);
+                if let Some(ext) = &xfrm.extents {
+                    max_x = max_x.max(x + ext.cx);
+                    max_y = max_y.max(y + ext.cy);
+                }
+            }
+        }
+
+        for conn in &connectors {
+            if let Some(xfrm) = &conn.shape_properties.transform
+                && let Some(off) = &xfrm.offset
+            {
+                let x: i64 = off.x.parse().unwrap_or(0);
+                let y: i64 = off.y.parse().unwrap_or(0);
+                min_x = min_x.min(x);
+                min_y = min_y.min(y);
+                if let Some(ext) = &xfrm.extents {
+                    max_x = max_x.max(x + ext.cx);
+                    max_y = max_y.max(y + ext.cy);
+                }
+            }
+        }
+
+        // Fallback if no transforms were found.
+        if min_x == i64::MAX {
+            min_x = 0;
+            min_y = 0;
+            max_x = 0;
+            max_y = 0;
+        }
+
+        let bw = (max_x - min_x).max(0);
+        let bh = (max_y - min_y).max(0);
+
+        let grp_xfrm = dml::CTGroupTransform2D {
+            offset: Some(Box::new(dml::Point2D {
+                x: min_x.to_string(),
+                y: min_y.to_string(),
+                extra_attrs: Default::default(),
+            })),
+            extents: Some(Box::new(dml::PositiveSize2D {
+                cx: bw,
+                cy: bh,
+                extra_attrs: Default::default(),
+            })),
+            child_offset: Some(Box::new(dml::Point2D {
+                x: min_x.to_string(),
+                y: min_y.to_string(),
+                extra_attrs: Default::default(),
+            })),
+            child_extents: Some(Box::new(dml::PositiveSize2D {
+                cx: bw,
+                cy: bh,
+                extra_attrs: Default::default(),
+            })),
+            ..Default::default()
+        };
+
+        let grp_sp_pr = dml::CTGroupShapeProperties {
+            transform: Some(Box::new(grp_xfrm)),
+            ..Default::default()
+        };
+
+        let group = types::GroupShape {
+            non_visual_group_properties: Box::new(types::CTGroupShapeNonVisual {
+                c_nv_pr: make_cnv_pr(group_id as u32, &group_name),
+                c_nv_grp_sp_pr: Box::new(dml::CTNonVisualGroupDrawingShapeProps {
+                    grp_sp_locks: None,
+                    ext_lst: None,
+                    extra_children: Default::default(),
+                }),
+                nv_pr: make_nv_pr(),
+                extra_children: Default::default(),
+            }),
+            grp_sp_pr: Box::new(grp_sp_pr),
+            shape: shapes,
+            group_shape: Vec::new(),
+            graphic_frame: Vec::new(),
+            connector: connectors,
+            picture: Vec::new(),
+            content_part: Vec::new(),
+            ext_lst: None,
+            extra_children: Default::default(),
+        };
+
+        slide
+            .slide
+            .common_slide_data
+            .shape_tree
+            .group_shape
+            .push(group);
+        slide
     }
 }
 
@@ -1151,11 +1660,13 @@ impl SlideBuilder {
     fn hyperlinks(&self) -> Vec<&str> {
         let mut links = Vec::new();
         for element in &self.hyperlink_elements {
-            for run in &element.runs {
-                if let Some(ref url) = run.hyperlink
-                    && !links.contains(&url.as_str())
-                {
-                    links.push(url.as_str());
+            for para in &element.paragraphs {
+                for run in &para.runs {
+                    if let Some(ref url) = run.hyperlink
+                        && !links.contains(&url.as_str())
+                    {
+                        links.push(url.as_str());
+                    }
                 }
             }
         }
@@ -1231,15 +1742,18 @@ impl SlideBuilder {
         height: i64,
     ) -> &mut Self {
         let element = TextElement {
-            runs: vec![TextRun {
-                text: text.into(),
-                hyperlink: Some(url.into()),
-                tooltip: None,
-                font_size: None,
-                color: None,
-                bold: None,
-                italic: None,
-                underline: false,
+            paragraphs: vec![Paragraph {
+                runs: vec![TextRun {
+                    text: text.into(),
+                    hyperlink: Some(url.into()),
+                    tooltip: None,
+                    font_size: None,
+                    color: None,
+                    bold: None,
+                    italic: None,
+                    underline: false,
+                }],
+                align: None,
             }],
             is_title: false,
             x,
@@ -1249,6 +1763,7 @@ impl SlideBuilder {
             fill_color: None,
             line_color: None,
             line_width: None,
+            geometry: None,
         };
         self.hyperlink_elements.push(element);
         self
@@ -1266,7 +1781,7 @@ impl SlideBuilder {
         height: i64,
     ) -> &mut Self {
         let element = TextElement {
-            runs,
+            paragraphs: vec![Paragraph { runs, align: None }],
             is_title: false,
             x,
             y,
@@ -1275,6 +1790,7 @@ impl SlideBuilder {
             fill_color: None,
             line_color: None,
             line_width: None,
+            geometry: None,
         };
         self.push_text_element(element);
         self
@@ -1308,6 +1824,7 @@ impl SlideBuilder {
         ShapeBuilder {
             slide: self,
             runs,
+            extra_paragraphs: Vec::new(),
             is_title: false,
             x,
             y,
@@ -1316,6 +1833,8 @@ impl SlideBuilder {
             fill_color: None,
             line_color: None,
             line_width: None,
+            geometry: None,
+            align: None,
         }
     }
 
@@ -1495,6 +2014,69 @@ impl SlideBuilder {
             .common_slide_data
             .shape_tree
             .graphic_frame
+            .is_empty()
+    }
+
+    /// Add a connector (straight line) between two points.
+    ///
+    /// Position coordinates are in EMUs (914400 EMUs = 1 inch).
+    /// `color` is an optional 6-character hex RGB string for the line color.
+    ///
+    /// Produces a `<p:cxnSp>` element with `<a:prstGeom prst="line"/>`.
+    /// ECMA-376 Part 1, Section 19.3.1.19 (cxnSp).
+    pub fn add_connector(
+        &mut self,
+        x1: i64,
+        y1: i64,
+        x2: i64,
+        y2: i64,
+        color: Option<&str>,
+    ) -> &mut Self {
+        let elem = ConnectorElement {
+            x1,
+            y1,
+            x2,
+            y2,
+            line_color: color.map(|s| s.to_string()),
+        };
+        let shape_id = self.next_shape_id;
+        self.next_shape_id += 1;
+        let connector = build_connector_impl(&elem, shape_id);
+        self.slide
+            .common_slide_data
+            .shape_tree
+            .connector
+            .push(connector);
+        self
+    }
+
+    /// Begin building a group of shapes (`<p:grpSp>`).
+    ///
+    /// Use [`GroupBuilder`] to add shapes and connectors to the group, then
+    /// call [`GroupBuilder::finish`] to finalize it.
+    ///
+    /// ECMA-376 Part 1, Section 19.3.1.22 (grpSp).
+    pub fn begin_group(&mut self) -> GroupBuilder<'_> {
+        GroupBuilder {
+            slide: self,
+            shapes: Vec::new(),
+            connectors: Vec::new(),
+            name: None,
+        }
+    }
+
+    /// Check if this slide has connectors.
+    pub fn has_connectors(&self) -> bool {
+        !self.slide.common_slide_data.shape_tree.connector.is_empty()
+    }
+
+    /// Check if this slide has group shapes.
+    pub fn has_groups(&self) -> bool {
+        !self
+            .slide
+            .common_slide_data
+            .shape_tree
+            .group_shape
             .is_empty()
     }
 
@@ -2645,5 +3227,407 @@ mod tests {
             slide_xml_str.contains("bgPr") || slide_xml_str.contains("solidFill"),
             "Slide XML should contain bgPr or solidFill"
         );
+    }
+
+    // -------------------------------------------------------------------------
+    // Feature 1: Preset shape geometries
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_preset_geometry_ellipse() {
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide
+            .shape(vec![TextRun::text("Oval")], 457200, 457200, 1828800, 914400)
+            .set_geometry(PresetGeometry::Ellipse)
+            .add();
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
+        let read_slide = presentation.slide(0).unwrap();
+
+        let shapes = read_slide.shapes();
+        assert!(!shapes.is_empty());
+        let sp_pr = &shapes[0].shape_properties;
+        let geom = sp_pr.geometry.as_ref().expect("shape has geometry");
+        if let ooxml_dml::types::EGGeometry::PrstGeom(prst) = geom.as_ref() {
+            assert_eq!(prst.preset, ooxml_dml::types::STShapeType::Ellipse);
+        } else {
+            panic!("Expected PrstGeom geometry");
+        }
+    }
+
+    #[test]
+    fn test_preset_geometry_roundrect() {
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide
+            .shape(
+                vec![TextRun::text("Rounded")],
+                457200,
+                457200,
+                1828800,
+                914400,
+            )
+            .set_geometry(PresetGeometry::RoundRect)
+            .add();
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
+        let read_slide = presentation.slide(0).unwrap();
+
+        let shapes = read_slide.shapes();
+        let sp_pr = &shapes[0].shape_properties;
+        let geom = sp_pr.geometry.as_ref().expect("shape has geometry");
+        if let ooxml_dml::types::EGGeometry::PrstGeom(prst) = geom.as_ref() {
+            assert_eq!(prst.preset, ooxml_dml::types::STShapeType::RoundRect);
+        } else {
+            panic!("Expected PrstGeom geometry");
+        }
+    }
+
+    #[test]
+    fn test_preset_geometry_default_is_rect() {
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide
+            .shape(
+                vec![TextRun::text("Default")],
+                457200,
+                457200,
+                1828800,
+                914400,
+            )
+            .add();
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
+        let read_slide = presentation.slide(0).unwrap();
+
+        let shapes = read_slide.shapes();
+        let sp_pr = &shapes[0].shape_properties;
+        let geom = sp_pr.geometry.as_ref().expect("shape has geometry");
+        if let ooxml_dml::types::EGGeometry::PrstGeom(prst) = geom.as_ref() {
+            assert_eq!(prst.preset, ooxml_dml::types::STShapeType::Rect);
+        } else {
+            panic!("Expected PrstGeom geometry");
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Feature 2: Connector shapes
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_add_connector_basic() {
+        use crate::ConnectorExt;
+        use crate::ext::GroupShapeExt;
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.add_connector(0, 0, 1828800, 914400, None);
+
+        assert!(slide.has_connectors(), "slide should have a connector");
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
+        let read_slide = presentation.slide(0).unwrap();
+
+        // Connectors are read back from the shape tree via inner().
+        let tree = &read_slide.inner().common_slide_data.shape_tree;
+        let connectors = tree.connectors();
+        assert_eq!(connectors.len(), 1, "expected 1 connector");
+        assert!(connectors[0].name().starts_with("Connector"));
+    }
+
+    #[test]
+    fn test_add_connector_with_color() {
+        use crate::ext::GroupShapeExt;
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.add_connector(914400, 0, 914400, 1828800, Some("FF0000"));
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
+        let read_slide = presentation.slide(0).unwrap();
+
+        let tree = &read_slide.inner().common_slide_data.shape_tree;
+        let connectors = tree.connectors();
+        assert_eq!(connectors.len(), 1);
+
+        // Verify the line color is set on the connector.
+        let sp_pr = &connectors[0].shape_properties;
+        let line = sp_pr.line.as_ref().expect("connector has line");
+        let line_fill = line.line_fill_properties.as_ref().expect("line has fill");
+        if let ooxml_dml::types::EGLineFillProperties::SolidFill(solid) = line_fill.as_ref()
+            && let Some(color) = &solid.color_choice
+            && let ooxml_dml::types::EGColorChoice::SrgbClr(srgb) = color.as_ref()
+        {
+            assert_eq!(srgb.value, vec![0xFF, 0x00, 0x00]);
+            return;
+        }
+        panic!("Expected connector line solidFill/srgbClr with FF0000");
+    }
+
+    #[test]
+    fn test_connector_geometry_is_line() {
+        use crate::ext::GroupShapeExt;
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.add_connector(0, 0, 914400, 914400, None);
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
+        let read_slide = presentation.slide(0).unwrap();
+
+        let tree = &read_slide.inner().common_slide_data.shape_tree;
+        let connectors = tree.connectors();
+        let sp_pr = &connectors[0].shape_properties;
+        let geom = sp_pr.geometry.as_ref().expect("connector has geometry");
+        if let ooxml_dml::types::EGGeometry::PrstGeom(prst) = geom.as_ref() {
+            assert_eq!(prst.preset, ooxml_dml::types::STShapeType::Line);
+        } else {
+            panic!("Expected PrstGeom line geometry for connector");
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Feature 3: Group shapes
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_group_shape_basic() {
+        use crate::ext::GroupShapeExt;
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide
+            .begin_group()
+            .set_name("My Group")
+            .add_text("Shape A", 0, 0, 914400, 457200)
+            .add_text("Shape B", 0, 914400, 914400, 457200)
+            .finish();
+
+        assert!(slide.has_groups(), "slide should have a group");
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
+        let read_slide = presentation.slide(0).unwrap();
+
+        // The slide's shape tree should contain a group.
+        let tree = &read_slide.inner().common_slide_data.shape_tree;
+        let groups = tree.group_shapes();
+        assert_eq!(groups.len(), 1, "expected 1 group shape");
+        assert_eq!(groups[0].name(), "My Group");
+        assert_eq!(groups[0].shapes().len(), 2, "expected 2 shapes in group");
+    }
+
+    #[test]
+    fn test_group_shape_with_connector() {
+        use crate::ext::GroupShapeExt;
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide
+            .begin_group()
+            .add_text("Box", 0, 0, 914400, 457200)
+            .add_connector(457200, 457200, 914400, 914400)
+            .finish();
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
+        let read_slide = presentation.slide(0).unwrap();
+
+        let tree = &read_slide.inner().common_slide_data.shape_tree;
+        let groups = tree.group_shapes();
+        assert_eq!(groups.len(), 1);
+        assert_eq!(groups[0].shapes().len(), 1);
+        assert_eq!(groups[0].connectors().len(), 1);
+    }
+
+    // -------------------------------------------------------------------------
+    // Feature 5: Text paragraph alignment
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_text_align_center() {
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide
+            .shape(
+                vec![TextRun::text("Centered text")],
+                457200,
+                457200,
+                7315200,
+                457200,
+            )
+            .set_text_align(TextAlign::Center)
+            .add();
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
+        let read_slide = presentation.slide(0).unwrap();
+
+        let shapes = read_slide.shapes();
+        assert!(!shapes.is_empty());
+        let text_body = shapes[0].text_body().expect("shape has text body");
+        let para = &text_body.p[0];
+        let p_pr = para.p_pr.as_ref().expect("paragraph has pPr");
+        assert_eq!(
+            p_pr.algn,
+            Some(ooxml_dml::types::STTextAlignType::Ctr),
+            "expected center alignment"
+        );
+    }
+
+    #[test]
+    fn test_text_align_right() {
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide
+            .shape(
+                vec![TextRun::text("Right aligned")],
+                457200,
+                457200,
+                7315200,
+                457200,
+            )
+            .set_text_align(TextAlign::Right)
+            .add();
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
+        let read_slide = presentation.slide(0).unwrap();
+
+        let shapes = read_slide.shapes();
+        let text_body = shapes[0].text_body().expect("shape has text body");
+        let p_pr = text_body.p[0].p_pr.as_ref().expect("paragraph has pPr");
+        assert_eq!(p_pr.algn, Some(ooxml_dml::types::STTextAlignType::R));
+    }
+
+    // -------------------------------------------------------------------------
+    // Feature 6: Multiple paragraphs in a shape
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_multiple_paragraphs_in_shape() {
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide
+            .shape(
+                vec![TextRun::text("First paragraph")],
+                457200,
+                457200,
+                7315200,
+                1828800,
+            )
+            .add_paragraph(Paragraph::new("Second paragraph"))
+            .add_paragraph(Paragraph::new("Third paragraph"))
+            .add();
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
+        let read_slide = presentation.slide(0).unwrap();
+
+        let shapes = read_slide.shapes();
+        assert!(!shapes.is_empty());
+        let text_body = shapes[0].text_body().expect("shape has text body");
+        assert_eq!(
+            text_body.p.len(),
+            3,
+            "expected 3 paragraphs in shape, got {}",
+            text_body.p.len()
+        );
+    }
+
+    #[test]
+    fn test_multiple_paragraphs_with_alignment() {
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide
+            .shape(
+                vec![TextRun::text("Left")],
+                457200,
+                457200,
+                7315200,
+                1828800,
+            )
+            .set_text_align(TextAlign::Left)
+            .add_paragraph(Paragraph::new("Center").set_align(TextAlign::Center))
+            .add_paragraph(Paragraph::new("Right").set_align(TextAlign::Right))
+            .add();
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
+        let read_slide = presentation.slide(0).unwrap();
+
+        let shapes = read_slide.shapes();
+        let text_body = shapes[0].text_body().expect("shape has text body");
+        assert_eq!(text_body.p.len(), 3, "expected 3 paragraphs");
+
+        let p0_algn = text_body.p[0].p_pr.as_ref().and_then(|p| p.algn);
+        let p1_algn = text_body.p[1].p_pr.as_ref().and_then(|p| p.algn);
+        let p2_algn = text_body.p[2].p_pr.as_ref().and_then(|p| p.algn);
+
+        assert_eq!(p0_algn, Some(ooxml_dml::types::STTextAlignType::L));
+        assert_eq!(p1_algn, Some(ooxml_dml::types::STTextAlignType::Ctr));
+        assert_eq!(p2_algn, Some(ooxml_dml::types::STTextAlignType::R));
     }
 }

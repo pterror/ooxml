@@ -51,6 +51,9 @@ pub struct Workbook<R: Read + Seek> {
     styles: crate::types::Stylesheet,
     /// Defined names (named ranges).
     defined_names: Vec<crate::types::DefinedName>,
+    /// Workbook protection settings (if any).
+    #[cfg(feature = "sml-protection")]
+    workbook_protection: Option<crate::types::WorkbookProtection>,
 }
 
 /// Metadata about a sheet.
@@ -107,6 +110,8 @@ impl<R: Read + Seek> Workbook<R> {
                 inner.defined_name
             })
             .unwrap_or_default();
+        #[cfg(feature = "sml-protection")]
+        let workbook_protection = wb.workbook_protection.map(|b| *b);
 
         // Load shared strings if present
         let shared_strings = if let Some(rel) = workbook_rels.get_by_type(REL_SHARED_STRINGS) {
@@ -141,6 +146,8 @@ impl<R: Read + Seek> Workbook<R> {
             shared_strings,
             styles,
             defined_names,
+            #[cfg(feature = "sml-protection")]
+            workbook_protection,
         })
     }
 
@@ -157,6 +164,29 @@ impl<R: Read + Seek> Workbook<R> {
     /// Get the workbook stylesheet.
     pub fn styles(&self) -> &crate::types::Stylesheet {
         &self.styles
+    }
+
+    /// Get the workbook stylesheet (alias for [`styles`](Self::styles)).
+    pub fn stylesheet(&self) -> Option<&crate::types::Stylesheet> {
+        Some(&self.styles)
+    }
+
+    /// Get the workbook protection settings (if any).
+    ///
+    /// Requires the `sml-protection` feature.
+    ///
+    /// ECMA-376 Part 1, Section 18.2.29 (workbookProtection).
+    #[cfg(feature = "sml-protection")]
+    pub fn workbook_protection(&self) -> Option<&crate::types::WorkbookProtection> {
+        self.workbook_protection.as_ref()
+    }
+
+    /// Access the raw workbook protection for testing.
+    ///
+    /// Requires the `sml-protection` feature.
+    #[cfg(feature = "sml-protection")]
+    pub fn raw_workbook_protection(&self) -> Option<&crate::types::WorkbookProtection> {
+        self.workbook_protection.as_ref()
     }
 
     /// Get all defined names (named ranges).
