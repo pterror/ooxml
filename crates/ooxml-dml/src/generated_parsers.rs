@@ -34395,7 +34395,8 @@ impl FromXml for BarSeries {
                             }
                             #[cfg(feature = "dml-charts")]
                             b"shape" => {
-                                f_shape = Some(Box::new(BarShape::from_xml(reader, &e, false)?));
+                                f_shape =
+                                    Some(Box::new(DiagramShape::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34533,7 +34534,7 @@ impl FromXml for BarSeries {
                             }
                             #[cfg(feature = "dml-charts")]
                             b"shape" => {
-                                f_shape = Some(Box::new(BarShape::from_xml(reader, &e, true)?));
+                                f_shape = Some(Box::new(DiagramShape::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37412,13 +37413,13 @@ impl FromXml for BarDirection {
     }
 }
 
-impl FromXml for BarShape {
+impl FromXml for DiagramShape {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
-        #[cfg(feature = "dml-charts")]
+        #[cfg(feature = "dml-diagrams")]
         let mut f_value = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -37427,7 +37428,7 @@ impl FromXml for BarShape {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
-                #[cfg(feature = "dml-charts")]
+                #[cfg(feature = "dml-diagrams")]
                 b"val" => {
                     f_value = val.parse().ok();
                 }
@@ -37454,7 +37455,7 @@ impl FromXml for BarShape {
         }
 
         Ok(Self {
-            #[cfg(feature = "dml-charts")]
+            #[cfg(feature = "dml-diagrams")]
             value: f_value,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -37994,7 +37995,8 @@ impl FromXml for Bar3DChart {
                             }
                             #[cfg(feature = "dml-charts")]
                             b"shape" => {
-                                f_shape = Some(Box::new(BarShape::from_xml(reader, &e, false)?));
+                                f_shape =
+                                    Some(Box::new(DiagramShape::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38100,7 +38102,7 @@ impl FromXml for Bar3DChart {
                             }
                             #[cfg(feature = "dml-charts")]
                             b"shape" => {
-                                f_shape = Some(Box::new(BarShape::from_xml(reader, &e, true)?));
+                                f_shape = Some(Box::new(DiagramShape::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -47697,6 +47699,7715 @@ impl FromXml for ChartSpace {
             user_shapes: f_user_shapes,
             #[cfg(feature = "dml-charts")]
             ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for ColorTransformName {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_lang = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_value: Option<String> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"lang" => {
+                    f_lang = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"val" => {
+                    f_value = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            lang: f_lang,
+            #[cfg(feature = "dml-diagrams")]
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for ColorTransformDescription {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_lang = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_value: Option<String> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"lang" => {
+                    f_lang = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"val" => {
+                    f_value = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            lang: f_lang,
+            #[cfg(feature = "dml-diagrams")]
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for DiagramColorCategory {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_type: Option<String> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_pri: Option<u32> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"type" => {
+                    f_type = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"pri" => {
+                    f_pri = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            r#type: f_type.ok_or_else(|| ParseError::MissingAttribute("type".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            pri: f_pri.ok_or_else(|| ParseError::MissingAttribute("pri".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for DiagramColorCategories {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cat = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"cat" => {
+                                f_cat.push(DiagramColorCategory::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"cat" => {
+                                f_cat.push(DiagramColorCategory::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            cat: f_cat,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for DiagramColors {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_meth = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_hue_dir = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_color_choice = Vec::new();
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"meth" => {
+                    f_meth = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"hueDir" => {
+                    f_hue_dir = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr"
+                            | b"prstClr" => {
+                                f_color_choice.push(EGColorChoice::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr"
+                            | b"prstClr" => {
+                                f_color_choice.push(EGColorChoice::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            meth: f_meth,
+            #[cfg(feature = "dml-diagrams")]
+            hue_dir: f_hue_dir,
+            #[cfg(feature = "dml-diagrams")]
+            color_choice: f_color_choice,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for DiagramColorStyleLabel {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_name: Option<String> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_fill_clr_lst = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_lin_clr_lst = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_effect_clr_lst = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_tx_lin_clr_lst = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_tx_fill_clr_lst = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_tx_effect_clr_lst = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"name" => {
+                    f_name = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"fillClrLst" => {
+                                f_fill_clr_lst =
+                                    Some(Box::new(DiagramColors::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"linClrLst" => {
+                                f_lin_clr_lst =
+                                    Some(Box::new(DiagramColors::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"effectClrLst" => {
+                                f_effect_clr_lst =
+                                    Some(Box::new(DiagramColors::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"txLinClrLst" => {
+                                f_tx_lin_clr_lst =
+                                    Some(Box::new(DiagramColors::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"txFillClrLst" => {
+                                f_tx_fill_clr_lst =
+                                    Some(Box::new(DiagramColors::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"txEffectClrLst" => {
+                                f_tx_effect_clr_lst =
+                                    Some(Box::new(DiagramColors::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"fillClrLst" => {
+                                f_fill_clr_lst =
+                                    Some(Box::new(DiagramColors::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"linClrLst" => {
+                                f_lin_clr_lst =
+                                    Some(Box::new(DiagramColors::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"effectClrLst" => {
+                                f_effect_clr_lst =
+                                    Some(Box::new(DiagramColors::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"txLinClrLst" => {
+                                f_tx_lin_clr_lst =
+                                    Some(Box::new(DiagramColors::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"txFillClrLst" => {
+                                f_tx_fill_clr_lst =
+                                    Some(Box::new(DiagramColors::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"txEffectClrLst" => {
+                                f_tx_effect_clr_lst =
+                                    Some(Box::new(DiagramColors::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            fill_clr_lst: f_fill_clr_lst,
+            #[cfg(feature = "dml-diagrams")]
+            lin_clr_lst: f_lin_clr_lst,
+            #[cfg(feature = "dml-diagrams")]
+            effect_clr_lst: f_effect_clr_lst,
+            #[cfg(feature = "dml-diagrams")]
+            tx_lin_clr_lst: f_tx_lin_clr_lst,
+            #[cfg(feature = "dml-diagrams")]
+            tx_fill_clr_lst: f_tx_fill_clr_lst,
+            #[cfg(feature = "dml-diagrams")]
+            tx_effect_clr_lst: f_tx_effect_clr_lst,
+            #[cfg(feature = "dml-diagrams")]
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for DiagramColorTransform {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_unique_id = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_min_ver = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_title = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_desc = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cat_lst = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_style_lbl = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"uniqueId" => {
+                    f_unique_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"minVer" => {
+                    f_min_ver = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"title" => {
+                                f_title.push(ColorTransformName::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"desc" => {
+                                f_desc
+                                    .push(ColorTransformDescription::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"catLst" => {
+                                f_cat_lst = Some(Box::new(DiagramColorCategories::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"styleLbl" => {
+                                f_style_lbl
+                                    .push(DiagramColorStyleLabel::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"title" => {
+                                f_title.push(ColorTransformName::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"desc" => {
+                                f_desc.push(ColorTransformDescription::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"catLst" => {
+                                f_cat_lst = Some(Box::new(DiagramColorCategories::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"styleLbl" => {
+                                f_style_lbl
+                                    .push(DiagramColorStyleLabel::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            unique_id: f_unique_id,
+            #[cfg(feature = "dml-diagrams")]
+            min_ver: f_min_ver,
+            #[cfg(feature = "dml-diagrams")]
+            title: f_title,
+            #[cfg(feature = "dml-diagrams")]
+            desc: f_desc,
+            #[cfg(feature = "dml-diagrams")]
+            cat_lst: f_cat_lst,
+            #[cfg(feature = "dml-diagrams")]
+            style_lbl: f_style_lbl,
+            #[cfg(feature = "dml-diagrams")]
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for DiagramColorTransformHeader {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_unique_id: Option<String> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_min_ver = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_res_id = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_title = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_desc = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cat_lst = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"uniqueId" => {
+                    f_unique_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"minVer" => {
+                    f_min_ver = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"resId" => {
+                    f_res_id = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"title" => {
+                                f_title.push(ColorTransformName::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"desc" => {
+                                f_desc
+                                    .push(ColorTransformDescription::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"catLst" => {
+                                f_cat_lst = Some(Box::new(DiagramColorCategories::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"title" => {
+                                f_title.push(ColorTransformName::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"desc" => {
+                                f_desc.push(ColorTransformDescription::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"catLst" => {
+                                f_cat_lst = Some(Box::new(DiagramColorCategories::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            unique_id: f_unique_id
+                .ok_or_else(|| ParseError::MissingAttribute("uniqueId".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            min_ver: f_min_ver,
+            #[cfg(feature = "dml-diagrams")]
+            res_id: f_res_id,
+            #[cfg(feature = "dml-diagrams")]
+            title: f_title,
+            #[cfg(feature = "dml-diagrams")]
+            desc: f_desc,
+            #[cfg(feature = "dml-diagrams")]
+            cat_lst: f_cat_lst,
+            #[cfg(feature = "dml-diagrams")]
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for DiagramColorTransformHeaderList {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_colors_def_hdr = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"colorsDefHdr" => {
+                                f_colors_def_hdr.push(DiagramColorTransformHeader::from_xml(
+                                    reader, &e, false,
+                                )?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"colorsDefHdr" => {
+                                f_colors_def_hdr
+                                    .push(DiagramColorTransformHeader::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            colors_def_hdr: f_colors_def_hdr,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for DiagramPoint {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_model_id: Option<STModelId> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_type = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cxn_id = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_pr_set = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_sp_pr = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_t = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"modelId" => {
+                    f_model_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"type" => {
+                    f_type = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"cxnId" => {
+                    f_cxn_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"prSet" => {
+                                f_pr_set = Some(Box::new(DiagramElementProperties::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"spPr" => {
+                                f_sp_pr =
+                                    Some(Box::new(CTShapeProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"t" => {
+                                f_t = Some(Box::new(TextBody::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"prSet" => {
+                                f_pr_set = Some(Box::new(DiagramElementProperties::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"spPr" => {
+                                f_sp_pr =
+                                    Some(Box::new(CTShapeProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"t" => {
+                                f_t = Some(Box::new(TextBody::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            model_id: f_model_id
+                .ok_or_else(|| ParseError::MissingAttribute("modelId".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            r#type: f_type,
+            #[cfg(feature = "dml-diagrams")]
+            cxn_id: f_cxn_id,
+            #[cfg(feature = "dml-diagrams")]
+            pr_set: f_pr_set,
+            #[cfg(feature = "dml-diagrams")]
+            sp_pr: f_sp_pr,
+            #[cfg(feature = "dml-diagrams")]
+            t: f_t,
+            #[cfg(feature = "dml-diagrams")]
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for DiagramPointList {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_pt = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"pt" => {
+                                f_pt.push(DiagramPoint::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"pt" => {
+                                f_pt.push(DiagramPoint::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            pt: f_pt,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for DiagramConnection {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_model_id: Option<STModelId> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_type = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_src_id: Option<STModelId> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_dest_id: Option<STModelId> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_src_ord: Option<u32> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_dest_ord: Option<u32> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_par_trans_id = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_sib_trans_id = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_pres_id = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"modelId" => {
+                    f_model_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"type" => {
+                    f_type = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"srcId" => {
+                    f_src_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"destId" => {
+                    f_dest_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"srcOrd" => {
+                    f_src_ord = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"destOrd" => {
+                    f_dest_ord = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"parTransId" => {
+                    f_par_trans_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"sibTransId" => {
+                    f_sib_trans_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"presId" => {
+                    f_pres_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            model_id: f_model_id
+                .ok_or_else(|| ParseError::MissingAttribute("modelId".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            r#type: f_type,
+            #[cfg(feature = "dml-diagrams")]
+            src_id: f_src_id.ok_or_else(|| ParseError::MissingAttribute("srcId".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            dest_id: f_dest_id.ok_or_else(|| ParseError::MissingAttribute("destId".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            src_ord: f_src_ord.ok_or_else(|| ParseError::MissingAttribute("srcOrd".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            dest_ord: f_dest_ord
+                .ok_or_else(|| ParseError::MissingAttribute("destOrd".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            par_trans_id: f_par_trans_id,
+            #[cfg(feature = "dml-diagrams")]
+            sib_trans_id: f_sib_trans_id,
+            #[cfg(feature = "dml-diagrams")]
+            pres_id: f_pres_id,
+            #[cfg(feature = "dml-diagrams")]
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for DiagramConnectionList {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cxn = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"cxn" => {
+                                f_cxn.push(DiagramConnection::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"cxn" => {
+                                f_cxn.push(DiagramConnection::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            cxn: f_cxn,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for DataModel {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_pt_lst: Option<Box<DiagramPointList>> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cxn_lst = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_bg = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_whole = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"ptLst" => {
+                                f_pt_lst =
+                                    Some(Box::new(DiagramPointList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"cxnLst" => {
+                                f_cxn_lst = Some(Box::new(DiagramConnectionList::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"bg" => {
+                                f_bg = Some(Box::new(CTBackgroundFormatting::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"whole" => {
+                                f_whole = Some(Box::new(CTWholeE2oFormatting::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"ptLst" => {
+                                f_pt_lst =
+                                    Some(Box::new(DiagramPointList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"cxnLst" => {
+                                f_cxn_lst = Some(Box::new(DiagramConnectionList::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"bg" => {
+                                f_bg = Some(Box::new(CTBackgroundFormatting::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"whole" => {
+                                f_whole = Some(Box::new(CTWholeE2oFormatting::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            pt_lst: f_pt_lst.ok_or_else(|| ParseError::MissingAttribute("ptLst".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            cxn_lst: f_cxn_lst,
+            #[cfg(feature = "dml-diagrams")]
+            bg: f_bg,
+            #[cfg(feature = "dml-diagrams")]
+            whole: f_whole,
+            #[cfg(feature = "dml-diagrams")]
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for DdgrmAGIteratorAttributes {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        let mut f_axis = None;
+        let mut f_pt_type = None;
+        let mut f_hide_last_trans = None;
+        let mut f_st = None;
+        let mut f_cnt = None;
+        let mut f_step = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"axis" => {
+                    f_axis = Some(val.into_owned());
+                }
+                b"ptType" => {
+                    f_pt_type = Some(val.into_owned());
+                }
+                b"hideLastTrans" => {
+                    f_hide_last_trans = Some(val.into_owned());
+                }
+                b"st" => {
+                    f_st = Some(val.into_owned());
+                }
+                b"cnt" => {
+                    f_cnt = Some(val.into_owned());
+                }
+                b"step" => {
+                    f_step = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            axis: f_axis,
+            pt_type: f_pt_type,
+            hide_last_trans: f_hide_last_trans,
+            st: f_st,
+            cnt: f_cnt,
+            step: f_step,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for DdgrmAGConstraintAttributes {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        let mut f_type: Option<STConstraintType> = None;
+        let mut f_for = None;
+        let mut f_for_name = None;
+        let mut f_pt_type = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"type" => {
+                    f_type = val.parse().ok();
+                }
+                b"for" => {
+                    f_for = val.parse().ok();
+                }
+                b"forName" => {
+                    f_for_name = Some(val.into_owned());
+                }
+                b"ptType" => {
+                    f_pt_type = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            r#type: f_type.ok_or_else(|| ParseError::MissingAttribute("type".to_string()))?,
+            r#for: f_for,
+            for_name: f_for_name,
+            pt_type: f_pt_type,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for DdgrmAGConstraintRefAttributes {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        let mut f_ref_type = None;
+        let mut f_ref_for = None;
+        let mut f_ref_for_name = None;
+        let mut f_ref_pt_type = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"refType" => {
+                    f_ref_type = val.parse().ok();
+                }
+                b"refFor" => {
+                    f_ref_for = val.parse().ok();
+                }
+                b"refForName" => {
+                    f_ref_for_name = Some(val.into_owned());
+                }
+                b"refPtType" => {
+                    f_ref_pt_type = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            ref_type: f_ref_type,
+            ref_for: f_ref_for,
+            ref_for_name: f_ref_for_name,
+            ref_pt_type: f_ref_pt_type,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for LayoutConstraint {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_type: Option<STConstraintType> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_for = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_for_name = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_pt_type = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ref_type = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ref_for = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ref_for_name = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ref_pt_type = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_op = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_value = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_fact = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"type" => {
+                    f_type = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"for" => {
+                    f_for = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"forName" => {
+                    f_for_name = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"ptType" => {
+                    f_pt_type = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"refType" => {
+                    f_ref_type = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"refFor" => {
+                    f_ref_for = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"refForName" => {
+                    f_ref_for_name = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"refPtType" => {
+                    f_ref_pt_type = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"op" => {
+                    f_op = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"val" => {
+                    f_value = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"fact" => {
+                    f_fact = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            r#type: f_type.ok_or_else(|| ParseError::MissingAttribute("type".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            r#for: f_for,
+            #[cfg(feature = "dml-diagrams")]
+            for_name: f_for_name,
+            #[cfg(feature = "dml-diagrams")]
+            pt_type: f_pt_type,
+            #[cfg(feature = "dml-diagrams")]
+            ref_type: f_ref_type,
+            #[cfg(feature = "dml-diagrams")]
+            ref_for: f_ref_for,
+            #[cfg(feature = "dml-diagrams")]
+            ref_for_name: f_ref_for_name,
+            #[cfg(feature = "dml-diagrams")]
+            ref_pt_type: f_ref_pt_type,
+            #[cfg(feature = "dml-diagrams")]
+            op: f_op,
+            #[cfg(feature = "dml-diagrams")]
+            value: f_value,
+            #[cfg(feature = "dml-diagrams")]
+            fact: f_fact,
+            #[cfg(feature = "dml-diagrams")]
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for LayoutConstraints {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_constr = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"constr" => {
+                                f_constr.push(LayoutConstraint::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"constr" => {
+                                f_constr.push(LayoutConstraint::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            constr: f_constr,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for NumericRule {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_type: Option<STConstraintType> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_for = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_for_name = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_pt_type = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_value = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_fact = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_max = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"type" => {
+                    f_type = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"for" => {
+                    f_for = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"forName" => {
+                    f_for_name = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"ptType" => {
+                    f_pt_type = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"val" => {
+                    f_value = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"fact" => {
+                    f_fact = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"max" => {
+                    f_max = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            r#type: f_type.ok_or_else(|| ParseError::MissingAttribute("type".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            r#for: f_for,
+            #[cfg(feature = "dml-diagrams")]
+            for_name: f_for_name,
+            #[cfg(feature = "dml-diagrams")]
+            pt_type: f_pt_type,
+            #[cfg(feature = "dml-diagrams")]
+            value: f_value,
+            #[cfg(feature = "dml-diagrams")]
+            fact: f_fact,
+            #[cfg(feature = "dml-diagrams")]
+            max: f_max,
+            #[cfg(feature = "dml-diagrams")]
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for LayoutRules {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_rule = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"rule" => {
+                                f_rule.push(NumericRule::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"rule" => {
+                                f_rule.push(NumericRule::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            rule: f_rule,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for PresentationOf {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_axis = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_pt_type = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_hide_last_trans = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_st = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cnt = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_step = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"axis" => {
+                    f_axis = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"ptType" => {
+                    f_pt_type = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"hideLastTrans" => {
+                    f_hide_last_trans = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"st" => {
+                    f_st = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"cnt" => {
+                    f_cnt = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"step" => {
+                    f_step = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            axis: f_axis,
+            #[cfg(feature = "dml-diagrams")]
+            pt_type: f_pt_type,
+            #[cfg(feature = "dml-diagrams")]
+            hide_last_trans: f_hide_last_trans,
+            #[cfg(feature = "dml-diagrams")]
+            st: f_st,
+            #[cfg(feature = "dml-diagrams")]
+            cnt: f_cnt,
+            #[cfg(feature = "dml-diagrams")]
+            step: f_step,
+            #[cfg(feature = "dml-diagrams")]
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for LayoutAdjustment {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_idx: Option<STIndex1> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_value: Option<f64> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"idx" => {
+                    f_idx = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"val" => {
+                    f_value = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            idx: f_idx.ok_or_else(|| ParseError::MissingAttribute("idx".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for LayoutAdjustmentList {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_adj = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"adj" => {
+                                f_adj.push(LayoutAdjustment::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"adj" => {
+                                f_adj.push(LayoutAdjustment::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            adj: f_adj,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for AlgorithmParameter {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_type: Option<STParameterId> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_value: Option<STParameterVal> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"type" => {
+                    f_type = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"val" => {
+                    f_value = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            r#type: f_type.ok_or_else(|| ParseError::MissingAttribute("type".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for LayoutAlgorithm {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_type: Option<STAlgorithmType> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_rev = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_param = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"type" => {
+                    f_type = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"rev" => {
+                    f_rev = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"param" => {
+                                f_param.push(AlgorithmParameter::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"param" => {
+                                f_param.push(AlgorithmParameter::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            r#type: f_type.ok_or_else(|| ParseError::MissingAttribute("type".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            rev: f_rev,
+            #[cfg(feature = "dml-diagrams")]
+            param: f_param,
+            #[cfg(feature = "dml-diagrams")]
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for LayoutNode {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_name = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_style_lbl = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ch_order = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_move_with = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_alg = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_shape = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_pres_of = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_constr_lst = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_rule_lst = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_var_lst = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_for_each = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_layout_node = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_choose = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"name" => {
+                    f_name = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"styleLbl" => {
+                    f_style_lbl = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"chOrder" => {
+                    f_ch_order = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"moveWith" => {
+                    f_move_with = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"alg" => {
+                                f_alg =
+                                    Some(Box::new(LayoutAlgorithm::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"shape" => {
+                                f_shape =
+                                    Some(Box::new(DiagramShape::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"presOf" => {
+                                f_pres_of =
+                                    Some(Box::new(PresentationOf::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"constrLst" => {
+                                f_constr_lst =
+                                    Some(Box::new(LayoutConstraints::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"ruleLst" => {
+                                f_rule_lst =
+                                    Some(Box::new(LayoutRules::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"varLst" => {
+                                f_var_lst = Some(Box::new(LayoutVariableProperties::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"forEach" => {
+                                f_for_each.push(LayoutForEach::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"layoutNode" => {
+                                f_layout_node.push(LayoutNode::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"choose" => {
+                                f_choose.push(LayoutChoose::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"alg" => {
+                                f_alg =
+                                    Some(Box::new(LayoutAlgorithm::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"shape" => {
+                                f_shape = Some(Box::new(DiagramShape::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"presOf" => {
+                                f_pres_of =
+                                    Some(Box::new(PresentationOf::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"constrLst" => {
+                                f_constr_lst =
+                                    Some(Box::new(LayoutConstraints::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"ruleLst" => {
+                                f_rule_lst =
+                                    Some(Box::new(LayoutRules::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"varLst" => {
+                                f_var_lst = Some(Box::new(LayoutVariableProperties::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"forEach" => {
+                                f_for_each.push(LayoutForEach::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"layoutNode" => {
+                                f_layout_node.push(LayoutNode::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"choose" => {
+                                f_choose.push(LayoutChoose::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            name: f_name,
+            #[cfg(feature = "dml-diagrams")]
+            style_lbl: f_style_lbl,
+            #[cfg(feature = "dml-diagrams")]
+            ch_order: f_ch_order,
+            #[cfg(feature = "dml-diagrams")]
+            move_with: f_move_with,
+            #[cfg(feature = "dml-diagrams")]
+            alg: f_alg,
+            #[cfg(feature = "dml-diagrams")]
+            shape: f_shape,
+            #[cfg(feature = "dml-diagrams")]
+            pres_of: f_pres_of,
+            #[cfg(feature = "dml-diagrams")]
+            constr_lst: f_constr_lst,
+            #[cfg(feature = "dml-diagrams")]
+            rule_lst: f_rule_lst,
+            #[cfg(feature = "dml-diagrams")]
+            var_lst: f_var_lst,
+            #[cfg(feature = "dml-diagrams")]
+            for_each: f_for_each,
+            #[cfg(feature = "dml-diagrams")]
+            layout_node: f_layout_node,
+            #[cfg(feature = "dml-diagrams")]
+            choose: f_choose,
+            #[cfg(feature = "dml-diagrams")]
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for LayoutForEach {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_name = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ref = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_axis = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_pt_type = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_hide_last_trans = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_st = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cnt = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_step = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_alg = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_shape = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_pres_of = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_constr_lst = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_rule_lst = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_for_each = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_layout_node = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_choose = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"name" => {
+                    f_name = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"ref" => {
+                    f_ref = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"axis" => {
+                    f_axis = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"ptType" => {
+                    f_pt_type = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"hideLastTrans" => {
+                    f_hide_last_trans = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"st" => {
+                    f_st = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"cnt" => {
+                    f_cnt = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"step" => {
+                    f_step = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"alg" => {
+                                f_alg =
+                                    Some(Box::new(LayoutAlgorithm::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"shape" => {
+                                f_shape =
+                                    Some(Box::new(DiagramShape::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"presOf" => {
+                                f_pres_of =
+                                    Some(Box::new(PresentationOf::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"constrLst" => {
+                                f_constr_lst =
+                                    Some(Box::new(LayoutConstraints::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"ruleLst" => {
+                                f_rule_lst =
+                                    Some(Box::new(LayoutRules::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"forEach" => {
+                                f_for_each.push(LayoutForEach::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"layoutNode" => {
+                                f_layout_node.push(LayoutNode::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"choose" => {
+                                f_choose.push(LayoutChoose::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"alg" => {
+                                f_alg =
+                                    Some(Box::new(LayoutAlgorithm::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"shape" => {
+                                f_shape = Some(Box::new(DiagramShape::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"presOf" => {
+                                f_pres_of =
+                                    Some(Box::new(PresentationOf::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"constrLst" => {
+                                f_constr_lst =
+                                    Some(Box::new(LayoutConstraints::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"ruleLst" => {
+                                f_rule_lst =
+                                    Some(Box::new(LayoutRules::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"forEach" => {
+                                f_for_each.push(LayoutForEach::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"layoutNode" => {
+                                f_layout_node.push(LayoutNode::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"choose" => {
+                                f_choose.push(LayoutChoose::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            name: f_name,
+            #[cfg(feature = "dml-diagrams")]
+            r#ref: f_ref,
+            #[cfg(feature = "dml-diagrams")]
+            axis: f_axis,
+            #[cfg(feature = "dml-diagrams")]
+            pt_type: f_pt_type,
+            #[cfg(feature = "dml-diagrams")]
+            hide_last_trans: f_hide_last_trans,
+            #[cfg(feature = "dml-diagrams")]
+            st: f_st,
+            #[cfg(feature = "dml-diagrams")]
+            cnt: f_cnt,
+            #[cfg(feature = "dml-diagrams")]
+            step: f_step,
+            #[cfg(feature = "dml-diagrams")]
+            alg: f_alg,
+            #[cfg(feature = "dml-diagrams")]
+            shape: f_shape,
+            #[cfg(feature = "dml-diagrams")]
+            pres_of: f_pres_of,
+            #[cfg(feature = "dml-diagrams")]
+            constr_lst: f_constr_lst,
+            #[cfg(feature = "dml-diagrams")]
+            rule_lst: f_rule_lst,
+            #[cfg(feature = "dml-diagrams")]
+            for_each: f_for_each,
+            #[cfg(feature = "dml-diagrams")]
+            layout_node: f_layout_node,
+            #[cfg(feature = "dml-diagrams")]
+            choose: f_choose,
+            #[cfg(feature = "dml-diagrams")]
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for LayoutWhen {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_name = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_axis = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_pt_type = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_hide_last_trans = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_st = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cnt = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_step = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_func: Option<STFunctionType> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_arg = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_op: Option<STFunctionOperator> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_value: Option<STFunctionValue> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_alg = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_shape = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_pres_of = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_constr_lst = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_rule_lst = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_for_each = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_layout_node = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_choose = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"name" => {
+                    f_name = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"axis" => {
+                    f_axis = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"ptType" => {
+                    f_pt_type = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"hideLastTrans" => {
+                    f_hide_last_trans = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"st" => {
+                    f_st = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"cnt" => {
+                    f_cnt = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"step" => {
+                    f_step = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"func" => {
+                    f_func = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"arg" => {
+                    f_arg = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"op" => {
+                    f_op = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"val" => {
+                    f_value = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"alg" => {
+                                f_alg =
+                                    Some(Box::new(LayoutAlgorithm::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"shape" => {
+                                f_shape =
+                                    Some(Box::new(DiagramShape::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"presOf" => {
+                                f_pres_of =
+                                    Some(Box::new(PresentationOf::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"constrLst" => {
+                                f_constr_lst =
+                                    Some(Box::new(LayoutConstraints::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"ruleLst" => {
+                                f_rule_lst =
+                                    Some(Box::new(LayoutRules::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"forEach" => {
+                                f_for_each.push(LayoutForEach::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"layoutNode" => {
+                                f_layout_node.push(LayoutNode::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"choose" => {
+                                f_choose.push(LayoutChoose::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"alg" => {
+                                f_alg =
+                                    Some(Box::new(LayoutAlgorithm::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"shape" => {
+                                f_shape = Some(Box::new(DiagramShape::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"presOf" => {
+                                f_pres_of =
+                                    Some(Box::new(PresentationOf::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"constrLst" => {
+                                f_constr_lst =
+                                    Some(Box::new(LayoutConstraints::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"ruleLst" => {
+                                f_rule_lst =
+                                    Some(Box::new(LayoutRules::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"forEach" => {
+                                f_for_each.push(LayoutForEach::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"layoutNode" => {
+                                f_layout_node.push(LayoutNode::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"choose" => {
+                                f_choose.push(LayoutChoose::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            name: f_name,
+            #[cfg(feature = "dml-diagrams")]
+            axis: f_axis,
+            #[cfg(feature = "dml-diagrams")]
+            pt_type: f_pt_type,
+            #[cfg(feature = "dml-diagrams")]
+            hide_last_trans: f_hide_last_trans,
+            #[cfg(feature = "dml-diagrams")]
+            st: f_st,
+            #[cfg(feature = "dml-diagrams")]
+            cnt: f_cnt,
+            #[cfg(feature = "dml-diagrams")]
+            step: f_step,
+            #[cfg(feature = "dml-diagrams")]
+            func: f_func.ok_or_else(|| ParseError::MissingAttribute("func".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            arg: f_arg,
+            #[cfg(feature = "dml-diagrams")]
+            op: f_op.ok_or_else(|| ParseError::MissingAttribute("op".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            alg: f_alg,
+            #[cfg(feature = "dml-diagrams")]
+            shape: f_shape,
+            #[cfg(feature = "dml-diagrams")]
+            pres_of: f_pres_of,
+            #[cfg(feature = "dml-diagrams")]
+            constr_lst: f_constr_lst,
+            #[cfg(feature = "dml-diagrams")]
+            rule_lst: f_rule_lst,
+            #[cfg(feature = "dml-diagrams")]
+            for_each: f_for_each,
+            #[cfg(feature = "dml-diagrams")]
+            layout_node: f_layout_node,
+            #[cfg(feature = "dml-diagrams")]
+            choose: f_choose,
+            #[cfg(feature = "dml-diagrams")]
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for LayoutOtherwise {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_name = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_alg = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_shape = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_pres_of = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_constr_lst = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_rule_lst = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_for_each = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_layout_node = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_choose = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"name" => {
+                    f_name = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"alg" => {
+                                f_alg =
+                                    Some(Box::new(LayoutAlgorithm::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"shape" => {
+                                f_shape =
+                                    Some(Box::new(DiagramShape::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"presOf" => {
+                                f_pres_of =
+                                    Some(Box::new(PresentationOf::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"constrLst" => {
+                                f_constr_lst =
+                                    Some(Box::new(LayoutConstraints::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"ruleLst" => {
+                                f_rule_lst =
+                                    Some(Box::new(LayoutRules::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"forEach" => {
+                                f_for_each.push(LayoutForEach::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"layoutNode" => {
+                                f_layout_node.push(LayoutNode::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"choose" => {
+                                f_choose.push(LayoutChoose::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"alg" => {
+                                f_alg =
+                                    Some(Box::new(LayoutAlgorithm::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"shape" => {
+                                f_shape = Some(Box::new(DiagramShape::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"presOf" => {
+                                f_pres_of =
+                                    Some(Box::new(PresentationOf::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"constrLst" => {
+                                f_constr_lst =
+                                    Some(Box::new(LayoutConstraints::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"ruleLst" => {
+                                f_rule_lst =
+                                    Some(Box::new(LayoutRules::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"forEach" => {
+                                f_for_each.push(LayoutForEach::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"layoutNode" => {
+                                f_layout_node.push(LayoutNode::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"choose" => {
+                                f_choose.push(LayoutChoose::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            name: f_name,
+            #[cfg(feature = "dml-diagrams")]
+            alg: f_alg,
+            #[cfg(feature = "dml-diagrams")]
+            shape: f_shape,
+            #[cfg(feature = "dml-diagrams")]
+            pres_of: f_pres_of,
+            #[cfg(feature = "dml-diagrams")]
+            constr_lst: f_constr_lst,
+            #[cfg(feature = "dml-diagrams")]
+            rule_lst: f_rule_lst,
+            #[cfg(feature = "dml-diagrams")]
+            for_each: f_for_each,
+            #[cfg(feature = "dml-diagrams")]
+            layout_node: f_layout_node,
+            #[cfg(feature = "dml-diagrams")]
+            choose: f_choose,
+            #[cfg(feature = "dml-diagrams")]
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for LayoutChoose {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_name = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_if = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_else = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"name" => {
+                    f_name = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"if" => {
+                                f_if.push(LayoutWhen::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"else" => {
+                                f_else =
+                                    Some(Box::new(LayoutOtherwise::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"if" => {
+                                f_if.push(LayoutWhen::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"else" => {
+                                f_else =
+                                    Some(Box::new(LayoutOtherwise::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            name: f_name,
+            #[cfg(feature = "dml-diagrams")]
+            r#if: f_if,
+            #[cfg(feature = "dml-diagrams")]
+            r#else: f_else,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for DiagramSampleData {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_use_def = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_data_model = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"useDef" => {
+                    f_use_def = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"dataModel" => {
+                                f_data_model =
+                                    Some(Box::new(DataModel::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"dataModel" => {
+                                f_data_model =
+                                    Some(Box::new(DataModel::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            use_def: f_use_def,
+            #[cfg(feature = "dml-diagrams")]
+            data_model: f_data_model,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for DiagramCategory {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_type: Option<String> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_pri: Option<u32> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"type" => {
+                    f_type = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"pri" => {
+                    f_pri = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            r#type: f_type.ok_or_else(|| ParseError::MissingAttribute("type".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            pri: f_pri.ok_or_else(|| ParseError::MissingAttribute("pri".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for DiagramCategories {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cat = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"cat" => {
+                                f_cat.push(DiagramCategory::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"cat" => {
+                                f_cat.push(DiagramCategory::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            cat: f_cat,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for DiagramName {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_lang = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_value: Option<String> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"lang" => {
+                    f_lang = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"val" => {
+                    f_value = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            lang: f_lang,
+            #[cfg(feature = "dml-diagrams")]
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for DiagramDescription {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_lang = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_value: Option<String> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"lang" => {
+                    f_lang = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"val" => {
+                    f_value = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            lang: f_lang,
+            #[cfg(feature = "dml-diagrams")]
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for DiagramDefinition {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_unique_id = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_min_ver = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_def_style = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_title = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_desc = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cat_lst = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_samp_data = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_style_data = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_clr_data = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_layout_node: Option<Box<LayoutNode>> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"uniqueId" => {
+                    f_unique_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"minVer" => {
+                    f_min_ver = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"defStyle" => {
+                    f_def_style = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"title" => {
+                                f_title.push(DiagramName::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"desc" => {
+                                f_desc.push(DiagramDescription::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"catLst" => {
+                                f_cat_lst =
+                                    Some(Box::new(DiagramCategories::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"sampData" => {
+                                f_samp_data =
+                                    Some(Box::new(DiagramSampleData::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"styleData" => {
+                                f_style_data =
+                                    Some(Box::new(DiagramSampleData::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"clrData" => {
+                                f_clr_data =
+                                    Some(Box::new(DiagramSampleData::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"layoutNode" => {
+                                f_layout_node =
+                                    Some(Box::new(LayoutNode::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"title" => {
+                                f_title.push(DiagramName::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"desc" => {
+                                f_desc.push(DiagramDescription::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"catLst" => {
+                                f_cat_lst =
+                                    Some(Box::new(DiagramCategories::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"sampData" => {
+                                f_samp_data =
+                                    Some(Box::new(DiagramSampleData::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"styleData" => {
+                                f_style_data =
+                                    Some(Box::new(DiagramSampleData::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"clrData" => {
+                                f_clr_data =
+                                    Some(Box::new(DiagramSampleData::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"layoutNode" => {
+                                f_layout_node =
+                                    Some(Box::new(LayoutNode::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            unique_id: f_unique_id,
+            #[cfg(feature = "dml-diagrams")]
+            min_ver: f_min_ver,
+            #[cfg(feature = "dml-diagrams")]
+            def_style: f_def_style,
+            #[cfg(feature = "dml-diagrams")]
+            title: f_title,
+            #[cfg(feature = "dml-diagrams")]
+            desc: f_desc,
+            #[cfg(feature = "dml-diagrams")]
+            cat_lst: f_cat_lst,
+            #[cfg(feature = "dml-diagrams")]
+            samp_data: f_samp_data,
+            #[cfg(feature = "dml-diagrams")]
+            style_data: f_style_data,
+            #[cfg(feature = "dml-diagrams")]
+            clr_data: f_clr_data,
+            #[cfg(feature = "dml-diagrams")]
+            layout_node: f_layout_node
+                .ok_or_else(|| ParseError::MissingAttribute("layoutNode".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for DiagramDefinitionHeader {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_unique_id: Option<String> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_min_ver = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_def_style = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_res_id = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_title = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_desc = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cat_lst = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"uniqueId" => {
+                    f_unique_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"minVer" => {
+                    f_min_ver = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"defStyle" => {
+                    f_def_style = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"resId" => {
+                    f_res_id = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"title" => {
+                                f_title.push(DiagramName::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"desc" => {
+                                f_desc.push(DiagramDescription::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"catLst" => {
+                                f_cat_lst =
+                                    Some(Box::new(DiagramCategories::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"title" => {
+                                f_title.push(DiagramName::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"desc" => {
+                                f_desc.push(DiagramDescription::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"catLst" => {
+                                f_cat_lst =
+                                    Some(Box::new(DiagramCategories::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            unique_id: f_unique_id
+                .ok_or_else(|| ParseError::MissingAttribute("uniqueId".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            min_ver: f_min_ver,
+            #[cfg(feature = "dml-diagrams")]
+            def_style: f_def_style,
+            #[cfg(feature = "dml-diagrams")]
+            res_id: f_res_id,
+            #[cfg(feature = "dml-diagrams")]
+            title: f_title,
+            #[cfg(feature = "dml-diagrams")]
+            desc: f_desc,
+            #[cfg(feature = "dml-diagrams")]
+            cat_lst: f_cat_lst,
+            #[cfg(feature = "dml-diagrams")]
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for DiagramDefinitionHeaderList {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_layout_def_hdr = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"layoutDefHdr" => {
+                                f_layout_def_hdr
+                                    .push(DiagramDefinitionHeader::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"layoutDefHdr" => {
+                                f_layout_def_hdr
+                                    .push(DiagramDefinitionHeader::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            layout_def_hdr: f_layout_def_hdr,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for DiagramRelationshipIds {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_dm: Option<STRelationshipId> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_lo: Option<STRelationshipId> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_qs: Option<STRelationshipId> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cs: Option<STRelationshipId> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"dm" => {
+                    f_dm = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"lo" => {
+                    f_lo = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"qs" => {
+                    f_qs = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"cs" => {
+                    f_cs = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            dm: f_dm.ok_or_else(|| ParseError::MissingAttribute("dm".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            lo: f_lo.ok_or_else(|| ParseError::MissingAttribute("lo".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            qs: f_qs.ok_or_else(|| ParseError::MissingAttribute("qs".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            cs: f_cs.ok_or_else(|| ParseError::MissingAttribute("cs".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for DiagramElementProperties {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_pres_assoc_i_d = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_pres_name = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_pres_style_lbl = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_pres_style_idx = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_pres_style_cnt = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_lo_type_id = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_lo_cat_id = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_qs_type_id = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_qs_cat_id = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cs_type_id = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cs_cat_id = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_coherent3_d_off = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_phldr_t = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_phldr = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cust_ang = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cust_flip_vert = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cust_flip_hor = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cust_sz_x = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cust_sz_y = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cust_scale_x = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cust_scale_y = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cust_t = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cust_lin_fact_x = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cust_lin_fact_y = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cust_lin_fact_neighbor_x = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cust_lin_fact_neighbor_y = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cust_rad_scale_rad = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cust_rad_scale_inc = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_pres_layout_vars = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_style = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"presAssocID" => {
+                    f_pres_assoc_i_d = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"presName" => {
+                    f_pres_name = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"presStyleLbl" => {
+                    f_pres_style_lbl = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"presStyleIdx" => {
+                    f_pres_style_idx = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"presStyleCnt" => {
+                    f_pres_style_cnt = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"loTypeId" => {
+                    f_lo_type_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"loCatId" => {
+                    f_lo_cat_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"qsTypeId" => {
+                    f_qs_type_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"qsCatId" => {
+                    f_qs_cat_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"csTypeId" => {
+                    f_cs_type_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"csCatId" => {
+                    f_cs_cat_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"coherent3DOff" => {
+                    f_coherent3_d_off = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"phldrT" => {
+                    f_phldr_t = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"phldr" => {
+                    f_phldr = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"custAng" => {
+                    f_cust_ang = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"custFlipVert" => {
+                    f_cust_flip_vert = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"custFlipHor" => {
+                    f_cust_flip_hor = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"custSzX" => {
+                    f_cust_sz_x = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"custSzY" => {
+                    f_cust_sz_y = val.parse().ok();
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"custScaleX" => {
+                    f_cust_scale_x = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"custScaleY" => {
+                    f_cust_scale_y = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"custT" => {
+                    f_cust_t = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"custLinFactX" => {
+                    f_cust_lin_fact_x = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"custLinFactY" => {
+                    f_cust_lin_fact_y = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"custLinFactNeighborX" => {
+                    f_cust_lin_fact_neighbor_x = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"custLinFactNeighborY" => {
+                    f_cust_lin_fact_neighbor_y = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"custRadScaleRad" => {
+                    f_cust_rad_scale_rad = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"custRadScaleInc" => {
+                    f_cust_rad_scale_inc = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"presLayoutVars" => {
+                                f_pres_layout_vars = Some(Box::new(
+                                    LayoutVariableProperties::from_xml(reader, &e, false)?,
+                                ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"style" => {
+                                f_style = Some(Box::new(ShapeStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"presLayoutVars" => {
+                                f_pres_layout_vars = Some(Box::new(
+                                    LayoutVariableProperties::from_xml(reader, &e, true)?,
+                                ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"style" => {
+                                f_style = Some(Box::new(ShapeStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            pres_assoc_i_d: f_pres_assoc_i_d,
+            #[cfg(feature = "dml-diagrams")]
+            pres_name: f_pres_name,
+            #[cfg(feature = "dml-diagrams")]
+            pres_style_lbl: f_pres_style_lbl,
+            #[cfg(feature = "dml-diagrams")]
+            pres_style_idx: f_pres_style_idx,
+            #[cfg(feature = "dml-diagrams")]
+            pres_style_cnt: f_pres_style_cnt,
+            #[cfg(feature = "dml-diagrams")]
+            lo_type_id: f_lo_type_id,
+            #[cfg(feature = "dml-diagrams")]
+            lo_cat_id: f_lo_cat_id,
+            #[cfg(feature = "dml-diagrams")]
+            qs_type_id: f_qs_type_id,
+            #[cfg(feature = "dml-diagrams")]
+            qs_cat_id: f_qs_cat_id,
+            #[cfg(feature = "dml-diagrams")]
+            cs_type_id: f_cs_type_id,
+            #[cfg(feature = "dml-diagrams")]
+            cs_cat_id: f_cs_cat_id,
+            #[cfg(feature = "dml-diagrams")]
+            coherent3_d_off: f_coherent3_d_off,
+            #[cfg(feature = "dml-diagrams")]
+            phldr_t: f_phldr_t,
+            #[cfg(feature = "dml-diagrams")]
+            phldr: f_phldr,
+            #[cfg(feature = "dml-diagrams")]
+            cust_ang: f_cust_ang,
+            #[cfg(feature = "dml-diagrams")]
+            cust_flip_vert: f_cust_flip_vert,
+            #[cfg(feature = "dml-diagrams")]
+            cust_flip_hor: f_cust_flip_hor,
+            #[cfg(feature = "dml-diagrams")]
+            cust_sz_x: f_cust_sz_x,
+            #[cfg(feature = "dml-diagrams")]
+            cust_sz_y: f_cust_sz_y,
+            #[cfg(feature = "dml-diagrams")]
+            cust_scale_x: f_cust_scale_x,
+            #[cfg(feature = "dml-diagrams")]
+            cust_scale_y: f_cust_scale_y,
+            #[cfg(feature = "dml-diagrams")]
+            cust_t: f_cust_t,
+            #[cfg(feature = "dml-diagrams")]
+            cust_lin_fact_x: f_cust_lin_fact_x,
+            #[cfg(feature = "dml-diagrams")]
+            cust_lin_fact_y: f_cust_lin_fact_y,
+            #[cfg(feature = "dml-diagrams")]
+            cust_lin_fact_neighbor_x: f_cust_lin_fact_neighbor_x,
+            #[cfg(feature = "dml-diagrams")]
+            cust_lin_fact_neighbor_y: f_cust_lin_fact_neighbor_y,
+            #[cfg(feature = "dml-diagrams")]
+            cust_rad_scale_rad: f_cust_rad_scale_rad,
+            #[cfg(feature = "dml-diagrams")]
+            cust_rad_scale_inc: f_cust_rad_scale_inc,
+            #[cfg(feature = "dml-diagrams")]
+            pres_layout_vars: f_pres_layout_vars,
+            #[cfg(feature = "dml-diagrams")]
+            style: f_style,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for OrgChartProperties {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_value = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"val" => {
+                    f_value = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            value: f_value,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for ChildMaximum {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_value = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"val" => {
+                    f_value = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            value: f_value,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for ChildPreference {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_value = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"val" => {
+                    f_value = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            value: f_value,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for BulletEnabled {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_value = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"val" => {
+                    f_value = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            value: f_value,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for LayoutDirection {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_value = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"val" => {
+                    f_value = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            value: f_value,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for HierarchyBranchStyle {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_value = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"val" => {
+                    f_value = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            value: f_value,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for AnimateOneByOne {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_value = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"val" => {
+                    f_value = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            value: f_value,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for AnimateLevel {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_value = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"val" => {
+                    f_value = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            value: f_value,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for ResizeHandles {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_value = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"val" => {
+                    f_value = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            value: f_value,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for LayoutVariableProperties {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_org_chart = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ch_max = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ch_pref = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_bullet_enabled = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_dir = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_hier_branch = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_anim_one = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_anim_lvl = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_resize_handles = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"orgChart" => {
+                                f_org_chart = Some(Box::new(OrgChartProperties::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"chMax" => {
+                                f_ch_max =
+                                    Some(Box::new(ChildMaximum::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"chPref" => {
+                                f_ch_pref =
+                                    Some(Box::new(ChildPreference::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"bulletEnabled" => {
+                                f_bullet_enabled =
+                                    Some(Box::new(BulletEnabled::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"dir" => {
+                                f_dir =
+                                    Some(Box::new(LayoutDirection::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"hierBranch" => {
+                                f_hier_branch = Some(Box::new(HierarchyBranchStyle::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"animOne" => {
+                                f_anim_one =
+                                    Some(Box::new(AnimateOneByOne::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"animLvl" => {
+                                f_anim_lvl =
+                                    Some(Box::new(AnimateLevel::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"resizeHandles" => {
+                                f_resize_handles =
+                                    Some(Box::new(ResizeHandles::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"orgChart" => {
+                                f_org_chart =
+                                    Some(Box::new(OrgChartProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"chMax" => {
+                                f_ch_max =
+                                    Some(Box::new(ChildMaximum::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"chPref" => {
+                                f_ch_pref =
+                                    Some(Box::new(ChildPreference::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"bulletEnabled" => {
+                                f_bullet_enabled =
+                                    Some(Box::new(BulletEnabled::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"dir" => {
+                                f_dir =
+                                    Some(Box::new(LayoutDirection::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"hierBranch" => {
+                                f_hier_branch = Some(Box::new(HierarchyBranchStyle::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"animOne" => {
+                                f_anim_one =
+                                    Some(Box::new(AnimateOneByOne::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"animLvl" => {
+                                f_anim_lvl =
+                                    Some(Box::new(AnimateLevel::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"resizeHandles" => {
+                                f_resize_handles =
+                                    Some(Box::new(ResizeHandles::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            org_chart: f_org_chart,
+            #[cfg(feature = "dml-diagrams")]
+            ch_max: f_ch_max,
+            #[cfg(feature = "dml-diagrams")]
+            ch_pref: f_ch_pref,
+            #[cfg(feature = "dml-diagrams")]
+            bullet_enabled: f_bullet_enabled,
+            #[cfg(feature = "dml-diagrams")]
+            dir: f_dir,
+            #[cfg(feature = "dml-diagrams")]
+            hier_branch: f_hier_branch,
+            #[cfg(feature = "dml-diagrams")]
+            anim_one: f_anim_one,
+            #[cfg(feature = "dml-diagrams")]
+            anim_lvl: f_anim_lvl,
+            #[cfg(feature = "dml-diagrams")]
+            resize_handles: f_resize_handles,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for StyleDefinitionName {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_lang = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_value: Option<String> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"lang" => {
+                    f_lang = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"val" => {
+                    f_value = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            lang: f_lang,
+            #[cfg(feature = "dml-diagrams")]
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for StyleDefinitionDescription {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_lang = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_value: Option<String> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"lang" => {
+                    f_lang = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"val" => {
+                    f_value = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            lang: f_lang,
+            #[cfg(feature = "dml-diagrams")]
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for DiagramStyleCategory {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_type: Option<String> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_pri: Option<u32> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"type" => {
+                    f_type = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"pri" => {
+                    f_pri = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            r#type: f_type.ok_or_else(|| ParseError::MissingAttribute("type".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            pri: f_pri.ok_or_else(|| ParseError::MissingAttribute("pri".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for DiagramStyleCategories {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cat = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"cat" => {
+                                f_cat.push(DiagramStyleCategory::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"cat" => {
+                                f_cat.push(DiagramStyleCategory::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            cat: f_cat,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for DiagramTextProperties {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_text3_d = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"sp3d" | b"flatTx" => {
+                                f_text3_d = Some(Box::new(EGText3D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"sp3d" | b"flatTx" => {
+                                f_text3_d = Some(Box::new(EGText3D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            text3_d: f_text3_d,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for DiagramStyleLabel {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_name: Option<String> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_scene3d = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_sp3d = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_tx_pr = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_style = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"name" => {
+                    f_name = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"scene3d" => {
+                                f_scene3d = Some(Box::new(CTScene3D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"sp3d" => {
+                                f_sp3d = Some(Box::new(CTShape3D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"txPr" => {
+                                f_tx_pr = Some(Box::new(DiagramTextProperties::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"style" => {
+                                f_style = Some(Box::new(ShapeStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"scene3d" => {
+                                f_scene3d = Some(Box::new(CTScene3D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"sp3d" => {
+                                f_sp3d = Some(Box::new(CTShape3D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"txPr" => {
+                                f_tx_pr = Some(Box::new(DiagramTextProperties::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"style" => {
+                                f_style = Some(Box::new(ShapeStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            scene3d: f_scene3d,
+            #[cfg(feature = "dml-diagrams")]
+            sp3d: f_sp3d,
+            #[cfg(feature = "dml-diagrams")]
+            tx_pr: f_tx_pr,
+            #[cfg(feature = "dml-diagrams")]
+            style: f_style,
+            #[cfg(feature = "dml-diagrams")]
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for DiagramStyleDefinition {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_unique_id = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_min_ver = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_title = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_desc = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cat_lst = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_scene3d = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_style_lbl = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"uniqueId" => {
+                    f_unique_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"minVer" => {
+                    f_min_ver = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"title" => {
+                                f_title.push(StyleDefinitionName::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"desc" => {
+                                f_desc
+                                    .push(StyleDefinitionDescription::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"catLst" => {
+                                f_cat_lst = Some(Box::new(DiagramStyleCategories::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"scene3d" => {
+                                f_scene3d = Some(Box::new(CTScene3D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"styleLbl" => {
+                                f_style_lbl.push(DiagramStyleLabel::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"title" => {
+                                f_title.push(StyleDefinitionName::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"desc" => {
+                                f_desc
+                                    .push(StyleDefinitionDescription::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"catLst" => {
+                                f_cat_lst = Some(Box::new(DiagramStyleCategories::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"scene3d" => {
+                                f_scene3d = Some(Box::new(CTScene3D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"styleLbl" => {
+                                f_style_lbl.push(DiagramStyleLabel::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            unique_id: f_unique_id,
+            #[cfg(feature = "dml-diagrams")]
+            min_ver: f_min_ver,
+            #[cfg(feature = "dml-diagrams")]
+            title: f_title,
+            #[cfg(feature = "dml-diagrams")]
+            desc: f_desc,
+            #[cfg(feature = "dml-diagrams")]
+            cat_lst: f_cat_lst,
+            #[cfg(feature = "dml-diagrams")]
+            scene3d: f_scene3d,
+            #[cfg(feature = "dml-diagrams")]
+            style_lbl: f_style_lbl,
+            #[cfg(feature = "dml-diagrams")]
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for DiagramStyleDefinitionHeader {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_unique_id: Option<String> = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_min_ver = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_res_id = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_title = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_desc = Vec::new();
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_cat_lst = None;
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-diagrams")]
+                b"uniqueId" => {
+                    f_unique_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"minVer" => {
+                    f_min_ver = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-diagrams")]
+                b"resId" => {
+                    f_res_id = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"title" => {
+                                f_title.push(StyleDefinitionName::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"desc" => {
+                                f_desc
+                                    .push(StyleDefinitionDescription::from_xml(reader, &e, false)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"catLst" => {
+                                f_cat_lst = Some(Box::new(DiagramStyleCategories::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, false,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"title" => {
+                                f_title.push(StyleDefinitionName::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"desc" => {
+                                f_desc
+                                    .push(StyleDefinitionDescription::from_xml(reader, &e, true)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"catLst" => {
+                                f_cat_lst = Some(Box::new(DiagramStyleCategories::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "dml-diagrams")]
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
+                                    reader, &e, true,
+                                )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            unique_id: f_unique_id
+                .ok_or_else(|| ParseError::MissingAttribute("uniqueId".to_string()))?,
+            #[cfg(feature = "dml-diagrams")]
+            min_ver: f_min_ver,
+            #[cfg(feature = "dml-diagrams")]
+            res_id: f_res_id,
+            #[cfg(feature = "dml-diagrams")]
+            title: f_title,
+            #[cfg(feature = "dml-diagrams")]
+            desc: f_desc,
+            #[cfg(feature = "dml-diagrams")]
+            cat_lst: f_cat_lst,
+            #[cfg(feature = "dml-diagrams")]
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for DiagramStyleDefinitionHeaderList {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        start_tag: &BytesStart,
+        is_empty: bool,
+    ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-diagrams")]
+        let mut f_style_def_hdr = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"styleDefHdr" => {
+                                f_style_def_hdr.push(DiagramStyleDefinitionHeader::from_xml(
+                                    reader, &e, false,
+                                )?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-diagrams")]
+                            b"styleDefHdr" => {
+                                f_style_def_hdr.push(DiagramStyleDefinitionHeader::from_xml(
+                                    reader, &e, true,
+                                )?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            #[cfg(feature = "dml-diagrams")]
+            style_def_hdr: f_style_def_hdr,
             #[cfg(feature = "extra-children")]
             extra_children,
         })

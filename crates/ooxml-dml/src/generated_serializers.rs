@@ -23844,11 +23844,11 @@ impl ToXml for BarDirection {
     }
 }
 
-impl ToXml for BarShape {
+impl ToXml for DiagramShape {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
         let mut start = start;
-        #[cfg(feature = "dml-charts")]
+        #[cfg(feature = "dml-diagrams")]
         if let Some(ref val) = self.value {
             {
                 let s = val.to_string();
@@ -31683,6 +31683,4850 @@ impl ToXml for ChartSpace {
         }
         #[cfg(feature = "dml-charts")]
         if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for ColorTransformName {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.lang {
+            start.push_attribute(("lang", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.value;
+            start.push_attribute(("val", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for ColorTransformDescription {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.lang {
+            start.push_attribute(("lang", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.value;
+            start.push_attribute(("val", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for DiagramColorCategory {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.r#type;
+            start.push_attribute(("type", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.pri;
+            {
+                let s = val.to_string();
+                start.push_attribute(("pri", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for DiagramColorCategories {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.cat {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:cat", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if !self.cat.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DiagramColors {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.meth {
+            {
+                let s = val.to_string();
+                start.push_attribute(("meth", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.hue_dir {
+            {
+                let s = val.to_string();
+                start.push_attribute(("hueDir", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.color_choice {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if !self.color_choice.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DiagramColorStyleLabel {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.name;
+            start.push_attribute(("name", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.fill_clr_lst {
+            val.write_element("a:fillClrLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.lin_clr_lst {
+            val.write_element("a:linClrLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.effect_clr_lst {
+            val.write_element("a:effectClrLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.tx_lin_clr_lst {
+            val.write_element("a:txLinClrLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.tx_fill_clr_lst {
+            val.write_element("a:txFillClrLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.tx_effect_clr_lst {
+            val.write_element("a:txEffectClrLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if self.fill_clr_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.lin_clr_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.effect_clr_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.tx_lin_clr_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.tx_fill_clr_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.tx_effect_clr_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DiagramColorTransform {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.unique_id {
+            start.push_attribute(("uniqueId", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.min_ver {
+            start.push_attribute(("minVer", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.title {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:title", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.desc {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:desc", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cat_lst {
+            val.write_element("a:catLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.style_lbl {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:styleLbl", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if !self.title.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if !self.desc.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.cat_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if !self.style_lbl.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DiagramColorTransformHeader {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.unique_id;
+            start.push_attribute(("uniqueId", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.min_ver {
+            start.push_attribute(("minVer", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.res_id {
+            {
+                let s = val.to_string();
+                start.push_attribute(("resId", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.title {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:title", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.desc {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:desc", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cat_lst {
+            val.write_element("a:catLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if !self.title.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if !self.desc.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.cat_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DiagramColorTransformHeaderList {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.colors_def_hdr {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:colorsDefHdr", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if !self.colors_def_hdr.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DiagramPoint {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.model_id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("modelId", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.r#type {
+            {
+                let s = val.to_string();
+                start.push_attribute(("type", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cxn_id {
+            {
+                let s = val.to_string();
+                start.push_attribute(("cxnId", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.pr_set {
+            val.write_element("a:prSet", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.sp_pr {
+            val.write_element("a:spPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.t {
+            val.write_element("a:t", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if self.pr_set.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.sp_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.t.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DiagramPointList {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.pt {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:pt", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if !self.pt.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DiagramConnection {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.model_id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("modelId", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.r#type {
+            {
+                let s = val.to_string();
+                start.push_attribute(("type", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.src_id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("srcId", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.dest_id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("destId", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.src_ord;
+            {
+                let s = val.to_string();
+                start.push_attribute(("srcOrd", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.dest_ord;
+            {
+                let s = val.to_string();
+                start.push_attribute(("destOrd", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.par_trans_id {
+            {
+                let s = val.to_string();
+                start.push_attribute(("parTransId", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.sib_trans_id {
+            {
+                let s = val.to_string();
+                start.push_attribute(("sibTransId", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.pres_id {
+            start.push_attribute(("presId", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DiagramConnectionList {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.cxn {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:cxn", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if !self.cxn.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DataModel {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.pt_lst;
+            val.write_element("a:ptLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cxn_lst {
+            val.write_element("a:cxnLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.bg {
+            val.write_element("a:bg", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.whole {
+            val.write_element("a:whole", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        return false;
+        #[cfg(feature = "dml-diagrams")]
+        if self.cxn_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.bg.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.whole.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DdgrmAGIteratorAttributes {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        if let Some(ref val) = self.axis {
+            start.push_attribute(("axis", val.as_str()));
+        }
+        if let Some(ref val) = self.pt_type {
+            start.push_attribute(("ptType", val.as_str()));
+        }
+        if let Some(ref val) = self.hide_last_trans {
+            start.push_attribute(("hideLastTrans", val.as_str()));
+        }
+        if let Some(ref val) = self.st {
+            start.push_attribute(("st", val.as_str()));
+        }
+        if let Some(ref val) = self.cnt {
+            start.push_attribute(("cnt", val.as_str()));
+        }
+        if let Some(ref val) = self.step {
+            start.push_attribute(("step", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for DdgrmAGConstraintAttributes {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        {
+            let val = &self.r#type;
+            {
+                let s = val.to_string();
+                start.push_attribute(("type", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.r#for {
+            {
+                let s = val.to_string();
+                start.push_attribute(("for", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.for_name {
+            start.push_attribute(("forName", val.as_str()));
+        }
+        if let Some(ref val) = self.pt_type {
+            {
+                let s = val.to_string();
+                start.push_attribute(("ptType", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for DdgrmAGConstraintRefAttributes {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        if let Some(ref val) = self.ref_type {
+            {
+                let s = val.to_string();
+                start.push_attribute(("refType", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.ref_for {
+            {
+                let s = val.to_string();
+                start.push_attribute(("refFor", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.ref_for_name {
+            start.push_attribute(("refForName", val.as_str()));
+        }
+        if let Some(ref val) = self.ref_pt_type {
+            {
+                let s = val.to_string();
+                start.push_attribute(("refPtType", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for LayoutConstraint {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.r#type;
+            {
+                let s = val.to_string();
+                start.push_attribute(("type", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.r#for {
+            {
+                let s = val.to_string();
+                start.push_attribute(("for", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.for_name {
+            start.push_attribute(("forName", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.pt_type {
+            {
+                let s = val.to_string();
+                start.push_attribute(("ptType", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ref_type {
+            {
+                let s = val.to_string();
+                start.push_attribute(("refType", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ref_for {
+            {
+                let s = val.to_string();
+                start.push_attribute(("refFor", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ref_for_name {
+            start.push_attribute(("refForName", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ref_pt_type {
+            {
+                let s = val.to_string();
+                start.push_attribute(("refPtType", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.op {
+            {
+                let s = val.to_string();
+                start.push_attribute(("op", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.fact {
+            {
+                let s = val.to_string();
+                start.push_attribute(("fact", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for LayoutConstraints {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.constr {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:constr", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if !self.constr.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for NumericRule {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.r#type;
+            {
+                let s = val.to_string();
+                start.push_attribute(("type", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.r#for {
+            {
+                let s = val.to_string();
+                start.push_attribute(("for", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.for_name {
+            start.push_attribute(("forName", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.pt_type {
+            {
+                let s = val.to_string();
+                start.push_attribute(("ptType", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.fact {
+            {
+                let s = val.to_string();
+                start.push_attribute(("fact", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.max {
+            {
+                let s = val.to_string();
+                start.push_attribute(("max", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for LayoutRules {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.rule {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:rule", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if !self.rule.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for PresentationOf {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.axis {
+            start.push_attribute(("axis", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.pt_type {
+            start.push_attribute(("ptType", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.hide_last_trans {
+            start.push_attribute(("hideLastTrans", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.st {
+            start.push_attribute(("st", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cnt {
+            start.push_attribute(("cnt", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.step {
+            start.push_attribute(("step", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for LayoutAdjustment {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.idx;
+            {
+                let s = val.to_string();
+                start.push_attribute(("idx", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.value;
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for LayoutAdjustmentList {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.adj {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:adj", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if !self.adj.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for AlgorithmParameter {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.r#type;
+            {
+                let s = val.to_string();
+                start.push_attribute(("type", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.value;
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for LayoutAlgorithm {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.r#type;
+            {
+                let s = val.to_string();
+                start.push_attribute(("type", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.rev {
+            {
+                let s = val.to_string();
+                start.push_attribute(("rev", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.param {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:param", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if !self.param.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for LayoutNode {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.name {
+            start.push_attribute(("name", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.style_lbl {
+            start.push_attribute(("styleLbl", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ch_order {
+            {
+                let s = val.to_string();
+                start.push_attribute(("chOrder", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.move_with {
+            start.push_attribute(("moveWith", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.alg {
+            val.write_element("a:alg", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.shape {
+            val.write_element("a:shape", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.pres_of {
+            val.write_element("a:presOf", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.constr_lst {
+            val.write_element("a:constrLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.rule_lst {
+            val.write_element("a:ruleLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.var_lst {
+            val.write_element("a:varLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.for_each {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:forEach", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.layout_node {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:layoutNode", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.choose {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:choose", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if self.alg.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.shape.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.pres_of.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.constr_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.rule_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.var_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if !self.for_each.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if !self.layout_node.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if !self.choose.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for LayoutForEach {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.name {
+            start.push_attribute(("name", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.r#ref {
+            start.push_attribute(("ref", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.axis {
+            start.push_attribute(("axis", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.pt_type {
+            start.push_attribute(("ptType", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.hide_last_trans {
+            start.push_attribute(("hideLastTrans", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.st {
+            start.push_attribute(("st", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cnt {
+            start.push_attribute(("cnt", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.step {
+            start.push_attribute(("step", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.alg {
+            val.write_element("a:alg", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.shape {
+            val.write_element("a:shape", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.pres_of {
+            val.write_element("a:presOf", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.constr_lst {
+            val.write_element("a:constrLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.rule_lst {
+            val.write_element("a:ruleLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.for_each {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:forEach", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.layout_node {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:layoutNode", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.choose {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:choose", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if self.alg.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.shape.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.pres_of.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.constr_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.rule_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if !self.for_each.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if !self.layout_node.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if !self.choose.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for LayoutWhen {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.name {
+            start.push_attribute(("name", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.axis {
+            start.push_attribute(("axis", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.pt_type {
+            start.push_attribute(("ptType", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.hide_last_trans {
+            start.push_attribute(("hideLastTrans", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.st {
+            start.push_attribute(("st", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cnt {
+            start.push_attribute(("cnt", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.step {
+            start.push_attribute(("step", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.func;
+            {
+                let s = val.to_string();
+                start.push_attribute(("func", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.arg {
+            {
+                let s = val.to_string();
+                start.push_attribute(("arg", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.op;
+            {
+                let s = val.to_string();
+                start.push_attribute(("op", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.value;
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.alg {
+            val.write_element("a:alg", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.shape {
+            val.write_element("a:shape", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.pres_of {
+            val.write_element("a:presOf", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.constr_lst {
+            val.write_element("a:constrLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.rule_lst {
+            val.write_element("a:ruleLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.for_each {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:forEach", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.layout_node {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:layoutNode", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.choose {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:choose", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if self.alg.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.shape.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.pres_of.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.constr_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.rule_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if !self.for_each.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if !self.layout_node.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if !self.choose.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for LayoutOtherwise {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.name {
+            start.push_attribute(("name", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.alg {
+            val.write_element("a:alg", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.shape {
+            val.write_element("a:shape", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.pres_of {
+            val.write_element("a:presOf", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.constr_lst {
+            val.write_element("a:constrLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.rule_lst {
+            val.write_element("a:ruleLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.for_each {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:forEach", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.layout_node {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:layoutNode", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.choose {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:choose", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if self.alg.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.shape.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.pres_of.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.constr_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.rule_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if !self.for_each.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if !self.layout_node.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if !self.choose.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for LayoutChoose {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.name {
+            start.push_attribute(("name", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.r#if {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:if", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.r#else {
+            val.write_element("a:else", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if !self.r#if.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.r#else.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DiagramSampleData {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.use_def {
+            start.push_attribute(("useDef", if *val { "1" } else { "0" }));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.data_model {
+            val.write_element("a:dataModel", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if self.data_model.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DiagramCategory {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.r#type;
+            start.push_attribute(("type", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.pri;
+            {
+                let s = val.to_string();
+                start.push_attribute(("pri", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for DiagramCategories {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.cat {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:cat", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if !self.cat.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DiagramName {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.lang {
+            start.push_attribute(("lang", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.value;
+            start.push_attribute(("val", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for DiagramDescription {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.lang {
+            start.push_attribute(("lang", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.value;
+            start.push_attribute(("val", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for DiagramDefinition {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.unique_id {
+            start.push_attribute(("uniqueId", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.min_ver {
+            start.push_attribute(("minVer", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.def_style {
+            start.push_attribute(("defStyle", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.title {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:title", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.desc {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:desc", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cat_lst {
+            val.write_element("a:catLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.samp_data {
+            val.write_element("a:sampData", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.style_data {
+            val.write_element("a:styleData", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.clr_data {
+            val.write_element("a:clrData", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.layout_node;
+            val.write_element("a:layoutNode", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if !self.title.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if !self.desc.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.cat_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.samp_data.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.style_data.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.clr_data.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        return false;
+        #[cfg(feature = "dml-diagrams")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DiagramDefinitionHeader {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.unique_id;
+            start.push_attribute(("uniqueId", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.min_ver {
+            start.push_attribute(("minVer", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.def_style {
+            start.push_attribute(("defStyle", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.res_id {
+            {
+                let s = val.to_string();
+                start.push_attribute(("resId", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.title {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:title", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.desc {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:desc", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cat_lst {
+            val.write_element("a:catLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if !self.title.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if !self.desc.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.cat_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DiagramDefinitionHeaderList {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.layout_def_hdr {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:layoutDefHdr", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if !self.layout_def_hdr.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DiagramRelationshipIds {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.dm;
+            start.push_attribute(("r:dm", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.lo;
+            start.push_attribute(("r:lo", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.qs;
+            start.push_attribute(("r:qs", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.cs;
+            start.push_attribute(("r:cs", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for DiagramElementProperties {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.pres_assoc_i_d {
+            {
+                let s = val.to_string();
+                start.push_attribute(("presAssocID", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.pres_name {
+            start.push_attribute(("presName", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.pres_style_lbl {
+            start.push_attribute(("presStyleLbl", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.pres_style_idx {
+            {
+                let s = val.to_string();
+                start.push_attribute(("presStyleIdx", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.pres_style_cnt {
+            {
+                let s = val.to_string();
+                start.push_attribute(("presStyleCnt", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.lo_type_id {
+            start.push_attribute(("loTypeId", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.lo_cat_id {
+            start.push_attribute(("loCatId", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.qs_type_id {
+            start.push_attribute(("qsTypeId", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.qs_cat_id {
+            start.push_attribute(("qsCatId", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cs_type_id {
+            start.push_attribute(("csTypeId", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cs_cat_id {
+            start.push_attribute(("csCatId", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.coherent3_d_off {
+            start.push_attribute(("coherent3DOff", if *val { "1" } else { "0" }));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.phldr_t {
+            start.push_attribute(("phldrT", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.phldr {
+            start.push_attribute(("phldr", if *val { "1" } else { "0" }));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cust_ang {
+            {
+                let s = val.to_string();
+                start.push_attribute(("custAng", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cust_flip_vert {
+            start.push_attribute(("custFlipVert", if *val { "1" } else { "0" }));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cust_flip_hor {
+            start.push_attribute(("custFlipHor", if *val { "1" } else { "0" }));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cust_sz_x {
+            {
+                let s = val.to_string();
+                start.push_attribute(("custSzX", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cust_sz_y {
+            {
+                let s = val.to_string();
+                start.push_attribute(("custSzY", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cust_scale_x {
+            {
+                let s = val.to_string();
+                start.push_attribute(("custScaleX", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cust_scale_y {
+            {
+                let s = val.to_string();
+                start.push_attribute(("custScaleY", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cust_t {
+            start.push_attribute(("custT", if *val { "1" } else { "0" }));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cust_lin_fact_x {
+            {
+                let s = val.to_string();
+                start.push_attribute(("custLinFactX", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cust_lin_fact_y {
+            {
+                let s = val.to_string();
+                start.push_attribute(("custLinFactY", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cust_lin_fact_neighbor_x {
+            {
+                let s = val.to_string();
+                start.push_attribute(("custLinFactNeighborX", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cust_lin_fact_neighbor_y {
+            {
+                let s = val.to_string();
+                start.push_attribute(("custLinFactNeighborY", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cust_rad_scale_rad {
+            {
+                let s = val.to_string();
+                start.push_attribute(("custRadScaleRad", s.as_str()));
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cust_rad_scale_inc {
+            {
+                let s = val.to_string();
+                start.push_attribute(("custRadScaleInc", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.pres_layout_vars {
+            val.write_element("a:presLayoutVars", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.style {
+            val.write_element("a:style", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if self.pres_layout_vars.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.style.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for OrgChartProperties {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.value {
+            start.push_attribute(("val", if *val { "1" } else { "0" }));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for ChildMaximum {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for ChildPreference {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for BulletEnabled {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.value {
+            start.push_attribute(("val", if *val { "1" } else { "0" }));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for LayoutDirection {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for HierarchyBranchStyle {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for AnimateOneByOne {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for AnimateLevel {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for ResizeHandles {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("val", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for LayoutVariableProperties {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.org_chart {
+            val.write_element("a:orgChart", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ch_max {
+            val.write_element("a:chMax", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ch_pref {
+            val.write_element("a:chPref", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.bullet_enabled {
+            val.write_element("a:bulletEnabled", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.dir {
+            val.write_element("a:dir", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.hier_branch {
+            val.write_element("a:hierBranch", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.anim_one {
+            val.write_element("a:animOne", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.anim_lvl {
+            val.write_element("a:animLvl", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.resize_handles {
+            val.write_element("a:resizeHandles", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if self.org_chart.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.ch_max.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.ch_pref.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.bullet_enabled.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.dir.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.hier_branch.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.anim_one.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.anim_lvl.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.resize_handles.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for StyleDefinitionName {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.lang {
+            start.push_attribute(("lang", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.value;
+            start.push_attribute(("val", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for StyleDefinitionDescription {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.lang {
+            start.push_attribute(("lang", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.value;
+            start.push_attribute(("val", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for DiagramStyleCategory {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.r#type;
+            start.push_attribute(("type", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.pri;
+            {
+                let s = val.to_string();
+                start.push_attribute(("pri", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn is_empty_element(&self) -> bool {
+        true
+    }
+}
+
+impl ToXml for DiagramStyleCategories {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.cat {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:cat", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if !self.cat.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DiagramTextProperties {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.text3_d {
+            val.write_element("", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if self.text3_d.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DiagramStyleLabel {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.name;
+            start.push_attribute(("name", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.scene3d {
+            val.write_element("a:scene3d", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.sp3d {
+            val.write_element("a:sp3d", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.tx_pr {
+            val.write_element("a:txPr", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.style {
+            val.write_element("a:style", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if self.scene3d.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.sp3d.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.tx_pr.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.style.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DiagramStyleDefinition {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.unique_id {
+            start.push_attribute(("uniqueId", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.min_ver {
+            start.push_attribute(("minVer", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.title {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:title", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.desc {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:desc", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cat_lst {
+            val.write_element("a:catLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.scene3d {
+            val.write_element("a:scene3d", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.style_lbl {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:styleLbl", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if !self.title.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if !self.desc.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.cat_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.scene3d.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if !self.style_lbl.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DiagramStyleDefinitionHeader {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        #[cfg(feature = "dml-diagrams")]
+        {
+            let val = &self.unique_id;
+            start.push_attribute(("uniqueId", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.min_ver {
+            start.push_attribute(("minVer", val.as_str()));
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.res_id {
+            {
+                let s = val.to_string();
+                start.push_attribute(("resId", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.title {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:title", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.desc {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:desc", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.cat_lst {
+            val.write_element("a:catLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if let Some(ref val) = self.ext_lst {
+            val.write_element("a:extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if !self.title.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if !self.desc.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.cat_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-diagrams")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
+    }
+}
+
+impl ToXml for DiagramStyleDefinitionHeaderList {
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-diagrams")]
+        for item in &self.style_def_hdr {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("a:styleDefHdr", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
+    fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-diagrams")]
+        if !self.style_def_hdr.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]

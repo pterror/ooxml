@@ -534,6 +534,103 @@ impl ChartTitleExt for crate::types::ChartTitle {
     }
 }
 
+/// Extension trait for [`DataModel`] providing convenience access to SmartArt content.
+///
+/// Corresponds to ECMA-376 §21.4.2.8 (CT_DataModel).
+#[cfg(feature = "dml-diagrams")]
+pub trait DataModelExt {
+    /// Returns all diagram points that represent actual content nodes.
+    ///
+    /// Filters out connector/transition points (`parTrans`, `sibTrans`, `pres`) and
+    /// returns only points of type `node`, `asst`, or `doc`.
+    fn content_points(&self) -> Vec<&crate::types::DiagramPoint>;
+
+    /// Returns all connections between diagram points.
+    fn connections(&self) -> Vec<&crate::types::DiagramConnection>;
+
+    /// Extracts all text from diagram content nodes, in order.
+    ///
+    /// Each node's text paragraphs are joined with newlines. Nodes are separated
+    /// by newlines in the returned string.
+    fn text(&self) -> Vec<String>;
+}
+
+#[cfg(feature = "dml-diagrams")]
+fn diagram_content_points(model: &crate::types::DataModel) -> Vec<&crate::types::DiagramPoint> {
+    use crate::types::STPtType;
+    model
+        .pt_lst
+        .pt
+        .iter()
+        .filter(|pt| {
+            // Include points without a type (defaults to "node") and explicit
+            // node/asst/doc types. Exclude parTrans, sibTrans, pres connectors.
+            matches!(
+                pt.r#type,
+                None | Some(STPtType::Node) | Some(STPtType::Asst) | Some(STPtType::Doc)
+            )
+        })
+        .collect()
+}
+
+#[cfg(all(feature = "dml-diagrams", feature = "dml-text"))]
+impl DataModelExt for crate::types::DataModel {
+    fn content_points(&self) -> Vec<&crate::types::DiagramPoint> {
+        diagram_content_points(self)
+    }
+
+    fn connections(&self) -> Vec<&crate::types::DiagramConnection> {
+        self.cxn_lst
+            .as_deref()
+            .map(|lst| lst.cxn.iter().collect())
+            .unwrap_or_default()
+    }
+
+    fn text(&self) -> Vec<String> {
+        self.content_points()
+            .iter()
+            .filter_map(|pt| {
+                pt.t.as_deref().map(|body| {
+                    body.p
+                        .iter()
+                        .map(|p| {
+                            p.text_run
+                                .iter()
+                                .filter_map(|tr| match tr {
+                                    crate::types::EGTextRun::R(run) => Some(run.t.as_str()),
+                                    crate::types::EGTextRun::Br(_) => Some("\n"),
+                                    crate::types::EGTextRun::Fld(fld) => fld.t.as_deref(),
+                                })
+                                .collect::<String>()
+                        })
+                        .collect::<Vec<_>>()
+                        .join("\n")
+                })
+            })
+            .filter(|s| !s.is_empty())
+            .collect()
+    }
+}
+
+// Fallback implementation when dml-text is not enabled: text() always returns empty.
+#[cfg(all(feature = "dml-diagrams", not(feature = "dml-text")))]
+impl DataModelExt for crate::types::DataModel {
+    fn content_points(&self) -> Vec<&crate::types::DiagramPoint> {
+        diagram_content_points(self)
+    }
+
+    fn connections(&self) -> Vec<&crate::types::DiagramConnection> {
+        self.cxn_lst
+            .as_deref()
+            .map(|lst| lst.cxn.iter().collect())
+            .unwrap_or_default()
+    }
+
+    fn text(&self) -> Vec<String> {
+        Vec::new()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -922,6 +1019,132 @@ mod tests {
         };
 
         assert_eq!(title.title_text(), Some("Sales Report".to_string()));
+    }
+
+    // -------------------------------------------------------------------------
+    // DataModelExt tests
+    // -------------------------------------------------------------------------
+
+    #[cfg(feature = "dml-diagrams")]
+    fn make_data_model(points: Vec<crate::types::DiagramPoint>) -> crate::types::DataModel {
+        use crate::types::*;
+        DataModel {
+            #[cfg(feature = "dml-diagrams")]
+            pt_lst: Box::new(DiagramPointList {
+                pt: points,
+                #[cfg(feature = "extra-children")]
+                extra_children: Vec::new(),
+            }),
+            #[cfg(feature = "dml-diagrams")]
+            cxn_lst: None,
+            #[cfg(feature = "dml-diagrams")]
+            bg: None,
+            #[cfg(feature = "dml-diagrams")]
+            whole: None,
+            #[cfg(feature = "dml-diagrams")]
+            ext_lst: None,
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        }
+    }
+
+    #[cfg(feature = "dml-diagrams")]
+    fn make_diagram_point(
+        id: &str,
+        pt_type: Option<crate::types::STPtType>,
+    ) -> crate::types::DiagramPoint {
+        use crate::types::*;
+        DiagramPoint {
+            #[cfg(feature = "dml-diagrams")]
+            model_id: id.to_string(),
+            #[cfg(feature = "dml-diagrams")]
+            r#type: pt_type,
+            #[cfg(feature = "dml-diagrams")]
+            cxn_id: None,
+            #[cfg(feature = "dml-diagrams")]
+            pr_set: None,
+            #[cfg(feature = "dml-diagrams")]
+            sp_pr: None,
+            #[cfg(feature = "dml-diagrams")]
+            t: None,
+            #[cfg(feature = "dml-diagrams")]
+            ext_lst: None,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        }
+    }
+
+    #[cfg(feature = "dml-diagrams")]
+    #[test]
+    fn test_data_model_content_points() {
+        use crate::ext::DataModelExt;
+        use crate::types::STPtType;
+
+        let points = vec![
+            make_diagram_point("1", None),                     // node (default)
+            make_diagram_point("2", Some(STPtType::Node)),     // explicit node
+            make_diagram_point("3", Some(STPtType::Asst)),     // assistant
+            make_diagram_point("4", Some(STPtType::ParTrans)), // connector — excluded
+            make_diagram_point("5", Some(STPtType::SibTrans)), // connector — excluded
+            make_diagram_point("6", Some(STPtType::Pres)),     // presentation — excluded
+        ];
+
+        let model = make_data_model(points);
+        let content = model.content_points();
+
+        // Only node/asst/doc types are returned
+        assert_eq!(content.len(), 3);
+        assert_eq!(content[0].model_id, "1");
+        assert_eq!(content[1].model_id, "2");
+        assert_eq!(content[2].model_id, "3");
+    }
+
+    #[cfg(feature = "dml-diagrams")]
+    #[test]
+    fn test_data_model_connections_empty() {
+        use crate::ext::DataModelExt;
+
+        let model = make_data_model(vec![]);
+        assert!(model.connections().is_empty());
+    }
+
+    #[cfg(all(feature = "dml-diagrams", feature = "dml-text"))]
+    #[test]
+    fn test_data_model_text() {
+        use crate::ext::DataModelExt;
+        use crate::types::*;
+
+        let mut pt = make_diagram_point("1", None);
+        pt.t = Some(Box::new(TextBody {
+            body_pr: Box::new(CTTextBodyProperties::default()),
+            lst_style: None,
+            p: vec![TextParagraph {
+                #[cfg(feature = "dml-text")]
+                p_pr: None,
+                text_run: vec![EGTextRun::R(Box::new(TextRun {
+                    #[cfg(feature = "dml-text")]
+                    r_pr: None,
+                    #[cfg(feature = "dml-text")]
+                    t: "SmartArt Node".to_string(),
+                    #[cfg(feature = "extra-children")]
+                    extra_children: Vec::new(),
+                }))],
+                #[cfg(feature = "dml-text")]
+                end_para_r_pr: None,
+                #[cfg(feature = "extra-children")]
+                extra_children: Vec::new(),
+            }],
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        }));
+
+        let model = make_data_model(vec![pt]);
+        let texts = model.text();
+
+        assert_eq!(texts.len(), 1);
+        assert_eq!(texts[0], "SmartArt Node");
     }
 
     #[cfg(feature = "dml-charts")]

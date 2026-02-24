@@ -44,6 +44,8 @@ pub mod generated_serializers;
 pub use generated_serializers as serializers;
 
 pub use error::{Error, Result};
+#[cfg(feature = "dml-diagrams")]
+pub use ext::DataModelExt;
 #[cfg(feature = "dml-charts")]
 pub use ext::{ChartExt, ChartKind, ChartSpaceExt, ChartTitleExt, PlotAreaExt};
 #[cfg(feature = "dml-tables")]

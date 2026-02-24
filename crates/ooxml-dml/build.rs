@@ -19,12 +19,14 @@ fn main() {
     // Paths to schemas
     let dml_path = format!("{}/dml-main.rnc", spec_dir);
     let chart_path = format!("{}/dml-chart.rnc", spec_dir);
+    let diagram_path = format!("{}/dml-diagram.rnc", spec_dir);
     let shared_path = format!("{}/shared-commonSimpleTypes.rnc", spec_dir);
     let rel_path = format!("{}/shared-relationshipReference.rnc", spec_dir);
 
     // Only regenerate if schemas change
     println!("cargo::rerun-if-changed={}", dml_path);
     println!("cargo::rerun-if-changed={}", chart_path);
+    println!("cargo::rerun-if-changed={}", diagram_path);
     println!("cargo::rerun-if-changed={}", shared_path);
     println!("cargo::rerun-if-changed={}", rel_path);
     println!("cargo::rerun-if-changed={}", names_path);
@@ -110,6 +112,25 @@ fn main() {
             }
         }
         combined_schema.definitions.extend(chart_schema.definitions);
+    }
+
+    // Parse and merge the DML diagram schema (ECMA-376 §21.4)
+    if Path::new(&diagram_path).exists() {
+        let diagram_input =
+            fs::read_to_string(&diagram_path).expect("failed to read dml-diagram.rnc");
+        let diagram_schema = parse_rnc(&diagram_input).expect("failed to parse dml-diagram.rnc");
+        for ns in diagram_schema.namespaces {
+            if !combined_schema
+                .namespaces
+                .iter()
+                .any(|n| n.prefix == ns.prefix)
+            {
+                combined_schema.namespaces.push(ns);
+            }
+        }
+        combined_schema
+            .definitions
+            .extend(diagram_schema.definitions);
     }
 
     // Load name mappings if available

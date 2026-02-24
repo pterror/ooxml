@@ -3670,3 +3670,180 @@ dml:
 
   ChartStyle:
     "*": [charts]
+
+  # ---------------------------------------------------------------------------
+  # Diagrams/SmartArt (ECMA-376 §21.4, dml-diagram.rnc)
+  # ---------------------------------------------------------------------------
+  DataModel:
+    "*": [diagrams]
+
+  DiagramPoint:
+    "*": [diagrams]
+
+  DiagramPointList:
+    "*": [diagrams]
+
+  DiagramConnection:
+    "*": [diagrams]
+
+  DiagramConnectionList:
+    "*": [diagrams]
+
+  DiagramElementProperties:
+    "*": [diagrams]
+
+  DiagramRelationshipIds:
+    "*": [diagrams]
+
+  DiagramDefinition:
+    "*": [diagrams]
+
+  DiagramDefinitionHeader:
+    "*": [diagrams]
+
+  DiagramDefinitionHeaderList:
+    "*": [diagrams]
+
+  LayoutNode:
+    "*": [diagrams]
+
+  LayoutAlgorithm:
+    "*": [diagrams]
+
+  AlgorithmParameter:
+    "*": [diagrams]
+
+  DiagramShape:
+    "*": [diagrams]
+
+  LayoutForEach:
+    "*": [diagrams]
+
+  LayoutChoose:
+    "*": [diagrams]
+
+  LayoutWhen:
+    "*": [diagrams]
+
+  LayoutOtherwise:
+    "*": [diagrams]
+
+  LayoutAdjustment:
+    "*": [diagrams]
+
+  LayoutAdjustmentList:
+    "*": [diagrams]
+
+  DiagramColorTransform:
+    "*": [diagrams]
+
+  DiagramColorTransformHeader:
+    "*": [diagrams]
+
+  DiagramColorTransformHeaderList:
+    "*": [diagrams]
+
+  DiagramColors:
+    "*": [diagrams]
+
+  DiagramColorStyleLabel:
+    "*": [diagrams]
+
+  DiagramColorCategory:
+    "*": [diagrams]
+
+  DiagramColorCategories:
+    "*": [diagrams]
+
+  DiagramStyleDefinition:
+    "*": [diagrams]
+
+  DiagramStyleDefinitionHeader:
+    "*": [diagrams]
+
+  DiagramStyleDefinitionHeaderList:
+    "*": [diagrams]
+
+  DiagramStyleLabel:
+    "*": [diagrams]
+
+  DiagramStyleCategory:
+    "*": [diagrams]
+
+  DiagramStyleCategories:
+    "*": [diagrams]
+
+  DiagramTextProperties:
+    "*": [diagrams]
+
+  LayoutVariableProperties:
+    "*": [diagrams]
+
+  OrgChartProperties:
+    "*": [diagrams]
+
+  LayoutDirection:
+    "*": [diagrams]
+
+  HierarchyBranchStyle:
+    "*": [diagrams]
+
+  AnimateOneByOne:
+    "*": [diagrams]
+
+  AnimateLevel:
+    "*": [diagrams]
+
+  BulletEnabled:
+    "*": [diagrams]
+
+  ResizeHandles:
+    "*": [diagrams]
+
+  LayoutConstraint:
+    "*": [diagrams]
+
+  LayoutConstraints:
+    "*": [diagrams]
+
+  NumericRule:
+    "*": [diagrams]
+
+  LayoutRules:
+    "*": [diagrams]
+
+  PresentationOf:
+    "*": [diagrams]
+
+  DiagramName:
+    "*": [diagrams]
+
+  DiagramDescription:
+    "*": [diagrams]
+
+  DiagramCategory:
+    "*": [diagrams]
+
+  DiagramCategories:
+    "*": [diagrams]
+
+  ColorTransformName:
+    "*": [diagrams]
+
+  ColorTransformDescription:
+    "*": [diagrams]
+
+  StyleDefinitionName:
+    "*": [diagrams]
+
+  StyleDefinitionDescription:
+    "*": [diagrams]
+
+  DiagramSampleData:
+    "*": [diagrams]
+
+  ChildMaximum:
+    "*": [diagrams]
+
+  ChildPreference:
+    "*": [diagrams]

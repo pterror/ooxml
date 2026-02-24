@@ -1082,6 +1082,66 @@ dml:
     ST_LblOffsetUShort: LabelOffsetUShort
     ST_LogBase: LogBaseValue
 
+    # Diagram/SmartArt types (ECMA-376 §21.4, dml-diagram.rnc)
+    CT_DataModel: DataModel
+    CT_Pt: DiagramPoint
+    CT_PtList: DiagramPointList
+    CT_Cxn: DiagramConnection
+    CT_CxnList: DiagramConnectionList
+    CT_ElemPropSet: DiagramElementProperties
+    CT_RelIds: DiagramRelationshipIds
+    CT_DiagramDefinition: DiagramDefinition
+    CT_DiagramDefinitionHeader: DiagramDefinitionHeader
+    CT_DiagramDefinitionHeaderLst: DiagramDefinitionHeaderList
+    CT_LayoutNode: LayoutNode
+    CT_Algorithm: LayoutAlgorithm
+    CT_Parameter: AlgorithmParameter
+    CT_Shape: DiagramShape
+    CT_ForEach: LayoutForEach
+    CT_Choose: LayoutChoose
+    CT_When: LayoutWhen
+    CT_Otherwise: LayoutOtherwise
+    CT_Adj: LayoutAdjustment
+    CT_AdjLst: LayoutAdjustmentList
+    CT_ColorTransform: DiagramColorTransform
+    CT_ColorTransformHeader: DiagramColorTransformHeader
+    CT_ColorTransformHeaderLst: DiagramColorTransformHeaderList
+    CT_Colors: DiagramColors
+    CT_CTStyleLabel: DiagramColorStyleLabel
+    CT_CTCategory: DiagramColorCategory
+    CT_CTCategories: DiagramColorCategories
+    CT_StyleDefinition: DiagramStyleDefinition
+    CT_StyleDefinitionHeader: DiagramStyleDefinitionHeader
+    CT_StyleDefinitionHeaderLst: DiagramStyleDefinitionHeaderList
+    CT_StyleLabel: DiagramStyleLabel
+    CT_SDCategory: DiagramStyleCategory
+    CT_SDCategories: DiagramStyleCategories
+    CT_TextProps: DiagramTextProperties
+    CT_LayoutVariablePropertySet: LayoutVariableProperties
+    CT_OrgChart: OrgChartProperties
+    CT_Direction: LayoutDirection
+    CT_HierBranchStyle: HierarchyBranchStyle
+    CT_AnimOne: AnimateOneByOne
+    CT_AnimLvl: AnimateLevel
+    CT_BulletEnabled: BulletEnabled
+    CT_ResizeHandles: ResizeHandles
+    CT_Constraint: LayoutConstraint
+    CT_Constraints: LayoutConstraints
+    CT_NumericRule: NumericRule
+    CT_Rules: LayoutRules
+    CT_PresentationOf: PresentationOf
+    CT_Name: DiagramName
+    CT_Description: DiagramDescription
+    CT_Category: DiagramCategory
+    CT_Categories: DiagramCategories
+    CT_CTName: ColorTransformName
+    CT_CTDescription: ColorTransformDescription
+    CT_SDName: StyleDefinitionName
+    CT_SDDescription: StyleDefinitionDescription
+    CT_SampleData: DiagramSampleData
+    CT_ChildMax: ChildMaximum
+    CT_ChildPref: ChildPreference
+
     # CT_* wrapper types: using "Element" suffix to avoid name collision
     # with same-named ST_* type aliases
     CT_FixedPercentage: FixedPercentageElement
@@ -1113,3 +1173,6 @@ dml:
     cNvPr: common_non_visual_properties
     cNvSpPr: common_non_visual_shape_properties
     cNvPicPr: common_non_visual_picture_properties
+  variants:
+    # Diagram axis/relationship types use "self" which is a Rust keyword
+    self: SelfNode

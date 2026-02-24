@@ -23,6 +23,8 @@ pub mod ns {
     pub const CDR: &str = "http://schemas.openxmlformats.org/drawingml/2006/chartDrawing";
     /// Namespace prefix: dchrt
     pub const DCHRT: &str = "http://schemas.openxmlformats.org/drawingml/2006/chart";
+    /// Namespace prefix: ddgrm
+    pub const DDGRM: &str = "http://schemas.openxmlformats.org/drawingml/2006/diagram";
 }
 
 pub type Language = String;
@@ -6233,6 +6235,2469 @@ impl std::str::FromStr for ChartPageOrientation {
             "portrait" => Ok(Self::Portrait),
             "landscape" => Ok(Self::Landscape),
             _ => Err(format!("unknown ChartPageOrientation value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STClrAppMethod {
+    #[serde(rename = "span")]
+    Span,
+    #[serde(rename = "cycle")]
+    Cycle,
+    #[serde(rename = "repeat")]
+    Repeat,
+}
+
+impl std::fmt::Display for STClrAppMethod {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Span => write!(f, "span"),
+            Self::Cycle => write!(f, "cycle"),
+            Self::Repeat => write!(f, "repeat"),
+        }
+    }
+}
+
+impl std::str::FromStr for STClrAppMethod {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "span" => Ok(Self::Span),
+            "cycle" => Ok(Self::Cycle),
+            "repeat" => Ok(Self::Repeat),
+            _ => Err(format!("unknown STClrAppMethod value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STHueDir {
+    #[serde(rename = "cw")]
+    Cw,
+    #[serde(rename = "ccw")]
+    Ccw,
+}
+
+impl std::fmt::Display for STHueDir {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Cw => write!(f, "cw"),
+            Self::Ccw => write!(f, "ccw"),
+        }
+    }
+}
+
+impl std::str::FromStr for STHueDir {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "cw" => Ok(Self::Cw),
+            "ccw" => Ok(Self::Ccw),
+            _ => Err(format!("unknown STHueDir value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STPtType {
+    #[serde(rename = "node")]
+    Node,
+    #[serde(rename = "asst")]
+    Asst,
+    #[serde(rename = "doc")]
+    Doc,
+    #[serde(rename = "pres")]
+    Pres,
+    #[serde(rename = "parTrans")]
+    ParTrans,
+    #[serde(rename = "sibTrans")]
+    SibTrans,
+}
+
+impl std::fmt::Display for STPtType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Node => write!(f, "node"),
+            Self::Asst => write!(f, "asst"),
+            Self::Doc => write!(f, "doc"),
+            Self::Pres => write!(f, "pres"),
+            Self::ParTrans => write!(f, "parTrans"),
+            Self::SibTrans => write!(f, "sibTrans"),
+        }
+    }
+}
+
+impl std::str::FromStr for STPtType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "node" => Ok(Self::Node),
+            "asst" => Ok(Self::Asst),
+            "doc" => Ok(Self::Doc),
+            "pres" => Ok(Self::Pres),
+            "parTrans" => Ok(Self::ParTrans),
+            "sibTrans" => Ok(Self::SibTrans),
+            _ => Err(format!("unknown STPtType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STCxnType {
+    #[serde(rename = "parOf")]
+    ParOf,
+    #[serde(rename = "presOf")]
+    PresOf,
+    #[serde(rename = "presParOf")]
+    PresParOf,
+    #[serde(rename = "unknownRelationship")]
+    UnknownRelationship,
+}
+
+impl std::fmt::Display for STCxnType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::ParOf => write!(f, "parOf"),
+            Self::PresOf => write!(f, "presOf"),
+            Self::PresParOf => write!(f, "presParOf"),
+            Self::UnknownRelationship => write!(f, "unknownRelationship"),
+        }
+    }
+}
+
+impl std::str::FromStr for STCxnType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "parOf" => Ok(Self::ParOf),
+            "presOf" => Ok(Self::PresOf),
+            "presParOf" => Ok(Self::PresParOf),
+            "unknownRelationship" => Ok(Self::UnknownRelationship),
+            _ => Err(format!("unknown STCxnType value: {}", s)),
+        }
+    }
+}
+
+pub type STLayoutShapeType = String;
+
+pub type STIndex1 = u32;
+
+pub type STParameterVal = String;
+
+pub type STModelId = String;
+
+pub type STPrSetCustVal = String;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STDirection {
+    #[serde(rename = "norm")]
+    Norm,
+    #[serde(rename = "rev")]
+    Rev,
+}
+
+impl std::fmt::Display for STDirection {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Norm => write!(f, "norm"),
+            Self::Rev => write!(f, "rev"),
+        }
+    }
+}
+
+impl std::str::FromStr for STDirection {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "norm" => Ok(Self::Norm),
+            "rev" => Ok(Self::Rev),
+            _ => Err(format!("unknown STDirection value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STHierBranchStyle {
+    #[serde(rename = "l")]
+    L,
+    #[serde(rename = "r")]
+    R,
+    #[serde(rename = "hang")]
+    Hang,
+    #[serde(rename = "std")]
+    Std,
+    #[serde(rename = "init")]
+    Init,
+}
+
+impl std::fmt::Display for STHierBranchStyle {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::L => write!(f, "l"),
+            Self::R => write!(f, "r"),
+            Self::Hang => write!(f, "hang"),
+            Self::Std => write!(f, "std"),
+            Self::Init => write!(f, "init"),
+        }
+    }
+}
+
+impl std::str::FromStr for STHierBranchStyle {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "l" => Ok(Self::L),
+            "r" => Ok(Self::R),
+            "hang" => Ok(Self::Hang),
+            "std" => Ok(Self::Std),
+            "init" => Ok(Self::Init),
+            _ => Err(format!("unknown STHierBranchStyle value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STAnimOneStr {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "one")]
+    One,
+    #[serde(rename = "branch")]
+    Branch,
+}
+
+impl std::fmt::Display for STAnimOneStr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::One => write!(f, "one"),
+            Self::Branch => write!(f, "branch"),
+        }
+    }
+}
+
+impl std::str::FromStr for STAnimOneStr {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "one" => Ok(Self::One),
+            "branch" => Ok(Self::Branch),
+            _ => Err(format!("unknown STAnimOneStr value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STAnimLvlStr {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "lvl")]
+    Lvl,
+    #[serde(rename = "ctr")]
+    Ctr,
+}
+
+impl std::fmt::Display for STAnimLvlStr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::Lvl => write!(f, "lvl"),
+            Self::Ctr => write!(f, "ctr"),
+        }
+    }
+}
+
+impl std::str::FromStr for STAnimLvlStr {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "lvl" => Ok(Self::Lvl),
+            "ctr" => Ok(Self::Ctr),
+            _ => Err(format!("unknown STAnimLvlStr value: {}", s)),
+        }
+    }
+}
+
+pub type STNodeCount = i32;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STResizeHandlesStr {
+    #[serde(rename = "exact")]
+    Exact,
+    #[serde(rename = "rel")]
+    Rel,
+}
+
+impl std::fmt::Display for STResizeHandlesStr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Exact => write!(f, "exact"),
+            Self::Rel => write!(f, "rel"),
+        }
+    }
+}
+
+impl std::str::FromStr for STResizeHandlesStr {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "exact" => Ok(Self::Exact),
+            "rel" => Ok(Self::Rel),
+            _ => Err(format!("unknown STResizeHandlesStr value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STAlgorithmType {
+    #[serde(rename = "composite")]
+    Composite,
+    #[serde(rename = "conn")]
+    Conn,
+    #[serde(rename = "cycle")]
+    Cycle,
+    #[serde(rename = "hierChild")]
+    HierChild,
+    #[serde(rename = "hierRoot")]
+    HierRoot,
+    #[serde(rename = "pyra")]
+    Pyra,
+    #[serde(rename = "lin")]
+    Lin,
+    #[serde(rename = "sp")]
+    Sp,
+    #[serde(rename = "tx")]
+    Tx,
+    #[serde(rename = "snake")]
+    Snake,
+}
+
+impl std::fmt::Display for STAlgorithmType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Composite => write!(f, "composite"),
+            Self::Conn => write!(f, "conn"),
+            Self::Cycle => write!(f, "cycle"),
+            Self::HierChild => write!(f, "hierChild"),
+            Self::HierRoot => write!(f, "hierRoot"),
+            Self::Pyra => write!(f, "pyra"),
+            Self::Lin => write!(f, "lin"),
+            Self::Sp => write!(f, "sp"),
+            Self::Tx => write!(f, "tx"),
+            Self::Snake => write!(f, "snake"),
+        }
+    }
+}
+
+impl std::str::FromStr for STAlgorithmType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "composite" => Ok(Self::Composite),
+            "conn" => Ok(Self::Conn),
+            "cycle" => Ok(Self::Cycle),
+            "hierChild" => Ok(Self::HierChild),
+            "hierRoot" => Ok(Self::HierRoot),
+            "pyra" => Ok(Self::Pyra),
+            "lin" => Ok(Self::Lin),
+            "sp" => Ok(Self::Sp),
+            "tx" => Ok(Self::Tx),
+            "snake" => Ok(Self::Snake),
+            _ => Err(format!("unknown STAlgorithmType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STAxisType {
+    #[serde(rename = "self")]
+    SelfNode,
+    #[serde(rename = "ch")]
+    Ch,
+    #[serde(rename = "des")]
+    Des,
+    #[serde(rename = "desOrSelf")]
+    DesOrSelf,
+    #[serde(rename = "par")]
+    Par,
+    #[serde(rename = "ancst")]
+    Ancst,
+    #[serde(rename = "ancstOrSelf")]
+    AncstOrSelf,
+    #[serde(rename = "followSib")]
+    FollowSib,
+    #[serde(rename = "precedSib")]
+    PrecedSib,
+    #[serde(rename = "follow")]
+    Follow,
+    #[serde(rename = "preced")]
+    Preced,
+    #[serde(rename = "root")]
+    Root,
+    #[serde(rename = "none")]
+    None,
+}
+
+impl std::fmt::Display for STAxisType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::SelfNode => write!(f, "self"),
+            Self::Ch => write!(f, "ch"),
+            Self::Des => write!(f, "des"),
+            Self::DesOrSelf => write!(f, "desOrSelf"),
+            Self::Par => write!(f, "par"),
+            Self::Ancst => write!(f, "ancst"),
+            Self::AncstOrSelf => write!(f, "ancstOrSelf"),
+            Self::FollowSib => write!(f, "followSib"),
+            Self::PrecedSib => write!(f, "precedSib"),
+            Self::Follow => write!(f, "follow"),
+            Self::Preced => write!(f, "preced"),
+            Self::Root => write!(f, "root"),
+            Self::None => write!(f, "none"),
+        }
+    }
+}
+
+impl std::str::FromStr for STAxisType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "self" => Ok(Self::SelfNode),
+            "ch" => Ok(Self::Ch),
+            "des" => Ok(Self::Des),
+            "desOrSelf" => Ok(Self::DesOrSelf),
+            "par" => Ok(Self::Par),
+            "ancst" => Ok(Self::Ancst),
+            "ancstOrSelf" => Ok(Self::AncstOrSelf),
+            "followSib" => Ok(Self::FollowSib),
+            "precedSib" => Ok(Self::PrecedSib),
+            "follow" => Ok(Self::Follow),
+            "preced" => Ok(Self::Preced),
+            "root" => Ok(Self::Root),
+            "none" => Ok(Self::None),
+            _ => Err(format!("unknown STAxisType value: {}", s)),
+        }
+    }
+}
+
+pub type STAxisTypes = String;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STBoolOperator {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "equ")]
+    Equ,
+    #[serde(rename = "gte")]
+    Gte,
+    #[serde(rename = "lte")]
+    Lte,
+}
+
+impl std::fmt::Display for STBoolOperator {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::Equ => write!(f, "equ"),
+            Self::Gte => write!(f, "gte"),
+            Self::Lte => write!(f, "lte"),
+        }
+    }
+}
+
+impl std::str::FromStr for STBoolOperator {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "equ" => Ok(Self::Equ),
+            "gte" => Ok(Self::Gte),
+            "lte" => Ok(Self::Lte),
+            _ => Err(format!("unknown STBoolOperator value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STChildOrderType {
+    #[serde(rename = "b")]
+    B,
+    #[serde(rename = "t")]
+    T,
+}
+
+impl std::fmt::Display for STChildOrderType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::B => write!(f, "b"),
+            Self::T => write!(f, "t"),
+        }
+    }
+}
+
+impl std::str::FromStr for STChildOrderType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "b" => Ok(Self::B),
+            "t" => Ok(Self::T),
+            _ => Err(format!("unknown STChildOrderType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STConstraintType {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "alignOff")]
+    AlignOff,
+    #[serde(rename = "begMarg")]
+    BegMarg,
+    #[serde(rename = "bendDist")]
+    BendDist,
+    #[serde(rename = "begPad")]
+    BegPad,
+    #[serde(rename = "b")]
+    B,
+    #[serde(rename = "bMarg")]
+    BMarg,
+    #[serde(rename = "bOff")]
+    BOff,
+    #[serde(rename = "ctrX")]
+    CtrX,
+    #[serde(rename = "ctrXOff")]
+    CtrXOff,
+    #[serde(rename = "ctrY")]
+    CtrY,
+    #[serde(rename = "ctrYOff")]
+    CtrYOff,
+    #[serde(rename = "connDist")]
+    ConnDist,
+    #[serde(rename = "diam")]
+    Diam,
+    #[serde(rename = "endMarg")]
+    EndMarg,
+    #[serde(rename = "endPad")]
+    EndPad,
+    #[serde(rename = "h")]
+    H,
+    #[serde(rename = "hArH")]
+    HArH,
+    #[serde(rename = "hOff")]
+    HOff,
+    #[serde(rename = "l")]
+    L,
+    #[serde(rename = "lMarg")]
+    LMarg,
+    #[serde(rename = "lOff")]
+    LOff,
+    #[serde(rename = "r")]
+    R,
+    #[serde(rename = "rMarg")]
+    RMarg,
+    #[serde(rename = "rOff")]
+    ROff,
+    #[serde(rename = "primFontSz")]
+    PrimFontSz,
+    #[serde(rename = "pyraAcctRatio")]
+    PyraAcctRatio,
+    #[serde(rename = "secFontSz")]
+    SecFontSz,
+    #[serde(rename = "sibSp")]
+    SibSp,
+    #[serde(rename = "secSibSp")]
+    SecSibSp,
+    #[serde(rename = "sp")]
+    Sp,
+    #[serde(rename = "stemThick")]
+    StemThick,
+    #[serde(rename = "t")]
+    T,
+    #[serde(rename = "tMarg")]
+    TMarg,
+    #[serde(rename = "tOff")]
+    TOff,
+    #[serde(rename = "userA")]
+    UserA,
+    #[serde(rename = "userB")]
+    UserB,
+    #[serde(rename = "userC")]
+    UserC,
+    #[serde(rename = "userD")]
+    UserD,
+    #[serde(rename = "userE")]
+    UserE,
+    #[serde(rename = "userF")]
+    UserF,
+    #[serde(rename = "userG")]
+    UserG,
+    #[serde(rename = "userH")]
+    UserH,
+    #[serde(rename = "userI")]
+    UserI,
+    #[serde(rename = "userJ")]
+    UserJ,
+    #[serde(rename = "userK")]
+    UserK,
+    #[serde(rename = "userL")]
+    UserL,
+    #[serde(rename = "userM")]
+    UserM,
+    #[serde(rename = "userN")]
+    UserN,
+    #[serde(rename = "userO")]
+    UserO,
+    #[serde(rename = "userP")]
+    UserP,
+    #[serde(rename = "userQ")]
+    UserQ,
+    #[serde(rename = "userR")]
+    UserR,
+    #[serde(rename = "userS")]
+    UserS,
+    #[serde(rename = "userT")]
+    UserT,
+    #[serde(rename = "userU")]
+    UserU,
+    #[serde(rename = "userV")]
+    UserV,
+    #[serde(rename = "userW")]
+    UserW,
+    #[serde(rename = "userX")]
+    UserX,
+    #[serde(rename = "userY")]
+    UserY,
+    #[serde(rename = "userZ")]
+    UserZ,
+    #[serde(rename = "w")]
+    W,
+    #[serde(rename = "wArH")]
+    WArH,
+    #[serde(rename = "wOff")]
+    WOff,
+}
+
+impl std::fmt::Display for STConstraintType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::AlignOff => write!(f, "alignOff"),
+            Self::BegMarg => write!(f, "begMarg"),
+            Self::BendDist => write!(f, "bendDist"),
+            Self::BegPad => write!(f, "begPad"),
+            Self::B => write!(f, "b"),
+            Self::BMarg => write!(f, "bMarg"),
+            Self::BOff => write!(f, "bOff"),
+            Self::CtrX => write!(f, "ctrX"),
+            Self::CtrXOff => write!(f, "ctrXOff"),
+            Self::CtrY => write!(f, "ctrY"),
+            Self::CtrYOff => write!(f, "ctrYOff"),
+            Self::ConnDist => write!(f, "connDist"),
+            Self::Diam => write!(f, "diam"),
+            Self::EndMarg => write!(f, "endMarg"),
+            Self::EndPad => write!(f, "endPad"),
+            Self::H => write!(f, "h"),
+            Self::HArH => write!(f, "hArH"),
+            Self::HOff => write!(f, "hOff"),
+            Self::L => write!(f, "l"),
+            Self::LMarg => write!(f, "lMarg"),
+            Self::LOff => write!(f, "lOff"),
+            Self::R => write!(f, "r"),
+            Self::RMarg => write!(f, "rMarg"),
+            Self::ROff => write!(f, "rOff"),
+            Self::PrimFontSz => write!(f, "primFontSz"),
+            Self::PyraAcctRatio => write!(f, "pyraAcctRatio"),
+            Self::SecFontSz => write!(f, "secFontSz"),
+            Self::SibSp => write!(f, "sibSp"),
+            Self::SecSibSp => write!(f, "secSibSp"),
+            Self::Sp => write!(f, "sp"),
+            Self::StemThick => write!(f, "stemThick"),
+            Self::T => write!(f, "t"),
+            Self::TMarg => write!(f, "tMarg"),
+            Self::TOff => write!(f, "tOff"),
+            Self::UserA => write!(f, "userA"),
+            Self::UserB => write!(f, "userB"),
+            Self::UserC => write!(f, "userC"),
+            Self::UserD => write!(f, "userD"),
+            Self::UserE => write!(f, "userE"),
+            Self::UserF => write!(f, "userF"),
+            Self::UserG => write!(f, "userG"),
+            Self::UserH => write!(f, "userH"),
+            Self::UserI => write!(f, "userI"),
+            Self::UserJ => write!(f, "userJ"),
+            Self::UserK => write!(f, "userK"),
+            Self::UserL => write!(f, "userL"),
+            Self::UserM => write!(f, "userM"),
+            Self::UserN => write!(f, "userN"),
+            Self::UserO => write!(f, "userO"),
+            Self::UserP => write!(f, "userP"),
+            Self::UserQ => write!(f, "userQ"),
+            Self::UserR => write!(f, "userR"),
+            Self::UserS => write!(f, "userS"),
+            Self::UserT => write!(f, "userT"),
+            Self::UserU => write!(f, "userU"),
+            Self::UserV => write!(f, "userV"),
+            Self::UserW => write!(f, "userW"),
+            Self::UserX => write!(f, "userX"),
+            Self::UserY => write!(f, "userY"),
+            Self::UserZ => write!(f, "userZ"),
+            Self::W => write!(f, "w"),
+            Self::WArH => write!(f, "wArH"),
+            Self::WOff => write!(f, "wOff"),
+        }
+    }
+}
+
+impl std::str::FromStr for STConstraintType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "alignOff" => Ok(Self::AlignOff),
+            "begMarg" => Ok(Self::BegMarg),
+            "bendDist" => Ok(Self::BendDist),
+            "begPad" => Ok(Self::BegPad),
+            "b" => Ok(Self::B),
+            "bMarg" => Ok(Self::BMarg),
+            "bOff" => Ok(Self::BOff),
+            "ctrX" => Ok(Self::CtrX),
+            "ctrXOff" => Ok(Self::CtrXOff),
+            "ctrY" => Ok(Self::CtrY),
+            "ctrYOff" => Ok(Self::CtrYOff),
+            "connDist" => Ok(Self::ConnDist),
+            "diam" => Ok(Self::Diam),
+            "endMarg" => Ok(Self::EndMarg),
+            "endPad" => Ok(Self::EndPad),
+            "h" => Ok(Self::H),
+            "hArH" => Ok(Self::HArH),
+            "hOff" => Ok(Self::HOff),
+            "l" => Ok(Self::L),
+            "lMarg" => Ok(Self::LMarg),
+            "lOff" => Ok(Self::LOff),
+            "r" => Ok(Self::R),
+            "rMarg" => Ok(Self::RMarg),
+            "rOff" => Ok(Self::ROff),
+            "primFontSz" => Ok(Self::PrimFontSz),
+            "pyraAcctRatio" => Ok(Self::PyraAcctRatio),
+            "secFontSz" => Ok(Self::SecFontSz),
+            "sibSp" => Ok(Self::SibSp),
+            "secSibSp" => Ok(Self::SecSibSp),
+            "sp" => Ok(Self::Sp),
+            "stemThick" => Ok(Self::StemThick),
+            "t" => Ok(Self::T),
+            "tMarg" => Ok(Self::TMarg),
+            "tOff" => Ok(Self::TOff),
+            "userA" => Ok(Self::UserA),
+            "userB" => Ok(Self::UserB),
+            "userC" => Ok(Self::UserC),
+            "userD" => Ok(Self::UserD),
+            "userE" => Ok(Self::UserE),
+            "userF" => Ok(Self::UserF),
+            "userG" => Ok(Self::UserG),
+            "userH" => Ok(Self::UserH),
+            "userI" => Ok(Self::UserI),
+            "userJ" => Ok(Self::UserJ),
+            "userK" => Ok(Self::UserK),
+            "userL" => Ok(Self::UserL),
+            "userM" => Ok(Self::UserM),
+            "userN" => Ok(Self::UserN),
+            "userO" => Ok(Self::UserO),
+            "userP" => Ok(Self::UserP),
+            "userQ" => Ok(Self::UserQ),
+            "userR" => Ok(Self::UserR),
+            "userS" => Ok(Self::UserS),
+            "userT" => Ok(Self::UserT),
+            "userU" => Ok(Self::UserU),
+            "userV" => Ok(Self::UserV),
+            "userW" => Ok(Self::UserW),
+            "userX" => Ok(Self::UserX),
+            "userY" => Ok(Self::UserY),
+            "userZ" => Ok(Self::UserZ),
+            "w" => Ok(Self::W),
+            "wArH" => Ok(Self::WArH),
+            "wOff" => Ok(Self::WOff),
+            _ => Err(format!("unknown STConstraintType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STConstraintRelationship {
+    #[serde(rename = "self")]
+    SelfNode,
+    #[serde(rename = "ch")]
+    Ch,
+    #[serde(rename = "des")]
+    Des,
+}
+
+impl std::fmt::Display for STConstraintRelationship {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::SelfNode => write!(f, "self"),
+            Self::Ch => write!(f, "ch"),
+            Self::Des => write!(f, "des"),
+        }
+    }
+}
+
+impl std::str::FromStr for STConstraintRelationship {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "self" => Ok(Self::SelfNode),
+            "ch" => Ok(Self::Ch),
+            "des" => Ok(Self::Des),
+            _ => Err(format!("unknown STConstraintRelationship value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STElementType {
+    #[serde(rename = "all")]
+    All,
+    #[serde(rename = "doc")]
+    Doc,
+    #[serde(rename = "node")]
+    Node,
+    #[serde(rename = "norm")]
+    Norm,
+    #[serde(rename = "nonNorm")]
+    NonNorm,
+    #[serde(rename = "asst")]
+    Asst,
+    #[serde(rename = "nonAsst")]
+    NonAsst,
+    #[serde(rename = "parTrans")]
+    ParTrans,
+    #[serde(rename = "pres")]
+    Pres,
+    #[serde(rename = "sibTrans")]
+    SibTrans,
+}
+
+impl std::fmt::Display for STElementType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::All => write!(f, "all"),
+            Self::Doc => write!(f, "doc"),
+            Self::Node => write!(f, "node"),
+            Self::Norm => write!(f, "norm"),
+            Self::NonNorm => write!(f, "nonNorm"),
+            Self::Asst => write!(f, "asst"),
+            Self::NonAsst => write!(f, "nonAsst"),
+            Self::ParTrans => write!(f, "parTrans"),
+            Self::Pres => write!(f, "pres"),
+            Self::SibTrans => write!(f, "sibTrans"),
+        }
+    }
+}
+
+impl std::str::FromStr for STElementType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "all" => Ok(Self::All),
+            "doc" => Ok(Self::Doc),
+            "node" => Ok(Self::Node),
+            "norm" => Ok(Self::Norm),
+            "nonNorm" => Ok(Self::NonNorm),
+            "asst" => Ok(Self::Asst),
+            "nonAsst" => Ok(Self::NonAsst),
+            "parTrans" => Ok(Self::ParTrans),
+            "pres" => Ok(Self::Pres),
+            "sibTrans" => Ok(Self::SibTrans),
+            _ => Err(format!("unknown STElementType value: {}", s)),
+        }
+    }
+}
+
+pub type STElementTypes = String;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STParameterId {
+    #[serde(rename = "horzAlign")]
+    HorzAlign,
+    #[serde(rename = "vertAlign")]
+    VertAlign,
+    #[serde(rename = "chDir")]
+    ChDir,
+    #[serde(rename = "chAlign")]
+    ChAlign,
+    #[serde(rename = "secChAlign")]
+    SecChAlign,
+    #[serde(rename = "linDir")]
+    LinDir,
+    #[serde(rename = "secLinDir")]
+    SecLinDir,
+    #[serde(rename = "stElem")]
+    StElem,
+    #[serde(rename = "bendPt")]
+    BendPt,
+    #[serde(rename = "connRout")]
+    ConnRout,
+    #[serde(rename = "begSty")]
+    BegSty,
+    #[serde(rename = "endSty")]
+    EndSty,
+    #[serde(rename = "dim")]
+    Dim,
+    #[serde(rename = "rotPath")]
+    RotPath,
+    #[serde(rename = "ctrShpMap")]
+    CtrShpMap,
+    #[serde(rename = "nodeHorzAlign")]
+    NodeHorzAlign,
+    #[serde(rename = "nodeVertAlign")]
+    NodeVertAlign,
+    #[serde(rename = "fallback")]
+    Fallback,
+    #[serde(rename = "txDir")]
+    TxDir,
+    #[serde(rename = "pyraAcctPos")]
+    PyraAcctPos,
+    #[serde(rename = "pyraAcctTxMar")]
+    PyraAcctTxMar,
+    #[serde(rename = "txBlDir")]
+    TxBlDir,
+    #[serde(rename = "txAnchorHorz")]
+    TxAnchorHorz,
+    #[serde(rename = "txAnchorVert")]
+    TxAnchorVert,
+    #[serde(rename = "txAnchorHorzCh")]
+    TxAnchorHorzCh,
+    #[serde(rename = "txAnchorVertCh")]
+    TxAnchorVertCh,
+    #[serde(rename = "parTxLTRAlign")]
+    ParTxLTRAlign,
+    #[serde(rename = "parTxRTLAlign")]
+    ParTxRTLAlign,
+    #[serde(rename = "shpTxLTRAlignCh")]
+    ShpTxLTRAlignCh,
+    #[serde(rename = "shpTxRTLAlignCh")]
+    ShpTxRTLAlignCh,
+    #[serde(rename = "autoTxRot")]
+    AutoTxRot,
+    #[serde(rename = "grDir")]
+    GrDir,
+    #[serde(rename = "flowDir")]
+    FlowDir,
+    #[serde(rename = "contDir")]
+    ContDir,
+    #[serde(rename = "bkpt")]
+    Bkpt,
+    #[serde(rename = "off")]
+    Off,
+    #[serde(rename = "hierAlign")]
+    HierAlign,
+    #[serde(rename = "bkPtFixedVal")]
+    BkPtFixedVal,
+    #[serde(rename = "stBulletLvl")]
+    StBulletLvl,
+    #[serde(rename = "stAng")]
+    StAng,
+    #[serde(rename = "spanAng")]
+    SpanAng,
+    #[serde(rename = "ar")]
+    Ar,
+    #[serde(rename = "lnSpPar")]
+    LnSpPar,
+    #[serde(rename = "lnSpAfParP")]
+    LnSpAfParP,
+    #[serde(rename = "lnSpCh")]
+    LnSpCh,
+    #[serde(rename = "lnSpAfChP")]
+    LnSpAfChP,
+    #[serde(rename = "rtShortDist")]
+    RtShortDist,
+    #[serde(rename = "alignTx")]
+    AlignTx,
+    #[serde(rename = "pyraLvlNode")]
+    PyraLvlNode,
+    #[serde(rename = "pyraAcctBkgdNode")]
+    PyraAcctBkgdNode,
+    #[serde(rename = "pyraAcctTxNode")]
+    PyraAcctTxNode,
+    #[serde(rename = "srcNode")]
+    SrcNode,
+    #[serde(rename = "dstNode")]
+    DstNode,
+    #[serde(rename = "begPts")]
+    BegPts,
+    #[serde(rename = "endPts")]
+    EndPts,
+}
+
+impl std::fmt::Display for STParameterId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::HorzAlign => write!(f, "horzAlign"),
+            Self::VertAlign => write!(f, "vertAlign"),
+            Self::ChDir => write!(f, "chDir"),
+            Self::ChAlign => write!(f, "chAlign"),
+            Self::SecChAlign => write!(f, "secChAlign"),
+            Self::LinDir => write!(f, "linDir"),
+            Self::SecLinDir => write!(f, "secLinDir"),
+            Self::StElem => write!(f, "stElem"),
+            Self::BendPt => write!(f, "bendPt"),
+            Self::ConnRout => write!(f, "connRout"),
+            Self::BegSty => write!(f, "begSty"),
+            Self::EndSty => write!(f, "endSty"),
+            Self::Dim => write!(f, "dim"),
+            Self::RotPath => write!(f, "rotPath"),
+            Self::CtrShpMap => write!(f, "ctrShpMap"),
+            Self::NodeHorzAlign => write!(f, "nodeHorzAlign"),
+            Self::NodeVertAlign => write!(f, "nodeVertAlign"),
+            Self::Fallback => write!(f, "fallback"),
+            Self::TxDir => write!(f, "txDir"),
+            Self::PyraAcctPos => write!(f, "pyraAcctPos"),
+            Self::PyraAcctTxMar => write!(f, "pyraAcctTxMar"),
+            Self::TxBlDir => write!(f, "txBlDir"),
+            Self::TxAnchorHorz => write!(f, "txAnchorHorz"),
+            Self::TxAnchorVert => write!(f, "txAnchorVert"),
+            Self::TxAnchorHorzCh => write!(f, "txAnchorHorzCh"),
+            Self::TxAnchorVertCh => write!(f, "txAnchorVertCh"),
+            Self::ParTxLTRAlign => write!(f, "parTxLTRAlign"),
+            Self::ParTxRTLAlign => write!(f, "parTxRTLAlign"),
+            Self::ShpTxLTRAlignCh => write!(f, "shpTxLTRAlignCh"),
+            Self::ShpTxRTLAlignCh => write!(f, "shpTxRTLAlignCh"),
+            Self::AutoTxRot => write!(f, "autoTxRot"),
+            Self::GrDir => write!(f, "grDir"),
+            Self::FlowDir => write!(f, "flowDir"),
+            Self::ContDir => write!(f, "contDir"),
+            Self::Bkpt => write!(f, "bkpt"),
+            Self::Off => write!(f, "off"),
+            Self::HierAlign => write!(f, "hierAlign"),
+            Self::BkPtFixedVal => write!(f, "bkPtFixedVal"),
+            Self::StBulletLvl => write!(f, "stBulletLvl"),
+            Self::StAng => write!(f, "stAng"),
+            Self::SpanAng => write!(f, "spanAng"),
+            Self::Ar => write!(f, "ar"),
+            Self::LnSpPar => write!(f, "lnSpPar"),
+            Self::LnSpAfParP => write!(f, "lnSpAfParP"),
+            Self::LnSpCh => write!(f, "lnSpCh"),
+            Self::LnSpAfChP => write!(f, "lnSpAfChP"),
+            Self::RtShortDist => write!(f, "rtShortDist"),
+            Self::AlignTx => write!(f, "alignTx"),
+            Self::PyraLvlNode => write!(f, "pyraLvlNode"),
+            Self::PyraAcctBkgdNode => write!(f, "pyraAcctBkgdNode"),
+            Self::PyraAcctTxNode => write!(f, "pyraAcctTxNode"),
+            Self::SrcNode => write!(f, "srcNode"),
+            Self::DstNode => write!(f, "dstNode"),
+            Self::BegPts => write!(f, "begPts"),
+            Self::EndPts => write!(f, "endPts"),
+        }
+    }
+}
+
+impl std::str::FromStr for STParameterId {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "horzAlign" => Ok(Self::HorzAlign),
+            "vertAlign" => Ok(Self::VertAlign),
+            "chDir" => Ok(Self::ChDir),
+            "chAlign" => Ok(Self::ChAlign),
+            "secChAlign" => Ok(Self::SecChAlign),
+            "linDir" => Ok(Self::LinDir),
+            "secLinDir" => Ok(Self::SecLinDir),
+            "stElem" => Ok(Self::StElem),
+            "bendPt" => Ok(Self::BendPt),
+            "connRout" => Ok(Self::ConnRout),
+            "begSty" => Ok(Self::BegSty),
+            "endSty" => Ok(Self::EndSty),
+            "dim" => Ok(Self::Dim),
+            "rotPath" => Ok(Self::RotPath),
+            "ctrShpMap" => Ok(Self::CtrShpMap),
+            "nodeHorzAlign" => Ok(Self::NodeHorzAlign),
+            "nodeVertAlign" => Ok(Self::NodeVertAlign),
+            "fallback" => Ok(Self::Fallback),
+            "txDir" => Ok(Self::TxDir),
+            "pyraAcctPos" => Ok(Self::PyraAcctPos),
+            "pyraAcctTxMar" => Ok(Self::PyraAcctTxMar),
+            "txBlDir" => Ok(Self::TxBlDir),
+            "txAnchorHorz" => Ok(Self::TxAnchorHorz),
+            "txAnchorVert" => Ok(Self::TxAnchorVert),
+            "txAnchorHorzCh" => Ok(Self::TxAnchorHorzCh),
+            "txAnchorVertCh" => Ok(Self::TxAnchorVertCh),
+            "parTxLTRAlign" => Ok(Self::ParTxLTRAlign),
+            "parTxRTLAlign" => Ok(Self::ParTxRTLAlign),
+            "shpTxLTRAlignCh" => Ok(Self::ShpTxLTRAlignCh),
+            "shpTxRTLAlignCh" => Ok(Self::ShpTxRTLAlignCh),
+            "autoTxRot" => Ok(Self::AutoTxRot),
+            "grDir" => Ok(Self::GrDir),
+            "flowDir" => Ok(Self::FlowDir),
+            "contDir" => Ok(Self::ContDir),
+            "bkpt" => Ok(Self::Bkpt),
+            "off" => Ok(Self::Off),
+            "hierAlign" => Ok(Self::HierAlign),
+            "bkPtFixedVal" => Ok(Self::BkPtFixedVal),
+            "stBulletLvl" => Ok(Self::StBulletLvl),
+            "stAng" => Ok(Self::StAng),
+            "spanAng" => Ok(Self::SpanAng),
+            "ar" => Ok(Self::Ar),
+            "lnSpPar" => Ok(Self::LnSpPar),
+            "lnSpAfParP" => Ok(Self::LnSpAfParP),
+            "lnSpCh" => Ok(Self::LnSpCh),
+            "lnSpAfChP" => Ok(Self::LnSpAfChP),
+            "rtShortDist" => Ok(Self::RtShortDist),
+            "alignTx" => Ok(Self::AlignTx),
+            "pyraLvlNode" => Ok(Self::PyraLvlNode),
+            "pyraAcctBkgdNode" => Ok(Self::PyraAcctBkgdNode),
+            "pyraAcctTxNode" => Ok(Self::PyraAcctTxNode),
+            "srcNode" => Ok(Self::SrcNode),
+            "dstNode" => Ok(Self::DstNode),
+            "begPts" => Ok(Self::BegPts),
+            "endPts" => Ok(Self::EndPts),
+            _ => Err(format!("unknown STParameterId value: {}", s)),
+        }
+    }
+}
+
+pub type STInts = String;
+
+pub type STUnsignedInts = String;
+
+pub type STBooleans = String;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STFunctionType {
+    #[serde(rename = "cnt")]
+    Cnt,
+    #[serde(rename = "pos")]
+    Pos,
+    #[serde(rename = "revPos")]
+    RevPos,
+    #[serde(rename = "posEven")]
+    PosEven,
+    #[serde(rename = "posOdd")]
+    PosOdd,
+    #[serde(rename = "var")]
+    Var,
+    #[serde(rename = "depth")]
+    Depth,
+    #[serde(rename = "maxDepth")]
+    MaxDepth,
+}
+
+impl std::fmt::Display for STFunctionType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Cnt => write!(f, "cnt"),
+            Self::Pos => write!(f, "pos"),
+            Self::RevPos => write!(f, "revPos"),
+            Self::PosEven => write!(f, "posEven"),
+            Self::PosOdd => write!(f, "posOdd"),
+            Self::Var => write!(f, "var"),
+            Self::Depth => write!(f, "depth"),
+            Self::MaxDepth => write!(f, "maxDepth"),
+        }
+    }
+}
+
+impl std::str::FromStr for STFunctionType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "cnt" => Ok(Self::Cnt),
+            "pos" => Ok(Self::Pos),
+            "revPos" => Ok(Self::RevPos),
+            "posEven" => Ok(Self::PosEven),
+            "posOdd" => Ok(Self::PosOdd),
+            "var" => Ok(Self::Var),
+            "depth" => Ok(Self::Depth),
+            "maxDepth" => Ok(Self::MaxDepth),
+            _ => Err(format!("unknown STFunctionType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STFunctionOperator {
+    #[serde(rename = "equ")]
+    Equ,
+    #[serde(rename = "neq")]
+    Neq,
+    #[serde(rename = "gt")]
+    Gt,
+    #[serde(rename = "lt")]
+    Lt,
+    #[serde(rename = "gte")]
+    Gte,
+    #[serde(rename = "lte")]
+    Lte,
+}
+
+impl std::fmt::Display for STFunctionOperator {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Equ => write!(f, "equ"),
+            Self::Neq => write!(f, "neq"),
+            Self::Gt => write!(f, "gt"),
+            Self::Lt => write!(f, "lt"),
+            Self::Gte => write!(f, "gte"),
+            Self::Lte => write!(f, "lte"),
+        }
+    }
+}
+
+impl std::str::FromStr for STFunctionOperator {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "equ" => Ok(Self::Equ),
+            "neq" => Ok(Self::Neq),
+            "gt" => Ok(Self::Gt),
+            "lt" => Ok(Self::Lt),
+            "gte" => Ok(Self::Gte),
+            "lte" => Ok(Self::Lte),
+            _ => Err(format!("unknown STFunctionOperator value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STDiagramHorizontalAlignment {
+    #[serde(rename = "l")]
+    L,
+    #[serde(rename = "ctr")]
+    Ctr,
+    #[serde(rename = "r")]
+    R,
+    #[serde(rename = "none")]
+    None,
+}
+
+impl std::fmt::Display for STDiagramHorizontalAlignment {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::L => write!(f, "l"),
+            Self::Ctr => write!(f, "ctr"),
+            Self::R => write!(f, "r"),
+            Self::None => write!(f, "none"),
+        }
+    }
+}
+
+impl std::str::FromStr for STDiagramHorizontalAlignment {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "l" => Ok(Self::L),
+            "ctr" => Ok(Self::Ctr),
+            "r" => Ok(Self::R),
+            "none" => Ok(Self::None),
+            _ => Err(format!("unknown STDiagramHorizontalAlignment value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STVerticalAlignment {
+    #[serde(rename = "t")]
+    T,
+    #[serde(rename = "mid")]
+    Mid,
+    #[serde(rename = "b")]
+    B,
+    #[serde(rename = "none")]
+    None,
+}
+
+impl std::fmt::Display for STVerticalAlignment {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::T => write!(f, "t"),
+            Self::Mid => write!(f, "mid"),
+            Self::B => write!(f, "b"),
+            Self::None => write!(f, "none"),
+        }
+    }
+}
+
+impl std::str::FromStr for STVerticalAlignment {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "t" => Ok(Self::T),
+            "mid" => Ok(Self::Mid),
+            "b" => Ok(Self::B),
+            "none" => Ok(Self::None),
+            _ => Err(format!("unknown STVerticalAlignment value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STChildDirection {
+    #[serde(rename = "horz")]
+    Horz,
+    #[serde(rename = "vert")]
+    Vert,
+}
+
+impl std::fmt::Display for STChildDirection {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Horz => write!(f, "horz"),
+            Self::Vert => write!(f, "vert"),
+        }
+    }
+}
+
+impl std::str::FromStr for STChildDirection {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "horz" => Ok(Self::Horz),
+            "vert" => Ok(Self::Vert),
+            _ => Err(format!("unknown STChildDirection value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STChildAlignment {
+    #[serde(rename = "t")]
+    T,
+    #[serde(rename = "b")]
+    B,
+    #[serde(rename = "l")]
+    L,
+    #[serde(rename = "r")]
+    R,
+}
+
+impl std::fmt::Display for STChildAlignment {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::T => write!(f, "t"),
+            Self::B => write!(f, "b"),
+            Self::L => write!(f, "l"),
+            Self::R => write!(f, "r"),
+        }
+    }
+}
+
+impl std::str::FromStr for STChildAlignment {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "t" => Ok(Self::T),
+            "b" => Ok(Self::B),
+            "l" => Ok(Self::L),
+            "r" => Ok(Self::R),
+            _ => Err(format!("unknown STChildAlignment value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STSecondaryChildAlignment {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "t")]
+    T,
+    #[serde(rename = "b")]
+    B,
+    #[serde(rename = "l")]
+    L,
+    #[serde(rename = "r")]
+    R,
+}
+
+impl std::fmt::Display for STSecondaryChildAlignment {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::T => write!(f, "t"),
+            Self::B => write!(f, "b"),
+            Self::L => write!(f, "l"),
+            Self::R => write!(f, "r"),
+        }
+    }
+}
+
+impl std::str::FromStr for STSecondaryChildAlignment {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "t" => Ok(Self::T),
+            "b" => Ok(Self::B),
+            "l" => Ok(Self::L),
+            "r" => Ok(Self::R),
+            _ => Err(format!("unknown STSecondaryChildAlignment value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STLinearDirection {
+    #[serde(rename = "fromL")]
+    FromL,
+    #[serde(rename = "fromR")]
+    FromR,
+    #[serde(rename = "fromT")]
+    FromT,
+    #[serde(rename = "fromB")]
+    FromB,
+}
+
+impl std::fmt::Display for STLinearDirection {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::FromL => write!(f, "fromL"),
+            Self::FromR => write!(f, "fromR"),
+            Self::FromT => write!(f, "fromT"),
+            Self::FromB => write!(f, "fromB"),
+        }
+    }
+}
+
+impl std::str::FromStr for STLinearDirection {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "fromL" => Ok(Self::FromL),
+            "fromR" => Ok(Self::FromR),
+            "fromT" => Ok(Self::FromT),
+            "fromB" => Ok(Self::FromB),
+            _ => Err(format!("unknown STLinearDirection value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STSecondaryLinearDirection {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "fromL")]
+    FromL,
+    #[serde(rename = "fromR")]
+    FromR,
+    #[serde(rename = "fromT")]
+    FromT,
+    #[serde(rename = "fromB")]
+    FromB,
+}
+
+impl std::fmt::Display for STSecondaryLinearDirection {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::FromL => write!(f, "fromL"),
+            Self::FromR => write!(f, "fromR"),
+            Self::FromT => write!(f, "fromT"),
+            Self::FromB => write!(f, "fromB"),
+        }
+    }
+}
+
+impl std::str::FromStr for STSecondaryLinearDirection {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "fromL" => Ok(Self::FromL),
+            "fromR" => Ok(Self::FromR),
+            "fromT" => Ok(Self::FromT),
+            "fromB" => Ok(Self::FromB),
+            _ => Err(format!("unknown STSecondaryLinearDirection value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STStartingElement {
+    #[serde(rename = "node")]
+    Node,
+    #[serde(rename = "trans")]
+    Trans,
+}
+
+impl std::fmt::Display for STStartingElement {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Node => write!(f, "node"),
+            Self::Trans => write!(f, "trans"),
+        }
+    }
+}
+
+impl std::str::FromStr for STStartingElement {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "node" => Ok(Self::Node),
+            "trans" => Ok(Self::Trans),
+            _ => Err(format!("unknown STStartingElement value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STRotationPath {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "alongPath")]
+    AlongPath,
+}
+
+impl std::fmt::Display for STRotationPath {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::AlongPath => write!(f, "alongPath"),
+        }
+    }
+}
+
+impl std::str::FromStr for STRotationPath {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "alongPath" => Ok(Self::AlongPath),
+            _ => Err(format!("unknown STRotationPath value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STCenterShapeMapping {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "fNode")]
+    FNode,
+}
+
+impl std::fmt::Display for STCenterShapeMapping {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::FNode => write!(f, "fNode"),
+        }
+    }
+}
+
+impl std::str::FromStr for STCenterShapeMapping {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "fNode" => Ok(Self::FNode),
+            _ => Err(format!("unknown STCenterShapeMapping value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STBendPoint {
+    #[serde(rename = "beg")]
+    Beg,
+    #[serde(rename = "def")]
+    Def,
+    #[serde(rename = "end")]
+    End,
+}
+
+impl std::fmt::Display for STBendPoint {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Beg => write!(f, "beg"),
+            Self::Def => write!(f, "def"),
+            Self::End => write!(f, "end"),
+        }
+    }
+}
+
+impl std::str::FromStr for STBendPoint {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "beg" => Ok(Self::Beg),
+            "def" => Ok(Self::Def),
+            "end" => Ok(Self::End),
+            _ => Err(format!("unknown STBendPoint value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STConnectorRouting {
+    #[serde(rename = "stra")]
+    Stra,
+    #[serde(rename = "bend")]
+    Bend,
+    #[serde(rename = "curve")]
+    Curve,
+    #[serde(rename = "longCurve")]
+    LongCurve,
+}
+
+impl std::fmt::Display for STConnectorRouting {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Stra => write!(f, "stra"),
+            Self::Bend => write!(f, "bend"),
+            Self::Curve => write!(f, "curve"),
+            Self::LongCurve => write!(f, "longCurve"),
+        }
+    }
+}
+
+impl std::str::FromStr for STConnectorRouting {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "stra" => Ok(Self::Stra),
+            "bend" => Ok(Self::Bend),
+            "curve" => Ok(Self::Curve),
+            "longCurve" => Ok(Self::LongCurve),
+            _ => Err(format!("unknown STConnectorRouting value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STArrowheadStyle {
+    #[serde(rename = "auto")]
+    Auto,
+    #[serde(rename = "arr")]
+    Arr,
+    #[serde(rename = "noArr")]
+    NoArr,
+}
+
+impl std::fmt::Display for STArrowheadStyle {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Auto => write!(f, "auto"),
+            Self::Arr => write!(f, "arr"),
+            Self::NoArr => write!(f, "noArr"),
+        }
+    }
+}
+
+impl std::str::FromStr for STArrowheadStyle {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "auto" => Ok(Self::Auto),
+            "arr" => Ok(Self::Arr),
+            "noArr" => Ok(Self::NoArr),
+            _ => Err(format!("unknown STArrowheadStyle value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STConnectorDimension {
+    #[serde(rename = "1D")]
+    _1D,
+    #[serde(rename = "2D")]
+    _2D,
+    #[serde(rename = "cust")]
+    Cust,
+}
+
+impl std::fmt::Display for STConnectorDimension {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::_1D => write!(f, "1D"),
+            Self::_2D => write!(f, "2D"),
+            Self::Cust => write!(f, "cust"),
+        }
+    }
+}
+
+impl std::str::FromStr for STConnectorDimension {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "1D" => Ok(Self::_1D),
+            "2D" => Ok(Self::_2D),
+            "cust" => Ok(Self::Cust),
+            _ => Err(format!("unknown STConnectorDimension value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STConnectorPoint {
+    #[serde(rename = "auto")]
+    Auto,
+    #[serde(rename = "bCtr")]
+    BCtr,
+    #[serde(rename = "ctr")]
+    Ctr,
+    #[serde(rename = "midL")]
+    MidL,
+    #[serde(rename = "midR")]
+    MidR,
+    #[serde(rename = "tCtr")]
+    TCtr,
+    #[serde(rename = "bL")]
+    BL,
+    #[serde(rename = "bR")]
+    BR,
+    #[serde(rename = "tL")]
+    TL,
+    #[serde(rename = "tR")]
+    TR,
+    #[serde(rename = "radial")]
+    Radial,
+}
+
+impl std::fmt::Display for STConnectorPoint {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Auto => write!(f, "auto"),
+            Self::BCtr => write!(f, "bCtr"),
+            Self::Ctr => write!(f, "ctr"),
+            Self::MidL => write!(f, "midL"),
+            Self::MidR => write!(f, "midR"),
+            Self::TCtr => write!(f, "tCtr"),
+            Self::BL => write!(f, "bL"),
+            Self::BR => write!(f, "bR"),
+            Self::TL => write!(f, "tL"),
+            Self::TR => write!(f, "tR"),
+            Self::Radial => write!(f, "radial"),
+        }
+    }
+}
+
+impl std::str::FromStr for STConnectorPoint {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "auto" => Ok(Self::Auto),
+            "bCtr" => Ok(Self::BCtr),
+            "ctr" => Ok(Self::Ctr),
+            "midL" => Ok(Self::MidL),
+            "midR" => Ok(Self::MidR),
+            "tCtr" => Ok(Self::TCtr),
+            "bL" => Ok(Self::BL),
+            "bR" => Ok(Self::BR),
+            "tL" => Ok(Self::TL),
+            "tR" => Ok(Self::TR),
+            "radial" => Ok(Self::Radial),
+            _ => Err(format!("unknown STConnectorPoint value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STNodeHorizontalAlignment {
+    #[serde(rename = "l")]
+    L,
+    #[serde(rename = "ctr")]
+    Ctr,
+    #[serde(rename = "r")]
+    R,
+}
+
+impl std::fmt::Display for STNodeHorizontalAlignment {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::L => write!(f, "l"),
+            Self::Ctr => write!(f, "ctr"),
+            Self::R => write!(f, "r"),
+        }
+    }
+}
+
+impl std::str::FromStr for STNodeHorizontalAlignment {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "l" => Ok(Self::L),
+            "ctr" => Ok(Self::Ctr),
+            "r" => Ok(Self::R),
+            _ => Err(format!("unknown STNodeHorizontalAlignment value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STNodeVerticalAlignment {
+    #[serde(rename = "t")]
+    T,
+    #[serde(rename = "mid")]
+    Mid,
+    #[serde(rename = "b")]
+    B,
+}
+
+impl std::fmt::Display for STNodeVerticalAlignment {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::T => write!(f, "t"),
+            Self::Mid => write!(f, "mid"),
+            Self::B => write!(f, "b"),
+        }
+    }
+}
+
+impl std::str::FromStr for STNodeVerticalAlignment {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "t" => Ok(Self::T),
+            "mid" => Ok(Self::Mid),
+            "b" => Ok(Self::B),
+            _ => Err(format!("unknown STNodeVerticalAlignment value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STFallbackDimension {
+    #[serde(rename = "1D")]
+    _1D,
+    #[serde(rename = "2D")]
+    _2D,
+}
+
+impl std::fmt::Display for STFallbackDimension {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::_1D => write!(f, "1D"),
+            Self::_2D => write!(f, "2D"),
+        }
+    }
+}
+
+impl std::str::FromStr for STFallbackDimension {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "1D" => Ok(Self::_1D),
+            "2D" => Ok(Self::_2D),
+            _ => Err(format!("unknown STFallbackDimension value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STTextDirection {
+    #[serde(rename = "fromT")]
+    FromT,
+    #[serde(rename = "fromB")]
+    FromB,
+}
+
+impl std::fmt::Display for STTextDirection {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::FromT => write!(f, "fromT"),
+            Self::FromB => write!(f, "fromB"),
+        }
+    }
+}
+
+impl std::str::FromStr for STTextDirection {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "fromT" => Ok(Self::FromT),
+            "fromB" => Ok(Self::FromB),
+            _ => Err(format!("unknown STTextDirection value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STPyramidAccentPosition {
+    #[serde(rename = "bef")]
+    Bef,
+    #[serde(rename = "aft")]
+    Aft,
+}
+
+impl std::fmt::Display for STPyramidAccentPosition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Bef => write!(f, "bef"),
+            Self::Aft => write!(f, "aft"),
+        }
+    }
+}
+
+impl std::str::FromStr for STPyramidAccentPosition {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "bef" => Ok(Self::Bef),
+            "aft" => Ok(Self::Aft),
+            _ => Err(format!("unknown STPyramidAccentPosition value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STPyramidAccentTextMargin {
+    #[serde(rename = "step")]
+    Step,
+    #[serde(rename = "stack")]
+    Stack,
+}
+
+impl std::fmt::Display for STPyramidAccentTextMargin {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Step => write!(f, "step"),
+            Self::Stack => write!(f, "stack"),
+        }
+    }
+}
+
+impl std::str::FromStr for STPyramidAccentTextMargin {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "step" => Ok(Self::Step),
+            "stack" => Ok(Self::Stack),
+            _ => Err(format!("unknown STPyramidAccentTextMargin value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STTextBlockDirection {
+    #[serde(rename = "horz")]
+    Horz,
+    #[serde(rename = "vert")]
+    Vert,
+}
+
+impl std::fmt::Display for STTextBlockDirection {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Horz => write!(f, "horz"),
+            Self::Vert => write!(f, "vert"),
+        }
+    }
+}
+
+impl std::str::FromStr for STTextBlockDirection {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "horz" => Ok(Self::Horz),
+            "vert" => Ok(Self::Vert),
+            _ => Err(format!("unknown STTextBlockDirection value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STTextAnchorHorizontal {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "ctr")]
+    Ctr,
+}
+
+impl std::fmt::Display for STTextAnchorHorizontal {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::Ctr => write!(f, "ctr"),
+        }
+    }
+}
+
+impl std::str::FromStr for STTextAnchorHorizontal {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "ctr" => Ok(Self::Ctr),
+            _ => Err(format!("unknown STTextAnchorHorizontal value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STTextAnchorVertical {
+    #[serde(rename = "t")]
+    T,
+    #[serde(rename = "mid")]
+    Mid,
+    #[serde(rename = "b")]
+    B,
+}
+
+impl std::fmt::Display for STTextAnchorVertical {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::T => write!(f, "t"),
+            Self::Mid => write!(f, "mid"),
+            Self::B => write!(f, "b"),
+        }
+    }
+}
+
+impl std::str::FromStr for STTextAnchorVertical {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "t" => Ok(Self::T),
+            "mid" => Ok(Self::Mid),
+            "b" => Ok(Self::B),
+            _ => Err(format!("unknown STTextAnchorVertical value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STDiagramTextAlignment {
+    #[serde(rename = "l")]
+    L,
+    #[serde(rename = "ctr")]
+    Ctr,
+    #[serde(rename = "r")]
+    R,
+}
+
+impl std::fmt::Display for STDiagramTextAlignment {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::L => write!(f, "l"),
+            Self::Ctr => write!(f, "ctr"),
+            Self::R => write!(f, "r"),
+        }
+    }
+}
+
+impl std::str::FromStr for STDiagramTextAlignment {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "l" => Ok(Self::L),
+            "ctr" => Ok(Self::Ctr),
+            "r" => Ok(Self::R),
+            _ => Err(format!("unknown STDiagramTextAlignment value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STAutoTextRotation {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "upr")]
+    Upr,
+    #[serde(rename = "grav")]
+    Grav,
+}
+
+impl std::fmt::Display for STAutoTextRotation {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::Upr => write!(f, "upr"),
+            Self::Grav => write!(f, "grav"),
+        }
+    }
+}
+
+impl std::str::FromStr for STAutoTextRotation {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "upr" => Ok(Self::Upr),
+            "grav" => Ok(Self::Grav),
+            _ => Err(format!("unknown STAutoTextRotation value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STGrowDirection {
+    #[serde(rename = "tL")]
+    TL,
+    #[serde(rename = "tR")]
+    TR,
+    #[serde(rename = "bL")]
+    BL,
+    #[serde(rename = "bR")]
+    BR,
+}
+
+impl std::fmt::Display for STGrowDirection {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::TL => write!(f, "tL"),
+            Self::TR => write!(f, "tR"),
+            Self::BL => write!(f, "bL"),
+            Self::BR => write!(f, "bR"),
+        }
+    }
+}
+
+impl std::str::FromStr for STGrowDirection {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "tL" => Ok(Self::TL),
+            "tR" => Ok(Self::TR),
+            "bL" => Ok(Self::BL),
+            "bR" => Ok(Self::BR),
+            _ => Err(format!("unknown STGrowDirection value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STFlowDirection {
+    #[serde(rename = "row")]
+    Row,
+    #[serde(rename = "col")]
+    Col,
+}
+
+impl std::fmt::Display for STFlowDirection {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Row => write!(f, "row"),
+            Self::Col => write!(f, "col"),
+        }
+    }
+}
+
+impl std::str::FromStr for STFlowDirection {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "row" => Ok(Self::Row),
+            "col" => Ok(Self::Col),
+            _ => Err(format!("unknown STFlowDirection value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STContinueDirection {
+    #[serde(rename = "revDir")]
+    RevDir,
+    #[serde(rename = "sameDir")]
+    SameDir,
+}
+
+impl std::fmt::Display for STContinueDirection {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::RevDir => write!(f, "revDir"),
+            Self::SameDir => write!(f, "sameDir"),
+        }
+    }
+}
+
+impl std::str::FromStr for STContinueDirection {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "revDir" => Ok(Self::RevDir),
+            "sameDir" => Ok(Self::SameDir),
+            _ => Err(format!("unknown STContinueDirection value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STBreakpoint {
+    #[serde(rename = "endCnv")]
+    EndCnv,
+    #[serde(rename = "bal")]
+    Bal,
+    #[serde(rename = "fixed")]
+    Fixed,
+}
+
+impl std::fmt::Display for STBreakpoint {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::EndCnv => write!(f, "endCnv"),
+            Self::Bal => write!(f, "bal"),
+            Self::Fixed => write!(f, "fixed"),
+        }
+    }
+}
+
+impl std::str::FromStr for STBreakpoint {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "endCnv" => Ok(Self::EndCnv),
+            "bal" => Ok(Self::Bal),
+            "fixed" => Ok(Self::Fixed),
+            _ => Err(format!("unknown STBreakpoint value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STOffset {
+    #[serde(rename = "ctr")]
+    Ctr,
+    #[serde(rename = "off")]
+    Off,
+}
+
+impl std::fmt::Display for STOffset {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Ctr => write!(f, "ctr"),
+            Self::Off => write!(f, "off"),
+        }
+    }
+}
+
+impl std::str::FromStr for STOffset {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "ctr" => Ok(Self::Ctr),
+            "off" => Ok(Self::Off),
+            _ => Err(format!("unknown STOffset value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STHierarchyAlignment {
+    #[serde(rename = "tL")]
+    TL,
+    #[serde(rename = "tR")]
+    TR,
+    #[serde(rename = "tCtrCh")]
+    TCtrCh,
+    #[serde(rename = "tCtrDes")]
+    TCtrDes,
+    #[serde(rename = "bL")]
+    BL,
+    #[serde(rename = "bR")]
+    BR,
+    #[serde(rename = "bCtrCh")]
+    BCtrCh,
+    #[serde(rename = "bCtrDes")]
+    BCtrDes,
+    #[serde(rename = "lT")]
+    LT,
+    #[serde(rename = "lB")]
+    LB,
+    #[serde(rename = "lCtrCh")]
+    LCtrCh,
+    #[serde(rename = "lCtrDes")]
+    LCtrDes,
+    #[serde(rename = "rT")]
+    RT,
+    #[serde(rename = "rB")]
+    RB,
+    #[serde(rename = "rCtrCh")]
+    RCtrCh,
+    #[serde(rename = "rCtrDes")]
+    RCtrDes,
+}
+
+impl std::fmt::Display for STHierarchyAlignment {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::TL => write!(f, "tL"),
+            Self::TR => write!(f, "tR"),
+            Self::TCtrCh => write!(f, "tCtrCh"),
+            Self::TCtrDes => write!(f, "tCtrDes"),
+            Self::BL => write!(f, "bL"),
+            Self::BR => write!(f, "bR"),
+            Self::BCtrCh => write!(f, "bCtrCh"),
+            Self::BCtrDes => write!(f, "bCtrDes"),
+            Self::LT => write!(f, "lT"),
+            Self::LB => write!(f, "lB"),
+            Self::LCtrCh => write!(f, "lCtrCh"),
+            Self::LCtrDes => write!(f, "lCtrDes"),
+            Self::RT => write!(f, "rT"),
+            Self::RB => write!(f, "rB"),
+            Self::RCtrCh => write!(f, "rCtrCh"),
+            Self::RCtrDes => write!(f, "rCtrDes"),
+        }
+    }
+}
+
+impl std::str::FromStr for STHierarchyAlignment {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "tL" => Ok(Self::TL),
+            "tR" => Ok(Self::TR),
+            "tCtrCh" => Ok(Self::TCtrCh),
+            "tCtrDes" => Ok(Self::TCtrDes),
+            "bL" => Ok(Self::BL),
+            "bR" => Ok(Self::BR),
+            "bCtrCh" => Ok(Self::BCtrCh),
+            "bCtrDes" => Ok(Self::BCtrDes),
+            "lT" => Ok(Self::LT),
+            "lB" => Ok(Self::LB),
+            "lCtrCh" => Ok(Self::LCtrCh),
+            "lCtrDes" => Ok(Self::LCtrDes),
+            "rT" => Ok(Self::RT),
+            "rB" => Ok(Self::RB),
+            "rCtrCh" => Ok(Self::RCtrCh),
+            "rCtrDes" => Ok(Self::RCtrDes),
+            _ => Err(format!("unknown STHierarchyAlignment value: {}", s)),
+        }
+    }
+}
+
+pub type STFunctionValue = String;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STVariableType {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "orgChart")]
+    OrgChart,
+    #[serde(rename = "chMax")]
+    ChMax,
+    #[serde(rename = "chPref")]
+    ChPref,
+    #[serde(rename = "bulEnabled")]
+    BulEnabled,
+    #[serde(rename = "dir")]
+    Dir,
+    #[serde(rename = "hierBranch")]
+    HierBranch,
+    #[serde(rename = "animOne")]
+    AnimOne,
+    #[serde(rename = "animLvl")]
+    AnimLvl,
+    #[serde(rename = "resizeHandles")]
+    ResizeHandles,
+}
+
+impl std::fmt::Display for STVariableType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::OrgChart => write!(f, "orgChart"),
+            Self::ChMax => write!(f, "chMax"),
+            Self::ChPref => write!(f, "chPref"),
+            Self::BulEnabled => write!(f, "bulEnabled"),
+            Self::Dir => write!(f, "dir"),
+            Self::HierBranch => write!(f, "hierBranch"),
+            Self::AnimOne => write!(f, "animOne"),
+            Self::AnimLvl => write!(f, "animLvl"),
+            Self::ResizeHandles => write!(f, "resizeHandles"),
+        }
+    }
+}
+
+impl std::str::FromStr for STVariableType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "orgChart" => Ok(Self::OrgChart),
+            "chMax" => Ok(Self::ChMax),
+            "chPref" => Ok(Self::ChPref),
+            "bulEnabled" => Ok(Self::BulEnabled),
+            "dir" => Ok(Self::Dir),
+            "hierBranch" => Ok(Self::HierBranch),
+            "animOne" => Ok(Self::AnimOne),
+            "animLvl" => Ok(Self::AnimLvl),
+            "resizeHandles" => Ok(Self::ResizeHandles),
+            _ => Err(format!("unknown STVariableType value: {}", s)),
+        }
+    }
+}
+
+pub type STFunctionArgument = STVariableType;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STOutputShapeType {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "conn")]
+    Conn,
+}
+
+impl std::fmt::Display for STOutputShapeType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::Conn => write!(f, "conn"),
+        }
+    }
+}
+
+impl std::str::FromStr for STOutputShapeType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "conn" => Ok(Self::Conn),
+            _ => Err(format!("unknown STOutputShapeType value: {}", s)),
         }
     }
 }
@@ -13853,7 +16318,7 @@ pub struct BarSeries {
     #[cfg(feature = "dml-charts")]
     #[serde(rename = "shape")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub shape: Option<Box<BarShape>>,
+    pub shape: Option<Box<DiagramShape>>,
     #[cfg(feature = "dml-charts")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14370,8 +16835,8 @@ pub struct BarDirection {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct BarShape {
-    #[cfg(feature = "dml-charts")]
+pub struct DiagramShape {
+    #[cfg(feature = "dml-diagrams")]
     #[serde(rename = "@val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<BarShapeType>,
@@ -14487,7 +16952,7 @@ pub struct Bar3DChart {
     #[cfg(feature = "dml-charts")]
     #[serde(rename = "shape")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub shape: Option<Box<BarShape>>,
+    pub shape: Option<Box<DiagramShape>>,
     #[cfg(feature = "dml-charts")]
     #[serde(rename = "axId")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -16310,3 +18775,1881 @@ pub type DchrtChartSpace = Box<ChartSpace>;
 pub type DchrtUserShapes = String;
 
 pub type DchrtChart = Box<ChartRelId>;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ColorTransformName {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@lang")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lang: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@val")]
+    pub value: String,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ColorTransformDescription {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@lang")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lang: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@val")]
+    pub value: String,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DiagramColorCategory {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@type")]
+    pub r#type: String,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@pri")]
+    pub pri: u32,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DiagramColorCategories {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "cat")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub cat: Vec<DiagramColorCategory>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DiagramColors {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@meth")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub meth: Option<STClrAppMethod>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@hueDir")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub hue_dir: Option<STHueDir>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(skip)]
+    #[serde(default)]
+    pub color_choice: Vec<EGColorChoice>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DiagramColorStyleLabel {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@name")]
+    pub name: String,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "fillClrLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fill_clr_lst: Option<Box<DiagramColors>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "linClrLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lin_clr_lst: Option<Box<DiagramColors>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "effectClrLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub effect_clr_lst: Option<Box<DiagramColors>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "txLinClrLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_lin_clr_lst: Option<Box<DiagramColors>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "txFillClrLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_fill_clr_lst: Option<Box<DiagramColors>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "txEffectClrLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_effect_clr_lst: Option<Box<DiagramColors>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DiagramColorTransform {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@uniqueId")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub unique_id: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@minVer")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub min_ver: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "title")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub title: Vec<ColorTransformName>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "desc")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub desc: Vec<ColorTransformDescription>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "catLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cat_lst: Option<Box<DiagramColorCategories>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "styleLbl")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub style_lbl: Vec<DiagramColorStyleLabel>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+pub type DdgrmColorsDef = Box<DiagramColorTransform>;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DiagramColorTransformHeader {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@uniqueId")]
+    pub unique_id: String,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@minVer")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub min_ver: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@resId")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub res_id: Option<i32>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "title")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub title: Vec<ColorTransformName>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "desc")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub desc: Vec<ColorTransformDescription>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "catLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cat_lst: Option<Box<DiagramColorCategories>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+pub type DdgrmColorsDefHdr = Box<DiagramColorTransformHeader>;
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DiagramColorTransformHeaderList {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "colorsDefHdr")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub colors_def_hdr: Vec<DiagramColorTransformHeader>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+pub type DdgrmColorsDefHdrLst = Box<DiagramColorTransformHeaderList>;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DiagramPoint {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@modelId")]
+    pub model_id: STModelId,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@type")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub r#type: Option<STPtType>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@cxnId")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cxn_id: Option<STModelId>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "prSet")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pr_set: Option<Box<DiagramElementProperties>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "spPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_pr: Option<Box<CTShapeProperties>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "t")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub t: Option<Box<TextBody>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DiagramPointList {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "pt")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub pt: Vec<DiagramPoint>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DiagramConnection {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@modelId")]
+    pub model_id: STModelId,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@type")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub r#type: Option<STCxnType>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@srcId")]
+    pub src_id: STModelId,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@destId")]
+    pub dest_id: STModelId,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@srcOrd")]
+    pub src_ord: u32,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@destOrd")]
+    pub dest_ord: u32,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@parTransId")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub par_trans_id: Option<STModelId>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@sibTransId")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sib_trans_id: Option<STModelId>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@presId")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pres_id: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DiagramConnectionList {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "cxn")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub cxn: Vec<DiagramConnection>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DataModel {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "ptLst")]
+    pub pt_lst: Box<DiagramPointList>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "cxnLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cxn_lst: Option<Box<DiagramConnectionList>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "bg")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bg: Option<Box<CTBackgroundFormatting>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "whole")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub whole: Option<Box<CTWholeE2oFormatting>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+pub type DdgrmDataModel = Box<DataModel>;
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DdgrmAGIteratorAttributes {
+    #[serde(rename = "@axis")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub axis: Option<STAxisTypes>,
+    #[serde(rename = "@ptType")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pt_type: Option<STElementTypes>,
+    #[serde(rename = "@hideLastTrans")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub hide_last_trans: Option<STBooleans>,
+    #[serde(rename = "@st")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub st: Option<STInts>,
+    #[serde(rename = "@cnt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cnt: Option<STUnsignedInts>,
+    #[serde(rename = "@step")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub step: Option<STInts>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DdgrmAGConstraintAttributes {
+    #[serde(rename = "@type")]
+    pub r#type: STConstraintType,
+    #[serde(rename = "@for")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub r#for: Option<STConstraintRelationship>,
+    #[serde(rename = "@forName")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub for_name: Option<String>,
+    #[serde(rename = "@ptType")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pt_type: Option<STElementType>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DdgrmAGConstraintRefAttributes {
+    #[serde(rename = "@refType")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ref_type: Option<STConstraintType>,
+    #[serde(rename = "@refFor")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ref_for: Option<STConstraintRelationship>,
+    #[serde(rename = "@refForName")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ref_for_name: Option<String>,
+    #[serde(rename = "@refPtType")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ref_pt_type: Option<STElementType>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LayoutConstraint {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@type")]
+    pub r#type: STConstraintType,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@for")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub r#for: Option<STConstraintRelationship>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@forName")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub for_name: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@ptType")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pt_type: Option<STElementType>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@refType")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ref_type: Option<STConstraintType>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@refFor")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ref_for: Option<STConstraintRelationship>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@refForName")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ref_for_name: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@refPtType")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ref_pt_type: Option<STElementType>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@op")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub op: Option<STBoolOperator>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<f64>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@fact")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fact: Option<f64>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct LayoutConstraints {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "constr")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub constr: Vec<LayoutConstraint>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NumericRule {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@type")]
+    pub r#type: STConstraintType,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@for")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub r#for: Option<STConstraintRelationship>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@forName")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub for_name: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@ptType")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pt_type: Option<STElementType>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<f64>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@fact")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fact: Option<f64>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@max")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub max: Option<f64>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct LayoutRules {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "rule")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub rule: Vec<NumericRule>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct PresentationOf {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@axis")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub axis: Option<STAxisTypes>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@ptType")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pt_type: Option<STElementTypes>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@hideLastTrans")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub hide_last_trans: Option<STBooleans>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@st")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub st: Option<STInts>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@cnt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cnt: Option<STUnsignedInts>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@step")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub step: Option<STInts>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LayoutAdjustment {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@idx")]
+    pub idx: STIndex1,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@val")]
+    pub value: f64,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct LayoutAdjustmentList {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "adj")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub adj: Vec<LayoutAdjustment>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AlgorithmParameter {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@type")]
+    pub r#type: STParameterId,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@val")]
+    pub value: STParameterVal,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LayoutAlgorithm {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@type")]
+    pub r#type: STAlgorithmType,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@rev")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rev: Option<u32>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "param")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub param: Vec<AlgorithmParameter>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct LayoutNode {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@name")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@styleLbl")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub style_lbl: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@chOrder")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ch_order: Option<STChildOrderType>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@moveWith")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub move_with: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "alg")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub alg: Option<Box<LayoutAlgorithm>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "shape")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub shape: Option<Box<DiagramShape>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "presOf")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pres_of: Option<Box<PresentationOf>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "constrLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub constr_lst: Option<Box<LayoutConstraints>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "ruleLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rule_lst: Option<Box<LayoutRules>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "varLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub var_lst: Option<Box<LayoutVariableProperties>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "forEach")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub for_each: Vec<LayoutForEach>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "layoutNode")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub layout_node: Vec<LayoutNode>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "choose")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub choose: Vec<LayoutChoose>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct LayoutForEach {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@name")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@ref")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub r#ref: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@axis")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub axis: Option<STAxisTypes>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@ptType")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pt_type: Option<STElementTypes>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@hideLastTrans")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub hide_last_trans: Option<STBooleans>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@st")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub st: Option<STInts>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@cnt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cnt: Option<STUnsignedInts>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@step")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub step: Option<STInts>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "alg")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub alg: Option<Box<LayoutAlgorithm>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "shape")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub shape: Option<Box<DiagramShape>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "presOf")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pres_of: Option<Box<PresentationOf>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "constrLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub constr_lst: Option<Box<LayoutConstraints>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "ruleLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rule_lst: Option<Box<LayoutRules>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "forEach")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub for_each: Vec<LayoutForEach>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "layoutNode")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub layout_node: Vec<LayoutNode>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "choose")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub choose: Vec<LayoutChoose>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LayoutWhen {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@name")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@axis")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub axis: Option<STAxisTypes>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@ptType")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pt_type: Option<STElementTypes>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@hideLastTrans")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub hide_last_trans: Option<STBooleans>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@st")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub st: Option<STInts>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@cnt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cnt: Option<STUnsignedInts>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@step")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub step: Option<STInts>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@func")]
+    pub func: STFunctionType,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@arg")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub arg: Option<STFunctionArgument>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@op")]
+    pub op: STFunctionOperator,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@val")]
+    pub value: STFunctionValue,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "alg")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub alg: Option<Box<LayoutAlgorithm>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "shape")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub shape: Option<Box<DiagramShape>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "presOf")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pres_of: Option<Box<PresentationOf>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "constrLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub constr_lst: Option<Box<LayoutConstraints>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "ruleLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rule_lst: Option<Box<LayoutRules>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "forEach")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub for_each: Vec<LayoutForEach>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "layoutNode")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub layout_node: Vec<LayoutNode>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "choose")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub choose: Vec<LayoutChoose>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct LayoutOtherwise {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@name")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "alg")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub alg: Option<Box<LayoutAlgorithm>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "shape")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub shape: Option<Box<DiagramShape>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "presOf")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pres_of: Option<Box<PresentationOf>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "constrLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub constr_lst: Option<Box<LayoutConstraints>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "ruleLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rule_lst: Option<Box<LayoutRules>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "forEach")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub for_each: Vec<LayoutForEach>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "layoutNode")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub layout_node: Vec<LayoutNode>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "choose")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub choose: Vec<LayoutChoose>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct LayoutChoose {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@name")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "if")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub r#if: Vec<LayoutWhen>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "else")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub r#else: Option<Box<LayoutOtherwise>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DiagramSampleData {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@useDef")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub use_def: Option<bool>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "dataModel")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub data_model: Option<Box<DataModel>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DiagramCategory {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@type")]
+    pub r#type: String,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@pri")]
+    pub pri: u32,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DiagramCategories {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "cat")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub cat: Vec<DiagramCategory>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DiagramName {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@lang")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lang: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@val")]
+    pub value: String,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DiagramDescription {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@lang")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lang: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@val")]
+    pub value: String,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DiagramDefinition {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@uniqueId")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub unique_id: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@minVer")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub min_ver: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@defStyle")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub def_style: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "title")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub title: Vec<DiagramName>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "desc")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub desc: Vec<DiagramDescription>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "catLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cat_lst: Option<Box<DiagramCategories>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "sampData")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub samp_data: Option<Box<DiagramSampleData>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "styleData")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub style_data: Option<Box<DiagramSampleData>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "clrData")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub clr_data: Option<Box<DiagramSampleData>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "layoutNode")]
+    pub layout_node: Box<LayoutNode>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+pub type DdgrmLayoutDef = Box<DiagramDefinition>;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DiagramDefinitionHeader {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@uniqueId")]
+    pub unique_id: String,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@minVer")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub min_ver: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@defStyle")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub def_style: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@resId")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub res_id: Option<i32>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "title")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub title: Vec<DiagramName>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "desc")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub desc: Vec<DiagramDescription>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "catLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cat_lst: Option<Box<DiagramCategories>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+pub type DdgrmLayoutDefHdr = Box<DiagramDefinitionHeader>;
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DiagramDefinitionHeaderList {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "layoutDefHdr")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub layout_def_hdr: Vec<DiagramDefinitionHeader>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+pub type DdgrmLayoutDefHdrLst = Box<DiagramDefinitionHeaderList>;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DiagramRelationshipIds {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@r:dm")]
+    pub dm: STRelationshipId,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@r:lo")]
+    pub lo: STRelationshipId,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@r:qs")]
+    pub qs: STRelationshipId,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@r:cs")]
+    pub cs: STRelationshipId,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+pub type DdgrmRelIds = Box<DiagramRelationshipIds>;
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DiagramElementProperties {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@presAssocID")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pres_assoc_i_d: Option<STModelId>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@presName")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pres_name: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@presStyleLbl")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pres_style_lbl: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@presStyleIdx")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pres_style_idx: Option<i32>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@presStyleCnt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pres_style_cnt: Option<i32>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@loTypeId")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lo_type_id: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@loCatId")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lo_cat_id: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@qsTypeId")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub qs_type_id: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@qsCatId")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub qs_cat_id: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@csTypeId")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cs_type_id: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@csCatId")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cs_cat_id: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@coherent3DOff")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub coherent3_d_off: Option<bool>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@phldrT")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub phldr_t: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@phldr")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub phldr: Option<bool>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@custAng")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cust_ang: Option<i32>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@custFlipVert")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub cust_flip_vert: Option<bool>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@custFlipHor")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub cust_flip_hor: Option<bool>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@custSzX")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cust_sz_x: Option<i32>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@custSzY")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cust_sz_y: Option<i32>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@custScaleX")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cust_scale_x: Option<STPrSetCustVal>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@custScaleY")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cust_scale_y: Option<STPrSetCustVal>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@custT")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub cust_t: Option<bool>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@custLinFactX")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cust_lin_fact_x: Option<STPrSetCustVal>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@custLinFactY")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cust_lin_fact_y: Option<STPrSetCustVal>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@custLinFactNeighborX")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cust_lin_fact_neighbor_x: Option<STPrSetCustVal>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@custLinFactNeighborY")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cust_lin_fact_neighbor_y: Option<STPrSetCustVal>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@custRadScaleRad")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cust_rad_scale_rad: Option<STPrSetCustVal>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@custRadScaleInc")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cust_rad_scale_inc: Option<STPrSetCustVal>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "presLayoutVars")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pres_layout_vars: Option<Box<LayoutVariableProperties>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "style")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub style: Option<Box<ShapeStyle>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct OrgChartProperties {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@val")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub value: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ChildMaximum {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<STNodeCount>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ChildPreference {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<STNodeCount>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct BulletEnabled {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@val")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub value: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct LayoutDirection {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<STDirection>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct HierarchyBranchStyle {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<STHierBranchStyle>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct AnimateOneByOne {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<STAnimOneStr>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct AnimateLevel {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<STAnimLvlStr>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ResizeHandles {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<STResizeHandlesStr>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct LayoutVariableProperties {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "orgChart")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub org_chart: Option<Box<OrgChartProperties>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "chMax")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ch_max: Option<Box<ChildMaximum>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "chPref")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ch_pref: Option<Box<ChildPreference>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "bulletEnabled")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bullet_enabled: Option<Box<BulletEnabled>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "dir")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dir: Option<Box<LayoutDirection>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "hierBranch")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub hier_branch: Option<Box<HierarchyBranchStyle>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "animOne")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub anim_one: Option<Box<AnimateOneByOne>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "animLvl")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub anim_lvl: Option<Box<AnimateLevel>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "resizeHandles")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub resize_handles: Option<Box<ResizeHandles>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StyleDefinitionName {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@lang")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lang: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@val")]
+    pub value: String,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StyleDefinitionDescription {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@lang")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lang: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@val")]
+    pub value: String,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DiagramStyleCategory {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@type")]
+    pub r#type: String,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@pri")]
+    pub pri: u32,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DiagramStyleCategories {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "cat")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub cat: Vec<DiagramStyleCategory>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DiagramTextProperties {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(skip)]
+    #[serde(default)]
+    pub text3_d: Option<Box<EGText3D>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DiagramStyleLabel {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@name")]
+    pub name: String,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "scene3d")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub scene3d: Option<Box<CTScene3D>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "sp3d")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp3d: Option<Box<CTShape3D>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "txPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_pr: Option<Box<DiagramTextProperties>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "style")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub style: Option<Box<ShapeStyle>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DiagramStyleDefinition {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@uniqueId")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub unique_id: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@minVer")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub min_ver: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "title")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub title: Vec<StyleDefinitionName>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "desc")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub desc: Vec<StyleDefinitionDescription>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "catLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cat_lst: Option<Box<DiagramStyleCategories>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "scene3d")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub scene3d: Option<Box<CTScene3D>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "styleLbl")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub style_lbl: Vec<DiagramStyleLabel>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+pub type DdgrmStyleDef = Box<DiagramStyleDefinition>;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DiagramStyleDefinitionHeader {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@uniqueId")]
+    pub unique_id: String,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@minVer")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub min_ver: Option<String>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "@resId")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub res_id: Option<i32>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "title")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub title: Vec<StyleDefinitionName>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "desc")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub desc: Vec<StyleDefinitionDescription>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "catLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cat_lst: Option<Box<DiagramStyleCategories>>,
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+pub type DdgrmStyleDefHdr = Box<DiagramStyleDefinitionHeader>;
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DiagramStyleDefinitionHeaderList {
+    #[cfg(feature = "dml-diagrams")]
+    #[serde(rename = "styleDefHdr")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub style_def_hdr: Vec<DiagramStyleDefinitionHeader>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+pub type DdgrmStyleDefHdrLst = Box<DiagramStyleDefinitionHeaderList>;

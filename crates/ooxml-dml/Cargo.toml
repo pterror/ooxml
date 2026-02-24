@@ -21,6 +21,7 @@ full = [
     "dml-media",
     "dml-extensions",
     "dml-charts",
+    "dml-diagrams",
     "extra-attrs",
     "extra-children",
 ]
@@ -37,6 +38,7 @@ dml-3d = []            # 3D effects, scenes, lighting
 dml-media = []         # Audio/video content
 dml-extensions = []    # Extension lists
 dml-charts = []        # Chart types (ECMA-376 §21.2)
+dml-diagrams = []      # SmartArt/Diagram types (ECMA-376 §21.4)
 extra-attrs = []
 extra-children = []
 
