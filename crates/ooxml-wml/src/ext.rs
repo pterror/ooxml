@@ -891,14 +891,9 @@ impl PictExt for types::CTPicture {
 
 /// A math expression extracted from an `<m:oMath>` element (ECMA-376 Part 1 §22.1).
 ///
-/// The text approximation is produced by walking `<m:t>` elements in the OMML
-/// tree and concatenating their text content.  It is intentionally
-/// best-effort — accurate enough for search/indexing but not a LaTeX rendering.
 #[cfg(feature = "extra-children")]
 #[derive(Debug, Clone, PartialEq)]
 pub struct MathExpression {
-    /// Plain-text approximation (concatenated `m:t` text nodes).
-    pub text_approximation: String,
     /// `true` for display (block) math (`<m:oMathPara>`), `false` for inline (`<m:oMath>`).
     pub is_display: bool,
 }
@@ -959,25 +954,10 @@ fn collect_math_from_raw(elem: &ooxml_xml::RawXmlElement, out: &mut Vec<MathExpr
     let local = math_local_name(&elem.name);
     match local {
         "oMathPara" => {
-            // Display math: collect text from all oMath children inside.
-            let mut text = String::new();
-            for child in &elem.children {
-                if let ooxml_xml::RawXmlNode::Element(child_elem) = child {
-                    collect_math_text(child_elem, &mut text);
-                }
-            }
-            out.push(MathExpression {
-                text_approximation: text,
-                is_display: true,
-            });
+            out.push(MathExpression { is_display: true });
         }
         "oMath" => {
-            let mut text = String::new();
-            collect_math_text(elem, &mut text);
-            out.push(MathExpression {
-                text_approximation: text,
-                is_display: false,
-            });
+            out.push(MathExpression { is_display: false });
         }
         _ => {
             // Recurse into unrecognised wrapper elements.
@@ -986,25 +966,6 @@ fn collect_math_from_raw(elem: &ooxml_xml::RawXmlElement, out: &mut Vec<MathExpr
                     collect_math_from_raw(child_elem, out);
                 }
             }
-        }
-    }
-}
-
-/// Recursively collect text from `<m:t>` leaves within an OMML subtree.
-#[cfg(feature = "extra-children")]
-fn collect_math_text(elem: &ooxml_xml::RawXmlElement, out: &mut String) {
-    if math_local_name(&elem.name) == "t" {
-        // Text leaf — collect direct text children.
-        for child in &elem.children {
-            if let ooxml_xml::RawXmlNode::Text(t) = child {
-                out.push_str(t);
-            }
-        }
-        return;
-    }
-    for child in &elem.children {
-        if let ooxml_xml::RawXmlNode::Element(child_elem) = child {
-            collect_math_text(child_elem, out);
         }
     }
 }
@@ -4482,7 +4443,6 @@ mod tests {
         let para = make_paragraph_with_inline_math("x+y");
         let exprs = para.math_expressions();
         assert_eq!(exprs.len(), 1);
-        assert_eq!(exprs[0].text_approximation, "x+y");
         assert!(!exprs[0].is_display);
     }
 
@@ -4493,7 +4453,6 @@ mod tests {
         let para = make_paragraph_with_display_math("E=mc²");
         let exprs = para.math_expressions();
         assert_eq!(exprs.len(), 1);
-        assert_eq!(exprs[0].text_approximation, "E=mc²");
         assert!(exprs[0].is_display);
     }
 
@@ -4571,9 +4530,7 @@ mod tests {
 
         let exprs = body.math_expressions();
         assert_eq!(exprs.len(), 2);
-        assert_eq!(exprs[0].text_approximation, "x+y");
         assert!(!exprs[0].is_display);
-        assert_eq!(exprs[1].text_approximation, "∫f(x)dx");
         assert!(exprs[1].is_display);
     }
 }
