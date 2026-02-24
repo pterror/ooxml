@@ -76,6 +76,6 @@ pub use workbook::{
 pub use writer::{
     BorderLineStyle, BorderSideStyle, BorderStyle, CellStyle, CommentBuilder, ConditionalFormat,
     ConditionalFormatRule, DataValidationBuilder, DefinedNameBuilder, FillPattern, FillStyle,
-    FontStyle, HorizontalAlignment, SheetBuilder, UnderlineStyle, VerticalAlignment,
-    WorkbookBuilder, WriteCellValue,
+    FontStyle, HorizontalAlignment, IgnoredErrorType, PageOrientation, PageSetupOptions,
+    SheetBuilder, UnderlineStyle, VerticalAlignment, WorkbookBuilder, WriteCellValue,
 };

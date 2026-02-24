@@ -965,6 +965,91 @@ struct HyperlinkEntry {
     display: Option<String>,
 }
 
+/// Page orientation for `set_page_setup`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum PageOrientation {
+    /// Portrait orientation (taller than wide).
+    #[default]
+    Portrait,
+    /// Landscape orientation (wider than tall).
+    Landscape,
+}
+
+/// Options for `SheetBuilder::set_page_setup`.
+///
+/// All fields are optional; unset fields are left at their Excel defaults.
+#[derive(Debug, Clone, Default)]
+pub struct PageSetupOptions {
+    /// Page orientation.
+    pub orientation: Option<PageOrientation>,
+    /// Paper size (e.g. 1 = Letter, 9 = A4). See ECMA-376 §18.18.43.
+    pub paper_size: Option<u32>,
+    /// Scaling percentage (10–400). Use instead of `fit_to_width`/`fit_to_height`.
+    pub scale: Option<u32>,
+    /// Fit to this many pages wide (0 = auto). Used with `fit_to_height`.
+    pub fit_to_width: Option<u32>,
+    /// Fit to this many pages tall (0 = auto). Used with `fit_to_width`.
+    pub fit_to_height: Option<u32>,
+}
+
+impl PageSetupOptions {
+    /// Create a new empty page-setup options object.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Set the page orientation.
+    pub fn with_orientation(mut self, orientation: PageOrientation) -> Self {
+        self.orientation = Some(orientation);
+        self
+    }
+
+    /// Set the paper size.
+    pub fn with_paper_size(mut self, size: u32) -> Self {
+        self.paper_size = Some(size);
+        self
+    }
+
+    /// Set the scaling percentage.
+    pub fn with_scale(mut self, scale: u32) -> Self {
+        self.scale = Some(scale);
+        self
+    }
+
+    /// Set the fit-to-pages dimensions.
+    pub fn with_fit_to(mut self, width: u32, height: u32) -> Self {
+        self.fit_to_width = Some(width);
+        self.fit_to_height = Some(height);
+        self
+    }
+}
+
+/// Error type for `add_ignored_error`.
+///
+/// Each variant corresponds to one of the boolean flags on the `<ignoredError>`
+/// element (ECMA-376 §18.3.1.35).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum IgnoredErrorType {
+    /// Number stored as text (the most common Excel warning).
+    NumberStoredAsText,
+    /// Formula error (e.g. #VALUE!, #REF!).
+    Formula,
+    /// Two-digit text year.
+    TwoDigitTextYear,
+    /// Formula evaluation error.
+    EvalError,
+    /// Formula range mismatch.
+    FormulaRange,
+    /// Unlocked formula in a protected sheet.
+    UnlockedFormula,
+    /// Empty cell reference.
+    EmptyCellReference,
+    /// List data validation mismatch.
+    ListDataValidation,
+    /// Calculated column formula inconsistency.
+    CalculatedColumn,
+}
+
 /// A sheet being built.
 #[derive(Debug)]
 pub struct SheetBuilder {
@@ -973,10 +1058,22 @@ pub struct SheetBuilder {
     cells: HashMap<(u32, u32), BuilderCell>,
     /// Row heights applied to Row elements at write time.
     row_heights: HashMap<u32, f64>,
+    /// Per-row outline levels (ECMA-376 §18.3.1.73 `@outlineLevel`).
+    row_outline_levels: HashMap<u32, u8>,
+    /// Per-row collapsed flag (ECMA-376 §18.3.1.73 `@collapsed`).
+    row_collapsed: HashMap<u32, bool>,
+    /// Per-column outline levels (ECMA-376 §18.3.1.13 `@outlineLevel`).
+    col_outline_levels: HashMap<u32, u8>,
+    /// Per-column collapsed flag (ECMA-376 §18.3.1.13 `@collapsed`).
+    col_collapsed: HashMap<u32, bool>,
     /// Comments go into a separate XML file, not into Worksheet.
     comments: Vec<CommentBuilder>,
     /// Hyperlinks, resolved to worksheet XML + sheet rels at write time.
     hyperlinks: Vec<HyperlinkEntry>,
+    /// Show/hide gridlines for the default sheet view.
+    show_gridlines: Option<bool>,
+    /// Show/hide row and column headers for the default sheet view.
+    show_row_col_headers: Option<bool>,
     /// All other worksheet state lives here directly; mutated by setter methods.
     worksheet: types::Worksheet,
 }
@@ -1073,8 +1170,14 @@ impl SheetBuilder {
             name: name.into(),
             cells: HashMap::new(),
             row_heights: HashMap::new(),
+            row_outline_levels: HashMap::new(),
+            row_collapsed: HashMap::new(),
+            col_outline_levels: HashMap::new(),
+            col_collapsed: HashMap::new(),
             comments: Vec::new(),
             hyperlinks: Vec::new(),
+            show_gridlines: None,
+            show_row_col_headers: None,
             worksheet: init_worksheet(),
         }
     }
@@ -1562,6 +1665,279 @@ impl SheetBuilder {
             tooltip: None,
             display: None,
         });
+    }
+
+    // -------------------------------------------------------------------------
+    // Page layout
+    // -------------------------------------------------------------------------
+
+    /// Set the page setup options for printing (ECMA-376 §18.3.1.63).
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// sheet.set_page_setup(PageSetupOptions::new()
+    ///     .with_orientation(PageOrientation::Landscape)
+    ///     .with_paper_size(9));  // A4
+    /// ```
+    pub fn set_page_setup(&mut self, opts: PageSetupOptions) {
+        #[cfg(feature = "sml-layout")]
+        {
+            let orientation = opts.orientation.map(|o| match o {
+                PageOrientation::Portrait => types::STOrientation::Portrait,
+                PageOrientation::Landscape => types::STOrientation::Landscape,
+            });
+            self.worksheet.page_setup = Some(Box::new(types::PageSetup {
+                #[cfg(feature = "sml-layout")]
+                paper_size: opts.paper_size,
+                #[cfg(feature = "sml-layout")]
+                paper_height: None,
+                #[cfg(feature = "sml-layout")]
+                paper_width: None,
+                #[cfg(feature = "sml-layout")]
+                scale: opts.scale,
+                #[cfg(feature = "sml-layout")]
+                first_page_number: None,
+                #[cfg(feature = "sml-layout")]
+                fit_to_width: opts.fit_to_width,
+                #[cfg(feature = "sml-layout")]
+                fit_to_height: opts.fit_to_height,
+                #[cfg(feature = "sml-layout")]
+                page_order: None,
+                #[cfg(feature = "sml-layout")]
+                orientation,
+                #[cfg(feature = "sml-layout")]
+                use_printer_defaults: None,
+                #[cfg(feature = "sml-layout")]
+                black_and_white: None,
+                #[cfg(feature = "sml-layout")]
+                draft: None,
+                #[cfg(feature = "sml-layout")]
+                cell_comments: None,
+                #[cfg(feature = "sml-layout")]
+                use_first_page_number: None,
+                #[cfg(feature = "sml-layout")]
+                errors: None,
+                #[cfg(feature = "sml-layout")]
+                horizontal_dpi: None,
+                #[cfg(feature = "sml-layout")]
+                vertical_dpi: None,
+                #[cfg(feature = "sml-layout")]
+                copies: None,
+                id: None,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+            }));
+        }
+        #[cfg(not(feature = "sml-layout"))]
+        let _ = opts;
+    }
+
+    /// Set the page margins for printing (ECMA-376 §18.3.1.62).
+    ///
+    /// All measurements are in inches.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// sheet.set_page_margins(0.7, 0.7, 0.75, 0.75, 0.3, 0.3);
+    /// ```
+    pub fn set_page_margins(
+        &mut self,
+        left: f64,
+        right: f64,
+        top: f64,
+        bottom: f64,
+        header: f64,
+        footer: f64,
+    ) {
+        #[cfg(feature = "sml-layout")]
+        {
+            self.worksheet.page_margins = Some(Box::new(types::PageMargins {
+                #[cfg(feature = "sml-layout")]
+                left,
+                #[cfg(feature = "sml-layout")]
+                right,
+                #[cfg(feature = "sml-layout")]
+                top,
+                #[cfg(feature = "sml-layout")]
+                bottom,
+                #[cfg(feature = "sml-layout")]
+                header,
+                #[cfg(feature = "sml-layout")]
+                footer,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+            }));
+        }
+        #[cfg(not(feature = "sml-layout"))]
+        let _ = (left, right, top, bottom, header, footer);
+    }
+
+    // -------------------------------------------------------------------------
+    // Row and column grouping (outline)
+    // -------------------------------------------------------------------------
+
+    /// Set the outline level for a row (ECMA-376 §18.3.1.73 `@outlineLevel`).
+    ///
+    /// Level 0 means no grouping; levels 1–7 define nested groups.
+    pub fn set_row_outline_level(&mut self, row: u32, level: u8) {
+        self.row_outline_levels.insert(row, level);
+    }
+
+    /// Set whether a row should be displayed as collapsed (ECMA-376 §18.3.1.73 `@collapsed`).
+    pub fn set_row_collapsed(&mut self, row: u32, collapsed: bool) {
+        self.row_collapsed.insert(row, collapsed);
+    }
+
+    /// Set the outline level for a column (ECMA-376 §18.3.1.13 `@outlineLevel`).
+    ///
+    /// Column is specified by letter (e.g., "A", "B", "AA").
+    pub fn set_column_outline_level(&mut self, col: &str, level: u8) {
+        if let Some(col_num) = column_letter_to_number(col) {
+            self.col_outline_levels.insert(col_num, level);
+        }
+    }
+
+    /// Set whether a column should be displayed as collapsed (ECMA-376 §18.3.1.13 `@collapsed`).
+    ///
+    /// Column is specified by letter (e.g., "A", "B", "AA").
+    pub fn set_column_collapsed(&mut self, col: &str, collapsed: bool) {
+        if let Some(col_num) = column_letter_to_number(col) {
+            self.col_collapsed.insert(col_num, collapsed);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Ignored errors
+    // -------------------------------------------------------------------------
+
+    /// Suppress an Excel validation warning for a cell range (ECMA-376 §18.3.1.35).
+    ///
+    /// This tells Excel to ignore the specified error type for the given range,
+    /// preventing the green-triangle warning indicators.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// // Suppress the "number stored as text" warning on A1:A10
+    /// sheet.add_ignored_error("A1:A10", IgnoredErrorType::NumberStoredAsText);
+    /// ```
+    pub fn add_ignored_error(&mut self, sqref: &str, error_type: IgnoredErrorType) {
+        #[cfg(feature = "sml-validation")]
+        {
+            let mut entry = types::IgnoredError {
+                square_reference: sqref.to_string(),
+                eval_error: None,
+                two_digit_text_year: None,
+                number_stored_as_text: None,
+                formula: None,
+                formula_range: None,
+                unlocked_formula: None,
+                empty_cell_reference: None,
+                list_data_validation: None,
+                calculated_column: None,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+            };
+            match error_type {
+                IgnoredErrorType::NumberStoredAsText => {
+                    entry.number_stored_as_text = Some(true);
+                }
+                IgnoredErrorType::Formula => {
+                    entry.formula = Some(true);
+                }
+                IgnoredErrorType::TwoDigitTextYear => {
+                    entry.two_digit_text_year = Some(true);
+                }
+                IgnoredErrorType::EvalError => {
+                    entry.eval_error = Some(true);
+                }
+                IgnoredErrorType::FormulaRange => {
+                    entry.formula_range = Some(true);
+                }
+                IgnoredErrorType::UnlockedFormula => {
+                    entry.unlocked_formula = Some(true);
+                }
+                IgnoredErrorType::EmptyCellReference => {
+                    entry.empty_cell_reference = Some(true);
+                }
+                IgnoredErrorType::ListDataValidation => {
+                    entry.list_data_validation = Some(true);
+                }
+                IgnoredErrorType::CalculatedColumn => {
+                    entry.calculated_column = Some(true);
+                }
+            }
+            let ie = self.worksheet.ignored_errors.get_or_insert_with(|| {
+                Box::new(types::IgnoredErrors {
+                    ignored_error: Vec::new(),
+                    extension_list: None,
+                    #[cfg(feature = "extra-children")]
+                    extra_children: Vec::new(),
+                })
+            });
+            ie.ignored_error.push(entry);
+        }
+        #[cfg(not(feature = "sml-validation"))]
+        let _ = (sqref, error_type);
+    }
+
+    // -------------------------------------------------------------------------
+    // Tab color
+    // -------------------------------------------------------------------------
+
+    /// Set the sheet tab color (ECMA-376 §18.3.1.77).
+    ///
+    /// The color is an RGB hex string (e.g. `"FF0000"` for red, `"4472C4"` for
+    /// the Excel blue theme color).
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// sheet.set_tab_color("FF0000"); // red tab
+    /// ```
+    pub fn set_tab_color(&mut self, rgb: &str) {
+        #[cfg(feature = "sml-styling")]
+        {
+            let color = Box::new(types::Color {
+                auto: None,
+                indexed: None,
+                rgb: Some(hex_color_to_bytes(rgb)),
+                theme: None,
+                tint: None,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+            });
+            let props = self
+                .worksheet
+                .sheet_properties
+                .get_or_insert_with(|| Box::new(types::SheetProperties::default()));
+            props.tab_color = Some(color);
+        }
+        #[cfg(not(feature = "sml-styling"))]
+        let _ = rgb;
+    }
+
+    // -------------------------------------------------------------------------
+    // Sheet view options
+    // -------------------------------------------------------------------------
+
+    /// Show or hide gridlines in the default sheet view (ECMA-376 §18.3.1.76
+    /// `@showGridLines`).
+    ///
+    /// Gridlines are visible by default in Excel; pass `false` to hide them.
+    pub fn set_show_gridlines(&mut self, show: bool) {
+        self.show_gridlines = Some(show);
+    }
+
+    /// Show or hide row and column headers in the default sheet view
+    /// (ECMA-376 §18.3.1.76 `@showRowColHeaders`).
+    ///
+    /// Row/col headers are visible by default in Excel; pass `false` to hide
+    /// them.
+    pub fn set_show_row_col_headers(&mut self, show: bool) {
+        self.show_row_col_headers = Some(show);
     }
 
     /// Get the sheet name.
@@ -2496,6 +2872,16 @@ impl WorkbookBuilder {
             rows_map.entry(*row).or_default().push((*col, cell));
         }
 
+        // Any rows that have outline/collapsed but no cells still need a Row element.
+        #[cfg(feature = "sml-structure")]
+        for &row_num in sheet
+            .row_outline_levels
+            .keys()
+            .chain(sheet.row_collapsed.keys())
+        {
+            rows_map.entry(row_num).or_default();
+        }
+
         // Sort and build rows
         let mut row_nums: Vec<_> = rows_map.keys().copied().collect();
         row_nums.sort();
@@ -2528,9 +2914,9 @@ impl WorkbookBuilder {
                     #[cfg(feature = "sml-styling")]
                     custom_height: row_heights.get(&row_num).map(|_| true),
                     #[cfg(feature = "sml-structure")]
-                    outline_level: None,
+                    outline_level: sheet.row_outline_levels.get(&row_num).copied(),
                     #[cfg(feature = "sml-structure")]
-                    collapsed: None,
+                    collapsed: sheet.row_collapsed.get(&row_num).copied(),
                     #[cfg(feature = "sml-styling")]
                     thick_top: None,
                     #[cfg(feature = "sml-styling")]
@@ -2555,6 +2941,149 @@ impl WorkbookBuilder {
             #[cfg(feature = "extra-children")]
             extra_children: Vec::new(),
         });
+
+        // Apply column outline levels and collapsed flags (if any).
+        // We update existing Column entries in place; if a column has outline/collapsed
+        // but no width entry (no Col element yet), we add one.
+        #[cfg(all(feature = "sml-styling", feature = "sml-structure"))]
+        if !sheet.col_outline_levels.is_empty() || !sheet.col_collapsed.is_empty() {
+            // Collect all column numbers that need outline/collapsed attributes.
+            let mut col_nums: std::collections::HashSet<u32> = std::collections::HashSet::new();
+            col_nums.extend(sheet.col_outline_levels.keys().copied());
+            col_nums.extend(sheet.col_collapsed.keys().copied());
+
+            for col_num in col_nums {
+                let level = sheet.col_outline_levels.get(&col_num).copied();
+                let collapsed = sheet.col_collapsed.get(&col_num).copied();
+
+                // Look for an existing Column entry that covers col_num.
+                let mut found = false;
+                for cols_group in &mut worksheet.cols {
+                    for col_entry in &mut cols_group.col {
+                        if col_entry.start_column <= col_num && col_num <= col_entry.end_column {
+                            if level.is_some() {
+                                col_entry.outline_level = level;
+                            }
+                            if collapsed.is_some() {
+                                col_entry.collapsed = collapsed;
+                            }
+                            found = true;
+                            break;
+                        }
+                    }
+                    if found {
+                        break;
+                    }
+                }
+
+                if !found {
+                    // No existing column entry — create a minimal one just for
+                    // the outline/collapsed attributes.
+                    let col_entry = types::Column {
+                        #[cfg(feature = "sml-styling")]
+                        start_column: col_num,
+                        #[cfg(feature = "sml-styling")]
+                        end_column: col_num,
+                        #[cfg(feature = "sml-styling")]
+                        width: None,
+                        #[cfg(feature = "sml-styling")]
+                        style: None,
+                        #[cfg(feature = "sml-structure")]
+                        hidden: None,
+                        #[cfg(feature = "sml-styling")]
+                        best_fit: None,
+                        #[cfg(feature = "sml-styling")]
+                        custom_width: None,
+                        #[cfg(feature = "sml-i18n")]
+                        phonetic: None,
+                        #[cfg(feature = "sml-structure")]
+                        outline_level: level,
+                        #[cfg(feature = "sml-structure")]
+                        collapsed,
+                        #[cfg(feature = "extra-attrs")]
+                        extra_attrs: Default::default(),
+                    };
+                    if let Some(cols_group) = worksheet.cols.first_mut() {
+                        cols_group.col.push(col_entry);
+                    } else {
+                        worksheet.cols.push(types::Columns {
+                            col: vec![col_entry],
+                            #[cfg(feature = "extra-children")]
+                            extra_children: Vec::new(),
+                        });
+                    }
+                }
+            }
+        }
+
+        // Apply show_gridlines / show_row_col_headers to the sheet view.
+        #[cfg(feature = "sml-styling")]
+        if sheet.show_gridlines.is_some() || sheet.show_row_col_headers.is_some() {
+            if let Some(views) = worksheet.sheet_views.as_mut() {
+                // Modify the first (default) sheet view if one already exists.
+                if let Some(sv) = views.sheet_view.first_mut() {
+                    if let Some(v) = sheet.show_gridlines {
+                        sv.show_grid_lines = Some(v);
+                    }
+                    if let Some(v) = sheet.show_row_col_headers {
+                        sv.show_row_col_headers = Some(v);
+                    }
+                }
+            } else {
+                // No sheet view yet — create a minimal one.
+                let sv = types::SheetView {
+                    #[cfg(feature = "sml-protection")]
+                    window_protection: None,
+                    #[cfg(feature = "sml-formulas")]
+                    show_formulas: None,
+                    #[cfg(feature = "sml-styling")]
+                    show_grid_lines: sheet.show_gridlines,
+                    #[cfg(feature = "sml-styling")]
+                    show_row_col_headers: sheet.show_row_col_headers,
+                    #[cfg(feature = "sml-styling")]
+                    show_zeros: None,
+                    #[cfg(feature = "sml-i18n")]
+                    right_to_left: None,
+                    tab_selected: None,
+                    #[cfg(feature = "sml-layout")]
+                    show_ruler: None,
+                    #[cfg(feature = "sml-structure")]
+                    show_outline_symbols: None,
+                    #[cfg(feature = "sml-styling")]
+                    default_grid_color: None,
+                    #[cfg(feature = "sml-layout")]
+                    show_white_space: None,
+                    view: None,
+                    top_left_cell: None,
+                    #[cfg(feature = "sml-styling")]
+                    color_id: None,
+                    zoom_scale: None,
+                    zoom_scale_normal: None,
+                    #[cfg(feature = "sml-layout")]
+                    zoom_scale_sheet_layout_view: None,
+                    #[cfg(feature = "sml-layout")]
+                    zoom_scale_page_layout_view: None,
+                    workbook_view_id: 0,
+                    #[cfg(feature = "sml-structure")]
+                    pane: None,
+                    selection: Vec::new(),
+                    #[cfg(feature = "sml-pivot")]
+                    pivot_selection: Vec::new(),
+                    #[cfg(feature = "sml-extensions")]
+                    extension_list: None,
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                    #[cfg(feature = "extra-children")]
+                    extra_children: Vec::new(),
+                };
+                worksheet.sheet_views = Some(Box::new(types::SheetViews {
+                    sheet_view: vec![sv],
+                    extension_list: None,
+                    #[cfg(feature = "extra-children")]
+                    extra_children: Vec::new(),
+                }));
+            }
+        }
 
         // Inject hyperlinks (external ones carry their rId; internal ones use location).
         #[cfg(feature = "sml-hyperlinks")]
@@ -4009,5 +4538,294 @@ mod tests {
         assert_eq!(hyperlinks.hyperlink.len(), 1);
         assert_eq!(hyperlinks.hyperlink[0].reference, "A1");
         assert!(hyperlinks.hyperlink[0].id.is_some());
+    }
+
+    // =========================================================================
+    // Page setup / margins
+    // =========================================================================
+
+    #[cfg(feature = "sml-layout")]
+    #[test]
+    fn test_roundtrip_page_setup() {
+        use std::io::Cursor;
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Sheet1");
+        sheet.set_cell("A1", "Print me");
+        sheet.set_page_setup(
+            PageSetupOptions::new()
+                .with_orientation(PageOrientation::Landscape)
+                .with_paper_size(9) // A4
+                .with_scale(80),
+        );
+
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
+        let read_sheet = workbook.resolved_sheet(0).unwrap();
+        let ws = read_sheet.worksheet();
+
+        let ps = ws.page_setup.as_deref().expect("page_setup should be set");
+        assert_eq!(ps.paper_size, Some(9));
+        assert_eq!(ps.scale, Some(80));
+        assert_eq!(ps.orientation, Some(crate::types::STOrientation::Landscape));
+    }
+
+    #[cfg(feature = "sml-layout")]
+    #[test]
+    fn test_roundtrip_page_margins() {
+        use std::io::Cursor;
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Sheet1");
+        sheet.set_cell("A1", "Data");
+        sheet.set_page_margins(0.7, 0.7, 0.75, 0.75, 0.3, 0.3);
+
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
+        let read_sheet = workbook.resolved_sheet(0).unwrap();
+        let ws = read_sheet.worksheet();
+
+        let pm = ws
+            .page_margins
+            .as_deref()
+            .expect("page_margins should be set");
+        assert!((pm.left - 0.7).abs() < f64::EPSILON);
+        assert!((pm.right - 0.7).abs() < f64::EPSILON);
+        assert!((pm.top - 0.75).abs() < f64::EPSILON);
+        assert!((pm.bottom - 0.75).abs() < f64::EPSILON);
+        assert!((pm.header - 0.3).abs() < f64::EPSILON);
+        assert!((pm.footer - 0.3).abs() < f64::EPSILON);
+    }
+
+    // =========================================================================
+    // Row / column outline grouping
+    // =========================================================================
+
+    #[cfg(all(feature = "sml-structure", feature = "sml-styling"))]
+    #[test]
+    fn test_roundtrip_row_outline() {
+        use std::io::Cursor;
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Sheet1");
+        sheet.set_cell("A1", "Header");
+        sheet.set_cell("A2", "Detail 1");
+        sheet.set_cell("A3", "Detail 2");
+        // Group rows 2–3 at outline level 1
+        sheet.set_row_outline_level(2, 1);
+        sheet.set_row_outline_level(3, 1);
+        // Mark the group as collapsed
+        sheet.set_row_collapsed(2, true);
+
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
+        let read_sheet = workbook.resolved_sheet(0).unwrap();
+
+        let row2 = read_sheet.row(2).expect("row 2 should exist");
+        assert_eq!(row2.outline_level, Some(1), "row 2 outline level");
+        assert_eq!(row2.collapsed, Some(true), "row 2 collapsed");
+
+        let row3 = read_sheet.row(3).expect("row 3 should exist");
+        assert_eq!(row3.outline_level, Some(1), "row 3 outline level");
+        assert_eq!(row3.collapsed, None, "row 3 not collapsed");
+    }
+
+    #[cfg(all(feature = "sml-structure", feature = "sml-styling"))]
+    #[test]
+    fn test_roundtrip_col_outline() {
+        use std::io::Cursor;
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Sheet1");
+        sheet.set_cell("A1", "Label");
+        sheet.set_cell("B1", "Detail");
+        sheet.set_column_outline_level("B", 1);
+        sheet.set_column_collapsed("B", true);
+
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
+        let read_sheet = workbook.resolved_sheet(0).unwrap();
+
+        let ws = read_sheet.worksheet();
+        let col_b = ws
+            .cols
+            .iter()
+            .flat_map(|c| &c.col)
+            .find(|c| c.start_column <= 2 && 2 <= c.end_column)
+            .expect("column B should have a definition");
+        assert_eq!(col_b.outline_level, Some(1), "col B outline level");
+        assert_eq!(col_b.collapsed, Some(true), "col B collapsed");
+    }
+
+    // =========================================================================
+    // Ignored errors
+    // =========================================================================
+
+    #[cfg(feature = "sml-validation")]
+    #[test]
+    fn test_roundtrip_ignored_errors() {
+        use std::io::Cursor;
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Sheet1");
+        sheet.set_cell("A1", "123"); // text that looks like a number
+        sheet.add_ignored_error("A1:A10", IgnoredErrorType::NumberStoredAsText);
+        sheet.add_ignored_error("B1:B5", IgnoredErrorType::TwoDigitTextYear);
+
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
+        let read_sheet = workbook.resolved_sheet(0).unwrap();
+        let ws = read_sheet.worksheet();
+
+        let ie = ws
+            .ignored_errors
+            .as_deref()
+            .expect("ignored_errors should be set");
+        assert_eq!(ie.ignored_error.len(), 2);
+
+        let first = &ie.ignored_error[0];
+        assert_eq!(first.square_reference.as_str(), "A1:A10");
+        assert_eq!(first.number_stored_as_text, Some(true));
+
+        let second = &ie.ignored_error[1];
+        assert_eq!(second.square_reference.as_str(), "B1:B5");
+        assert_eq!(second.two_digit_text_year, Some(true));
+    }
+
+    // =========================================================================
+    // Tab color
+    // =========================================================================
+
+    #[cfg(feature = "sml-styling")]
+    #[test]
+    fn test_roundtrip_tab_color() {
+        use std::io::Cursor;
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Red Sheet");
+        sheet.set_cell("A1", "Hello");
+        sheet.set_tab_color("FF0000"); // red
+
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
+        let read_sheet = workbook.resolved_sheet(0).unwrap();
+        let ws = read_sheet.worksheet();
+
+        let props = ws
+            .sheet_properties
+            .as_deref()
+            .expect("sheet_properties should be set");
+        let color = props.tab_color.as_deref().expect("tab_color should be set");
+        // rgb is stored as ARGB bytes: 0xFF, 0xFF, 0x00, 0x00
+        assert_eq!(
+            color.rgb.as_deref(),
+            Some(&[0xFF_u8, 0xFF, 0x00, 0x00] as &[u8])
+        );
+    }
+
+    // =========================================================================
+    // Sheet view options
+    // =========================================================================
+
+    #[cfg(feature = "sml-styling")]
+    #[test]
+    fn test_roundtrip_show_gridlines() {
+        use std::io::Cursor;
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Sheet1");
+        sheet.set_cell("A1", "Hello");
+        sheet.set_show_gridlines(false);
+
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
+        let read_sheet = workbook.resolved_sheet(0).unwrap();
+        let ws = read_sheet.worksheet();
+
+        let sv = ws
+            .sheet_views
+            .as_deref()
+            .and_then(|v| v.sheet_view.first())
+            .expect("sheet_views should be set");
+        assert_eq!(sv.show_grid_lines, Some(false));
+    }
+
+    #[cfg(feature = "sml-styling")]
+    #[test]
+    fn test_roundtrip_show_row_col_headers() {
+        use std::io::Cursor;
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Sheet1");
+        sheet.set_cell("A1", "Hello");
+        sheet.set_show_row_col_headers(false);
+
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
+        let read_sheet = workbook.resolved_sheet(0).unwrap();
+        let ws = read_sheet.worksheet();
+
+        let sv = ws
+            .sheet_views
+            .as_deref()
+            .and_then(|v| v.sheet_view.first())
+            .expect("sheet_views should be set");
+        assert_eq!(sv.show_row_col_headers, Some(false));
+    }
+
+    #[cfg(all(feature = "sml-styling", feature = "sml-structure"))]
+    #[test]
+    fn test_show_gridlines_with_freeze_pane() {
+        use std::io::Cursor;
+
+        // Ensure that setting show_gridlines doesn't clobber a previously set
+        // freeze pane (both must coexist in the same SheetView).
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Sheet1");
+        sheet.set_cell("A1", "Header");
+        sheet.freeze_rows(1);
+        sheet.set_show_gridlines(false);
+
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
+        let read_sheet = workbook.resolved_sheet(0).unwrap();
+        let ws = read_sheet.worksheet();
+
+        let sv = ws
+            .sheet_views
+            .as_deref()
+            .and_then(|v| v.sheet_view.first())
+            .expect("sheet_views should be set");
+        assert_eq!(sv.show_grid_lines, Some(false), "gridlines hidden");
+        // Freeze pane should still be intact.
+        let pane = sv.pane.as_deref().expect("freeze pane should be intact");
+        assert_eq!(pane.y_split, Some(1.0));
     }
 }

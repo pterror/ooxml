@@ -215,12 +215,24 @@ fn make_rect_geom() -> Box<dml::EGGeometry> {
     )))
 }
 
-/// A text run in a paragraph, optionally with a hyperlink.
+/// A text run in a paragraph, optionally with a hyperlink and formatting.
 #[derive(Debug, Clone)]
 pub struct TextRun {
     text: String,
     /// Optional hyperlink URL.
     hyperlink: Option<String>,
+    /// Optional tooltip text for the hyperlink.
+    tooltip: Option<String>,
+    /// Font size in points (e.g. 24.0 for 24pt). Stored as hundredths of a point internally.
+    font_size: Option<f32>,
+    /// Text color as a 6-hex-digit RGB string (e.g. "FF0000" for red).
+    color: Option<String>,
+    /// Bold formatting.
+    bold: Option<bool>,
+    /// Italic formatting.
+    italic: Option<bool>,
+    /// Underline formatting.
+    underline: bool,
 }
 
 impl TextRun {
@@ -229,6 +241,12 @@ impl TextRun {
         Self {
             text: text.into(),
             hyperlink: None,
+            tooltip: None,
+            font_size: None,
+            color: None,
+            bold: None,
+            italic: None,
+            underline: false,
         }
     }
 
@@ -237,7 +255,172 @@ impl TextRun {
         Self {
             text: text.into(),
             hyperlink: Some(url.into()),
+            tooltip: None,
+            font_size: None,
+            color: None,
+            bold: None,
+            italic: None,
+            underline: false,
         }
+    }
+
+    /// Set the font size in points.
+    ///
+    /// ECMA-376: `sz` attribute on `TextCharacterProperties` is in hundredths of a point
+    /// (e.g. 24pt = 2400). This method accepts points and converts automatically.
+    pub fn set_font_size(mut self, pt: f32) -> Self {
+        self.font_size = Some(pt);
+        self
+    }
+
+    /// Set the text color.
+    ///
+    /// `rgb` must be a 6-character hex string (e.g. `"FF0000"` for red).
+    /// Sets `solidFill/srgbClr` on `TextCharacterProperties`.
+    pub fn set_color(mut self, rgb: impl Into<String>) -> Self {
+        self.color = Some(rgb.into());
+        self
+    }
+
+    /// Set bold formatting.
+    pub fn set_bold(mut self, bold: bool) -> Self {
+        self.bold = Some(bold);
+        self
+    }
+
+    /// Set italic formatting.
+    pub fn set_italic(mut self, italic: bool) -> Self {
+        self.italic = Some(italic);
+        self
+    }
+
+    /// Set underline formatting.
+    pub fn set_underline(mut self, underline: bool) -> Self {
+        self.underline = underline;
+        self
+    }
+
+    /// Set a hyperlink tooltip.
+    ///
+    /// Sets the `tooltip` attribute on `hlinkClick`.
+    /// Only has effect when this run also has a hyperlink URL.
+    pub fn set_tooltip(mut self, text: impl Into<String>) -> Self {
+        self.tooltip = Some(text.into());
+        self
+    }
+}
+
+/// Convert a 6-character hex RGB string to bytes (e.g. "FF0000" → [0xFF, 0x00, 0x00]).
+fn hex_to_bytes(hex: &str) -> dml::HexColorRgb {
+    let hex = hex.trim_start_matches('#');
+    (0..hex.len())
+        .step_by(2)
+        .filter_map(|i| u8::from_str_radix(&hex[i..i + 2], 16).ok())
+        .collect()
+}
+
+/// Build a `SolidColorFill` from a 6-hex-digit RGB string.
+fn make_solid_fill(rgb: &str) -> Box<dml::EGFillProperties> {
+    Box::new(dml::EGFillProperties::SolidFill(Box::new(
+        dml::SolidColorFill {
+            color_choice: Some(Box::new(dml::EGColorChoice::SrgbClr(Box::new(
+                dml::SrgbColor {
+                    value: hex_to_bytes(rgb),
+                    color_transform: Vec::new(),
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                    #[cfg(feature = "extra-children")]
+                    extra_children: Default::default(),
+                },
+            )))),
+            #[cfg(feature = "extra-children")]
+            extra_children: Default::default(),
+        },
+    )))
+}
+
+/// Builder for adding a shape (text box) with full formatting control.
+///
+/// Create via [`SlideBuilder::shape`] and finalize via [`ShapeBuilder::add`].
+#[derive(Debug)]
+pub struct ShapeBuilder<'a> {
+    slide: &'a mut SlideBuilder,
+    runs: Vec<TextRun>,
+    is_title: bool,
+    x: i64,
+    y: i64,
+    width: i64,
+    height: i64,
+    fill_color: Option<String>,
+    line_color: Option<String>,
+    line_width: Option<i64>,
+}
+
+impl<'a> ShapeBuilder<'a> {
+    /// Set the shape position and size (all in EMUs).
+    ///
+    /// Sets `spPr/xfrm` offsets and extents.
+    pub fn set_position(mut self, x: i64, y: i64, cx: i64, cy: i64) -> Self {
+        self.x = x;
+        self.y = y;
+        self.width = cx;
+        self.height = cy;
+        self
+    }
+
+    /// Set the shape fill color.
+    ///
+    /// `rgb` must be a 6-character hex string (e.g. `"FF0000"` for red).
+    /// Sets `spPr/solidFill/srgbClr`.
+    pub fn set_fill_color(mut self, rgb: impl Into<String>) -> Self {
+        self.fill_color = Some(rgb.into());
+        self
+    }
+
+    /// Set the shape border/line color.
+    ///
+    /// `rgb` must be a 6-character hex string.
+    /// Sets `spPr/ln/solidFill/srgbClr`.
+    pub fn set_line_color(mut self, rgb: impl Into<String>) -> Self {
+        self.line_color = Some(rgb.into());
+        self
+    }
+
+    /// Set the shape border/line width in EMUs.
+    ///
+    /// Sets the `w` attribute on `spPr/ln`.
+    pub fn set_line_width(mut self, emu: i64) -> Self {
+        self.line_width = Some(emu);
+        self
+    }
+
+    /// Finalize the shape and add it to the slide.
+    pub fn add(self) {
+        let ShapeBuilder {
+            slide,
+            runs,
+            is_title,
+            x,
+            y,
+            width,
+            height,
+            fill_color,
+            line_color,
+            line_width,
+        } = self;
+
+        let element = TextElement {
+            runs,
+            is_title,
+            x,
+            y,
+            width,
+            height,
+            fill_color,
+            line_color,
+            line_width,
+        };
+        slide.push_text_element(element);
     }
 }
 
@@ -250,6 +433,12 @@ struct TextElement {
     y: i64,
     width: i64,
     height: i64,
+    /// Optional shape fill color (6-hex RGB).
+    fill_color: Option<String>,
+    /// Optional shape border color (6-hex RGB).
+    line_color: Option<String>,
+    /// Optional shape border width in EMUs.
+    line_width: Option<i64>,
 }
 
 impl TextElement {
@@ -258,12 +447,21 @@ impl TextElement {
             runs: vec![TextRun {
                 text,
                 hyperlink: None,
+                tooltip: None,
+                font_size: None,
+                color: None,
+                bold: None,
+                italic: None,
+                underline: false,
             }],
             is_title,
             x,
             y,
             width,
             height,
+            fill_color: None,
+            line_color: None,
+            line_width: None,
         }
     }
 
@@ -472,6 +670,8 @@ pub struct SlideBuilder {
     next_shape_id: usize,
     /// The pre-built slide type.
     slide: types::Slide,
+    /// Optional slide background color (6-hex RGB).
+    background_color: Option<String>,
 }
 
 /// Create an empty `types::Slide` with the required boilerplate shape tree.
@@ -562,7 +762,7 @@ fn build_shape_impl(
     hyperlink_rel_ids: Option<&std::collections::HashMap<&str, usize>>,
 ) -> types::Shape {
     let name = if element.is_title { "Title" } else { "Content" };
-    let font_size: i32 = if element.is_title { 4400 } else { 2400 };
+    let default_font_size: i32 = if element.is_title { 4400 } else { 2400 };
 
     let runs: Vec<dml::EGTextRun> = element
         .runs
@@ -573,15 +773,34 @@ fn build_shape_impl(
                 hyperlink_rel_ids?.get(url).map(|&rel_id| {
                     Box::new(dml::CTHyperlink {
                         id: Some(format!("rId{}", rel_id)),
+                        tooltip: run.tooltip.clone(),
                         ..Default::default()
                     })
                 })
             });
 
+            // Font size: per-run override, else element default.
+            let sz = Some(
+                run.font_size
+                    .map(|pt| (pt * 100.0).round() as i32)
+                    .unwrap_or(default_font_size),
+            );
+
+            // Color: per-run solidFill override.
+            let fill_properties = run.color.as_deref().map(make_solid_fill);
+
             dml::EGTextRun::R(Box::new(dml::TextRun {
                 r_pr: Some(Box::new(dml::TextCharacterProperties {
                     lang: Some("en-US".to_string()),
-                    sz: Some(font_size),
+                    sz,
+                    b: run.bold,
+                    i: run.italic,
+                    u: if run.underline {
+                        Some(dml::STTextUnderlineType::Sng)
+                    } else {
+                        None
+                    },
+                    fill_properties,
                     hlink_click,
                     ..Default::default()
                 })),
@@ -603,6 +822,41 @@ fn build_shape_impl(
         extra_children: Default::default(),
     };
 
+    // Shape fill color.
+    let fill_properties = element.fill_color.as_deref().map(make_solid_fill);
+
+    // Shape border/line (dml-lines fields are always available — DML defaults include all features).
+    let line = {
+        let has_line = element.line_color.is_some() || element.line_width.is_some();
+        if has_line {
+            let line_fill = element.line_color.as_deref().map(|rgb| {
+                Box::new(dml::EGLineFillProperties::SolidFill(Box::new(
+                    dml::SolidColorFill {
+                        color_choice: Some(Box::new(dml::EGColorChoice::SrgbClr(Box::new(
+                            dml::SrgbColor {
+                                value: hex_to_bytes(rgb),
+                                color_transform: Vec::new(),
+                                #[cfg(feature = "extra-attrs")]
+                                extra_attrs: Default::default(),
+                                #[cfg(feature = "extra-children")]
+                                extra_children: Default::default(),
+                            },
+                        )))),
+                        #[cfg(feature = "extra-children")]
+                        extra_children: Default::default(),
+                    },
+                )))
+            });
+            Some(Box::new(dml::LineProperties {
+                width: element.line_width.map(|w| w as i32),
+                line_fill_properties: line_fill,
+                ..Default::default()
+            }))
+        } else {
+            None
+        }
+    };
+
     let sp_pr = dml::CTShapeProperties {
         transform: Some(make_xfrm(
             element.x,
@@ -611,6 +865,8 @@ fn build_shape_impl(
             element.height,
         )),
         geometry: Some(make_rect_geom()),
+        fill_properties,
+        line,
         ..Default::default()
     };
 
@@ -887,6 +1143,7 @@ impl SlideBuilder {
             notes: None,
             next_shape_id: 2,
             slide: init_slide(),
+            background_color: None,
         }
     }
 
@@ -977,12 +1234,21 @@ impl SlideBuilder {
             runs: vec![TextRun {
                 text: text.into(),
                 hyperlink: Some(url.into()),
+                tooltip: None,
+                font_size: None,
+                color: None,
+                bold: None,
+                italic: None,
+                underline: false,
             }],
             is_title: false,
             x,
             y,
             width,
             height,
+            fill_color: None,
+            line_color: None,
+            line_width: None,
         };
         self.hyperlink_elements.push(element);
         self
@@ -990,7 +1256,7 @@ impl SlideBuilder {
 
     /// Add text with mixed content (including hyperlinks) at a specific position.
     ///
-    /// Use `TextRunBuilder` to create runs with or without hyperlinks.
+    /// Use [`TextRun`] to create runs with or without hyperlinks and formatting.
     pub fn add_text_with_runs(
         &mut self,
         runs: Vec<TextRun>,
@@ -1006,8 +1272,61 @@ impl SlideBuilder {
             y,
             width,
             height,
+            fill_color: None,
+            line_color: None,
+            line_width: None,
         };
         self.push_text_element(element);
+        self
+    }
+
+    /// Begin building a shape with full formatting control.
+    ///
+    /// Returns a [`ShapeBuilder`] that allows setting position, fill color, and border
+    /// before finalizing the shape with [`ShapeBuilder::add`].
+    ///
+    /// # Example
+    ///
+    /// ```no_run
+    /// # use ooxml_pml::{PresentationBuilder, writer::TextRun};
+    /// # let mut pres = PresentationBuilder::new();
+    /// # let slide = pres.add_slide();
+    /// slide.shape(vec![TextRun::text("Hello")], 914400, 914400, 3657600, 457200)
+    ///     .set_fill_color("4472C4")
+    ///     .set_line_color("2F5496")
+    ///     .set_line_width(12700)
+    ///     .add();
+    /// ```
+    pub fn shape(
+        &mut self,
+        runs: Vec<TextRun>,
+        x: i64,
+        y: i64,
+        width: i64,
+        height: i64,
+    ) -> ShapeBuilder<'_> {
+        ShapeBuilder {
+            slide: self,
+            runs,
+            is_title: false,
+            x,
+            y,
+            width,
+            height,
+            fill_color: None,
+            line_color: None,
+            line_width: None,
+        }
+    }
+
+    /// Set the slide background color.
+    ///
+    /// `rgb` must be a 6-character hex string (e.g. `"FF0000"` for red).
+    /// Sets `cSld/bg/bgPr/solidFill/srgbClr` on the slide XML.
+    ///
+    /// Requires the `pml-styling` feature (included in `full`/default).
+    pub fn set_background_color(&mut self, rgb: impl Into<String>) -> &mut Self {
+        self.background_color = Some(rgb.into());
         self
     }
 
@@ -1217,6 +1536,38 @@ impl SlideBuilder {
     ) -> Result<Vec<u8>> {
         let mut slide = self.slide.clone();
         let mut next_id = self.next_shape_id;
+
+        // Apply background color if set (requires pml-styling feature).
+        #[cfg(feature = "pml-styling")]
+        if let Some(ref rgb) = self.background_color {
+            use crate::types::CTBackground;
+            use crate::types::CTBackgroundProperties;
+            use crate::types::EGBackground;
+
+            let bg_pr = CTBackgroundProperties {
+                shade_to_title: None,
+                ext_lst: None,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+                // Inject solidFill as extra child so it roundtrips through raw XML.
+                #[cfg(feature = "extra-children")]
+                extra_children: parse_extra_child_xml(&format!(
+                    r#"<a:solidFill xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:srgbClr val="{}"/></a:solidFill>"#,
+                    rgb
+                )),
+            };
+
+            let bg = CTBackground {
+                #[cfg(feature = "pml-styling")]
+                bw_mode: None,
+                background: Some(Box::new(EGBackground::BgPr(Box::new(bg_pr)))),
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+                #[cfg(feature = "extra-children")]
+                extra_children: Default::default(),
+            };
+            slide.common_slide_data.bg = Some(Box::new(bg));
+        }
 
         // Build hyperlink shapes (deferred — need rIds).
         for element in &self.hyperlink_elements {
@@ -1766,6 +2117,8 @@ fn escape_xml(s: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::ext::ShapeExt;
+    use ooxml_dml::TextParagraphExt;
 
     #[test]
     fn test_presentation_builder() {
@@ -1969,5 +2322,328 @@ mod tests {
         assert_eq!(t.transition_type, Some(crate::TransitionType::Fade));
         assert_eq!(t.speed, crate::TransitionSpeed::Slow);
         assert_eq!(t.advance_time_ms, Some(3000));
+    }
+
+    // -------------------------------------------------------------------------
+    // Text run formatting tests (features 1–3, 7)
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_text_run_font_size() {
+        use ooxml_dml::TextRunExt;
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.add_text_with_runs(
+            vec![TextRun::text("Big text").set_font_size(36.0)],
+            457200,
+            914400,
+            8229600,
+            914400,
+        );
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
+        let read_slide = presentation.slide(0).unwrap();
+
+        let shapes = read_slide.shapes();
+        assert!(!shapes.is_empty());
+        let shape = &shapes[0];
+        let text_body = shape.text_body().expect("shape has text body");
+        let para = &text_body.p[0];
+        let runs = para.runs();
+        assert!(!runs.is_empty());
+        // 36pt = 3600 hundredths-of-a-point
+        assert_eq!(runs[0].font_size(), Some(3600));
+    }
+
+    #[test]
+    fn test_text_run_color() {
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.add_text_with_runs(
+            vec![TextRun::text("Red text").set_color("FF0000")],
+            457200,
+            914400,
+            8229600,
+            914400,
+        );
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
+        let read_slide = presentation.slide(0).unwrap();
+
+        let shapes = read_slide.shapes();
+        let shape = &shapes[0];
+        let text_body = shape.text_body().expect("shape has text body");
+        let para = &text_body.p[0];
+        let runs = para.runs();
+        assert!(!runs.is_empty());
+        let r_pr = runs[0].r_pr.as_ref().expect("run has r_pr");
+        // Verify solidFill/srgbClr is set.
+        let fill = r_pr
+            .fill_properties
+            .as_ref()
+            .expect("run has fill_properties");
+        if let ooxml_dml::types::EGFillProperties::SolidFill(solid) = fill.as_ref()
+            && let Some(color) = &solid.color_choice
+            && let ooxml_dml::types::EGColorChoice::SrgbClr(srgb) = color.as_ref()
+        {
+            // FF0000 = [0xFF, 0x00, 0x00]
+            assert_eq!(srgb.value, vec![0xFF, 0x00, 0x00]);
+            return;
+        }
+        panic!("Expected solidFill/srgbClr with FF0000");
+    }
+
+    #[test]
+    fn test_text_run_bold_italic_underline() {
+        use ooxml_dml::ext::TextRunExt;
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.add_text_with_runs(
+            vec![
+                TextRun::text("Formatted")
+                    .set_bold(true)
+                    .set_italic(true)
+                    .set_underline(true),
+            ],
+            457200,
+            914400,
+            8229600,
+            914400,
+        );
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
+        let read_slide = presentation.slide(0).unwrap();
+
+        let shapes = read_slide.shapes();
+        let shape = &shapes[0];
+        let text_body = shape.text_body().expect("shape has text body");
+        let para = &text_body.p[0];
+        let runs = para.runs();
+        assert!(!runs.is_empty());
+        assert!(runs[0].is_bold(), "expected bold");
+        assert!(runs[0].is_italic(), "expected italic");
+        assert!(runs[0].is_underlined(), "expected underline");
+    }
+
+    #[test]
+    fn test_hyperlink_tooltip() {
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.add_text_with_runs(
+            vec![
+                TextRun::hyperlink("Hover me", "https://example.com")
+                    .set_tooltip("This is a tooltip"),
+            ],
+            457200,
+            914400,
+            8229600,
+            914400,
+        );
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
+        let read_slide = presentation.slide(0).unwrap();
+
+        let shapes = read_slide.shapes();
+        // hyperlink shapes are pushed via hyperlink_elements
+        // After write/read they appear in the shape tree
+        let mut found_tooltip = false;
+        for shape in shapes {
+            if let Some(tb) = shape.text_body() {
+                for para in &tb.p {
+                    for run in para.runs() {
+                        if let Some(hlink) = &run.r_pr.as_ref().and_then(|p| p.hlink_click.as_ref())
+                            && hlink.tooltip.as_deref() == Some("This is a tooltip")
+                        {
+                            found_tooltip = true;
+                        }
+                    }
+                }
+            }
+        }
+        assert!(found_tooltip, "Expected tooltip on hyperlink run");
+    }
+
+    // -------------------------------------------------------------------------
+    // Shape position and fill/line tests (features 4–6)
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_shape_position_and_size() {
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide
+            .shape(
+                vec![TextRun::text("Positioned")],
+                914400,
+                457200,
+                3657600,
+                914400,
+            )
+            .add();
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
+        let read_slide = presentation.slide(0).unwrap();
+
+        let shapes = read_slide.shapes();
+        assert!(!shapes.is_empty());
+        let sp_pr = &shapes[0].shape_properties;
+        let xfrm = sp_pr.transform.as_ref().expect("shape has transform");
+        let off = xfrm.offset.as_ref().expect("xfrm has offset");
+        assert_eq!(off.x, "914400");
+        assert_eq!(off.y, "457200");
+        let ext = xfrm.extents.as_ref().expect("xfrm has extents");
+        assert_eq!(ext.cx, 3657600);
+        assert_eq!(ext.cy, 914400);
+    }
+
+    #[test]
+    fn test_shape_fill_color() {
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide
+            .shape(
+                vec![TextRun::text("Filled")],
+                457200,
+                457200,
+                3657600,
+                914400,
+            )
+            .set_fill_color("4472C4")
+            .add();
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
+        let read_slide = presentation.slide(0).unwrap();
+
+        let shapes = read_slide.shapes();
+        assert!(!shapes.is_empty());
+        let sp_pr = &shapes[0].shape_properties;
+        let fill = sp_pr.fill_properties.as_ref().expect("shape has fill");
+        if let ooxml_dml::types::EGFillProperties::SolidFill(solid) = fill.as_ref()
+            && let Some(color) = &solid.color_choice
+            && let ooxml_dml::types::EGColorChoice::SrgbClr(srgb) = color.as_ref()
+        {
+            // 4472C4 = [0x44, 0x72, 0xC4]
+            assert_eq!(srgb.value, vec![0x44, 0x72, 0xC4]);
+            return;
+        }
+        panic!("Expected shape solidFill/srgbClr with 4472C4");
+    }
+
+    #[test]
+    fn test_shape_line_color_and_width() {
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide
+            .shape(
+                vec![TextRun::text("Bordered")],
+                457200,
+                457200,
+                3657600,
+                914400,
+            )
+            .set_line_color("FF0000")
+            .set_line_width(38100) // 3pt line
+            .add();
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
+        let read_slide = presentation.slide(0).unwrap();
+
+        let shapes = read_slide.shapes();
+        assert!(!shapes.is_empty());
+        let sp_pr = &shapes[0].shape_properties;
+        let line = sp_pr.line.as_ref().expect("shape has line");
+        assert_eq!(line.width, Some(38100));
+        let line_fill = line.line_fill_properties.as_ref().expect("line has fill");
+        if let ooxml_dml::types::EGLineFillProperties::SolidFill(solid) = line_fill.as_ref()
+            && let Some(color) = &solid.color_choice
+            && let ooxml_dml::types::EGColorChoice::SrgbClr(srgb) = color.as_ref()
+        {
+            assert_eq!(srgb.value, vec![0xFF, 0x00, 0x00]);
+            return;
+        }
+        panic!("Expected line solidFill/srgbClr with FF0000");
+    }
+
+    // -------------------------------------------------------------------------
+    // Slide background color test (feature 8)
+    // -------------------------------------------------------------------------
+
+    #[cfg(feature = "pml-styling")]
+    #[test]
+    fn test_slide_background_color() {
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.add_title("BG Test");
+        slide.set_background_color("1F497D");
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        // Verify the PPTX roundtrips (reads back without error).
+        buffer.set_position(0);
+        let mut presentation = crate::Presentation::from_reader(buffer.clone()).unwrap();
+        assert_eq!(presentation.slide_count(), 1);
+        let _slide = presentation.slide(0).unwrap();
+
+        // Verify the raw PPTX bytes contain the background color and bgPr element.
+        // We use ooxml-opc to read the slide XML part directly.
+        buffer.set_position(0);
+        let mut package = ooxml_opc::Package::open(buffer).unwrap();
+        let slide_xml = package.read_part("ppt/slides/slide1.xml").unwrap();
+        let slide_xml_str = String::from_utf8_lossy(&slide_xml);
+
+        assert!(
+            slide_xml_str.contains("1F497D"),
+            "Slide XML should contain background color hex; got snippet: {}",
+            &slide_xml_str[..slide_xml_str.len().min(800)]
+        );
+        assert!(
+            slide_xml_str.contains("bgPr") || slide_xml_str.contains("solidFill"),
+            "Slide XML should contain bgPr or solidFill"
+        );
     }
 }

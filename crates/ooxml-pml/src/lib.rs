@@ -64,7 +64,8 @@ pub use types::{Picture, Shape};
 pub use ooxml_dml::types::{CTTable, CTTableCell, CTTableRow};
 pub use ooxml_dml::{TableCellExt, TableExt, TableRowExt};
 pub use writer::{
-    ImageFormat, PresentationBuilder, SlideBuilder, SlideTransition, TableBuilder, TextRun,
+    ImageFormat, PresentationBuilder, ShapeBuilder, SlideBuilder, SlideTransition, TableBuilder,
+    TextRun,
 };
 
 // Extension traits for generated types
