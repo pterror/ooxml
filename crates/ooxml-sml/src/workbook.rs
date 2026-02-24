@@ -29,6 +29,10 @@ const REL_DRAWING: &str =
 const REL_CHART: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart";
 const REL_CHARTSHEET: &str =
     "http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartsheet";
+const REL_PIVOT_TABLE: &str =
+    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotTable";
+const REL_PIVOT_CACHE_DEFINITION: &str =
+    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheDefinition";
 
 /// An Excel workbook.
 ///
@@ -197,6 +201,31 @@ impl<R: Read + Seek> Workbook<R> {
             .filter(move |d| d.local_sheet_id == Some(sheet_index))
     }
 
+    /// Load all pivot cache definitions from workbook relationships.
+    ///
+    /// Pivot cache definitions are workbook-level parts linked via relationships of type
+    /// `pivotCacheDefinition`. Each `types::CTPivotTableDefinition` references a cache
+    /// by its `cache_id`, which matches the `r:id` attribute on the cache definition.
+    ///
+    /// ECMA-376 Part 1, Section 18.10 (PivotTable).
+    pub fn pivot_caches(&mut self) -> Result<Vec<crate::types::PivotCacheDefinition>> {
+        let mut caches = Vec::new();
+        let rel_targets: Vec<String> = self
+            .workbook_rels
+            .get_all_by_type(REL_PIVOT_CACHE_DEFINITION)
+            .map(|r| r.target.clone())
+            .collect();
+        for target in rel_targets {
+            let path = resolve_path(&self.workbook_path, &target);
+            if let Ok(data) = self.package.read_part(&path)
+                && let Ok(cache) = bootstrap::<crate::types::PivotCacheDefinition>(&data)
+            {
+                caches.push(cache);
+            }
+        }
+        Ok(caches)
+    }
+
     // =========================================================================
     // New API using generated types (ADR-003)
     // =========================================================================
@@ -320,9 +349,11 @@ impl<R: Read + Seek> Workbook<R> {
             parse_worksheet(&data).map_err(|e| Error::Invalid(format!("Parse error: {:?}", e)))?
         };
 
-        // Load comments and charts
+        // Load comments, charts, and pivot tables
         let mut comments = Vec::new();
         let mut charts = Vec::new();
+        #[cfg(feature = "sml-pivot")]
+        let mut pivot_tables: Vec<crate::types::CTPivotTableDefinition> = Vec::new();
 
         if let Ok(sheet_rels) = self.package.read_part_relationships(&path) {
             // Load comments
@@ -348,6 +379,18 @@ impl<R: Read + Seek> Workbook<R> {
                     }
                 }
             }
+
+            // Load pivot tables from sheet relationships
+            // Load pivot tables from sheet relationships
+            #[cfg(feature = "sml-pivot")]
+            for rel in sheet_rels.get_all_by_type(REL_PIVOT_TABLE) {
+                let pt_path = resolve_path(&path, &rel.target);
+                if let Ok(pt_data) = self.package.read_part(&pt_path)
+                    && let Ok(pt) = bootstrap::<crate::types::CTPivotTableDefinition>(&pt_data)
+                {
+                    pivot_tables.push(pt);
+                }
+            }
         }
 
         Ok(ResolvedSheet::with_extras(
@@ -356,6 +399,8 @@ impl<R: Read + Seek> Workbook<R> {
             self.shared_strings.clone(),
             comments,
             charts,
+            #[cfg(feature = "sml-pivot")]
+            pivot_tables,
         ))
     }
 }
@@ -985,7 +1030,7 @@ fn is_date_format_code(code: &str) -> bool {
 /// Bootstrap a generated type from raw XML bytes.
 ///
 /// Scans the XML for the first element and calls `T::from_xml` on it.
-fn bootstrap<T: FromXml>(xml: &[u8]) -> Result<T> {
+pub(crate) fn bootstrap<T: FromXml>(xml: &[u8]) -> Result<T> {
     let mut reader = Reader::from_reader(Cursor::new(xml));
     let mut buf = Vec::new();
     loop {

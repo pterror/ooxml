@@ -316,6 +316,14 @@ pub mod rel_type {
     /// SmartArt diagram colors part.
     pub const DIAGRAM_COLORS: &str =
         "http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramColors";
+
+    /// Pivot table part (worksheet relationship).
+    pub const PIVOT_TABLE: &str =
+        "http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotTable";
+
+    /// Pivot cache definition part (workbook relationship).
+    pub const PIVOT_CACHE_DEFINITION: &str =
+        "http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheDefinition";
 }
 
 /// Get the relationships file path for a given part.
