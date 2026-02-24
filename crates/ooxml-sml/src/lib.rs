@@ -57,10 +57,14 @@ pub use lazy::{LazyCell, LazyRow, LazyWorksheet};
 
 // Extension traits for generated types (see ADR-003)
 pub mod ext;
+#[cfg(feature = "sml-pivot")]
+pub use ext::PivotTableExt;
 pub use ext::{
     CellExt, CellResolveExt, CellValue, Chart, ChartType, Comment, ResolveContext, ResolvedSheet,
     RowExt, SheetDataExt, WorksheetExt, parse_worksheet,
 };
+#[cfg(feature = "sml-styling")]
+pub use ext::{ConditionalFormattingExt, ConditionalRuleExt, WorksheetConditionalFormattingExt};
 
 pub use error::{Error, Result};
 // Writer-required types from workbook module

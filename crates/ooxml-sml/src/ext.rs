@@ -516,6 +516,9 @@ pub struct ResolvedSheet {
     comments: Vec<Comment>,
     /// Charts (loaded separately via drawing relationships)
     charts: Vec<Chart>,
+    /// Pivot tables (loaded from sheet relationships)
+    #[cfg(feature = "sml-pivot")]
+    pivot_tables: Vec<crate::types::CTPivotTableDefinition>,
 }
 
 /// A comment on a cell.
@@ -564,16 +567,19 @@ impl ResolvedSheet {
             context: ResolveContext::new(shared_strings),
             comments: Vec::new(),
             charts: Vec::new(),
+            #[cfg(feature = "sml-pivot")]
+            pivot_tables: Vec::new(),
         }
     }
 
-    /// Create a resolved sheet with comments and charts.
+    /// Create a resolved sheet with comments, charts, and pivot tables.
     pub fn with_extras(
         name: String,
         worksheet: Worksheet,
         shared_strings: Vec<String>,
         comments: Vec<Comment>,
         charts: Vec<Chart>,
+        #[cfg(feature = "sml-pivot")] pivot_tables: Vec<crate::types::CTPivotTableDefinition>,
     ) -> Self {
         Self {
             name,
@@ -581,6 +587,8 @@ impl ResolvedSheet {
             context: ResolveContext::new(shared_strings),
             comments,
             charts,
+            #[cfg(feature = "sml-pivot")]
+            pivot_tables,
         }
     }
 
@@ -724,6 +732,21 @@ impl ResolvedSheet {
     }
 
     // -------------------------------------------------------------------------
+    // Pivot Tables
+    // -------------------------------------------------------------------------
+
+    /// Get all pivot tables on this sheet.
+    ///
+    /// Pivot tables are loaded from the sheet's relationships (pivotTable parts).
+    /// Requires the `sml-pivot` feature.
+    ///
+    /// ECMA-376 Part 1, Section 18.10 (PivotTable).
+    #[cfg(feature = "sml-pivot")]
+    pub fn pivot_tables(&self) -> &[crate::types::CTPivotTableDefinition] {
+        &self.pivot_tables
+    }
+
+    // -------------------------------------------------------------------------
     // Dimensions & Structure
     // -------------------------------------------------------------------------
 
@@ -826,6 +849,195 @@ fn parse_column(reference: &str) -> Option<u32> {
 fn parse_row(reference: &str) -> Option<u32> {
     let digits: String = reference.chars().filter(|c| c.is_ascii_digit()).collect();
     digits.parse().ok()
+}
+
+// =============================================================================
+// Pivot Table Extension Traits
+// =============================================================================
+
+/// Extension methods for `types::CTPivotTableDefinition`.
+///
+/// Provides convenient access to pivot table name, location, and field indices.
+/// Gated on the `sml-pivot` feature.
+///
+/// ECMA-376 Part 1, Section 18.10.1.73 (pivotTableDefinition).
+#[cfg(feature = "sml-pivot")]
+pub trait PivotTableExt {
+    /// Get the pivot table name.
+    fn name(&self) -> &str;
+
+    /// Get the cell range for this pivot table (e.g., "A1:D10").
+    ///
+    /// This is the `ref` attribute of the `location` element.
+    fn location_reference(&self) -> &str;
+
+    /// Get the names of all data fields (value fields).
+    ///
+    /// Returns each data field's `name` attribute when present, or an empty
+    /// string for unnamed data fields.
+    fn data_field_names(&self) -> Vec<&str>;
+
+    /// Get the field indices used as row fields.
+    ///
+    /// Each value is the `x` attribute of a `<field>` element in `<rowFields>`.
+    /// Negative values (e.g., `-2`) represent the special "data" axis field.
+    fn row_field_indices(&self) -> Vec<i32>;
+
+    /// Get the field indices used as column fields.
+    ///
+    /// Each value is the `x` attribute of a `<field>` element in `<colFields>`.
+    /// Negative values (e.g., `-2`) represent the special "data" axis field.
+    fn col_field_indices(&self) -> Vec<i32>;
+}
+
+#[cfg(feature = "sml-pivot")]
+impl PivotTableExt for crate::types::CTPivotTableDefinition {
+    fn name(&self) -> &str {
+        &self.name
+    }
+
+    fn location_reference(&self) -> &str {
+        &self.location.reference
+    }
+
+    fn data_field_names(&self) -> Vec<&str> {
+        self.data_fields
+            .as_ref()
+            .map(|df| {
+                df.data_field
+                    .iter()
+                    .map(|f| f.name.as_deref().unwrap_or(""))
+                    .collect()
+            })
+            .unwrap_or_default()
+    }
+
+    fn row_field_indices(&self) -> Vec<i32> {
+        self.row_fields
+            .as_ref()
+            .map(|rf| rf.field.iter().map(|f| f.x).collect())
+            .unwrap_or_default()
+    }
+
+    fn col_field_indices(&self) -> Vec<i32> {
+        self.col_fields
+            .as_ref()
+            .map(|cf| cf.field.iter().map(|f| f.x).collect())
+            .unwrap_or_default()
+    }
+}
+
+// =============================================================================
+// Conditional Formatting Extension Traits
+// =============================================================================
+
+/// Extension methods for `types::ConditionalFormatting`.
+///
+/// Provides convenient access to cell range and contained rules.
+/// Gated on the `sml-styling` feature.
+///
+/// ECMA-376 Part 1, Section 18.3.1.18 (conditionalFormatting).
+#[cfg(feature = "sml-styling")]
+pub trait ConditionalFormattingExt {
+    /// Get the cell range this formatting applies to (sqref attribute).
+    ///
+    /// For example, `"A1:B10"` or `"A1:A10 C1:C10"` (space-separated ranges).
+    fn cell_range(&self) -> Option<&str>;
+
+    /// Get the conditional formatting rules.
+    fn rules(&self) -> &[crate::types::ConditionalRule];
+
+    /// Get the number of rules.
+    fn rule_count(&self) -> usize;
+}
+
+#[cfg(feature = "sml-styling")]
+impl ConditionalFormattingExt for crate::types::ConditionalFormatting {
+    fn cell_range(&self) -> Option<&str> {
+        self.square_reference.as_deref()
+    }
+
+    fn rules(&self) -> &[crate::types::ConditionalRule] {
+        &self.cf_rule
+    }
+
+    fn rule_count(&self) -> usize {
+        self.cf_rule.len()
+    }
+}
+
+/// Extension methods for `types::ConditionalRule`.
+///
+/// Provides convenient access to rule type and visualization sub-elements.
+/// Gated on the `sml-styling` feature.
+///
+/// ECMA-376 Part 1, Section 18.3.1.10 (cfRule).
+#[cfg(feature = "sml-styling")]
+pub trait ConditionalRuleExt {
+    /// Get the rule type (e.g., ColorScale, DataBar, CellIs, Expression).
+    fn rule_type(&self) -> Option<&crate::types::ConditionalType>;
+
+    /// Get the rule priority (lower number = higher priority).
+    fn priority(&self) -> i32;
+
+    /// Check if this rule uses a color scale visualization.
+    fn has_color_scale(&self) -> bool;
+
+    /// Check if this rule uses a data bar visualization.
+    fn has_data_bar(&self) -> bool;
+
+    /// Check if this rule uses an icon set visualization.
+    fn has_icon_set(&self) -> bool;
+
+    /// Get the formula expressions associated with this rule.
+    ///
+    /// For `cellIs` rules, contains 1-2 formulas (operands).
+    /// For `expression` rules, contains 1 formula.
+    /// For visualization rules (colorScale, dataBar, iconSet), empty.
+    fn formulas(&self) -> &[crate::types::STFormula];
+}
+
+#[cfg(feature = "sml-styling")]
+impl ConditionalRuleExt for crate::types::ConditionalRule {
+    fn rule_type(&self) -> Option<&crate::types::ConditionalType> {
+        self.r#type.as_ref()
+    }
+
+    fn priority(&self) -> i32 {
+        self.priority
+    }
+
+    fn has_color_scale(&self) -> bool {
+        self.color_scale.is_some()
+    }
+
+    fn has_data_bar(&self) -> bool {
+        self.data_bar.is_some()
+    }
+
+    fn has_icon_set(&self) -> bool {
+        self.icon_set.is_some()
+    }
+
+    fn formulas(&self) -> &[crate::types::STFormula] {
+        &self.formula
+    }
+}
+
+/// Extension for `types::Worksheet` to access conditional formatting.
+///
+/// Gated on the `sml-styling` feature.
+#[cfg(feature = "sml-styling")]
+pub trait WorksheetConditionalFormattingExt {
+    /// Get all conditional formatting rules on this worksheet.
+    fn conditional_formattings(&self) -> &[crate::types::ConditionalFormatting];
+}
+
+#[cfg(feature = "sml-styling")]
+impl WorksheetConditionalFormattingExt for crate::types::Worksheet {
+    fn conditional_formattings(&self) -> &[crate::types::ConditionalFormatting] {
+        &self.conditional_formatting
+    }
 }
 
 #[cfg(test)]
@@ -1065,5 +1277,83 @@ mod tests {
 
         // Non-existent cell
         assert!(sheet.value_at("Z99").is_none());
+    }
+
+    #[test]
+    #[cfg(feature = "sml-styling")]
+    fn test_conditional_formatting_cell_range() {
+        use crate::workbook::bootstrap;
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+        <conditionalFormatting sqref="A1:B5" xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+        </conditionalFormatting>"#;
+        let cf: crate::types::ConditionalFormatting = bootstrap(xml).expect("parse failed");
+        assert_eq!(cf.cell_range(), Some("A1:B5"));
+        assert_eq!(cf.rule_count(), 0);
+    }
+
+    #[test]
+    #[cfg(feature = "sml-styling")]
+    fn test_conditional_rule_type() {
+        use crate::workbook::bootstrap;
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+        <cfRule type="colorScale" priority="1" xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+            <colorScale>
+                <cfvo type="min"/>
+                <cfvo type="max"/>
+                <color rgb="FF0000"/>
+                <color rgb="00FF00"/>
+            </colorScale>
+        </cfRule>"#;
+        let rule: crate::types::ConditionalRule = bootstrap(xml).expect("parse failed");
+        assert_eq!(
+            rule.rule_type(),
+            Some(&crate::types::ConditionalType::ColorScale)
+        );
+        assert_eq!(rule.priority(), 1);
+    }
+
+    #[test]
+    #[cfg(feature = "sml-styling")]
+    fn test_conditional_rule_has_color_scale() {
+        use crate::workbook::bootstrap;
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+        <cfRule type="colorScale" priority="1" xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+            <colorScale>
+                <cfvo type="min"/>
+                <cfvo type="max"/>
+                <color rgb="FF0000"/>
+                <color rgb="00FF00"/>
+            </colorScale>
+        </cfRule>"#;
+        let rule: crate::types::ConditionalRule = bootstrap(xml).expect("parse failed");
+        assert!(rule.has_color_scale());
+        assert!(!rule.has_data_bar());
+        assert!(!rule.has_icon_set());
+    }
+
+    #[test]
+    #[cfg(feature = "sml-pivot")]
+    fn test_pivot_table_name() {
+        use crate::workbook::bootstrap;
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+        <pivotTableDefinition xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+            name="PivotTable1" cacheId="1" dataCaption="Values">
+            <location ref="A1:D10" firstHeaderRow="1" firstDataRow="2" firstDataCol="1"/>
+        </pivotTableDefinition>"#;
+        let pt: crate::types::CTPivotTableDefinition = bootstrap(xml).expect("parse failed");
+        assert_eq!(pt.name(), "PivotTable1");
+    }
+
+    #[test]
+    #[cfg(feature = "sml-pivot")]
+    fn test_pivot_table_location() {
+        use crate::workbook::bootstrap;
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+        <pivotTableDefinition xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+            name="PivotTable1" cacheId="1" dataCaption="Values">
+            <location ref="A1:D10" firstHeaderRow="1" firstDataRow="2" firstDataCol="1"/>
+        </pivotTableDefinition>"#;
+        let pt: crate::types::CTPivotTableDefinition = bootstrap(xml).expect("parse failed");
+        assert_eq!(pt.location_reference(), "A1:D10");
     }
 }
