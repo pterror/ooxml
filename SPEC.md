@@ -99,8 +99,8 @@ See [ECOSYSTEM.md](ECOSYSTEM.md) for details on fixtures and specs.
 - [x] Track changes (revisions: w:ins, w:del)
 - [x] Form fields (SDT-based: text, combo, dropdown, date)
 - [x] Math (OMML: text extraction via m:t, display vs inline)
-- [ ] SmartArt (limited) — RNC schema available (`dml-diagram.rnc`)
-- [ ] Charts (limited) — RNC schema available (`dml-chart.rnc`)
+- [x] SmartArt (limited) — 57 diagram types via `dml-diagrams` feature; `DataModelExt` for content extraction
+- [x] Charts (limited) — chart types via `dml-charts`; `DrawingChartExt` + `Document::get_chart()` in WML
 
 ### v0.4 - SpreadsheetML (Excel) ✅
 
@@ -128,8 +128,9 @@ See [ECOSYSTEM.md](ECOSYSTEM.md) for details on fixtures and specs.
 
 ### Future
 
-- [ ] SmartArt / Diagrams (`ooxml-dml` extension) — schema: `dml-diagram.rnc` (4 sub-schemas: data, layout, colors, style)
-- [ ] Charts (`ooxml-dml` extension) — schema: `dml-chart.rnc`
+- [ ] SmartArt reading in PML/WML (load `dgm:` parts via relationships, return `DataModel`)
+- [ ] Charts reading in PML (load chart parts from slide relationships)
+- [ ] Full DrawingML shape rendering
 - [ ] Advanced Excel (pivot tables, conditional formatting)
 - [ ] Advanced Word (track changes writing, field evaluation)
 - [ ] OMML to MathML/LaTeX conversion
