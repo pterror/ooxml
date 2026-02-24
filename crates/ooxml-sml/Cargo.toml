@@ -52,6 +52,7 @@ base64.workspace = true
 [dev-dependencies]
 criterion.workspace = true
 ooxml-corpus.workspace = true
+zip.workspace = true
 
 [build-dependencies]
 ooxml-codegen.workspace = true

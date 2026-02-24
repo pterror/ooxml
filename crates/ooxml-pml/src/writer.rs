@@ -30,6 +30,13 @@ const CT_PRESENTATION: &str =
 const CT_SLIDE: &str = "application/vnd.openxmlformats-officedocument.presentationml.slide+xml";
 const CT_NOTES_SLIDE: &str =
     "application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml";
+const CT_NOTES_MASTER: &str =
+    "application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml";
+const CT_CHART: &str = "application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
+const CT_DIAGRAM_DATA: &str =
+    "application/vnd.openxmlformats-officedocument.drawingml.diagramData+xml";
+const CT_DIAGRAM_LAYOUT: &str =
+    "application/vnd.openxmlformats-officedocument.drawingml.diagramLayout+xml";
 const CT_RELATIONSHIPS: &str = "application/vnd.openxmlformats-package.relationships+xml";
 const CT_XML: &str = "application/xml";
 
@@ -51,6 +58,13 @@ const REL_SLIDE_MASTER: &str =
     "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster";
 const REL_SLIDE_LAYOUT: &str =
     "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout";
+const REL_NOTES_MASTER: &str =
+    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster";
+const REL_CHART: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart";
+const REL_DIAGRAM_DATA: &str =
+    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramData";
+const REL_DIAGRAM_LAYOUT: &str =
+    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramLayout";
 
 // Namespaces
 const NS_PRES: &str = "http://schemas.openxmlformats.org/presentationml/2006/main";
@@ -118,6 +132,311 @@ fn build_slide_layout_xml() -> &'static str {
     </p:spTree>
   </p:cSld>
 </p:sldLayout>"#
+}
+
+/// An opaque handle for a slide master added to a `PresentationBuilder`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct MasterId(usize);
+
+/// An opaque handle for a slide layout within a master.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct LayoutId {
+    master_idx: usize,
+    layout_idx: usize,
+}
+
+/// Layout type for a slide layout.
+///
+/// Each variant maps to an OOXML `type` attribute on `<p:sldLayout>` and
+/// controls which placeholder shapes appear in the layout XML.
+/// ECMA-376 Part 1, Section 19.7.14 (ST_SlideLayoutType).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum SlideLayoutType {
+    /// Blank layout — no placeholders.
+    Blank,
+    /// Title slide — centred title + subtitle placeholders.
+    TitleSlide,
+    /// Title and content — title + content area.
+    TitleContent,
+    /// Two content areas — title + two side-by-side content areas.
+    TwoContent,
+    /// Section header — section divider with title + text.
+    SectionHeader,
+}
+
+impl SlideLayoutType {
+    fn xml_type(&self) -> &'static str {
+        match self {
+            SlideLayoutType::Blank => "blank",
+            SlideLayoutType::TitleSlide => "title",
+            SlideLayoutType::TitleContent => "obj",
+            SlideLayoutType::TwoContent => "twoObj",
+            SlideLayoutType::SectionHeader => "secHead",
+        }
+    }
+}
+
+/// Configuration for a slide layout added to a master.
+#[derive(Debug, Clone)]
+pub struct SlideLayoutConfig {
+    /// Display name for the layout.
+    pub name: String,
+    /// Layout type controlling placeholder shapes.
+    pub layout_type: SlideLayoutType,
+}
+
+/// Configuration for a slide master added to the presentation.
+#[derive(Debug, Clone)]
+pub struct SlideMasterConfig {
+    /// Optional background fill color (6-hex RGB, e.g. `"1F497D"`).
+    pub background_color: Option<String>,
+    /// Optional theme name (stored in the master XML comment for identification).
+    pub theme_name: Option<String>,
+    /// Layouts associated with this master.
+    pub layouts: Vec<SlideLayoutConfig>,
+}
+
+/// Internal representation of a configured slide master.
+#[derive(Debug)]
+struct SlideMasterEntry {
+    config: SlideMasterConfig,
+}
+
+/// Build slide master XML for a given master entry.
+///
+/// Extends the minimal master with an optional background fill color.
+fn build_master_xml(entry: &SlideMasterEntry, layout_count: usize) -> String {
+    let mut xml = String::new();
+    xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
+    xml.push('\n');
+    xml.push_str(r#"<p:sldMaster xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">"#);
+    xml.push_str("<p:cSld>");
+    if let Some(ref rgb) = entry.config.background_color {
+        xml.push_str(r#"<p:bg><p:bgPr>"#);
+        xml.push_str(r#"<a:solidFill>"#);
+        xml.push_str(&format!(r#"<a:srgbClr val="{}"/>"#, rgb));
+        xml.push_str(r#"</a:solidFill>"#);
+        xml.push_str(r#"<a:effectLst/>"#);
+        xml.push_str(r#"</p:bgPr></p:bg>"#);
+    }
+    xml.push_str(r#"<p:spTree>"#);
+    xml.push_str(r#"<p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr>"#);
+    xml.push_str(r#"<p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr>"#);
+    xml.push_str(r#"</p:spTree></p:cSld>"#);
+    xml.push_str(r#"<p:clrMap bg1="lt1" tx1="dk1" bg2="lt2" tx2="dk2" accent1="accent1" accent2="accent2" accent3="accent3" accent4="accent4" accent5="accent5" accent6="accent6" hlink="hlink" folHlink="folHlink"/>"#);
+    xml.push_str("<p:sldLayoutIdLst>");
+    for i in 0..layout_count {
+        let id = 2147483648u64 + i as u64;
+        xml.push_str(&format!(
+            r#"<p:sldLayoutId id="{}" r:id="rId{}"/>"#,
+            id,
+            i + 1
+        ));
+    }
+    xml.push_str("</p:sldLayoutIdLst>");
+    xml.push_str("</p:sldMaster>");
+    xml
+}
+
+/// Build slide layout XML for a given layout config.
+fn build_layout_xml(layout: &SlideLayoutConfig) -> String {
+    let layout_type = layout.layout_type.xml_type();
+    let mut xml = String::new();
+    xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
+    xml.push('\n');
+    xml.push_str(&format!(
+        r#"<p:sldLayout xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" type="{}" preserve="1">"#,
+        layout_type
+    ));
+    xml.push_str(&format!(r#"<p:cSld name="{}">"#, escape_xml(&layout.name)));
+    xml.push_str("<p:spTree>");
+    xml.push_str(r#"<p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr>"#);
+    xml.push_str(r#"<p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr>"#);
+
+    match layout.layout_type {
+        SlideLayoutType::TitleSlide => {
+            // Centre-title placeholder (id=2)
+            xml.push_str(r#"<p:sp><p:nvSpPr><p:cNvPr id="2" name="Title 1"/>"#);
+            xml.push_str(r#"<p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr>"#);
+            xml.push_str(r#"<p:nvPr><p:ph type="ctrTitle"/></p:nvPr></p:nvSpPr>"#);
+            xml.push_str(r#"<p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody></p:sp>"#);
+            // Subtitle placeholder (id=3, idx=1)
+            xml.push_str(r#"<p:sp><p:nvSpPr><p:cNvPr id="3" name="Subtitle 2"/>"#);
+            xml.push_str(r#"<p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr>"#);
+            xml.push_str(r#"<p:nvPr><p:ph type="subTitle" idx="1"/></p:nvPr></p:nvSpPr>"#);
+            xml.push_str(r#"<p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody></p:sp>"#);
+        }
+        SlideLayoutType::TitleContent => {
+            // Title placeholder (id=2)
+            xml.push_str(r#"<p:sp><p:nvSpPr><p:cNvPr id="2" name="Title 1"/>"#);
+            xml.push_str(r#"<p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr>"#);
+            xml.push_str(r#"<p:nvPr><p:ph type="title"/></p:nvPr></p:nvSpPr>"#);
+            xml.push_str(r#"<p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody></p:sp>"#);
+            // Content placeholder (id=3, idx=1)
+            xml.push_str(r#"<p:sp><p:nvSpPr><p:cNvPr id="3" name="Content Placeholder 2"/>"#);
+            xml.push_str(r#"<p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr>"#);
+            xml.push_str(r#"<p:nvPr><p:ph idx="1"/></p:nvPr></p:nvSpPr>"#);
+            xml.push_str(r#"<p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody></p:sp>"#);
+        }
+        SlideLayoutType::TwoContent => {
+            // Title placeholder (id=2)
+            xml.push_str(r#"<p:sp><p:nvSpPr><p:cNvPr id="2" name="Title 1"/>"#);
+            xml.push_str(r#"<p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr>"#);
+            xml.push_str(r#"<p:nvPr><p:ph type="title"/></p:nvPr></p:nvSpPr>"#);
+            xml.push_str(r#"<p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody></p:sp>"#);
+            // Left content placeholder (id=3, idx=1)
+            xml.push_str(r#"<p:sp><p:nvSpPr><p:cNvPr id="3" name="Content Placeholder 2"/>"#);
+            xml.push_str(r#"<p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr>"#);
+            xml.push_str(r#"<p:nvPr><p:ph idx="1"/></p:nvPr></p:nvSpPr>"#);
+            xml.push_str(r#"<p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody></p:sp>"#);
+            // Right content placeholder (id=4, idx=2)
+            xml.push_str(r#"<p:sp><p:nvSpPr><p:cNvPr id="4" name="Content Placeholder 3"/>"#);
+            xml.push_str(r#"<p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr>"#);
+            xml.push_str(r#"<p:nvPr><p:ph idx="2"/></p:nvPr></p:nvSpPr>"#);
+            xml.push_str(r#"<p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody></p:sp>"#);
+        }
+        SlideLayoutType::SectionHeader => {
+            // Title placeholder (id=2)
+            xml.push_str(r#"<p:sp><p:nvSpPr><p:cNvPr id="2" name="Title 1"/>"#);
+            xml.push_str(r#"<p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr>"#);
+            xml.push_str(r#"<p:nvPr><p:ph type="title"/></p:nvPr></p:nvSpPr>"#);
+            xml.push_str(r#"<p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody></p:sp>"#);
+            // Body placeholder (id=3, idx=1)
+            xml.push_str(r#"<p:sp><p:nvSpPr><p:cNvPr id="3" name="Text Placeholder 2"/>"#);
+            xml.push_str(r#"<p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr>"#);
+            xml.push_str(r#"<p:nvPr><p:ph type="body" idx="1"/></p:nvPr></p:nvSpPr>"#);
+            xml.push_str(r#"<p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody></p:sp>"#);
+        }
+        SlideLayoutType::Blank => {
+            // No placeholders for blank layout.
+        }
+    }
+
+    xml.push_str("</p:spTree>");
+    xml.push_str("</p:cSld>");
+    xml.push_str("</p:sldLayout>");
+    xml
+}
+
+/// Build the minimal notes master XML.
+fn build_notes_master_xml() -> &'static str {
+    r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<p:notesMaster xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+  <p:cSld>
+    <p:spTree>
+      <p:nvGrpSpPr>
+        <p:cNvPr id="1" name=""/>
+        <p:cNvGrpSpPr/>
+        <p:nvPr/>
+      </p:nvGrpSpPr>
+      <p:grpSpPr>
+        <a:xfrm>
+          <a:off x="0" y="0"/>
+          <a:ext cx="0" cy="0"/>
+          <a:chOff x="0" y="0"/>
+          <a:chExt cx="0" cy="0"/>
+        </a:xfrm>
+      </p:grpSpPr>
+      <p:sp>
+        <p:nvSpPr>
+          <p:cNvPr id="2" name=""/>
+          <p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr>
+          <p:nvPr><p:ph type="body" idx="1"/></p:nvPr>
+        </p:nvSpPr>
+        <p:spPr/>
+        <p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody>
+      </p:sp>
+    </p:spTree>
+  </p:cSld>
+  <p:txStyles><p:bodyStyle/><p:otherStyle/></p:txStyles>
+</p:notesMaster>"#
+}
+
+/// Animation effect presets for slide shapes.
+///
+/// Maps to OOXML animation preset IDs and classes.
+/// ECMA-376 Part 1, Section 19.5 (timing / animations).
+#[cfg(feature = "pml-animations")]
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum AnimationEffect {
+    /// Shape appears instantly (`presetID="1"` class `entr`).
+    Appear,
+    /// Fade in from transparent (`presetID="10"` class `entr`).
+    FadeIn,
+    /// Fly in from the left (`presetID="2"` class `entr` subtype `8`).
+    FlyInFromLeft,
+    /// Fly in from the right (`presetID="2"` class `entr` subtype `4`).
+    FlyInFromRight,
+    /// Fly in from the bottom (`presetID="2"` class `entr` subtype `16`).
+    FlyInFromBottom,
+    /// Fly in from the top (`presetID="2"` class `entr` subtype `2`).
+    FlyInFromTop,
+    /// Zoom in from small (`presetID="22"` class `entr`).
+    ZoomIn,
+    /// Spin clockwise (`presetID="3"` class `emph`).
+    SpinClockwise,
+    /// Blink/flash emphasis (`presetID="14"` class `emph`).
+    Blink,
+    /// Fade out (`presetID="10"` class `exit`).
+    FadeOut,
+    /// Fly out (`presetID="2"` class `exit`).
+    FlyOut,
+}
+
+/// Trigger for when an animation begins.
+///
+/// ECMA-376 Part 1, §19.5.30 (cTn nodeType).
+#[cfg(feature = "pml-animations")]
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum AnimationTrigger {
+    /// Start on the next mouse click.
+    OnClick,
+    /// Start simultaneously with the previous animation.
+    WithPrevious,
+    /// Start after the previous animation finishes.
+    AfterPrevious,
+}
+
+/// A pending animation to apply to a shape on this slide.
+///
+/// Stored on [`SlideBuilder`] and serialised into `<p:timing>` at write time.
+/// ECMA-376 Part 1, §19.5 (timing).
+#[cfg(feature = "pml-animations")]
+#[derive(Debug, Clone)]
+pub struct AnimationConfig {
+    /// Shape to animate (1-based `id` attribute on the shape's `<p:cNvPr>`).
+    pub shape_id: u32,
+    /// Effect to apply.
+    pub effect: AnimationEffect,
+    /// What triggers the animation.
+    pub trigger: AnimationTrigger,
+    /// Duration of the effect in milliseconds.
+    pub duration_ms: u32,
+    /// Delay before the effect starts, in milliseconds.
+    pub delay_ms: u32,
+}
+
+/// Internal storage for a chart to embed on a slide.
+#[cfg(feature = "pml-charts")]
+#[derive(Debug, Clone)]
+struct ChartElement {
+    data: Vec<u8>,
+    x: i64,
+    y: i64,
+    cx: i64,
+    cy: i64,
+}
+
+/// Internal storage for a SmartArt diagram to embed on a slide.
+#[cfg(feature = "pml-charts")]
+#[derive(Debug, Clone)]
+struct SmartArtElement {
+    data_xml: Vec<u8>,
+    layout_xml: Option<Vec<u8>>,
+    x: i64,
+    y: i64,
+    cx: i64,
+    cy: i64,
 }
 
 /// Serialize any `ToXml` type to XML bytes with a given tag name and PML namespace declarations.
@@ -884,6 +1203,17 @@ pub struct SlideBuilder {
     slide: types::Slide,
     /// Optional slide background color (6-hex RGB).
     background_color: Option<String>,
+    /// Which layout this slide uses (index into the master's layout list).
+    layout_id: Option<LayoutId>,
+    /// Pending animations — serialised into `<p:timing>` at write time.
+    #[cfg(feature = "pml-animations")]
+    animations: Vec<AnimationConfig>,
+    /// Charts to embed — serialised into chart parts at write time.
+    #[cfg(feature = "pml-charts")]
+    charts: Vec<ChartElement>,
+    /// SmartArt diagrams to embed — serialised at write time.
+    #[cfg(feature = "pml-charts")]
+    smartarts: Vec<SmartArtElement>,
 }
 
 /// Create an empty `types::Slide` with the required boilerplate shape tree.
@@ -1598,6 +1928,228 @@ fn build_graphic_frame(table: &TableElement, shape_id: usize) -> types::Graphica
     }
 }
 
+/// Build a `types::GraphicalObjectFrame` for an embedded chart.
+///
+/// The chart data is referenced via a relationship ID `rel_id`.
+/// ECMA-376 Part 1, §14.2.1.
+#[cfg(feature = "pml-charts")]
+fn build_chart_frame(
+    chart: &ChartElement,
+    shape_id: usize,
+    rel_id: usize,
+) -> types::GraphicalObjectFrame {
+    let chart_name = format!("Chart {}", shape_id);
+
+    let graphic_frame_locks = dml::CTGraphicalObjectFrameLocking {
+        no_grp: Some(true),
+        ..Default::default()
+    };
+    let c_nv_graphic_frame_pr = dml::CTNonVisualGraphicFrameProperties {
+        graphic_frame_locks: Some(Box::new(graphic_frame_locks)),
+        ..Default::default()
+    };
+    let nv_graphic_frame_pr = Box::new(types::CTGraphicalObjectFrameNonVisual {
+        c_nv_pr: make_cnv_pr(shape_id as u32, &chart_name),
+        c_nv_graphic_frame_pr: Box::new(c_nv_graphic_frame_pr),
+        nv_pr: make_nv_pr(),
+        extra_children: Default::default(),
+    });
+
+    let xfrm = make_xfrm(chart.x, chart.y, chart.cx, chart.cy);
+
+    let graphic_xml = format!(
+        r#"<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:chart xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:id="rId{}"/></a:graphicData></a:graphic>"#,
+        rel_id
+    );
+    let extra_children = parse_extra_child_xml(&graphic_xml);
+
+    types::GraphicalObjectFrame {
+        bw_mode: None,
+        nv_graphic_frame_pr,
+        xfrm,
+        ext_lst: None,
+        extra_attrs: Default::default(),
+        extra_children,
+    }
+}
+
+/// Build a `types::GraphicalObjectFrame` for an embedded SmartArt diagram.
+///
+/// The diagram data part is referenced via `data_rel_id`, and optionally a
+/// layout part via `layout_rel_id`.
+/// ECMA-376 Part 1, §14.2.4.
+#[cfg(feature = "pml-charts")]
+fn build_smartart_frame(
+    smartart: &SmartArtElement,
+    shape_id: usize,
+    data_rel_id: usize,
+    layout_rel_id: Option<usize>,
+) -> types::GraphicalObjectFrame {
+    let frame_name = format!("SmartArt {}", shape_id);
+
+    let graphic_frame_locks = dml::CTGraphicalObjectFrameLocking {
+        no_grp: Some(true),
+        ..Default::default()
+    };
+    let c_nv_graphic_frame_pr = dml::CTNonVisualGraphicFrameProperties {
+        graphic_frame_locks: Some(Box::new(graphic_frame_locks)),
+        ..Default::default()
+    };
+    let nv_graphic_frame_pr = Box::new(types::CTGraphicalObjectFrameNonVisual {
+        c_nv_pr: make_cnv_pr(shape_id as u32, &frame_name),
+        c_nv_graphic_frame_pr: Box::new(c_nv_graphic_frame_pr),
+        nv_pr: make_nv_pr(),
+        extra_children: Default::default(),
+    });
+
+    let xfrm = make_xfrm(smartart.x, smartart.y, smartart.cx, smartart.cy);
+
+    // Build the relIds attributes — dm= is the data rel, lo= is the layout rel.
+    let layout_attr = if let Some(lo_id) = layout_rel_id {
+        format!(r#" r:lo="rId{}""#, lo_id)
+    } else {
+        String::new()
+    };
+    let graphic_xml = format!(
+        r#"<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/diagram"><dgm:relIds xmlns:dgm="http://schemas.openxmlformats.org/drawingml/2006/diagram" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:dm="rId{}"{}/></a:graphicData></a:graphic>"#,
+        data_rel_id, layout_attr
+    );
+    let extra_children = parse_extra_child_xml(&graphic_xml);
+
+    types::GraphicalObjectFrame {
+        bw_mode: None,
+        nv_graphic_frame_pr,
+        xfrm,
+        ext_lst: None,
+        extra_attrs: Default::default(),
+        extra_children,
+    }
+}
+
+/// Build the raw XML string for `<p:timing>` from a list of animation configs.
+///
+/// Uses the minimal timing structure required by PowerPoint.
+/// ECMA-376 Part 1, §19.5.
+#[cfg(feature = "pml-animations")]
+fn build_timing_xml(animations: &[AnimationConfig]) -> String {
+    // cTn id assignment:
+    //   1 = root tmRoot
+    //   2 = mainSeq
+    //   per animation (4 ids each): outer_par_ctn, effect_ctn, set_ctn, (reserved)
+    let mut xml = String::new();
+    xml.push_str("<p:timing>");
+    xml.push_str("<p:tnLst><p:par>");
+    xml.push_str(r#"<p:cTn id="1" dur="indefinite" restart="whenNotActive" nodeType="tmRoot">"#);
+    xml.push_str("<p:childTnLst>");
+    xml.push_str(r#"<p:seq concurrent="1" nextAc="seek">"#);
+    xml.push_str(r#"<p:cTn id="2" dur="indefinite" nodeType="mainSeq"><p:childTnLst>"#);
+
+    let mut ctn_id: u32 = 3;
+    for (grp_idx, anim) in animations.iter().enumerate() {
+        let (preset_id, preset_class, preset_subtype) = animation_preset(anim);
+        let outer_delay = match anim.trigger {
+            AnimationTrigger::OnClick => "indefinite",
+            AnimationTrigger::WithPrevious | AnimationTrigger::AfterPrevious => "0",
+        };
+        let node_type = match anim.trigger {
+            AnimationTrigger::OnClick => "clickEffect",
+            AnimationTrigger::WithPrevious => "withEffect",
+            AnimationTrigger::AfterPrevious => "afterEffect",
+        };
+
+        let outer_id = ctn_id;
+        let effect_id = ctn_id + 1;
+        let set_id = ctn_id + 2;
+        ctn_id += 3;
+
+        // Outer par — groups this click-level animation.
+        xml.push_str("<p:par>");
+        xml.push_str(&format!(
+            r#"<p:cTn id="{}" fill="hold"><p:stCondLst><p:cond evt="onBegin" delay="{}"/></p:stCondLst><p:childTnLst><p:par>"#,
+            outer_id, outer_delay
+        ));
+        xml.push_str(&format!(
+            r#"<p:cTn id="{}" presetID="{}" presetClass="{}" presetSubtype="{}" fill="hold" grpId="{}" nodeType="{}" dur="{}">"#,
+            effect_id,
+            preset_id,
+            preset_class,
+            preset_subtype,
+            grp_idx,
+            node_type,
+            anim.duration_ms
+        ));
+        xml.push_str(&format!(
+            r#"<p:stCondLst><p:cond evt="begin" delay="{}"/></p:stCondLst>"#,
+            anim.delay_ms
+        ));
+        xml.push_str("<p:childTnLst><p:set><p:cBhvr>");
+        xml.push_str(&format!(r#"<p:cTn id="{}" dur="1" fill="hold"/>"#, set_id));
+        xml.push_str(&format!(
+            r#"<p:tgtEl><p:spTgt spid="{}"/></p:tgtEl>"#,
+            anim.shape_id
+        ));
+        xml.push_str("<p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst>");
+        xml.push_str(r#"</p:cBhvr><p:to><p:strVal val="visible"/></p:to></p:set>"#);
+        // Close: childTnLst, effect cTn, inner par, childTnLst, outer cTn, outer par
+        xml.push_str("</p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn></p:par>");
+    }
+
+    xml.push_str("</p:childTnLst></p:cTn>"); // mainSeq cTn
+    xml.push_str(r#"<p:prevCondLst><p:cond evt="onBegin" delay="0"><p:tn><p:tgtEl><p:sldTgt/></p:tgtEl></p:tn></p:cond></p:prevCondLst>"#);
+    xml.push_str("</p:seq>");
+    xml.push_str("</p:childTnLst></p:cTn>"); // root cTn
+    xml.push_str("</p:par></p:tnLst>");
+
+    xml.push_str("<p:bldLst>");
+    for anim in animations {
+        xml.push_str(&format!(
+            r#"<p:bldP spid="{}" grpId="0" uiExpand="1" build="p"/>"#,
+            anim.shape_id
+        ));
+    }
+    xml.push_str("</p:bldLst>");
+    xml.push_str("</p:timing>");
+    xml
+}
+
+/// Map an `AnimationConfig` to `(presetID, presetClass, presetSubtype)`.
+#[cfg(feature = "pml-animations")]
+fn animation_preset(anim: &AnimationConfig) -> (u32, &'static str, u32) {
+    match anim.effect {
+        AnimationEffect::Appear => (1, "entr", 0),
+        AnimationEffect::FadeIn => (10, "entr", 0),
+        AnimationEffect::FlyInFromLeft => (2, "entr", 8),
+        AnimationEffect::FlyInFromRight => (2, "entr", 4),
+        AnimationEffect::FlyInFromBottom => (2, "entr", 16),
+        AnimationEffect::FlyInFromTop => (2, "entr", 2),
+        AnimationEffect::ZoomIn => (22, "entr", 0),
+        AnimationEffect::SpinClockwise => (3, "emph", 0),
+        AnimationEffect::Blink => (14, "emph", 0),
+        AnimationEffect::FadeOut => (10, "exit", 0),
+        AnimationEffect::FlyOut => (2, "exit", 0),
+    }
+}
+
+/// Parse the timing XML string into a `types::SlideTiming` element for the
+/// generated slide type.
+///
+/// We store the whole `<p:timing>` as `extra_children` on the slide so it
+/// roundtrips faithfully without needing to map every generated sub-type.
+#[cfg(feature = "pml-animations")]
+fn build_timing_element(timing_xml: &str) -> types::SlideTiming {
+    // Strip the outer <p:timing> wrapper — its children go into extra_children
+    // of the generated SlideTiming type.
+    let inner = timing_xml
+        .trim_start_matches("<p:timing>")
+        .trim_end_matches("</p:timing>")
+        .trim();
+    let extra_children = parse_extra_child_xml(inner);
+    types::SlideTiming {
+        extra_children,
+        ..Default::default()
+    }
+}
+
 /// Convert a `SlideTransition` builder into a generated `types::SlideTransition`.
 #[cfg(feature = "pml-transitions")]
 fn build_slide_transition(t: &SlideTransition) -> types::SlideTransition {
@@ -1653,6 +2205,13 @@ impl SlideBuilder {
             next_shape_id: 2,
             slide: init_slide(),
             background_color: None,
+            layout_id: None,
+            #[cfg(feature = "pml-animations")]
+            animations: Vec::new(),
+            #[cfg(feature = "pml-charts")]
+            charts: Vec::new(),
+            #[cfg(feature = "pml-charts")]
+            smartarts: Vec::new(),
         }
     }
 
@@ -2110,11 +2669,117 @@ impl SlideBuilder {
         return false;
     }
 
-    /// Serialize this slide to XML bytes, resolving deferred images and hyperlinks.
+    /// Set which layout this slide uses.
+    ///
+    /// Pass the [`LayoutId`] returned by
+    /// [`PresentationBuilder::add_slide_master`].  If not called, the slide
+    /// uses the first layout of the first master (the default).
+    pub fn set_layout(&mut self, id: LayoutId) -> &mut Self {
+        self.layout_id = Some(id);
+        self
+    }
+
+    /// Add an animation to a shape on this slide.
+    ///
+    /// The `shape_id` must match the shape's `id` attribute as written to the
+    /// slide XML.  Shape IDs start at 2 (1 is the group shape) and increment
+    /// in the order shapes are added.
+    ///
+    /// Requires the `pml-animations` feature.
+    /// ECMA-376 Part 1, §19.5.
+    #[cfg(feature = "pml-animations")]
+    pub fn add_animation(&mut self, anim: AnimationConfig) -> &mut Self {
+        self.animations.push(anim);
+        self
+    }
+
+    /// Embed a chart in this slide.
+    ///
+    /// `chart_xml` must be valid DrawingML chart XML (a `<c:chartSpace>` root
+    /// element).  At write time the bytes are written to
+    /// `ppt/charts/chartN.xml` and a `<p:graphicFrame>` referencing it is
+    /// added to the slide's shape tree.
+    ///
+    /// Requires the `pml-charts` feature.
+    /// ECMA-376 Part 1, §14.2.1.
+    #[cfg(feature = "pml-charts")]
+    pub fn embed_chart(
+        &mut self,
+        chart_xml: impl Into<Vec<u8>>,
+        x: i64,
+        y: i64,
+        cx: i64,
+        cy: i64,
+    ) -> &mut Self {
+        self.charts.push(ChartElement {
+            data: chart_xml.into(),
+            x,
+            y,
+            cx,
+            cy,
+        });
+        self
+    }
+
+    /// Embed a SmartArt diagram in this slide.
+    ///
+    /// `data_xml` must be a `<dgm:dataModel>` document.  `layout_xml`, if
+    /// supplied, is written as a separate `diagramLayout` part.  At write time
+    /// a `<p:graphicFrame>` with a `<dgm:relIds>` element is added to the
+    /// slide's shape tree.
+    ///
+    /// Requires the `pml-charts` feature (which already covers diagrams).
+    /// ECMA-376 Part 1, §14.2.4.
+    #[cfg(feature = "pml-charts")]
+    pub fn embed_smartart(
+        &mut self,
+        data_xml: impl Into<Vec<u8>>,
+        layout_xml: Option<Vec<u8>>,
+        x: i64,
+        y: i64,
+        cx: i64,
+        cy: i64,
+    ) -> &mut Self {
+        self.smartarts.push(SmartArtElement {
+            data_xml: data_xml.into(),
+            layout_xml,
+            x,
+            y,
+            cx,
+            cy,
+        });
+        self
+    }
+
+    /// Check if this slide has animations.
+    #[cfg(feature = "pml-animations")]
+    pub fn has_animations(&self) -> bool {
+        !self.animations.is_empty()
+    }
+
+    /// Check if this slide has embedded charts.
+    #[cfg(feature = "pml-charts")]
+    pub fn has_charts(&self) -> bool {
+        !self.charts.is_empty()
+    }
+
+    /// Check if this slide has embedded SmartArt.
+    #[cfg(feature = "pml-charts")]
+    pub fn has_smartarts(&self) -> bool {
+        !self.smartarts.is_empty()
+    }
+
+    /// Serialize this slide to XML bytes, resolving deferred images, hyperlinks,
+    /// charts, and SmartArt.
+    ///
+    /// `chart_start_rel_id` and `smartart_start_rel_id` are only used when the
+    /// `pml-charts` feature is enabled.  Pass `0` when that feature is off.
     fn serialize_slide(
         &self,
         image_start_rel_id: usize,
         hyperlink_rel_ids: &std::collections::HashMap<&str, usize>,
+        chart_start_rel_id: usize,
+        smartart_start_rel_id: usize,
     ) -> Result<Vec<u8>> {
         let mut slide = self.slide.clone();
         let mut next_id = self.next_shape_id;
@@ -2166,6 +2831,36 @@ impl SlideBuilder {
             next_id += 1;
         }
 
+        // Build graphic frames for embedded charts (deferred — need rIds).
+        #[cfg(feature = "pml-charts")]
+        for (i, chart) in self.charts.iter().enumerate() {
+            let rel_id = chart_start_rel_id + i;
+            let frame = build_chart_frame(chart, next_id, rel_id);
+            slide.common_slide_data.shape_tree.graphic_frame.push(frame);
+            next_id += 1;
+        }
+
+        // Build graphic frames for SmartArt diagrams (deferred — need rIds).
+        #[cfg(feature = "pml-charts")]
+        for (i, smartart) in self.smartarts.iter().enumerate() {
+            let data_rel_id = smartart_start_rel_id + i * 2;
+            let layout_rel_id = if smartart.layout_xml.is_some() {
+                Some(data_rel_id + 1)
+            } else {
+                None
+            };
+            let frame = build_smartart_frame(smartart, next_id, data_rel_id, layout_rel_id);
+            slide.common_slide_data.shape_tree.graphic_frame.push(frame);
+            next_id += 1;
+        }
+
+        // Inject <p:timing> for slide animations.
+        #[cfg(feature = "pml-animations")]
+        if !self.animations.is_empty() {
+            let timing_xml = build_timing_xml(&self.animations);
+            slide.timing = Some(Box::new(build_timing_element(&timing_xml)));
+        }
+
         // Set clrMapOvr to masterClrMapping (always required for slides).
         slide.clr_map_ovr = Some(Box::new(dml::CTColorMappingOverride {
             master_clr_mapping: Some(Box::new(dml::CTEmptyElement)),
@@ -2183,6 +2878,8 @@ pub struct PresentationBuilder {
     slides: Vec<SlideBuilder>,
     slide_width: i64,
     slide_height: i64,
+    /// Additional slide masters (beyond the default minimal master).
+    extra_masters: Vec<SlideMasterEntry>,
 }
 
 impl Default for PresentationBuilder {
@@ -2198,7 +2895,30 @@ impl PresentationBuilder {
             slides: Vec::new(),
             slide_width: 9144000,
             slide_height: 6858000,
+            extra_masters: Vec::new(),
         }
+    }
+
+    /// Add a custom slide master (with its layouts) to the presentation.
+    ///
+    /// Returns a [`MasterId`] that uniquely identifies this master and a
+    /// `Vec<LayoutId>` with one handle per layout (in the same order as
+    /// `config.layouts`).  Layouts can be assigned to slides via
+    /// [`SlideBuilder::set_layout`].
+    ///
+    /// The default minimal master (master 1 / layout 1) is always written even
+    /// when custom masters are added.  Custom masters start from index 2.
+    pub fn add_slide_master(&mut self, config: SlideMasterConfig) -> (MasterId, Vec<LayoutId>) {
+        // The default master occupies index 0 internally; extras start at 1.
+        let master_idx = 1 + self.extra_masters.len(); // 1-based index (0 = default)
+        let layout_ids: Vec<LayoutId> = (0..config.layouts.len())
+            .map(|layout_idx| LayoutId {
+                master_idx,
+                layout_idx,
+            })
+            .collect();
+        self.extra_masters.push(SlideMasterEntry { config });
+        (MasterId(master_idx), layout_ids)
     }
 
     /// Set the slide size in EMUs (914400 EMUs = 1 inch).
@@ -2248,6 +2968,8 @@ impl PresentationBuilder {
             pkg.add_default_content_type("gif", CT_GIF);
         }
 
+        let has_notes = self.slides.iter().any(|s| s.has_notes());
+
         let root_rels = format!(
             r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
@@ -2256,8 +2978,19 @@ impl PresentationBuilder {
             REL_OFFICE_DOCUMENT
         );
 
-        // presentation.xml.rels: slides (rId1..rIdN) + slide master (rId{N+1})
-        let master_rel_id = self.slides.len() + 1;
+        // -----------------------------------------------------------------------
+        // presentation.xml.rels
+        //
+        // IDs:   rId1..rIdN  = slides
+        //        rId{N+1}    = default slide master (master 1)
+        //        rId{N+2..}  = extra masters (if any)
+        //        last entry  = notes master (if any slides have notes)
+        // -----------------------------------------------------------------------
+        let n_slides = self.slides.len();
+        let first_master_rel_id = n_slides + 1;
+        let n_masters = 1 + self.extra_masters.len(); // default + extras
+        let notes_master_rel_id = first_master_rel_id + n_masters; // after all masters
+
         let mut pres_rels = String::new();
         pres_rels.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
         pres_rels.push('\n');
@@ -2265,7 +2998,7 @@ impl PresentationBuilder {
             r#"<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">"#,
         );
         pres_rels.push('\n');
-        for i in 0..self.slides.len() {
+        for i in 0..n_slides {
             let rel_id = i + 1;
             pres_rels.push_str(&format!(
                 r#"  <Relationship Id="rId{}" Type="{}" Target="slides/slide{}.xml"/>"#,
@@ -2273,15 +3006,36 @@ impl PresentationBuilder {
             ));
             pres_rels.push('\n');
         }
+        // Default master (slideMaster1.xml)
         pres_rels.push_str(&format!(
             r#"  <Relationship Id="rId{}" Type="{}" Target="slideMasters/slideMaster1.xml"/>"#,
-            master_rel_id, REL_SLIDE_MASTER
+            first_master_rel_id, REL_SLIDE_MASTER
         ));
         pres_rels.push('\n');
+        // Extra masters
+        for extra_idx in 0..self.extra_masters.len() {
+            let master_num = 2 + extra_idx; // slideMaster2.xml, etc.
+            let rel_id = first_master_rel_id + 1 + extra_idx;
+            pres_rels.push_str(&format!(
+                r#"  <Relationship Id="rId{}" Type="{}" Target="slideMasters/slideMaster{}.xml"/>"#,
+                rel_id, REL_SLIDE_MASTER, master_num
+            ));
+            pres_rels.push('\n');
+        }
+        // Notes master (if any slide has notes)
+        if has_notes {
+            pres_rels.push_str(&format!(
+                r#"  <Relationship Id="rId{}" Type="{}" Target="notesMasters/notesMaster1.xml"/>"#,
+                notes_master_rel_id, REL_NOTES_MASTER
+            ));
+            pres_rels.push('\n');
+        }
         pres_rels.push_str("</Relationships>");
 
-        let presentation_xml =
-            serialize_pml_xml(&self.build_presentation(master_rel_id), "p:presentation")?;
+        let presentation_xml = serialize_pml_xml(
+            &self.build_presentation(first_master_rel_id),
+            "p:presentation",
+        )?;
 
         pkg.add_part("_rels/.rels", CT_RELATIONSHIPS, root_rels.as_bytes())?;
         pkg.add_part(
@@ -2291,20 +3045,25 @@ impl PresentationBuilder {
         )?;
         pkg.add_part("ppt/presentation.xml", CT_PRESENTATION, &presentation_xml)?;
 
-        // Write slide master and its single blank layout.
+        // -----------------------------------------------------------------------
+        // Slide master / layout constants
+        // -----------------------------------------------------------------------
         const CT_SLIDE_MASTER: &str =
             "application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml";
         const CT_SLIDE_LAYOUT: &str =
             "application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml";
 
-        let master_rels = format!(
+        // -----------------------------------------------------------------------
+        // Default slide master (slideMaster1.xml) + its single blank layout.
+        // -----------------------------------------------------------------------
+        let default_master_rels = format!(
             r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
   <Relationship Id="rId1" Type="{}" Target="../slideLayouts/slideLayout1.xml"/>
 </Relationships>"#,
             REL_SLIDE_LAYOUT
         );
-        let layout_rels = format!(
+        let default_layout_rels = format!(
             r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
   <Relationship Id="rId1" Type="{}" Target="../slideMasters/slideMaster1.xml"/>
@@ -2320,7 +3079,7 @@ impl PresentationBuilder {
         pkg.add_part(
             "ppt/slideMasters/_rels/slideMaster1.xml.rels",
             CT_RELATIONSHIPS,
-            master_rels.as_bytes(),
+            default_master_rels.as_bytes(),
         )?;
         pkg.add_part(
             "ppt/slideLayouts/slideLayout1.xml",
@@ -2330,10 +3089,101 @@ impl PresentationBuilder {
         pkg.add_part(
             "ppt/slideLayouts/_rels/slideLayout1.xml.rels",
             CT_RELATIONSHIPS,
-            layout_rels.as_bytes(),
+            default_layout_rels.as_bytes(),
         )?;
 
-        let mut global_image_num = 1;
+        // -----------------------------------------------------------------------
+        // Extra slide masters and their layouts.
+        //
+        // Layout numbering is global across all masters; we offset by 2 because
+        // the default master already owns slideLayout1.xml.
+        // -----------------------------------------------------------------------
+        let mut global_layout_num = 2usize; // slideLayout2, slideLayout3, …
+
+        for (extra_idx, entry) in self.extra_masters.iter().enumerate() {
+            let master_num = 2 + extra_idx; // slideMaster2, …
+            let n_layouts = entry.config.layouts.len();
+            let master_xml = build_master_xml(entry, n_layouts);
+
+            // Build master rels (points to each layout).
+            let mut master_rels_str = String::new();
+            master_rels_str.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
+            master_rels_str.push('\n');
+            master_rels_str.push_str(r#"<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">"#);
+            master_rels_str.push('\n');
+            for layout_local_idx in 0..n_layouts {
+                let layout_num = global_layout_num + layout_local_idx;
+                master_rels_str.push_str(&format!(
+                    r#"  <Relationship Id="rId{}" Type="{}" Target="../slideLayouts/slideLayout{}.xml"/>"#,
+                    layout_local_idx + 1, REL_SLIDE_LAYOUT, layout_num
+                ));
+                master_rels_str.push('\n');
+            }
+            master_rels_str.push_str("</Relationships>");
+
+            let master_path = format!("ppt/slideMasters/slideMaster{}.xml", master_num);
+            let master_rels_path =
+                format!("ppt/slideMasters/_rels/slideMaster{}.xml.rels", master_num);
+            pkg.add_part(&master_path, CT_SLIDE_MASTER, master_xml.as_bytes())?;
+            pkg.add_part(
+                &master_rels_path,
+                CT_RELATIONSHIPS,
+                master_rels_str.as_bytes(),
+            )?;
+
+            // Write each layout for this master.
+            for (layout_local_idx, layout_config) in entry.config.layouts.iter().enumerate() {
+                let layout_num = global_layout_num + layout_local_idx;
+                let layout_xml = build_layout_xml(layout_config);
+                let layout_rels_str = format!(
+                    r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="{}" Target="../slideMasters/slideMaster{}.xml"/>
+</Relationships>"#,
+                    REL_SLIDE_MASTER, master_num
+                );
+                let layout_path = format!("ppt/slideLayouts/slideLayout{}.xml", layout_num);
+                let layout_rels_path =
+                    format!("ppt/slideLayouts/_rels/slideLayout{}.xml.rels", layout_num);
+                pkg.add_part(&layout_path, CT_SLIDE_LAYOUT, layout_xml.as_bytes())?;
+                pkg.add_part(
+                    &layout_rels_path,
+                    CT_RELATIONSHIPS,
+                    layout_rels_str.as_bytes(),
+                )?;
+            }
+
+            global_layout_num += n_layouts;
+        }
+
+        // -----------------------------------------------------------------------
+        // Notes master (written once if any slide has notes).
+        // -----------------------------------------------------------------------
+        if has_notes {
+            pkg.add_part(
+                "ppt/notesMasters/notesMaster1.xml",
+                CT_NOTES_MASTER,
+                build_notes_master_xml().as_bytes(),
+            )?;
+            // Notes master has no rels beyond what the notes slides reference.
+            let nm_rels = r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+</Relationships>"#;
+            pkg.add_part(
+                "ppt/notesMasters/_rels/notesMaster1.xml.rels",
+                CT_RELATIONSHIPS,
+                nm_rels.as_bytes(),
+            )?;
+        }
+
+        // -----------------------------------------------------------------------
+        // Slides (with images, notes, hyperlinks, charts, SmartArt).
+        // -----------------------------------------------------------------------
+        let mut global_image_num = 1usize;
+        #[cfg(feature = "pml-charts")]
+        let mut global_chart_num = 1usize;
+        #[cfg(feature = "pml-charts")]
+        let mut global_diagram_num = 1usize;
 
         for (i, slide) in self.slides.iter().enumerate() {
             let slide_num = i + 1;
@@ -2341,7 +3191,29 @@ impl PresentationBuilder {
             let mut hyperlink_rel_ids: std::collections::HashMap<&str, usize> =
                 std::collections::HashMap::new();
 
-            // Every slide always has a rels file (at minimum for the layout reference).
+            // Determine which layout this slide references.
+            let layout_path = if let Some(lid) = slide.layout_id {
+                // Extra master layouts: compute the global layout number.
+                // master_idx=0 is the default master (layout 1).
+                // master_idx≥1 is an extra master; we need to count layouts.
+                if lid.master_idx == 0 {
+                    "slideLayouts/slideLayout1.xml".to_string()
+                } else {
+                    // Find the global offset of this master's first layout.
+                    let mut offset = 2usize; // default master uses layout 1
+                    for prev_extra in 0..(lid.master_idx - 1) {
+                        offset += self.extra_masters[prev_extra].config.layouts.len();
+                    }
+                    let layout_num = offset + lid.layout_idx;
+                    format!("slideLayouts/slideLayout{}.xml", layout_num)
+                }
+            } else {
+                "slideLayouts/slideLayout1.xml".to_string()
+            };
+
+            // -----------------------------------------------------------------------
+            // Slide rels
+            // -----------------------------------------------------------------------
             {
                 let mut slide_rels = String::new();
                 slide_rels.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
@@ -2353,8 +3225,8 @@ impl PresentationBuilder {
 
                 // rId1: slide layout (always present)
                 slide_rels.push_str(&format!(
-                    r#"  <Relationship Id="rId1" Type="{}" Target="../slideLayouts/slideLayout1.xml"/>"#,
-                    REL_SLIDE_LAYOUT
+                    r#"  <Relationship Id="rId1" Type="{}" Target="../{}"/>"#,
+                    REL_SLIDE_LAYOUT, layout_path
                 ));
                 slide_rels.push('\n');
 
@@ -2394,26 +3266,113 @@ impl PresentationBuilder {
                     rel_id += 1;
                 }
 
+                // Chart rels
+                #[cfg(feature = "pml-charts")]
+                for (chart_idx, _) in slide.charts.iter().enumerate() {
+                    let chart_num = global_chart_num + chart_idx;
+                    slide_rels.push_str(&format!(
+                        r#"  <Relationship Id="rId{}" Type="{}" Target="../charts/chart{}.xml"/>"#,
+                        rel_id, REL_CHART, chart_num
+                    ));
+                    slide_rels.push('\n');
+                    rel_id += 1;
+                }
+
+                // SmartArt rels
+                #[cfg(feature = "pml-charts")]
+                for (sa_idx, sa) in slide.smartarts.iter().enumerate() {
+                    let diag_num = global_diagram_num + sa_idx * 2; // data part
+                    slide_rels.push_str(&format!(
+                        r#"  <Relationship Id="rId{}" Type="{}" Target="../diagrams/data{}.xml"/>"#,
+                        rel_id, REL_DIAGRAM_DATA, diag_num
+                    ));
+                    slide_rels.push('\n');
+                    rel_id += 1;
+                    if sa.layout_xml.is_some() {
+                        slide_rels.push_str(&format!(
+                            r#"  <Relationship Id="rId{}" Type="{}" Target="../diagrams/layout{}.xml"/>"#,
+                            rel_id, REL_DIAGRAM_LAYOUT, diag_num + 1
+                        ));
+                        slide_rels.push('\n');
+                        rel_id += 1;
+                    }
+                }
+                #[cfg(not(feature = "pml-charts"))]
+                let _ = rel_id; // silence unused warning
+
                 slide_rels.push_str("</Relationships>");
                 let rels_name = format!("ppt/slides/_rels/slide{}.xml.rels", slide_num);
                 pkg.add_part(&rels_name, CT_RELATIONSHIPS, slide_rels.as_bytes())?;
 
+                // Write image data.
                 for (img_idx, img) in slide.images.iter().enumerate() {
                     let ext = img.format.extension();
                     let img_path = format!("ppt/media/image{}.{}", global_image_num + img_idx, ext);
                     pkg.add_part(&img_path, img.format.content_type(), &img.data)?;
                 }
+
+                // Write chart data.
+                #[cfg(feature = "pml-charts")]
+                for (chart_idx, chart) in slide.charts.iter().enumerate() {
+                    let chart_num = global_chart_num + chart_idx;
+                    let chart_path = format!("ppt/charts/chart{}.xml", chart_num);
+                    pkg.add_part(&chart_path, CT_CHART, &chart.data)?;
+                }
+
+                // Write SmartArt diagram data.
+                #[cfg(feature = "pml-charts")]
+                for (sa_idx, sa) in slide.smartarts.iter().enumerate() {
+                    let diag_num = global_diagram_num + sa_idx * 2;
+                    let data_path = format!("ppt/diagrams/data{}.xml", diag_num);
+                    pkg.add_part(&data_path, CT_DIAGRAM_DATA, &sa.data_xml)?;
+                    if let Some(ref layout_bytes) = sa.layout_xml {
+                        let layout_path_diag = format!("ppt/diagrams/layout{}.xml", diag_num + 1);
+                        pkg.add_part(&layout_path_diag, CT_DIAGRAM_LAYOUT, layout_bytes)?;
+                    }
+                }
             }
 
             // rId1=layout, rId2=notes (if any), then images start.
             let image_start_rel_id = if slide.has_notes() { 3 } else { 2 };
-            let slide_xml = slide.serialize_slide(image_start_rel_id, &hyperlink_rel_ids)?;
+            let slide_xml = slide.serialize_slide(
+                image_start_rel_id,
+                &hyperlink_rel_ids,
+                image_start_rel_id + slide.images.len() + hyperlinks.len(),
+                image_start_rel_id + slide.images.len() + hyperlinks.len() + {
+                    #[cfg(feature = "pml-charts")]
+                    {
+                        slide.charts.len()
+                    }
+                    #[cfg(not(feature = "pml-charts"))]
+                    {
+                        0
+                    }
+                },
+            )?;
             let part_name = format!("ppt/slides/slide{}.xml", slide_num);
             pkg.add_part(&part_name, CT_SLIDE, &slide_xml)?;
 
             global_image_num += slide.images.len();
+            #[cfg(feature = "pml-charts")]
+            {
+                global_chart_num += slide.charts.len();
+                global_diagram_num += slide.smartarts.len() * 2;
+            }
 
             if slide.has_notes() {
+                // Write notes slide rels: rId1=notes master, rId2=back-ref to slide.
+                let notes_rels = format!(
+                    r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="{}" Target="../notesMasters/notesMaster1.xml"/>
+  <Relationship Id="rId2" Type="{}" Target="../slides/slide{}.xml"/>
+</Relationships>"#,
+                    REL_NOTES_MASTER, REL_SLIDE, slide_num
+                );
+                let notes_rels_name =
+                    format!("ppt/notesSlides/_rels/notesSlide{}.xml.rels", slide_num);
+                pkg.add_part(&notes_rels_name, CT_RELATIONSHIPS, notes_rels.as_bytes())?;
+
                 let notes_xml =
                     serialize_pml_xml(&Self::build_notes_slide(slide, slide_num), "p:notes")?;
                 let notes_name = format!("ppt/notesSlides/notesSlide{}.xml", slide_num);
@@ -3629,5 +4588,631 @@ mod tests {
         assert_eq!(p0_algn, Some(ooxml_dml::types::STTextAlignType::L));
         assert_eq!(p1_algn, Some(ooxml_dml::types::STTextAlignType::Ctr));
         assert_eq!(p2_algn, Some(ooxml_dml::types::STTextAlignType::R));
+    }
+
+    // =========================================================================
+    // Feature: Multiple slide masters and layouts
+    // =========================================================================
+
+    #[test]
+    fn test_add_slide_master_returns_ids() {
+        let mut pres = PresentationBuilder::new();
+        let (master_id, layout_ids) = pres.add_slide_master(SlideMasterConfig {
+            background_color: None,
+            theme_name: None,
+            layouts: vec![
+                SlideLayoutConfig {
+                    name: "Title Slide".to_string(),
+                    layout_type: SlideLayoutType::TitleSlide,
+                },
+                SlideLayoutConfig {
+                    name: "Title and Content".to_string(),
+                    layout_type: SlideLayoutType::TitleContent,
+                },
+            ],
+        });
+        assert_eq!(master_id, MasterId(1));
+        assert_eq!(layout_ids.len(), 2);
+        assert_eq!(layout_ids[0].master_idx, 1);
+        assert_eq!(layout_ids[0].layout_idx, 0);
+        assert_eq!(layout_ids[1].layout_idx, 1);
+    }
+
+    #[test]
+    fn test_multiple_masters_roundtrip() {
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let (_, layout_ids) = pres.add_slide_master(SlideMasterConfig {
+            background_color: Some("1F497D".to_string()),
+            theme_name: Some("Custom Theme".to_string()),
+            layouts: vec![
+                SlideLayoutConfig {
+                    name: "Title Slide".to_string(),
+                    layout_type: SlideLayoutType::TitleSlide,
+                },
+                SlideLayoutConfig {
+                    name: "Title and Content".to_string(),
+                    layout_type: SlideLayoutType::TitleContent,
+                },
+            ],
+        });
+
+        // Add a slide using the custom layout.
+        let slide = pres.add_slide();
+        slide.set_layout(layout_ids[0]);
+        slide.add_title("Custom Master Slide");
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        // Verify it roundtrips.
+        buffer.set_position(0);
+        let presentation = crate::Presentation::from_reader(buffer).unwrap();
+        // Default master + 1 extra = 2 masters total.
+        assert_eq!(presentation.slide_masters().len(), 2);
+    }
+
+    #[test]
+    fn test_slide_layout_xml_contains_placeholders() {
+        // TitleSlide layout XML should contain the ctrTitle and subTitle placeholders.
+        let config = SlideLayoutConfig {
+            name: "My Title Layout".to_string(),
+            layout_type: SlideLayoutType::TitleSlide,
+        };
+        let xml = build_layout_xml(&config);
+        assert!(xml.contains(r#"type="ctrTitle""#), "Missing ctrTitle ph");
+        assert!(xml.contains(r#"type="subTitle""#), "Missing subTitle ph");
+        assert!(xml.contains("My Title Layout"), "Missing layout name");
+    }
+
+    #[test]
+    fn test_slide_layout_xml_title_content() {
+        let config = SlideLayoutConfig {
+            name: "Title Content".to_string(),
+            layout_type: SlideLayoutType::TitleContent,
+        };
+        let xml = build_layout_xml(&config);
+        assert!(xml.contains(r#"type="title""#));
+        // Content placeholder has no type attribute, just idx="1".
+        assert!(xml.contains(r#"idx="1""#));
+    }
+
+    #[test]
+    fn test_slide_layout_xml_two_content() {
+        let config = SlideLayoutConfig {
+            name: "Two Content".to_string(),
+            layout_type: SlideLayoutType::TwoContent,
+        };
+        let xml = build_layout_xml(&config);
+        assert!(xml.contains(r#"idx="1""#));
+        assert!(xml.contains(r#"idx="2""#));
+    }
+
+    #[test]
+    fn test_slide_layout_xml_blank() {
+        let config = SlideLayoutConfig {
+            name: "Blank".to_string(),
+            layout_type: SlideLayoutType::Blank,
+        };
+        let xml = build_layout_xml(&config);
+        // Blank layout should have no placeholder shapes.
+        assert!(
+            !xml.contains("<p:ph"),
+            "Blank layout should not have placeholders"
+        );
+        assert!(xml.contains(r#"type="blank""#));
+    }
+
+    #[test]
+    fn test_master_xml_background_color() {
+        let entry = SlideMasterEntry {
+            config: SlideMasterConfig {
+                background_color: Some("FF0000".to_string()),
+                theme_name: None,
+                layouts: vec![],
+            },
+        };
+        let xml = build_master_xml(&entry, 0);
+        assert!(xml.contains("FF0000"), "Master XML should contain bg color");
+        assert!(
+            xml.contains("solidFill"),
+            "Master XML should have solidFill"
+        );
+    }
+
+    #[test]
+    fn test_set_layout_writes_correct_rels() {
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let (_, layout_ids) = pres.add_slide_master(SlideMasterConfig {
+            background_color: None,
+            theme_name: None,
+            layouts: vec![SlideLayoutConfig {
+                name: "Title Slide".to_string(),
+                layout_type: SlideLayoutType::TitleSlide,
+            }],
+        });
+
+        let slide = pres.add_slide();
+        slide.set_layout(layout_ids[0]); // master 1, layout 0 → global layout 2
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut package = ooxml_opc::Package::open(buffer).unwrap();
+        let rels_xml = String::from_utf8(
+            package
+                .read_part("ppt/slides/_rels/slide1.xml.rels")
+                .unwrap(),
+        )
+        .unwrap();
+        // The slide should reference slideLayout2 (first layout of the extra master).
+        assert!(
+            rels_xml.contains("slideLayout2.xml"),
+            "Slide rels should reference slideLayout2, got: {}",
+            rels_xml
+        );
+    }
+
+    // =========================================================================
+    // Feature: Slide animations
+    // =========================================================================
+
+    #[cfg(feature = "pml-animations")]
+    #[test]
+    fn test_add_animation_stored() {
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.add_title("Animated");
+        slide.add_animation(AnimationConfig {
+            shape_id: 2,
+            effect: AnimationEffect::Appear,
+            trigger: AnimationTrigger::OnClick,
+            duration_ms: 500,
+            delay_ms: 0,
+        });
+        assert!(slide.has_animations(), "slide should have animations");
+    }
+
+    #[cfg(feature = "pml-animations")]
+    #[test]
+    fn test_animation_timing_xml_structure() {
+        let anims = vec![AnimationConfig {
+            shape_id: 3,
+            effect: AnimationEffect::FadeIn,
+            trigger: AnimationTrigger::OnClick,
+            duration_ms: 1000,
+            delay_ms: 250,
+        }];
+        let xml = build_timing_xml(&anims);
+        assert!(xml.contains("<p:timing>"), "missing <p:timing>");
+        assert!(xml.contains("</p:timing>"), "missing </p:timing>");
+        assert!(xml.contains("<p:tnLst>"), "missing <p:tnLst>");
+        assert!(xml.contains("<p:bldLst>"), "missing <p:bldLst>");
+        assert!(xml.contains(r#"spid="3""#), "bldP should reference shape 3");
+        // FadeIn = presetID 10
+        assert!(
+            xml.contains(r#"presetID="10""#),
+            "FadeIn should use presetID=10"
+        );
+    }
+
+    #[cfg(feature = "pml-animations")]
+    #[test]
+    fn test_animation_roundtrip_writes_timing() {
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.add_title("Animated Slide");
+        slide.add_animation(AnimationConfig {
+            shape_id: 2,
+            effect: AnimationEffect::FlyInFromLeft,
+            trigger: AnimationTrigger::OnClick,
+            duration_ms: 750,
+            delay_ms: 0,
+        });
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        // Verify the timing element appears in the slide XML.
+        buffer.set_position(0);
+        let mut package = ooxml_opc::Package::open(buffer).unwrap();
+        let slide_xml =
+            String::from_utf8(package.read_part("ppt/slides/slide1.xml").unwrap()).unwrap();
+        assert!(
+            slide_xml.contains("timing") || slide_xml.contains("tnLst"),
+            "Slide XML should contain timing element; got: {}",
+            &slide_xml[..slide_xml.len().min(500)]
+        );
+    }
+
+    #[cfg(feature = "pml-animations")]
+    #[test]
+    fn test_animation_multiple_effects() {
+        let anims = vec![
+            AnimationConfig {
+                shape_id: 2,
+                effect: AnimationEffect::Appear,
+                trigger: AnimationTrigger::OnClick,
+                duration_ms: 500,
+                delay_ms: 0,
+            },
+            AnimationConfig {
+                shape_id: 3,
+                effect: AnimationEffect::FadeIn,
+                trigger: AnimationTrigger::AfterPrevious,
+                duration_ms: 1000,
+                delay_ms: 500,
+            },
+        ];
+        let xml = build_timing_xml(&anims);
+        // Two bldP entries.
+        assert_eq!(
+            xml.matches("<p:bldP").count(),
+            2,
+            "Expected 2 bldP entries for 2 animations"
+        );
+        // Both shape refs present.
+        assert!(xml.contains(r#"spid="2""#));
+        assert!(xml.contains(r#"spid="3""#));
+    }
+
+    #[cfg(feature = "pml-animations")]
+    #[test]
+    fn test_animation_trigger_node_types() {
+        let click_anim = vec![AnimationConfig {
+            shape_id: 2,
+            effect: AnimationEffect::Appear,
+            trigger: AnimationTrigger::OnClick,
+            duration_ms: 500,
+            delay_ms: 0,
+        }];
+        let xml = build_timing_xml(&click_anim);
+        assert!(xml.contains(r#"nodeType="clickEffect""#));
+
+        let with_anim = vec![AnimationConfig {
+            shape_id: 2,
+            effect: AnimationEffect::Appear,
+            trigger: AnimationTrigger::WithPrevious,
+            duration_ms: 500,
+            delay_ms: 0,
+        }];
+        let xml2 = build_timing_xml(&with_anim);
+        assert!(xml2.contains(r#"nodeType="withEffect""#));
+
+        let after_anim = vec![AnimationConfig {
+            shape_id: 2,
+            effect: AnimationEffect::Appear,
+            trigger: AnimationTrigger::AfterPrevious,
+            duration_ms: 500,
+            delay_ms: 0,
+        }];
+        let xml3 = build_timing_xml(&after_anim);
+        assert!(xml3.contains(r#"nodeType="afterEffect""#));
+    }
+
+    // =========================================================================
+    // Feature: Notes master
+    // =========================================================================
+
+    #[test]
+    fn test_notes_master_written_when_slide_has_notes() {
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.add_title("Notes Test");
+        slide.set_notes("These are speaker notes.");
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut package = ooxml_opc::Package::open(buffer).unwrap();
+
+        // Notes master XML should exist.
+        let nm_xml = package.read_part("ppt/notesMasters/notesMaster1.xml");
+        assert!(
+            nm_xml.is_ok(),
+            "notesMaster1.xml should exist when slide has notes"
+        );
+        let nm_str = String::from_utf8(nm_xml.unwrap()).unwrap();
+        assert!(
+            nm_str.contains("notesMaster"),
+            "Wrong notes master root element"
+        );
+
+        // Notes master rels should exist.
+        let nm_rels = package.read_part("ppt/notesMasters/_rels/notesMaster1.xml.rels");
+        assert!(nm_rels.is_ok(), "notesMaster rels should exist");
+
+        // presentation.xml.rels should reference the notes master.
+        let pres_rels = String::from_utf8(
+            package
+                .read_part("ppt/_rels/presentation.xml.rels")
+                .unwrap(),
+        )
+        .unwrap();
+        assert!(
+            pres_rels.contains(REL_NOTES_MASTER),
+            "presentation.xml.rels should reference notes master"
+        );
+    }
+
+    #[test]
+    fn test_notes_slide_rels_reference_notes_master() {
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.set_notes("Speaker notes here.");
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut package = ooxml_opc::Package::open(buffer).unwrap();
+
+        let notes_rels = String::from_utf8(
+            package
+                .read_part("ppt/notesSlides/_rels/notesSlide1.xml.rels")
+                .unwrap(),
+        )
+        .unwrap();
+        assert!(
+            notes_rels.contains(REL_NOTES_MASTER),
+            "notes slide rels should reference notes master"
+        );
+    }
+
+    #[test]
+    fn test_no_notes_master_when_no_notes() {
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.add_title("No Notes");
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut package = ooxml_opc::Package::open(buffer).unwrap();
+        let nm = package.read_part("ppt/notesMasters/notesMaster1.xml");
+        assert!(
+            nm.is_err(),
+            "Should not write notes master when no slide has notes"
+        );
+    }
+
+    // =========================================================================
+    // Feature: Chart embedding
+    // =========================================================================
+
+    #[cfg(feature = "pml-charts")]
+    #[test]
+    fn test_embed_chart_stored() {
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.embed_chart(b"<c:chartSpace/>".to_vec(), 0, 0, 4572000, 3429000);
+        assert!(slide.has_charts());
+    }
+
+    #[cfg(feature = "pml-charts")]
+    #[test]
+    fn test_embed_chart_writes_chart_part() {
+        use std::io::Cursor;
+
+        let chart_xml = b"<?xml version=\"1.0\"?><c:chartSpace xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"/>";
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.embed_chart(chart_xml.to_vec(), 457200, 457200, 4572000, 3429000);
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut package = ooxml_opc::Package::open(buffer).unwrap();
+
+        // chart1.xml should be written.
+        let chart_data = package.read_part("ppt/charts/chart1.xml");
+        assert!(chart_data.is_ok(), "ppt/charts/chart1.xml should exist");
+
+        // The slide rels should reference the chart.
+        let slide_rels = String::from_utf8(
+            package
+                .read_part("ppt/slides/_rels/slide1.xml.rels")
+                .unwrap(),
+        )
+        .unwrap();
+        assert!(
+            slide_rels.contains(REL_CHART),
+            "slide rels should contain chart relationship type"
+        );
+        assert!(
+            slide_rels.contains("chart1.xml"),
+            "slide rels should reference chart1.xml"
+        );
+    }
+
+    #[cfg(feature = "pml-charts")]
+    #[test]
+    fn test_embed_chart_graphic_frame_in_slide_xml() {
+        use std::io::Cursor;
+
+        let chart_xml = b"<?xml version=\"1.0\"?><c:chartSpace/>";
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.embed_chart(chart_xml.to_vec(), 0, 0, 4572000, 3429000);
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut package = ooxml_opc::Package::open(buffer).unwrap();
+        let slide_xml =
+            String::from_utf8(package.read_part("ppt/slides/slide1.xml").unwrap()).unwrap();
+
+        // Slide XML should contain graphicFrame and chart data URI.
+        assert!(
+            slide_xml.contains("graphicFrame") || slide_xml.contains("graphicData"),
+            "Slide XML should contain graphicFrame for chart"
+        );
+        assert!(
+            slide_xml.contains("drawingml/2006/chart"),
+            "Slide XML should reference chart schema URI"
+        );
+    }
+
+    #[cfg(feature = "pml-charts")]
+    #[test]
+    fn test_embed_multiple_charts() {
+        use std::io::Cursor;
+
+        let chart_xml = b"<?xml version=\"1.0\"?><c:chartSpace/>";
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.embed_chart(chart_xml.to_vec(), 0, 0, 4572000, 3429000);
+        slide.embed_chart(chart_xml.to_vec(), 5000000, 0, 4572000, 3429000);
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut package = ooxml_opc::Package::open(buffer).unwrap();
+
+        assert!(
+            package.read_part("ppt/charts/chart1.xml").is_ok(),
+            "chart1.xml should exist"
+        );
+        assert!(
+            package.read_part("ppt/charts/chart2.xml").is_ok(),
+            "chart2.xml should exist"
+        );
+    }
+
+    // =========================================================================
+    // Feature: SmartArt embedding
+    // =========================================================================
+
+    #[cfg(feature = "pml-charts")]
+    #[test]
+    fn test_embed_smartart_stored() {
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.embed_smartart(b"<dgm:dataModel/>".to_vec(), None, 0, 0, 4572000, 3429000);
+        assert!(slide.has_smartarts());
+    }
+
+    #[cfg(feature = "pml-charts")]
+    #[test]
+    fn test_embed_smartart_writes_data_part() {
+        use std::io::Cursor;
+
+        let data_xml = b"<?xml version=\"1.0\"?><dgm:dataModel xmlns:dgm=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\"/>";
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.embed_smartart(data_xml.to_vec(), None, 0, 0, 4572000, 3429000);
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut package = ooxml_opc::Package::open(buffer).unwrap();
+
+        // Diagram data part should exist.
+        let data_part = package.read_part("ppt/diagrams/data1.xml");
+        assert!(data_part.is_ok(), "ppt/diagrams/data1.xml should exist");
+
+        // The slide rels should reference the diagram data.
+        let slide_rels = String::from_utf8(
+            package
+                .read_part("ppt/slides/_rels/slide1.xml.rels")
+                .unwrap(),
+        )
+        .unwrap();
+        assert!(
+            slide_rels.contains(REL_DIAGRAM_DATA),
+            "slide rels should contain diagramData relationship type"
+        );
+    }
+
+    #[cfg(feature = "pml-charts")]
+    #[test]
+    fn test_embed_smartart_with_layout() {
+        use std::io::Cursor;
+
+        let data_xml = b"<?xml version=\"1.0\"?><dgm:dataModel/>";
+        let layout_xml = b"<?xml version=\"1.0\"?><dgm:layout/>";
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.embed_smartart(
+            data_xml.to_vec(),
+            Some(layout_xml.to_vec()),
+            0,
+            0,
+            4572000,
+            3429000,
+        );
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut package = ooxml_opc::Package::open(buffer).unwrap();
+
+        // Both data and layout parts should exist.
+        assert!(package.read_part("ppt/diagrams/data1.xml").is_ok());
+        assert!(package.read_part("ppt/diagrams/layout2.xml").is_ok());
+
+        // The slide rels should reference both.
+        let slide_rels = String::from_utf8(
+            package
+                .read_part("ppt/slides/_rels/slide1.xml.rels")
+                .unwrap(),
+        )
+        .unwrap();
+        assert!(slide_rels.contains(REL_DIAGRAM_DATA));
+        assert!(slide_rels.contains(REL_DIAGRAM_LAYOUT));
+    }
+
+    #[cfg(feature = "pml-charts")]
+    #[test]
+    fn test_embed_smartart_graphic_frame_in_slide_xml() {
+        use std::io::Cursor;
+
+        let data_xml = b"<?xml version=\"1.0\"?><dgm:dataModel/>";
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.embed_smartart(data_xml.to_vec(), None, 457200, 457200, 4572000, 3429000);
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut package = ooxml_opc::Package::open(buffer).unwrap();
+        let slide_xml =
+            String::from_utf8(package.read_part("ppt/slides/slide1.xml").unwrap()).unwrap();
+
+        // Slide XML should contain the diagram URI.
+        assert!(
+            slide_xml.contains("drawingml/2006/diagram"),
+            "Slide XML should reference diagram schema URI"
+        );
+        assert!(
+            slide_xml.contains("dgm:relIds") || slide_xml.contains("relIds"),
+            "Slide XML should contain dgm:relIds"
+        );
     }
 }

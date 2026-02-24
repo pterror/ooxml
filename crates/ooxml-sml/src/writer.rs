@@ -37,6 +37,19 @@ const CT_COMMENTS: &str =
     "application/vnd.openxmlformats-officedocument.spreadsheetml.comments+xml";
 const CT_RELATIONSHIPS: &str = "application/vnd.openxmlformats-package.relationships+xml";
 const CT_XML: &str = "application/xml";
+#[cfg(feature = "sml-charts")]
+const CT_DRAWING: &str = "application/vnd.openxmlformats-officedocument.drawing+xml";
+#[cfg(feature = "sml-charts")]
+const CT_CHART: &str = "application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
+#[cfg(feature = "sml-pivot")]
+const CT_PIVOT_TABLE: &str =
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.pivotTable+xml";
+#[cfg(feature = "sml-pivot")]
+const CT_PIVOT_CACHE_DEF: &str =
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.pivotCacheDefinition+xml";
+#[cfg(feature = "sml-pivot")]
+const CT_PIVOT_CACHE_REC: &str =
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.pivotCacheRecords+xml";
 
 // Relationship types
 const REL_OFFICE_DOCUMENT: &str =
@@ -51,6 +64,20 @@ const REL_COMMENTS: &str =
     "http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments";
 const REL_HYPERLINK: &str =
     "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink";
+#[cfg(feature = "sml-charts")]
+const REL_DRAWING: &str =
+    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing";
+#[cfg(feature = "sml-charts")]
+const REL_CHART: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart";
+#[cfg(feature = "sml-pivot")]
+const REL_PIVOT_TABLE: &str =
+    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotTable";
+#[cfg(feature = "sml-pivot")]
+const REL_PIVOT_CACHE_DEF: &str =
+    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheDefinition";
+#[cfg(feature = "sml-pivot")]
+const REL_PIVOT_CACHE_REC: &str =
+    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheRecords";
 
 // Namespaces
 const NS_SPREADSHEET: &str = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
@@ -1203,6 +1230,72 @@ impl PageSetupOptions {
     }
 }
 
+// ============================================================================
+// Chart embedding (sml-charts feature)
+// ============================================================================
+
+/// A chart embedded in a worksheet.
+///
+/// Created by [`SheetBuilder::embed_chart`].
+#[cfg(feature = "sml-charts")]
+#[derive(Debug)]
+struct ChartEntry {
+    /// Raw chart XML bytes.
+    chart_xml: Vec<u8>,
+    /// Column index (0-based) of the top-left anchor cell.
+    x: u32,
+    /// Row index (0-based) of the top-left anchor cell.
+    y: u32,
+    /// Width in cells.
+    width: u32,
+    /// Height in cells.
+    height: u32,
+}
+
+// ============================================================================
+// Pivot table support (sml-pivot feature)
+// ============================================================================
+
+/// Options for [`SheetBuilder::add_pivot_table`].
+///
+/// Produces a minimal but spec-compliant pivot table definition.
+///
+/// # Example
+///
+/// ```ignore
+/// sheet.add_pivot_table(PivotTableOptions {
+///     name: "SalesPivot".to_string(),
+///     source_ref: "Sheet1!$A$1:$D$10".to_string(),
+///     dest_ref: "F1".to_string(),
+///     row_fields: vec!["Region".to_string()],
+///     col_fields: vec!["Quarter".to_string()],
+///     data_fields: vec!["Sales".to_string()],
+/// });
+/// ```
+#[cfg(feature = "sml-pivot")]
+#[derive(Debug, Clone)]
+pub struct PivotTableOptions {
+    /// Name of the pivot table (shown in Excel's pivot table list).
+    pub name: String,
+    /// Source data range, e.g. `"Sheet1!$A$1:$D$10"`.
+    pub source_ref: String,
+    /// Top-left cell of the pivot table output, e.g. `"A1"`.
+    pub dest_ref: String,
+    /// Field names to place on the row axis.
+    pub row_fields: Vec<String>,
+    /// Field names to place on the column axis.
+    pub col_fields: Vec<String>,
+    /// Field names to aggregate in the values area (sum by default).
+    pub data_fields: Vec<String>,
+}
+
+/// Internal record of a pivot table added to a sheet.
+#[cfg(feature = "sml-pivot")]
+#[derive(Debug)]
+struct PivotEntry {
+    opts: PivotTableOptions,
+}
+
 /// Error type for `add_ignored_error`.
 ///
 /// Each variant corresponds to one of the boolean flags on the `<ignoredError>`
@@ -1249,6 +1342,12 @@ pub struct SheetBuilder {
     comments: Vec<CommentBuilder>,
     /// Hyperlinks, resolved to worksheet XML + sheet rels at write time.
     hyperlinks: Vec<HyperlinkEntry>,
+    /// Embedded charts, written to xl/charts/ + xl/drawings/ at write time.
+    #[cfg(feature = "sml-charts")]
+    charts: Vec<ChartEntry>,
+    /// Pivot tables, written to xl/pivotTables/ and xl/pivotCache/ at write time.
+    #[cfg(feature = "sml-pivot")]
+    pivot_tables: Vec<PivotEntry>,
     /// Show/hide gridlines for the default sheet view.
     show_gridlines: Option<bool>,
     /// Show/hide row and column headers for the default sheet view.
@@ -1355,6 +1454,10 @@ impl SheetBuilder {
             col_collapsed: HashMap::new(),
             comments: Vec::new(),
             hyperlinks: Vec::new(),
+            #[cfg(feature = "sml-charts")]
+            charts: Vec::new(),
+            #[cfg(feature = "sml-pivot")]
+            pivot_tables: Vec::new(),
             show_gridlines: None,
             show_row_col_headers: None,
             worksheet: init_worksheet(),
@@ -2196,6 +2299,66 @@ impl SheetBuilder {
         self.show_row_col_headers = Some(show);
     }
 
+    // -------------------------------------------------------------------------
+    // Chart embedding (sml-charts)
+    // -------------------------------------------------------------------------
+
+    /// Embed a chart in the worksheet.
+    ///
+    /// The chart XML must be a complete `<c:chartSpace>` document (ECMA-376
+    /// §21.2).  The position and size are specified in cell units; `(x, y)` is
+    /// the 0-based column/row of the top-left anchor and `(width, height)` is
+    /// the extent in cells.
+    ///
+    /// At write time the chart is written to `xl/charts/chart{n}.xml`, a
+    /// drawing part is created at `xl/drawings/drawing{n}.xml`, and the
+    /// worksheet references the drawing via a relationship.
+    ///
+    /// Requires the `sml-charts` feature.
+    pub fn embed_chart(
+        &mut self,
+        chart_xml: &[u8],
+        x: u32,
+        y: u32,
+        width: u32,
+        height: u32,
+    ) -> &mut Self {
+        #[cfg(feature = "sml-charts")]
+        self.charts.push(ChartEntry {
+            chart_xml: chart_xml.to_vec(),
+            x,
+            y,
+            width,
+            height,
+        });
+        #[cfg(not(feature = "sml-charts"))]
+        let _ = (chart_xml, x, y, width, height);
+        self
+    }
+
+    // -------------------------------------------------------------------------
+    // Pivot tables (sml-pivot)
+    // -------------------------------------------------------------------------
+
+    /// Add a pivot table to the worksheet.
+    ///
+    /// This writes:
+    /// - `xl/pivotCache/pivotCacheDefinition{n}.xml`
+    /// - `xl/pivotCache/pivotCacheRecords{n}.xml`
+    /// - `xl/pivotTables/pivotTable{n}.xml`
+    ///
+    /// and the necessary relationship files.  The cache and pivot table are
+    /// cross-linked via the workbook `<pivotCaches>` element.
+    ///
+    /// Requires the `sml-pivot` feature.
+    pub fn add_pivot_table(&mut self, opts: PivotTableOptions) -> &mut Self {
+        #[cfg(feature = "sml-pivot")]
+        self.pivot_tables.push(PivotEntry { opts });
+        #[cfg(not(feature = "sml-pivot"))]
+        let _ = opts;
+        self
+    }
+
     /// Get the sheet name.
     pub fn name(&self) -> &str {
         &self.name
@@ -2649,7 +2812,17 @@ impl WorkbookBuilder {
             pkg.add_part("xl/styles.xml", CT_STYLES, &styles_xml)?;
         }
 
-        // Write each sheet and its related parts (comments, hyperlinks, etc.)
+        // Pre-compute global drawing and pivot numbering across all sheets.
+        // Each sheet that has charts gets one drawing part; each pivot table
+        // entry gets its own pivotCacheDefinition + pivotCacheRecords + pivotTable.
+        #[cfg(feature = "sml-charts")]
+        let mut next_drawing_num = 1usize;
+        #[cfg(feature = "sml-charts")]
+        let mut next_chart_num = 1usize;
+        #[cfg(feature = "sml-pivot")]
+        let mut next_pivot_num = 1usize;
+
+        // Write each sheet and its related parts (comments, hyperlinks, charts, pivot tables).
         for (i, sheet) in self.sheets.iter().enumerate() {
             let sheet_num = i + 1;
             let has_comments = !sheet.comments.is_empty();
@@ -2667,7 +2840,57 @@ impl WorkbookBuilder {
                 })
                 .collect();
 
-            let needs_rels = has_comments || !ext_hyperlinks.is_empty();
+            #[cfg(feature = "sml-charts")]
+            let has_charts = !sheet.charts.is_empty();
+            #[cfg(not(feature = "sml-charts"))]
+            let has_charts = false;
+
+            #[cfg(feature = "sml-pivot")]
+            let has_pivots = !sheet.pivot_tables.is_empty();
+            #[cfg(not(feature = "sml-pivot"))]
+            let has_pivots = false;
+
+            let needs_rels = has_comments || !ext_hyperlinks.is_empty() || has_charts || has_pivots;
+
+            // Relative IDs inside the sheet .rels file.
+            let mut sheet_rel_id = 1usize;
+            let comments_rel_id = if has_comments { sheet_rel_id } else { 0 };
+            if has_comments {
+                sheet_rel_id += 1;
+            }
+
+            // Track drawing rel id (if any charts are present, one drawing part per sheet).
+            #[cfg(feature = "sml-charts")]
+            let drawing_rel_id = if has_charts {
+                let id = sheet_rel_id;
+                sheet_rel_id += 1;
+                id
+            } else {
+                0
+            };
+
+            // Assign pivot rel IDs for this sheet.
+            #[cfg(feature = "sml-pivot")]
+            let pivot_rel_id_start = sheet_rel_id;
+
+            // Compute hyperlink rel id start (after comments, drawing, pivot rels).
+            #[cfg(feature = "sml-hyperlinks")]
+            let hyperlink_rel_id_start = {
+                let mut start = 1usize;
+                if has_comments {
+                    start += 1;
+                }
+                if has_charts {
+                    start += 1;
+                }
+                #[cfg(feature = "sml-pivot")]
+                {
+                    start += sheet.pivot_tables.len();
+                }
+                start
+            };
+            #[cfg(not(feature = "sml-hyperlinks"))]
+            let hyperlink_rel_id_start = 1usize;
 
             if needs_rels {
                 let mut sheet_rels = String::new();
@@ -2678,26 +2901,46 @@ impl WorkbookBuilder {
                 );
                 sheet_rels.push('\n');
 
-                let mut rel_id = 1usize;
-
                 if has_comments {
                     sheet_rels.push_str(&format!(
                         r#"  <Relationship Id="rId{}" Type="{}" Target="../comments{}.xml"/>"#,
-                        rel_id, REL_COMMENTS, sheet_num
+                        comments_rel_id, REL_COMMENTS, sheet_num
                     ));
                     sheet_rels.push('\n');
-                    rel_id += 1;
                 }
 
-                for url in &ext_hyperlinks {
+                #[cfg(feature = "sml-charts")]
+                if has_charts {
+                    sheet_rels.push_str(&format!(
+                        r#"  <Relationship Id="rId{}" Type="{}" Target="../drawings/drawing{}.xml"/>"#,
+                        drawing_rel_id, REL_DRAWING, next_drawing_num
+                    ));
+                    sheet_rels.push('\n');
+                }
+
+                // Pivot table rels: one per pivot entry for this sheet.
+                #[cfg(feature = "sml-pivot")]
+                {
+                    let mut prel = pivot_rel_id_start;
+                    for (pi, _pt) in sheet.pivot_tables.iter().enumerate() {
+                        let global_pivot = next_pivot_num + pi;
+                        sheet_rels.push_str(&format!(
+                            r#"  <Relationship Id="rId{}" Type="{}" Target="../pivotTables/pivotTable{}.xml"/>"#,
+                            prel, REL_PIVOT_TABLE, global_pivot
+                        ));
+                        sheet_rels.push('\n');
+                        prel += 1;
+                    }
+                }
+
+                for (hi, url) in ext_hyperlinks.iter().enumerate() {
                     sheet_rels.push_str(&format!(
                         r#"  <Relationship Id="rId{}" Type="{}" Target="{}" TargetMode="External"/>"#,
-                        rel_id,
+                        hyperlink_rel_id_start + hi,
                         REL_HYPERLINK,
                         escape_xml(url)
                     ));
                     sheet_rels.push('\n');
-                    rel_id += 1;
                 }
 
                 sheet_rels.push_str("</Relationships>");
@@ -2705,9 +2948,19 @@ impl WorkbookBuilder {
                 pkg.add_part(&rels_part, CT_RELATIONSHIPS, sheet_rels.as_bytes())?;
             }
 
-            // rId1 is taken by comments when present; hyperlinks follow after.
-            let hyperlink_rel_id_start = if has_comments { 2 } else { 1 };
-            let sheet_xml = self.serialize_sheet(sheet, hyperlink_rel_id_start)?;
+            // Write the worksheet XML, injecting the drawing reference if needed.
+            let sheet_xml = self.serialize_sheet_with_drawing(
+                sheet,
+                hyperlink_rel_id_start,
+                #[cfg(feature = "sml-charts")]
+                if has_charts {
+                    Some(drawing_rel_id)
+                } else {
+                    None
+                },
+                #[cfg(not(feature = "sml-charts"))]
+                None,
+            )?;
             let part_name = format!("xl/worksheets/sheet{}.xml", sheet_num);
             pkg.add_part(&part_name, CT_WORKSHEET, &sheet_xml)?;
 
@@ -2715,6 +2968,113 @@ impl WorkbookBuilder {
                 let comments_xml = self.serialize_comments(sheet)?;
                 let comments_part = format!("xl/comments{}.xml", sheet_num);
                 pkg.add_part(&comments_part, CT_COMMENTS, &comments_xml)?;
+            }
+
+            // Write chart parts and the drawing part for this sheet.
+            #[cfg(feature = "sml-charts")]
+            if has_charts {
+                let drawing_num = next_drawing_num;
+                next_drawing_num += 1;
+
+                // Drawing XML references each chart.
+                let drawing_xml = build_drawing_xml(&sheet.charts, next_chart_num);
+                let drawing_part = format!("xl/drawings/drawing{}.xml", drawing_num);
+                pkg.add_part(&drawing_part, CT_DRAWING, drawing_xml.as_bytes())?;
+
+                // Drawing .rels: one entry per chart.
+                let mut drawing_rels = String::new();
+                drawing_rels.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
+                drawing_rels.push('\n');
+                drawing_rels.push_str(
+                    r#"<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">"#,
+                );
+                drawing_rels.push('\n');
+                for (ci, _chart) in sheet.charts.iter().enumerate() {
+                    let chart_num = next_chart_num + ci;
+                    drawing_rels.push_str(&format!(
+                        r#"  <Relationship Id="rId{}" Type="{}" Target="../charts/chart{}.xml"/>"#,
+                        ci + 1,
+                        REL_CHART,
+                        chart_num,
+                    ));
+                    drawing_rels.push('\n');
+                }
+                drawing_rels.push_str("</Relationships>");
+                let drawing_rels_part =
+                    format!("xl/drawings/_rels/drawing{}.xml.rels", drawing_num);
+                pkg.add_part(
+                    &drawing_rels_part,
+                    CT_RELATIONSHIPS,
+                    drawing_rels.as_bytes(),
+                )?;
+
+                // Write each chart XML file.
+                for chart in &sheet.charts {
+                    let chart_part = format!("xl/charts/chart{}.xml", next_chart_num);
+                    pkg.add_part(&chart_part, CT_CHART, &chart.chart_xml)?;
+                    next_chart_num += 1;
+                }
+            }
+
+            // Write pivot table parts for this sheet.
+            #[cfg(feature = "sml-pivot")]
+            {
+                for (pi, pt) in sheet.pivot_tables.iter().enumerate() {
+                    let pn = next_pivot_num + pi;
+
+                    // pivotCacheDefinition
+                    let cache_def_xml = build_pivot_cache_definition_xml(&pt.opts, pn);
+                    let cache_def_part = format!("xl/pivotCache/pivotCacheDefinition{}.xml", pn);
+                    pkg.add_part(
+                        &cache_def_part,
+                        CT_PIVOT_CACHE_DEF,
+                        cache_def_xml.as_bytes(),
+                    )?;
+
+                    // pivotCacheDefinition .rels → pivotCacheRecords
+                    let cache_def_rels = format!(
+                        r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="{}" Target="pivotCacheRecords{}.xml"/>
+</Relationships>"#,
+                        REL_PIVOT_CACHE_REC, pn
+                    );
+                    let cache_def_rels_part =
+                        format!("xl/pivotCache/_rels/pivotCacheDefinition{}.xml.rels", pn);
+                    pkg.add_part(
+                        &cache_def_rels_part,
+                        CT_RELATIONSHIPS,
+                        cache_def_rels.as_bytes(),
+                    )?;
+
+                    // pivotCacheRecords (empty)
+                    let cache_rec_xml = r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<pivotCacheRecords xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="0"/>"#;
+                    let cache_rec_part = format!("xl/pivotCache/pivotCacheRecords{}.xml", pn);
+                    pkg.add_part(
+                        &cache_rec_part,
+                        CT_PIVOT_CACHE_REC,
+                        cache_rec_xml.as_bytes(),
+                    )?;
+
+                    // pivotTable
+                    let pivot_xml = build_pivot_table_xml(&pt.opts, pn, &sheet.name);
+                    let pivot_part = format!("xl/pivotTables/pivotTable{}.xml", pn);
+                    pkg.add_part(&pivot_part, CT_PIVOT_TABLE, pivot_xml.as_bytes())?;
+
+                    // pivotTable .rels → pivotCacheDefinition
+                    let pivot_rels = format!(
+                        r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="{}" Target="../pivotCache/pivotCacheDefinition{}.xml"/>
+</Relationships>"#,
+                        REL_PIVOT_CACHE_DEF, pn
+                    );
+                    let pivot_rels_part = format!("xl/pivotTables/_rels/pivotTable{}.xml.rels", pn);
+                    pkg.add_part(&pivot_rels_part, CT_RELATIONSHIPS, pivot_rels.as_bytes())?;
+                }
+                // Advance global pivot counter past all pivots written for this sheet.
+                next_pivot_num += sheet.pivot_tables.len();
             }
         }
 
@@ -3314,12 +3674,16 @@ impl WorkbookBuilder {
     /// Serialize a sheet to XML using generated types.
     ///
     /// `hyperlink_rel_id_start` is the first relationship ID available for
-    /// external hyperlinks (1-based; accounts for comments occupying rId1
-    /// when present).
-    fn serialize_sheet(
+    /// external hyperlinks (1-based; accounts for comments/drawing/pivot
+    /// occupying earlier rIds when present).
+    ///
+    /// `drawing_rel_id` is `Some(id)` when the sheet has embedded charts and a
+    /// drawing part has been assigned to it.
+    fn serialize_sheet_with_drawing(
         &self,
         sheet: &SheetBuilder,
         hyperlink_rel_id_start: usize,
+        drawing_rel_id: Option<usize>,
     ) -> Result<Vec<u8>> {
         // Build row height lookup (already a HashMap now)
         #[cfg(feature = "sml-styling")]
@@ -3583,6 +3947,19 @@ impl WorkbookBuilder {
         #[cfg(not(feature = "sml-hyperlinks"))]
         let _ = hyperlink_rel_id_start;
 
+        // Inject the drawing relationship reference when charts are present.
+        // ECMA-376 §18.3.1.27: <drawing r:id="rId{n}"/> inside <worksheet>.
+        #[cfg(feature = "sml-drawings")]
+        if let Some(rel_id) = drawing_rel_id {
+            worksheet.drawing = Some(Box::new(types::Drawing {
+                id: format!("rId{}", rel_id),
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+            }));
+        }
+        #[cfg(not(feature = "sml-drawings"))]
+        let _ = drawing_rel_id;
+
         serialize_with_namespaces(&worksheet, "worksheet")
     }
 
@@ -3800,6 +4177,308 @@ impl WorkbookBuilder {
         };
         serialize_with_namespaces(&sst, "sst")
     }
+}
+
+// ============================================================================
+// Chart drawing XML builder (sml-charts)
+// ============================================================================
+
+/// Build the `<xdr:wsDr>` drawing XML for a set of chart entries.
+///
+/// Each chart gets a `<xdr:twoCellAnchor>` referencing `rId{n}` where `n` is
+/// the 1-based index into the drawing part's own relationship list.
+///
+/// ECMA-376 Part 1, §20.5 (SpreadsheetDrawingML).
+#[cfg(feature = "sml-charts")]
+fn build_drawing_xml(charts: &[ChartEntry], _first_chart_num: usize) -> String {
+    const NS_XDR: &str = "http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing";
+    const NS_A: &str = "http://schemas.openxmlformats.org/drawingml/2006/main";
+    const NS_C: &str = "http://schemas.openxmlformats.org/drawingml/2006/chart";
+    const NS_R: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+
+    let mut xml = format!(
+        r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xdr:wsDr xmlns:xdr="{NS_XDR}" xmlns:a="{NS_A}" xmlns:c="{NS_C}" xmlns:r="{NS_R}">"#
+    );
+
+    for (idx, chart) in charts.iter().enumerate() {
+        let rel_id = idx + 1; // 1-based within the drawing .rels
+        let to_col = chart.x + chart.width;
+        let to_row = chart.y + chart.height;
+        xml.push_str(&format!(
+            r#"
+<xdr:twoCellAnchor>
+  <xdr:from><xdr:col>{}</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>{}</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:from>
+  <xdr:to><xdr:col>{}</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>{}</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:to>
+  <xdr:graphicFrame macro="">
+    <xdr:nvGraphicFramePr>
+      <xdr:cNvPr id="{}" name="Chart {}"/>
+      <xdr:cNvGraphicFramePr/>
+    </xdr:nvGraphicFramePr>
+    <xdr:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/></xdr:xfrm>
+    <a:graphic>
+      <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart">
+        <c:chart r:id="rId{}"/>
+      </a:graphicData>
+    </a:graphic>
+  </xdr:graphicFrame>
+  <xdr:clientData/>
+</xdr:twoCellAnchor>"#,
+            chart.x, chart.y, to_col, to_row,
+            idx + 2, // nvPr id (must be >= 2 to avoid conflicts)
+            idx + 1,
+            rel_id,
+        ));
+    }
+
+    xml.push_str("\n</xdr:wsDr>");
+    xml
+}
+
+// ============================================================================
+// Pivot table XML builders (sml-pivot)
+// ============================================================================
+
+/// Build a minimal `<pivotCacheDefinition>` XML.
+///
+/// ECMA-376 Part 1, §18.10.1.
+#[cfg(feature = "sml-pivot")]
+fn build_pivot_cache_definition_xml(opts: &PivotTableOptions, _pn: usize) -> String {
+    // Parse "SheetName!$A$1:$D$10" → sheet name + range.
+    let (sheet_name, ref_range) = parse_source_ref(&opts.source_ref);
+
+    // All source fields: row_fields + col_fields + data_fields (deduplicated by order).
+    let all_fields = collect_all_fields(opts);
+    let field_count = all_fields.len();
+
+    let mut xml = format!(
+        r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<pivotCacheDefinition xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+  r:id="rId1" refreshedBy="ooxml-sml" refreshedDate="0" createdVersion="3"
+  refreshedVersion="3" minRefreshableVersion="3" recordCount="0">
+  <cacheSource type="worksheet">
+    <worksheetSource ref="{ref_range}" sheet="{sheet_name}"/>
+  </cacheSource>
+  <cacheFields count="{field_count}">"#
+    );
+
+    for name in &all_fields {
+        xml.push_str(&format!(
+            r#"
+    <cacheField name="{}" numFmtId="0"><sharedItems/></cacheField>"#,
+            escape_xml(name)
+        ));
+    }
+
+    xml.push_str(
+        r#"
+  </cacheFields>
+</pivotCacheDefinition>"#,
+    );
+    xml
+}
+
+/// Build a minimal `<pivotTableDefinition>` XML.
+///
+/// ECMA-376 Part 1, §18.10.2.
+#[cfg(feature = "sml-pivot")]
+fn build_pivot_table_xml(opts: &PivotTableOptions, cache_id: usize, _sheet_name: &str) -> String {
+    let all_fields = collect_all_fields(opts);
+    let total_fields = all_fields.len();
+
+    // Build field-name to index map.
+    let field_index: HashMap<&str, usize> = all_fields
+        .iter()
+        .enumerate()
+        .map(|(i, n)| (n.as_str(), i))
+        .collect();
+
+    // Row fields: indices into the cache field list.
+    let row_field_indices: Vec<usize> = opts
+        .row_fields
+        .iter()
+        .filter_map(|n| field_index.get(n.as_str()).copied())
+        .collect();
+
+    // Col fields: indices into cache field list.
+    let col_field_indices: Vec<usize> = opts
+        .col_fields
+        .iter()
+        .filter_map(|n| field_index.get(n.as_str()).copied())
+        .collect();
+
+    // Data fields: indices into cache field list.
+    let data_field_indices: Vec<usize> = opts
+        .data_fields
+        .iter()
+        .filter_map(|n| field_index.get(n.as_str()).copied())
+        .collect();
+
+    // Location: dest_ref gives top-left; estimate a bounding box.
+    let dest = &opts.dest_ref;
+    let header_rows = 1u32;
+    let data_rows = opts.row_fields.len().max(1) as u32;
+    let data_cols = opts.col_fields.len().max(1) as u32;
+    // dest..dest+(data_rows+header_rows)x(data_cols+1) — rough estimate.
+    let (dest_col, dest_row) = parse_cell_ref_for_pivot(dest);
+    let end_col = dest_col + data_cols;
+    let end_row = dest_row + header_rows + data_rows;
+    let location_ref = format!("{}:{}", dest, format_cell_ref(end_col, end_row));
+
+    let mut xml = format!(
+        r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<pivotTableDefinition xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+  name="{name}" cacheId="{cache_id}" dataOnRows="0" dataPosition="0"
+  dataCaption="Values" createdVersion="3" updatedVersion="3" minRefreshableVersion="3"
+  useAutoFormatting="1" itemPrintTitles="1" indent="0" outline="0" outlineData="0">
+  <location ref="{location_ref}" firstHeaderRow="1" firstDataRow="2" firstDataCol="1"/>
+  <pivotFields count="{total_fields}">"#,
+        name = escape_xml(&opts.name),
+        cache_id = cache_id,
+        location_ref = location_ref,
+        total_fields = total_fields,
+    );
+
+    // One <pivotField/> per source field.
+    for _f in &all_fields {
+        xml.push_str(
+            r#"
+    <pivotField showAll="0"/>"#,
+        );
+    }
+
+    xml.push_str(
+        r#"
+  </pivotFields>"#,
+    );
+
+    // rowFields
+    if !row_field_indices.is_empty() {
+        xml.push_str(&format!(
+            r#"
+  <rowFields count="{}">"#,
+            row_field_indices.len()
+        ));
+        for idx in &row_field_indices {
+            xml.push_str(&format!(
+                r#"
+    <field x="{}"/>"#,
+                idx
+            ));
+        }
+        xml.push_str(
+            r#"
+  </rowFields>"#,
+        );
+    }
+
+    // colFields: use -2 (data axis placeholder) when there are data fields but no col fields,
+    // so Excel shows the Values field header on the column axis.
+    if !col_field_indices.is_empty() {
+        xml.push_str(&format!(
+            r#"
+  <colFields count="{}">"#,
+            col_field_indices.len()
+        ));
+        for idx in &col_field_indices {
+            xml.push_str(&format!(
+                r#"
+    <field x="{}"/>"#,
+                idx
+            ));
+        }
+        xml.push_str(
+            r#"
+  </colFields>"#,
+        );
+    } else if !data_field_indices.is_empty() {
+        // Single data field with no explicit column axis → put values on columns.
+        xml.push_str(
+            r#"
+  <colFields count="1">
+    <field x="-2"/>
+  </colFields>"#,
+        );
+    }
+
+    // dataFields
+    if !data_field_indices.is_empty() {
+        xml.push_str(&format!(
+            r#"
+  <dataFields count="{}">"#,
+            data_field_indices.len()
+        ));
+        for (di, &fld_idx) in data_field_indices.iter().enumerate() {
+            let field_name = &opts.data_fields[di];
+            xml.push_str(&format!(
+                r#"
+    <dataField name="Sum of {}" fld="{}" subtotal="sum"/>"#,
+                escape_xml(field_name),
+                fld_idx
+            ));
+        }
+        xml.push_str(
+            r#"
+  </dataFields>"#,
+        );
+    }
+
+    xml.push_str(
+        r#"
+</pivotTableDefinition>"#,
+    );
+    xml
+}
+
+/// Collect all unique field names from a `PivotTableOptions` in declaration order.
+///
+/// Row fields come first, then col fields, then data fields (new names only).
+#[cfg(feature = "sml-pivot")]
+fn collect_all_fields(opts: &PivotTableOptions) -> Vec<String> {
+    let mut seen = std::collections::HashSet::new();
+    let mut fields = Vec::new();
+    for name in opts
+        .row_fields
+        .iter()
+        .chain(opts.col_fields.iter())
+        .chain(opts.data_fields.iter())
+    {
+        if seen.insert(name.as_str()) {
+            fields.push(name.clone());
+        }
+    }
+    fields
+}
+
+/// Parse a source reference like `"Sheet1!$A$1:$D$10"` into `("Sheet1", "$A$1:$D$10")`.
+/// Falls back to `("Sheet1", source_ref)` if no `!` is found.
+#[cfg(feature = "sml-pivot")]
+fn parse_source_ref(source_ref: &str) -> (&str, &str) {
+    if let Some(bang) = source_ref.find('!') {
+        (&source_ref[..bang], &source_ref[bang + 1..])
+    } else {
+        ("Sheet1", source_ref)
+    }
+}
+
+/// Parse a cell reference like `"A1"` or `"$F$3"` into (col, row) 1-based numbers.
+#[cfg(feature = "sml-pivot")]
+fn parse_cell_ref_for_pivot(cell_ref: &str) -> (u32, u32) {
+    // Strip `$` signs then delegate to the existing parser.
+    let clean: String = cell_ref.chars().filter(|c| *c != '$').collect();
+    // Reuse parse_cell_reference which returns (row, col).
+    if let Some((row, col)) = parse_cell_reference(&clean) {
+        (col, row)
+    } else {
+        (1, 1) // fallback
+    }
+}
+
+/// Format 1-based (col, row) back to a cell reference like `"B3"`.
+#[cfg(feature = "sml-pivot")]
+fn format_cell_ref(col: u32, row: u32) -> String {
+    format!("{}{}", column_to_letter(col), row)
 }
 
 /// Build a single ConditionalFormatting item from a ConditionalFormat builder.
@@ -5529,5 +6208,316 @@ mod tests {
         assert_eq!(cell_styles.cell_style[2].name.as_deref(), Some("Neutral"));
         // Custom styles have customBuiltin=true
         assert_eq!(cell_styles.cell_style[1].custom_builtin, Some(true));
+    }
+
+    // =========================================================================
+    // Chart embedding
+    // =========================================================================
+
+    /// Verify that `embed_chart` writes a drawing part and a chart XML part.
+    #[cfg(feature = "sml-charts")]
+    #[test]
+    fn test_embed_chart_creates_drawing_and_chart_parts() {
+        use std::collections::HashSet;
+        use std::io::Cursor;
+
+        let chart_xml = br#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart">
+  <c:chart/>
+</c:chartSpace>"#;
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Sheet1");
+        sheet.set_cell("A1", "data");
+        sheet.embed_chart(chart_xml, 0, 5, 8, 15);
+
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        // Unpack the ZIP and check which parts are present.
+        buffer.set_position(0);
+        let mut zip = zip::ZipArchive::new(buffer).unwrap();
+        let names: HashSet<String> = (0..zip.len())
+            .map(|i| zip.by_index(i).unwrap().name().to_string())
+            .collect();
+
+        // Drawing and chart parts must exist.
+        assert!(
+            names.contains("xl/drawings/drawing1.xml"),
+            "drawing part missing; parts: {names:?}"
+        );
+        assert!(
+            names.contains("xl/charts/chart1.xml"),
+            "chart part missing; parts: {names:?}"
+        );
+        // Drawing rels must exist.
+        assert!(
+            names.contains("xl/drawings/_rels/drawing1.xml.rels"),
+            "drawing rels missing; parts: {names:?}"
+        );
+        // Sheet rels must reference the drawing.
+        assert!(
+            names.contains("xl/worksheets/_rels/sheet1.xml.rels"),
+            "sheet rels missing; parts: {names:?}"
+        );
+
+        // The drawing XML must contain a twoCellAnchor with the chart reference.
+        let drawing_bytes = {
+            let mut f = zip.by_name("xl/drawings/drawing1.xml").unwrap();
+            let mut v = Vec::new();
+            std::io::Read::read_to_end(&mut f, &mut v).unwrap();
+            v
+        };
+        let drawing_str = String::from_utf8_lossy(&drawing_bytes);
+        assert!(
+            drawing_str.contains("twoCellAnchor"),
+            "drawing XML should contain twoCellAnchor"
+        );
+        assert!(
+            drawing_str.contains("rId1"),
+            "drawing XML should reference rId1 for the chart"
+        );
+
+        // The chart XML must be exactly what was passed in.
+        let chart_bytes = {
+            let mut f = zip.by_name("xl/charts/chart1.xml").unwrap();
+            let mut v = Vec::new();
+            std::io::Read::read_to_end(&mut f, &mut v).unwrap();
+            v
+        };
+        assert_eq!(chart_bytes, chart_xml);
+    }
+
+    /// Two charts in the same sheet should get separate rId/chart numbers.
+    #[cfg(feature = "sml-charts")]
+    #[test]
+    fn test_embed_two_charts_same_sheet() {
+        use std::collections::HashSet;
+        use std::io::Cursor;
+
+        let chart_xml = b"<c:chartSpace/>";
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Sheet1");
+        sheet.embed_chart(chart_xml, 0, 0, 4, 10);
+        sheet.embed_chart(chart_xml, 5, 0, 4, 10);
+
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut zip = zip::ZipArchive::new(buffer).unwrap();
+        let names: HashSet<String> = (0..zip.len())
+            .map(|i| zip.by_index(i).unwrap().name().to_string())
+            .collect();
+
+        // Should have one drawing (for the sheet) but two chart files.
+        assert!(names.contains("xl/drawings/drawing1.xml"));
+        assert!(names.contains("xl/charts/chart1.xml"));
+        assert!(names.contains("xl/charts/chart2.xml"));
+        // Should NOT have a second drawing file.
+        assert!(!names.contains("xl/drawings/drawing2.xml"));
+    }
+
+    /// Charts across two different sheets get separate drawing/chart files.
+    #[cfg(feature = "sml-charts")]
+    #[test]
+    fn test_embed_charts_multiple_sheets() {
+        use std::collections::HashSet;
+        use std::io::Cursor;
+
+        let chart_xml = b"<c:chartSpace/>";
+
+        let mut wb = WorkbookBuilder::new();
+        let s1 = wb.add_sheet("Sheet1");
+        s1.embed_chart(chart_xml, 0, 0, 4, 10);
+        let s2 = wb.add_sheet("Sheet2");
+        s2.embed_chart(chart_xml, 0, 0, 4, 10);
+
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut zip = zip::ZipArchive::new(buffer).unwrap();
+        let names: HashSet<String> = (0..zip.len())
+            .map(|i| zip.by_index(i).unwrap().name().to_string())
+            .collect();
+
+        assert!(names.contains("xl/drawings/drawing1.xml"));
+        assert!(names.contains("xl/drawings/drawing2.xml"));
+        assert!(names.contains("xl/charts/chart1.xml"));
+        assert!(names.contains("xl/charts/chart2.xml"));
+    }
+
+    // =========================================================================
+    // Pivot tables
+    // =========================================================================
+
+    /// A pivot table produces the expected set of XML parts.
+    #[cfg(feature = "sml-pivot")]
+    #[test]
+    fn test_pivot_table_creates_expected_parts() {
+        use std::collections::HashSet;
+        use std::io::Cursor;
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Sheet1");
+        sheet.set_cell("A1", "Region");
+        sheet.set_cell("B1", "Sales");
+        sheet.add_pivot_table(PivotTableOptions {
+            name: "PivotTable1".to_string(),
+            source_ref: "Sheet1!$A$1:$B$5".to_string(),
+            dest_ref: "D1".to_string(),
+            row_fields: vec!["Region".to_string()],
+            col_fields: vec![],
+            data_fields: vec!["Sales".to_string()],
+        });
+
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut zip = zip::ZipArchive::new(buffer).unwrap();
+        let names: HashSet<String> = (0..zip.len())
+            .map(|i| zip.by_index(i).unwrap().name().to_string())
+            .collect();
+
+        assert!(
+            names.contains("xl/pivotCache/pivotCacheDefinition1.xml"),
+            "pivot cache definition missing; parts: {names:?}"
+        );
+        assert!(
+            names.contains("xl/pivotCache/pivotCacheRecords1.xml"),
+            "pivot cache records missing; parts: {names:?}"
+        );
+        assert!(
+            names.contains("xl/pivotTables/pivotTable1.xml"),
+            "pivot table missing; parts: {names:?}"
+        );
+        assert!(
+            names.contains("xl/pivotTables/_rels/pivotTable1.xml.rels"),
+            "pivot table rels missing; parts: {names:?}"
+        );
+        assert!(
+            names.contains("xl/pivotCache/_rels/pivotCacheDefinition1.xml.rels"),
+            "pivot cache definition rels missing; parts: {names:?}"
+        );
+        assert!(
+            names.contains("xl/worksheets/_rels/sheet1.xml.rels"),
+            "sheet rels missing; parts: {names:?}"
+        );
+    }
+
+    /// The pivot table XML must contain the expected structure elements.
+    #[cfg(feature = "sml-pivot")]
+    #[test]
+    fn test_pivot_table_xml_structure() {
+        use std::io::Cursor;
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Sheet1");
+        sheet.add_pivot_table(PivotTableOptions {
+            name: "MySales".to_string(),
+            source_ref: "Sheet1!$A$1:$C$10".to_string(),
+            dest_ref: "E1".to_string(),
+            row_fields: vec!["Region".to_string()],
+            col_fields: vec!["Quarter".to_string()],
+            data_fields: vec!["Revenue".to_string()],
+        });
+
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut zip = zip::ZipArchive::new(buffer).unwrap();
+
+        // Check pivot table definition content.
+        let pt_bytes = {
+            let mut f = zip.by_name("xl/pivotTables/pivotTable1.xml").unwrap();
+            let mut v = Vec::new();
+            std::io::Read::read_to_end(&mut f, &mut v).unwrap();
+            v
+        };
+        let pt_str = String::from_utf8_lossy(&pt_bytes);
+        assert!(
+            pt_str.contains("MySales"),
+            "should contain pivot table name"
+        );
+        assert!(
+            pt_str.contains("pivotTableDefinition"),
+            "should have root element"
+        );
+        assert!(
+            pt_str.contains("rowFields"),
+            "should have rowFields element"
+        );
+        assert!(
+            pt_str.contains("dataFields"),
+            "should have dataFields element"
+        );
+        assert!(
+            pt_str.contains("Sum of Revenue"),
+            "should have data field name"
+        );
+
+        // Check pivot cache definition content.
+        let cd_bytes = {
+            let mut f = zip
+                .by_name("xl/pivotCache/pivotCacheDefinition1.xml")
+                .unwrap();
+            let mut v = Vec::new();
+            std::io::Read::read_to_end(&mut f, &mut v).unwrap();
+            v
+        };
+        let cd_str = String::from_utf8_lossy(&cd_bytes);
+        assert!(
+            cd_str.contains("worksheetSource"),
+            "should have worksheetSource"
+        );
+        assert!(cd_str.contains("Sheet1"), "should reference source sheet");
+        assert!(cd_str.contains("cacheFields"), "should have cacheFields");
+        assert!(cd_str.contains("Region"), "should list Region field");
+        assert!(cd_str.contains("Revenue"), "should list Revenue field");
+    }
+
+    /// Two pivot tables in one sheet get separate part numbers.
+    #[cfg(feature = "sml-pivot")]
+    #[test]
+    fn test_two_pivot_tables_same_sheet() {
+        use std::collections::HashSet;
+        use std::io::Cursor;
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Sheet1");
+        sheet.add_pivot_table(PivotTableOptions {
+            name: "Pivot1".to_string(),
+            source_ref: "Sheet1!$A$1:$B$5".to_string(),
+            dest_ref: "D1".to_string(),
+            row_fields: vec!["A".to_string()],
+            col_fields: vec![],
+            data_fields: vec!["B".to_string()],
+        });
+        sheet.add_pivot_table(PivotTableOptions {
+            name: "Pivot2".to_string(),
+            source_ref: "Sheet1!$A$1:$B$5".to_string(),
+            dest_ref: "G1".to_string(),
+            row_fields: vec!["A".to_string()],
+            col_fields: vec![],
+            data_fields: vec!["B".to_string()],
+        });
+
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut zip = zip::ZipArchive::new(buffer).unwrap();
+        let names: HashSet<String> = (0..zip.len())
+            .map(|i| zip.by_index(i).unwrap().name().to_string())
+            .collect();
+
+        assert!(names.contains("xl/pivotTables/pivotTable1.xml"));
+        assert!(names.contains("xl/pivotTables/pivotTable2.xml"));
+        assert!(names.contains("xl/pivotCache/pivotCacheDefinition1.xml"));
+        assert!(names.contains("xl/pivotCache/pivotCacheDefinition2.xml"));
     }
 }

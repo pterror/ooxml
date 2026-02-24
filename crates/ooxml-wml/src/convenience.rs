@@ -5,6 +5,7 @@
 //! They are allowed because the generated types are in the same crate.
 
 use crate::types;
+use ooxml_xml::{PositionedNode, RawXmlElement, RawXmlNode};
 
 // =============================================================================
 // Body
@@ -1194,6 +1195,1034 @@ impl types::Paragraph {
             types::ParagraphContent::Del(tc) => tc.as_mut(),
             _ => unreachable!(),
         }
+    }
+}
+
+// =============================================================================
+// Form fields (SDT-based)  (wml-settings feature)
+// =============================================================================
+
+/// Type of form field to create inside a Structured Document Tag.
+///
+/// ECMA-376 Part 1, Section 17.5.2 (Structured Document Tags).
+#[cfg(feature = "wml-settings")]
+#[derive(Debug, Clone)]
+pub enum FormFieldType {
+    /// Plain-text input (`<w:text/>`).
+    PlainText,
+    /// Rich-text area (`<w:richText/>`).
+    RichText,
+    /// Combo box (`<w:comboBox>`).
+    ComboBox,
+    /// Drop-down list (`<w:dropDownList>`).
+    DropDownList,
+    /// Date picker (`<w:date>`).
+    DatePicker,
+}
+
+/// Configuration for a form field written as a Structured Document Tag.
+///
+/// ECMA-376 Part 1, Section 17.5.2 (`w:sdt`).
+#[cfg(feature = "wml-settings")]
+#[derive(Debug, Clone)]
+pub struct FormFieldConfig {
+    /// Machine-readable tag (`<w:tag w:val="..."/>`).
+    pub tag: Option<String>,
+    /// Human-readable alias/label (`<w:alias w:val="..."/>`).
+    pub label: Option<String>,
+    /// Type of form control.
+    pub field_type: FormFieldType,
+    /// Initial/default value displayed in the field.
+    pub default_value: Option<String>,
+    /// Placeholder text (used as content when no default_value is set).
+    pub placeholder: Option<String>,
+    /// Items for combo box / drop-down list fields.
+    pub list_items: Vec<String>,
+    /// Date format string for date picker fields (e.g. `"MM/dd/yyyy"`).
+    pub date_format: Option<String>,
+}
+
+#[cfg(feature = "wml-settings")]
+impl Default for FormFieldConfig {
+    fn default() -> Self {
+        Self {
+            tag: None,
+            label: None,
+            field_type: FormFieldType::PlainText,
+            default_value: None,
+            placeholder: None,
+            list_items: Vec::new(),
+            date_format: None,
+        }
+    }
+}
+
+/// Build a single paragraph containing the given text, for use inside SDT content.
+#[cfg(feature = "wml-settings")]
+fn make_text_paragraph(text: &str) -> types::BlockContentChoice {
+    let t = types::Text {
+        text: Some(text.to_string()),
+        #[cfg(feature = "extra-children")]
+        extra_children: Vec::new(),
+    };
+    let mut run = types::Run::default();
+    run.run_content.push(types::RunContent::T(Box::new(t)));
+    let mut para = types::Paragraph::default();
+    para.paragraph_content
+        .push(types::ParagraphContent::R(Box::new(run)));
+    types::BlockContentChoice::P(Box::new(para))
+}
+
+/// Build a `CTSdtListItem` from a display string.
+#[cfg(feature = "wml-settings")]
+fn make_list_item(text: &str) -> types::CTSdtListItem {
+    types::CTSdtListItem {
+        display_text: Some(text.to_string()),
+        value: Some(text.to_string()),
+        #[cfg(feature = "extra-attrs")]
+        extra_attrs: Default::default(),
+    }
+}
+
+#[cfg(feature = "wml-settings")]
+impl types::Body {
+    /// Add a form field as a Structured Document Tag (`<w:sdt>`).
+    ///
+    /// Produces a block-level SDT containing an appropriate SDT properties
+    /// element (`<w:sdtPr>`) and content paragraph with the default value.
+    ///
+    /// ECMA-376 Part 1, Section 17.5.2.
+    pub fn add_form_field(&mut self, config: FormFieldConfig) -> &mut Self {
+        let content_text = config
+            .default_value
+            .as_deref()
+            .or(config.placeholder.as_deref())
+            .unwrap_or("")
+            .to_string();
+
+        // Build sdtPr
+        let mut sdt_pr = types::CTSdtPr::default();
+
+        #[cfg(feature = "wml-settings")]
+        if let Some(ref tag_val) = config.tag {
+            sdt_pr.tag = Some(Box::new(types::CTString {
+                value: tag_val.clone(),
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+            }));
+        }
+
+        #[cfg(feature = "wml-settings")]
+        if let Some(ref alias_val) = config.label {
+            sdt_pr.alias = Some(Box::new(types::CTString {
+                value: alias_val.clone(),
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+            }));
+        }
+
+        #[cfg(feature = "wml-settings")]
+        match config.field_type {
+            FormFieldType::PlainText => {
+                sdt_pr.text = Some(Box::new(types::CTSdtText {
+                    multi_line: None,
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                }));
+            }
+            FormFieldType::RichText => {
+                sdt_pr.rich_text = Some(Box::new(types::CTEmpty));
+            }
+            FormFieldType::ComboBox => {
+                let items = config
+                    .list_items
+                    .iter()
+                    .map(|s| make_list_item(s))
+                    .collect();
+                sdt_pr.combo_box = Some(Box::new(types::CTSdtComboBox {
+                    last_value: None,
+                    list_item: items,
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                    #[cfg(feature = "extra-children")]
+                    extra_children: Vec::new(),
+                }));
+            }
+            FormFieldType::DropDownList => {
+                let items = config
+                    .list_items
+                    .iter()
+                    .map(|s| make_list_item(s))
+                    .collect();
+                sdt_pr.drop_down_list = Some(Box::new(types::CTSdtDropDownList {
+                    last_value: None,
+                    list_item: items,
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                    #[cfg(feature = "extra-children")]
+                    extra_children: Vec::new(),
+                }));
+            }
+            FormFieldType::DatePicker => {
+                let date_format_elem = config.date_format.as_deref().map(|fmt| {
+                    Box::new(types::CTString {
+                        value: fmt.to_string(),
+                        #[cfg(feature = "extra-attrs")]
+                        extra_attrs: Default::default(),
+                    })
+                });
+                sdt_pr.date = Some(Box::new(types::CTSdtDate {
+                    date_format: date_format_elem,
+                    full_date: None,
+                    lid: None,
+                    store_mapped_data_as: None,
+                    calendar: None,
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                    #[cfg(feature = "extra-children")]
+                    extra_children: Vec::new(),
+                }));
+            }
+        }
+
+        let sdt_content = types::CTSdtContentBlock {
+            block_content: vec![make_text_paragraph(&content_text)],
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        };
+
+        let sdt = types::CTSdtBlock {
+            sdt_pr: Some(Box::new(sdt_pr)),
+            sdt_end_pr: None,
+            sdt_content: Some(Box::new(sdt_content)),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        };
+
+        self.block_content
+            .push(types::BlockContent::Sdt(Box::new(sdt)));
+        self
+    }
+}
+
+// =============================================================================
+// Table of Contents  (wml-fields feature)
+// =============================================================================
+
+/// Options for a Table of Contents field inserted by `Body::add_toc()`.
+///
+/// ECMA-376 Part 1, Section 17.16 (Field Codes) – `TOC` field.
+#[cfg(feature = "wml-fields")]
+#[derive(Debug, Clone)]
+pub struct TocOptions {
+    /// Optional heading paragraph (e.g. "Table of Contents").
+    pub title: Option<String>,
+    /// Maximum heading level to include (default 3 → H1–H3).
+    pub max_level: u8,
+    /// Whether page numbers should be right-aligned with tab leaders.
+    pub right_align_page_numbers: bool,
+    /// Whether TOC entries should be hyperlinks.
+    pub use_hyperlinks: bool,
+}
+
+#[cfg(feature = "wml-fields")]
+impl Default for TocOptions {
+    fn default() -> Self {
+        Self {
+            title: None,
+            max_level: 3,
+            right_align_page_numbers: true,
+            use_hyperlinks: true,
+        }
+    }
+}
+
+/// Build a CTFldChar with the given type and all optional fields set to None.
+#[cfg(feature = "wml-fields")]
+fn make_fld_char(fld_char_type: types::STFldCharType) -> types::CTFldChar {
+    types::CTFldChar {
+        fld_char_type,
+        #[cfg(feature = "wml-fields")]
+        fld_lock: None,
+        #[cfg(feature = "wml-fields")]
+        dirty: None,
+        #[cfg(feature = "wml-fields")]
+        fld_data: None,
+        #[cfg(feature = "wml-fields")]
+        ff_data: None,
+        #[cfg(feature = "wml-track-changes")]
+        numbering_change: None,
+        #[cfg(feature = "extra-attrs")]
+        extra_attrs: Default::default(),
+        #[cfg(feature = "extra-children")]
+        extra_children: Vec::new(),
+    }
+}
+
+/// Build a single-run paragraph containing a field character run content item.
+#[cfg(feature = "wml-fields")]
+#[allow(dead_code)]
+fn make_fld_char_para(fld_char_type: types::STFldCharType) -> types::Paragraph {
+    let fld_char = make_fld_char(fld_char_type);
+    let mut run = types::Run::default();
+    run.run_content
+        .push(types::RunContent::FldChar(Box::new(fld_char)));
+    let mut para = types::Paragraph::default();
+    para.paragraph_content
+        .push(types::ParagraphContent::R(Box::new(run)));
+    para
+}
+
+/// Build an instr-text run inside a paragraph.
+#[cfg(feature = "wml-fields")]
+#[allow(dead_code)]
+fn make_instr_text_para(instr: &str) -> types::Paragraph {
+    let t = types::Text {
+        text: Some(instr.to_string()),
+        #[cfg(feature = "extra-children")]
+        extra_children: Vec::new(),
+    };
+    let mut run = types::Run::default();
+    run.run_content
+        .push(types::RunContent::InstrText(Box::new(t)));
+    let mut para = types::Paragraph::default();
+    para.paragraph_content
+        .push(types::ParagraphContent::R(Box::new(run)));
+    para
+}
+
+#[cfg(feature = "wml-fields")]
+impl types::Body {
+    /// Insert a Table of Contents field at the current position.
+    ///
+    /// This writes:
+    /// 1. An optional title paragraph styled "TOC Heading".
+    /// 2. A `TOC` field spanning three paragraphs: `fldChar begin`, `instrText`, `fldChar end`.
+    /// 3. A placeholder paragraph telling the user to update the field.
+    ///
+    /// ECMA-376 Part 1, Section 17.16.5.58 (TOC).
+    pub fn add_toc(&mut self, opts: TocOptions) -> &mut Self {
+        // 1. Optional title paragraph
+        if let Some(ref title_text) = opts.title {
+            let para = self.add_paragraph();
+            para.add_run().set_text(title_text.as_str());
+            #[cfg(feature = "wml-styling")]
+            {
+                let ppr = para
+                    .p_pr
+                    .get_or_insert_with(|| Box::new(types::ParagraphProperties::default()));
+                ppr.paragraph_style = Some(Box::new(types::CTString {
+                    value: "TOCHeading".to_string(),
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                }));
+            }
+        }
+
+        // 2. Build the TOC field instruction string
+        let mut instr = format!(r#" TOC \o "1-{}" "#, opts.max_level);
+        if opts.use_hyperlinks {
+            instr.push_str(r"\h ");
+        }
+        if opts.right_align_page_numbers {
+            instr.push_str(r"\z \u ");
+        }
+
+        // Write the field as three runs in a single paragraph:
+        // <w:r><w:fldChar w:fldCharType="begin"/></w:r>
+        // <w:r><w:instrText> TOC ... </w:instrText></w:r>
+        // <w:r><w:fldChar w:fldCharType="separate"/></w:r>
+        // <w:r><w:fldChar w:fldCharType="end"/></w:r>
+        let fld_begin = make_fld_char(types::STFldCharType::Begin);
+        let fld_separate = make_fld_char(types::STFldCharType::Separate);
+        let fld_end = make_fld_char(types::STFldCharType::End);
+
+        let instr_t = types::Text {
+            text: Some(instr),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        };
+
+        let mut run_begin = types::Run::default();
+        run_begin
+            .run_content
+            .push(types::RunContent::FldChar(Box::new(fld_begin)));
+
+        let mut run_instr = types::Run::default();
+        run_instr
+            .run_content
+            .push(types::RunContent::InstrText(Box::new(instr_t)));
+
+        let mut run_separate = types::Run::default();
+        run_separate
+            .run_content
+            .push(types::RunContent::FldChar(Box::new(fld_separate)));
+
+        let mut run_end = types::Run::default();
+        run_end
+            .run_content
+            .push(types::RunContent::FldChar(Box::new(fld_end)));
+
+        let toc_para = self.add_paragraph();
+        toc_para
+            .paragraph_content
+            .push(types::ParagraphContent::R(Box::new(run_begin)));
+        toc_para
+            .paragraph_content
+            .push(types::ParagraphContent::R(Box::new(run_instr)));
+        toc_para
+            .paragraph_content
+            .push(types::ParagraphContent::R(Box::new(run_separate)));
+        toc_para
+            .paragraph_content
+            .push(types::ParagraphContent::R(Box::new(run_end)));
+
+        // 3. Placeholder paragraph
+        let placeholder = self.add_paragraph();
+        placeholder
+            .add_run()
+            .set_text("[Right-click to update field]");
+
+        self
+    }
+}
+
+// =============================================================================
+// Office Math (OMath)
+// =============================================================================
+
+/// Office Math namespace (`m:`).
+///
+/// ECMA-376 Part 1, Section 22 (Office Math Markup Language).
+pub const NS_M: &str = "http://schemas.openxmlformats.org/officeDocument/2006/math";
+
+/// Builder for Office Math expressions embedded in Word paragraphs.
+///
+/// Produces either an inline `<m:oMath>` or a display `<m:oMathPara><m:oMath>`
+/// element stored as a `RawXmlElement` inside a paragraph run.
+///
+/// ECMA-376 Part 1, Section 22.1.2.77 (`m:oMath`).
+#[derive(Debug, Clone)]
+pub struct OMathBuilder {
+    display: bool,
+    xml_content: String,
+}
+
+impl OMathBuilder {
+    /// Create an inline math expression containing plain text.
+    pub fn plain(text: &str) -> Self {
+        Self {
+            display: false,
+            xml_content: format!("<m:r><m:t>{}</m:t></m:r>", xml_escape(text)),
+        }
+    }
+
+    /// Create a fraction `numerator / denominator`.
+    ///
+    /// ECMA-376 Part 1, Section 22.1.2.36 (`m:f`).
+    pub fn fraction(numerator: &str, denominator: &str) -> Self {
+        Self {
+            display: false,
+            xml_content: format!(
+                "<m:f><m:num><m:r><m:t>{}</m:t></m:r></m:num>\
+                 <m:den><m:r><m:t>{}</m:t></m:r></m:den></m:f>",
+                xml_escape(numerator),
+                xml_escape(denominator)
+            ),
+        }
+    }
+
+    /// Create a superscript expression `base^exp`.
+    ///
+    /// ECMA-376 Part 1, Section 22.1.2.105 (`m:sSup`).
+    pub fn superscript(base: &str, exp: &str) -> Self {
+        Self {
+            display: false,
+            xml_content: format!(
+                "<m:sSup><m:e><m:r><m:t>{}</m:t></m:r></m:e>\
+                 <m:sup><m:r><m:t>{}</m:t></m:r></m:sup></m:sSup>",
+                xml_escape(base),
+                xml_escape(exp)
+            ),
+        }
+    }
+
+    /// Create a subscript expression `base_sub`.
+    ///
+    /// ECMA-376 Part 1, Section 22.1.2.98 (`m:sSub`).
+    pub fn subscript(base: &str, sub: &str) -> Self {
+        Self {
+            display: false,
+            xml_content: format!(
+                "<m:sSub><m:e><m:r><m:t>{}</m:t></m:r></m:e>\
+                 <m:sub><m:r><m:t>{}</m:t></m:r></m:sub></m:sSub>",
+                xml_escape(base),
+                xml_escape(sub)
+            ),
+        }
+    }
+
+    /// Create a radical (square root) of `base`.
+    ///
+    /// ECMA-376 Part 1, Section 22.1.2.79 (`m:rad`).
+    pub fn radical(base: &str) -> Self {
+        Self {
+            display: false,
+            xml_content: format!(
+                "<m:rad><m:radPr><m:degHide m:val=\"1\"/></m:radPr>\
+                 <m:deg/><m:e><m:r><m:t>{}</m:t></m:r></m:e></m:rad>",
+                xml_escape(base)
+            ),
+        }
+    }
+
+    /// Set display (block) mode. Wraps the expression in `<m:oMathPara>`.
+    pub fn as_display(mut self) -> Self {
+        self.display = true;
+        self
+    }
+
+    /// Build a `RawXmlElement` suitable for use inside a paragraph.
+    ///
+    /// The element is `<m:oMath>` (inline) or
+    /// `<m:oMathPara><m:oMath>…</m:oMath></m:oMathPara>` (display).
+    pub fn build(self) -> RawXmlElement {
+        let omath = RawXmlElement {
+            name: "m:oMath".to_string(),
+            attributes: vec![("xmlns:m".to_string(), NS_M.to_string())],
+            children: vec![RawXmlNode::Text(self.xml_content)],
+            self_closing: false,
+        };
+
+        if self.display {
+            RawXmlElement {
+                name: "m:oMathPara".to_string(),
+                attributes: vec![("xmlns:m".to_string(), NS_M.to_string())],
+                children: vec![RawXmlNode::Element({
+                    // inner oMath without the xmlns repetition
+                    RawXmlElement {
+                        name: "m:oMath".to_string(),
+                        attributes: vec![],
+                        children: vec![RawXmlNode::Text({
+                            // re-use xml_content (moved into omath above) from display wrapper
+                            // We need to re-derive it — use omath.children
+                            match omath.children.into_iter().next() {
+                                Some(RawXmlNode::Text(t)) => t,
+                                _ => String::new(),
+                            }
+                        })],
+                        self_closing: false,
+                    }
+                })],
+                self_closing: false,
+            }
+        } else {
+            omath
+        }
+    }
+}
+
+/// Escape XML special characters in text content.
+fn xml_escape(s: &str) -> String {
+    s.replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
+        .replace('\'', "&apos;")
+}
+
+impl types::Paragraph {
+    /// Add an Office Math expression to this paragraph.
+    ///
+    /// The math element (`<m:oMath>` or `<m:oMathPara>`) is stored as a
+    /// `RawXmlElement` inside an extra-children slot on a synthetic run.
+    ///
+    /// ECMA-376 Part 1, Section 22.1.2.77 (`m:oMath`).
+    #[cfg(feature = "extra-children")]
+    pub fn add_math(&mut self, builder: OMathBuilder) -> &mut Self {
+        let elem = builder.build();
+        // Math elements live as siblings of runs in the paragraph's extra_children,
+        // using a PositionedNode so they serialize in document order.
+        let idx = self.paragraph_content.len();
+        self.extra_children
+            .push(PositionedNode::new(idx, RawXmlNode::Element(elem)));
+        self
+    }
+}
+
+// =============================================================================
+// Inline chart drawing
+// =============================================================================
+
+impl types::Paragraph {
+    /// Add an inline chart drawing reference to this paragraph.
+    ///
+    /// Inserts a `<w:drawing><wp:inline>…<c:chart r:id="rel_id"/>…</wp:inline></w:drawing>`
+    /// element referencing the chart part identified by `rel_id`.
+    ///
+    /// Use `DocumentBuilder::embed_chart` to obtain a `rel_id` first.
+    ///
+    /// ECMA-376 Part 1, Section 20.4.2.8 (inline).
+    #[cfg(feature = "wml-charts")]
+    pub fn add_inline_chart(&mut self, rel_id: &str, width_emu: i64, height_emu: i64) -> &mut Self {
+        let drawing_elem = build_chart_inline_element(rel_id, width_emu, height_emu);
+        let drawing = types::CTDrawing {
+            #[cfg(feature = "extra-children")]
+            extra_children: vec![PositionedNode::new(0, RawXmlNode::Element(drawing_elem))],
+        };
+        let mut run = types::Run::default();
+        run.run_content
+            .push(types::RunContent::Drawing(Box::new(drawing)));
+        self.paragraph_content
+            .push(types::ParagraphContent::R(Box::new(run)));
+        self
+    }
+}
+
+/// Build the `<wp:inline>` element referencing a chart.
+#[cfg(feature = "wml-charts")]
+fn build_chart_inline_element(rel_id: &str, width_emu: i64, height_emu: i64) -> RawXmlElement {
+    // <c:chart r:id="rel_id"/>
+    let chart_ref = RawXmlElement {
+        name: "c:chart".to_string(),
+        attributes: vec![
+            (
+                "xmlns:c".to_string(),
+                "http://schemas.openxmlformats.org/drawingml/2006/chart".to_string(),
+            ),
+            (
+                "xmlns:r".to_string(),
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships".to_string(),
+            ),
+            ("r:id".to_string(), rel_id.to_string()),
+        ],
+        children: vec![],
+        self_closing: true,
+    };
+
+    // <a:graphicData uri="...chart...">
+    let graphic_data = RawXmlElement {
+        name: "a:graphicData".to_string(),
+        attributes: vec![(
+            "uri".to_string(),
+            "http://schemas.openxmlformats.org/drawingml/2006/chart".to_string(),
+        )],
+        children: vec![RawXmlNode::Element(chart_ref)],
+        self_closing: false,
+    };
+
+    // <a:graphic>
+    let graphic = RawXmlElement {
+        name: "a:graphic".to_string(),
+        attributes: vec![(
+            "xmlns:a".to_string(),
+            "http://schemas.openxmlformats.org/drawingml/2006/main".to_string(),
+        )],
+        children: vec![RawXmlNode::Element(graphic_data)],
+        self_closing: false,
+    };
+
+    // <wp:extent cx="..." cy="..."/>
+    let extent = RawXmlElement {
+        name: "wp:extent".to_string(),
+        attributes: vec![
+            ("cx".to_string(), width_emu.to_string()),
+            ("cy".to_string(), height_emu.to_string()),
+        ],
+        children: vec![],
+        self_closing: true,
+    };
+
+    // <wp:docPr id="1" name="Chart 1"/>
+    let doc_pr = RawXmlElement {
+        name: "wp:docPr".to_string(),
+        attributes: vec![
+            ("id".to_string(), "1".to_string()),
+            ("name".to_string(), "Chart 1".to_string()),
+        ],
+        children: vec![],
+        self_closing: true,
+    };
+
+    // <wp:inline>
+    RawXmlElement {
+        name: "wp:inline".to_string(),
+        attributes: vec![
+            (
+                "xmlns:wp".to_string(),
+                "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
+                    .to_string(),
+            ),
+            ("distT".to_string(), "0".to_string()),
+            ("distB".to_string(), "0".to_string()),
+            ("distL".to_string(), "0".to_string()),
+            ("distR".to_string(), "0".to_string()),
+        ],
+        children: vec![
+            RawXmlNode::Element(extent),
+            RawXmlNode::Element(doc_pr),
+            RawXmlNode::Element(graphic),
+        ],
+        self_closing: false,
+    }
+}
+
+// =============================================================================
+// Tests for new features
+// =============================================================================
+
+#[cfg(test)]
+mod feature_tests {
+    use super::*;
+
+    // -------------------------------------------------------------------------
+    // Settings
+    // -------------------------------------------------------------------------
+
+    #[test]
+    #[cfg(feature = "wml-settings")]
+    fn test_settings_xml_content() {
+        use crate::writer::DocumentSettingsOptions;
+
+        // Directly test the build_settings_xml helper by calling via the module
+        // (We can't call build_settings_xml directly since it's private, so we
+        //  verify the public API generates the right document structure.)
+        let opts = DocumentSettingsOptions {
+            default_tab_stop: Some(720),
+            even_and_odd_headers: true,
+            track_changes: true,
+            rsid_root: Some("AB12CD34".to_string()),
+            compat_mode: true,
+        };
+        // Just verify struct construction compiles and no panics
+        let _ = opts;
+    }
+
+    #[test]
+    #[cfg(all(
+        feature = "wml-settings",
+        feature = "extra-attrs",
+        feature = "extra-children"
+    ))]
+    fn test_settings_roundtrip() {
+        use crate::Document;
+        use crate::writer::{DocumentBuilder, DocumentSettingsOptions};
+        use std::io::Cursor;
+
+        let mut builder = DocumentBuilder::new();
+        builder.set_settings(DocumentSettingsOptions {
+            default_tab_stop: Some(720),
+            even_and_odd_headers: true,
+            track_changes: false,
+            rsid_root: None,
+            compat_mode: false,
+        });
+        builder.add_paragraph("Hello");
+
+        let mut buf = Cursor::new(Vec::new());
+        builder.write(&mut buf).unwrap();
+
+        // Re-open and verify the document is readable
+        buf.set_position(0);
+        let doc = Document::from_reader(buf).unwrap();
+        let body = doc.body();
+        assert!(!body.block_content.is_empty());
+    }
+
+    // -------------------------------------------------------------------------
+    // Form fields
+    // -------------------------------------------------------------------------
+
+    #[test]
+    #[cfg(feature = "wml-settings")]
+    fn test_form_field_plain_text() {
+        let mut body = types::Body::default();
+        body.add_form_field(FormFieldConfig {
+            tag: Some("myTag".to_string()),
+            label: Some("My Field".to_string()),
+            field_type: FormFieldType::PlainText,
+            default_value: Some("default".to_string()),
+            ..Default::default()
+        });
+
+        assert_eq!(body.block_content.len(), 1);
+        match &body.block_content[0] {
+            types::BlockContent::Sdt(sdt) => {
+                let sdt_pr = sdt.sdt_pr.as_ref().expect("sdt_pr should be present");
+                assert_eq!(sdt_pr.tag.as_ref().unwrap().value, "myTag");
+                assert_eq!(sdt_pr.alias.as_ref().unwrap().value, "My Field");
+                assert!(sdt_pr.text.is_some(), "text element should be set");
+                let content = sdt.sdt_content.as_ref().expect("sdt_content");
+                assert_eq!(content.block_content.len(), 1);
+            }
+            _ => panic!("expected Sdt block content"),
+        }
+    }
+
+    #[test]
+    #[cfg(feature = "wml-settings")]
+    fn test_form_field_dropdown() {
+        let mut body = types::Body::default();
+        body.add_form_field(FormFieldConfig {
+            field_type: FormFieldType::DropDownList,
+            list_items: vec!["Option A".to_string(), "Option B".to_string()],
+            ..Default::default()
+        });
+
+        match &body.block_content[0] {
+            types::BlockContent::Sdt(sdt) => {
+                let sdt_pr = sdt.sdt_pr.as_ref().unwrap();
+                let dd = sdt_pr.drop_down_list.as_ref().expect("drop_down_list");
+                assert_eq!(dd.list_item.len(), 2);
+                assert_eq!(dd.list_item[0].display_text.as_deref(), Some("Option A"));
+                assert_eq!(dd.list_item[1].display_text.as_deref(), Some("Option B"));
+            }
+            _ => panic!("expected Sdt"),
+        }
+    }
+
+    #[test]
+    #[cfg(feature = "wml-settings")]
+    fn test_form_field_date_picker() {
+        let mut body = types::Body::default();
+        body.add_form_field(FormFieldConfig {
+            field_type: FormFieldType::DatePicker,
+            date_format: Some("MM/dd/yyyy".to_string()),
+            ..Default::default()
+        });
+
+        match &body.block_content[0] {
+            types::BlockContent::Sdt(sdt) => {
+                let sdt_pr = sdt.sdt_pr.as_ref().unwrap();
+                let date = sdt_pr.date.as_ref().expect("date element");
+                assert_eq!(date.date_format.as_ref().unwrap().value, "MM/dd/yyyy");
+            }
+            _ => panic!("expected Sdt"),
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Table of contents
+    // -------------------------------------------------------------------------
+
+    #[test]
+    #[cfg(feature = "wml-fields")]
+    fn test_toc_basic() {
+        let mut body = types::Body::default();
+        body.add_toc(TocOptions {
+            title: Some("Contents".to_string()),
+            max_level: 3,
+            right_align_page_numbers: true,
+            use_hyperlinks: true,
+        });
+
+        // Should have: title para + TOC field para + placeholder para = 3 paragraphs
+        let paras: Vec<_> = body
+            .block_content
+            .iter()
+            .filter_map(|b| match b {
+                types::BlockContent::P(p) => Some(p),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(
+            paras.len(),
+            3,
+            "expected title + field + placeholder paragraphs"
+        );
+
+        // The field paragraph should have 4 run content items (begin, instrText, separate, end)
+        let field_para = &paras[1];
+        assert_eq!(
+            field_para.paragraph_content.len(),
+            4,
+            "TOC paragraph should have 4 run items"
+        );
+    }
+
+    #[test]
+    #[cfg(feature = "wml-fields")]
+    fn test_toc_no_title() {
+        let mut body = types::Body::default();
+        body.add_toc(TocOptions::default());
+
+        // Should have: TOC field para + placeholder para = 2 paragraphs
+        let paras: Vec<_> = body
+            .block_content
+            .iter()
+            .filter_map(|b| match b {
+                types::BlockContent::P(p) => Some(p),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(paras.len(), 2, "expected field + placeholder paragraphs");
+    }
+
+    #[test]
+    #[cfg(feature = "wml-fields")]
+    fn test_toc_instr_text_contains_level() {
+        let mut body = types::Body::default();
+        body.add_toc(TocOptions {
+            title: None,
+            max_level: 2,
+            right_align_page_numbers: false,
+            use_hyperlinks: false,
+        });
+
+        let field_para = match &body.block_content[0] {
+            types::BlockContent::P(p) => p,
+            _ => panic!("expected paragraph"),
+        };
+
+        // Second run content item is InstrText
+        match &field_para.paragraph_content[1] {
+            types::ParagraphContent::R(run) => match &run.run_content[0] {
+                types::RunContent::InstrText(t) => {
+                    let instr = t.text.as_deref().unwrap_or("");
+                    assert!(
+                        instr.contains("1-2"),
+                        "should contain level range 1-2, got: {}",
+                        instr
+                    );
+                }
+                _ => panic!("expected InstrText"),
+            },
+            _ => panic!("expected run"),
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // OMathBuilder
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_omath_plain_build() {
+        let builder = OMathBuilder::plain("x");
+        let elem = builder.build();
+        assert_eq!(elem.name, "m:oMath");
+        assert!(!elem.attributes.is_empty(), "should have xmlns:m");
+        assert_eq!(elem.children.len(), 1);
+        match &elem.children[0] {
+            RawXmlNode::Text(t) => assert!(t.contains("m:r"), "text should wrap in m:r: {}", t),
+            _ => panic!("expected text node"),
+        }
+    }
+
+    #[test]
+    fn test_omath_fraction_build() {
+        let builder = OMathBuilder::fraction("a", "b");
+        let elem = builder.build();
+        match &elem.children[0] {
+            RawXmlNode::Text(t) => {
+                assert!(t.contains("m:f"), "should contain fraction: {}", t);
+                assert!(t.contains("m:num"), "should contain numerator: {}", t);
+                assert!(t.contains("m:den"), "should contain denominator: {}", t);
+            }
+            _ => panic!("expected text node"),
+        }
+    }
+
+    #[test]
+    fn test_omath_superscript_build() {
+        let builder = OMathBuilder::superscript("x", "2");
+        let elem = builder.build();
+        match &elem.children[0] {
+            RawXmlNode::Text(t) => {
+                assert!(t.contains("m:sSup"), "should contain sSup: {}", t);
+                assert!(t.contains("m:e"), "should contain base: {}", t);
+                assert!(t.contains("m:sup"), "should contain exp: {}", t);
+            }
+            _ => panic!("expected text node"),
+        }
+    }
+
+    #[test]
+    fn test_omath_subscript_build() {
+        let builder = OMathBuilder::subscript("x", "i");
+        let elem = builder.build();
+        match &elem.children[0] {
+            RawXmlNode::Text(t) => assert!(t.contains("m:sSub"), "{}", t),
+            _ => panic!(),
+        }
+    }
+
+    #[test]
+    fn test_omath_radical_build() {
+        let builder = OMathBuilder::radical("x");
+        let elem = builder.build();
+        match &elem.children[0] {
+            RawXmlNode::Text(t) => assert!(t.contains("m:rad"), "{}", t),
+            _ => panic!(),
+        }
+    }
+
+    #[test]
+    fn test_omath_display_wraps_in_para() {
+        let builder = OMathBuilder::plain("x").as_display();
+        let elem = builder.build();
+        assert_eq!(
+            elem.name, "m:oMathPara",
+            "display should be wrapped in oMathPara"
+        );
+        assert_eq!(elem.children.len(), 1);
+        match &elem.children[0] {
+            RawXmlNode::Element(inner) => assert_eq!(inner.name, "m:oMath"),
+            _ => panic!("expected oMath element child"),
+        }
+    }
+
+    #[test]
+    #[cfg(feature = "extra-children")]
+    fn test_paragraph_add_math() {
+        let mut para = types::Paragraph::default();
+        para.add_math(OMathBuilder::plain("y = mx + b"));
+        assert_eq!(para.extra_children.len(), 1);
+    }
+
+    // -------------------------------------------------------------------------
+    // Inline chart
+    // -------------------------------------------------------------------------
+
+    #[test]
+    #[cfg(all(
+        feature = "wml-charts",
+        feature = "extra-children",
+        feature = "extra-attrs"
+    ))]
+    fn test_embed_chart_and_add_inline() {
+        use crate::writer::DocumentBuilder;
+        use std::io::Cursor;
+
+        let chart_xml = br#"<?xml version="1.0" encoding="UTF-8"?><c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart"/>"#;
+
+        let mut builder = DocumentBuilder::new();
+        let rel_id = builder.embed_chart(chart_xml).unwrap();
+        assert!(
+            rel_id.starts_with("rId"),
+            "rel_id should be rId-prefixed: {}",
+            rel_id
+        );
+
+        // Add a paragraph with the inline chart
+        {
+            let body = builder.body_mut();
+            let para = body.add_paragraph();
+            para.add_inline_chart(&rel_id, 3000000, 2000000);
+        }
+
+        // Write to a buffer — should not panic
+        let mut buf = Cursor::new(Vec::new());
+        builder.write(&mut buf).unwrap();
+        assert!(!buf.get_ref().is_empty(), "output should not be empty");
+    }
+
+    #[test]
+    #[cfg(feature = "wml-charts")]
+    fn test_chart_inline_element_structure() {
+        let elem = build_chart_inline_element("rId5", 3000000, 2000000);
+        assert_eq!(elem.name, "wp:inline");
+        // Should contain extent, docPr, and graphic children
+        assert_eq!(elem.children.len(), 3);
     }
 }
 

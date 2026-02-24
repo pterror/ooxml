@@ -237,6 +237,46 @@ pub struct PendingEndnote {
     pub body: types::FootnoteEndnote,
 }
 
+// =============================================================================
+// Settings types
+// =============================================================================
+
+/// Options for the `word/settings.xml` document settings part.
+///
+/// ECMA-376 Part 1, Section 17.15 (Settings).
+#[cfg(feature = "wml-settings")]
+#[derive(Debug, Clone, Default)]
+pub struct DocumentSettingsOptions {
+    /// Default tab stop width in twips (maps to `<w:defaultTabStop>`).
+    pub default_tab_stop: Option<u32>,
+    /// Whether different headers/footers for odd/even pages are enabled
+    /// (maps to `<w:evenAndOddHeaders/>`).
+    pub even_and_odd_headers: bool,
+    /// Whether tracked changes are active (maps to `<w:trackChanges/>`).
+    pub track_changes: bool,
+    /// Root RSID for the document (maps to `<w:rsidRoot w:val="..."/>`).
+    pub rsid_root: Option<String>,
+    /// Whether to include a compatibility mode setting for Word 2013+
+    /// (`<w:compat><w:compatSetting w:name="compatibilityMode" w:val="15"/></w:compat>`).
+    pub compat_mode: bool,
+}
+
+// =============================================================================
+// Chart types
+// =============================================================================
+
+/// A pending chart to be written to the package.
+#[cfg(feature = "wml-charts")]
+#[derive(Clone)]
+pub struct PendingChart {
+    /// Chart XML bytes.
+    pub data: Vec<u8>,
+    /// Assigned relationship ID.
+    pub rel_id: String,
+    /// Generated filename (e.g., "chart1.xml").
+    pub filename: String,
+}
+
 /// A pending comment to be written to the package.
 #[derive(Clone)]
 pub struct PendingComment {
@@ -861,6 +901,15 @@ pub struct DocumentBuilder {
     endnotes: HashMap<i32, PendingEndnote>,
     /// Pending comments, keyed by ID.
     comments: HashMap<i32, PendingComment>,
+    /// Document settings options to write to word/settings.xml.
+    #[cfg(feature = "wml-settings")]
+    settings: Option<DocumentSettingsOptions>,
+    /// Pending charts, keyed by rel_id.
+    #[cfg(feature = "wml-charts")]
+    charts: HashMap<String, PendingChart>,
+    /// Counter for generating unique chart IDs.
+    #[cfg(feature = "wml-charts")]
+    next_chart_id: u32,
     /// Core document properties to write to docProps/core.xml.
     core_properties: Option<CoreProperties>,
     /// Extended application properties to write to docProps/app.xml.
@@ -916,6 +965,12 @@ impl DocumentBuilder {
             footnotes: HashMap::new(),
             endnotes: HashMap::new(),
             comments: HashMap::new(),
+            #[cfg(feature = "wml-settings")]
+            settings: None,
+            #[cfg(feature = "wml-charts")]
+            charts: HashMap::new(),
+            #[cfg(feature = "wml-charts")]
+            next_chart_id: 1,
             core_properties: None,
             app_properties: None,
             next_rel_id: 1,
@@ -1231,6 +1286,43 @@ impl DocumentBuilder {
         self
     }
 
+    /// Set the document settings to write to `word/settings.xml`.
+    ///
+    /// ECMA-376 Part 1, Section 17.15 (Document Settings).
+    #[cfg(feature = "wml-settings")]
+    pub fn set_settings(&mut self, opts: DocumentSettingsOptions) -> &mut Self {
+        self.settings = Some(opts);
+        self
+    }
+
+    /// Embed chart XML and return its relationship ID.
+    ///
+    /// The chart XML bytes will be written to `word/charts/chart{n}.xml`.
+    /// Use the returned `rel_id` with `add_inline_chart` on a paragraph run.
+    ///
+    /// ECMA-376 Part 1, Section 21.2 (DrawingML – Charts).
+    #[cfg(feature = "wml-charts")]
+    pub fn embed_chart(&mut self, chart_xml: &[u8]) -> crate::error::Result<String> {
+        let id = self.next_rel_id;
+        self.next_rel_id += 1;
+        let chart_num = self.next_chart_id;
+        self.next_chart_id += 1;
+
+        let rel_id = format!("rId{}", id);
+        let filename = format!("chart{}.xml", chart_num);
+
+        self.charts.insert(
+            rel_id.clone(),
+            PendingChart {
+                data: chart_xml.to_vec(),
+                rel_id: rel_id.clone(),
+                filename,
+            },
+        );
+
+        Ok(rel_id)
+    }
+
     /// Get a mutable reference to the document body.
     pub fn body_mut(&mut self) -> &mut types::Body {
         self.document
@@ -1528,10 +1620,47 @@ impl DocumentBuilder {
             )?;
 
             let num_rel_id = format!("rId{}", self.next_rel_id);
+            self.next_rel_id += 1;
             doc_rels.add(Relationship::new(
                 &num_rel_id,
                 rel_type::NUMBERING,
                 "numbering.xml",
+            ));
+        }
+
+        // Write settings.xml if settings were configured
+        #[cfg(feature = "wml-settings")]
+        if let Some(ref settings_opts) = self.settings {
+            let settings_xml = build_settings_xml(settings_opts);
+            pkg.add_part(
+                "word/settings.xml",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml",
+                settings_xml.as_bytes(),
+            )?;
+
+            let settings_rel_id = format!("rId{}", self.next_rel_id);
+            self.next_rel_id += 1;
+            doc_rels.add(Relationship::new(
+                &settings_rel_id,
+                rel_type::SETTINGS,
+                "settings.xml",
+            ));
+        }
+
+        // Write charts and add relationships
+        #[cfg(feature = "wml-charts")]
+        for chart in self.charts.values() {
+            let chart_path = format!("word/charts/{}", chart.filename);
+            pkg.add_part(
+                &chart_path,
+                "application/vnd.openxmlformats-officedocument.drawingml.chart+xml",
+                &chart.data,
+            )?;
+
+            doc_rels.add(Relationship::new(
+                &chart.rel_id,
+                rel_type::CHART,
+                format!("charts/{}", chart.filename),
             ));
         }
 
@@ -1956,6 +2085,51 @@ fn build_bullet_run_properties() -> types::RunProperties {
 #[allow(dead_code)]
 fn build_bullet_run_properties() -> types::RunProperties {
     types::RunProperties::default()
+}
+
+// =============================================================================
+// Settings XML builder
+// =============================================================================
+
+/// Build the raw XML for `word/settings.xml` from the configured options.
+///
+/// ECMA-376 Part 1, Section 17.15.1 (`w:settings`).
+#[cfg(feature = "wml-settings")]
+fn build_settings_xml(opts: &DocumentSettingsOptions) -> String {
+    let mut xml = String::from(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
+    xml.push_str("\r\n");
+    xml.push_str(
+        r#"<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">"#,
+    );
+
+    if let Some(tab_stop) = opts.default_tab_stop {
+        xml.push_str(&format!(r#"<w:defaultTabStop w:val="{}"/>"#, tab_stop));
+    }
+
+    if opts.even_and_odd_headers {
+        xml.push_str("<w:evenAndOddHeaders/>");
+    }
+
+    if opts.track_changes {
+        xml.push_str("<w:trackChanges/>");
+    }
+
+    if let Some(ref rsid) = opts.rsid_root {
+        xml.push_str(&format!(r#"<w:rsidRoot w:val="{}"/>"#, rsid));
+    }
+
+    if opts.compat_mode {
+        xml.push_str(concat!(
+            "<w:compat>",
+            r#"<w:compatSetting w:name="compatibilityMode" "#,
+            r#"w:uri="http://schemas.microsoft.com/office/word" "#,
+            r#"w:val="15"/>"#,
+            "</w:compat>",
+        ));
+    }
+
+    xml.push_str("</w:settings>");
+    xml
 }
 
 // =============================================================================
