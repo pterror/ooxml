@@ -11,7 +11,7 @@ pub fn fixture_fixture_sml_cell_integer() -> crate::Fixture {
     use ooxml_sml::WorkbookBuilder;
     let mut wb = WorkbookBuilder::new();
     let sheet = wb.add_sheet("Sheet1");
-    sheet.set_cell_at(0, 0, ooxml_sml::WriteCellValue::Number(42f64));
+    sheet.set_cell_at(1, 1, ooxml_sml::WriteCellValue::Number(42f64));
     let mut buf = std::io::Cursor::new(Vec::new());
     wb.write(&mut buf)
         .expect("failed to build fixture fixture_sml_cell_integer");
@@ -45,7 +45,7 @@ pub fn fixture_fixture_sml_cell_float() -> crate::Fixture {
     use ooxml_sml::WorkbookBuilder;
     let mut wb = WorkbookBuilder::new();
     let sheet = wb.add_sheet("Sheet1");
-    sheet.set_cell_at(0, 0, ooxml_sml::WriteCellValue::Number(3.14f64));
+    sheet.set_cell_at(1, 1, ooxml_sml::WriteCellValue::Number(3.14f64));
     let mut buf = std::io::Cursor::new(Vec::new());
     wb.write(&mut buf)
         .expect("failed to build fixture fixture_sml_cell_float");
@@ -79,7 +79,7 @@ pub fn fixture_fixture_sml_cell_negative() -> crate::Fixture {
     use ooxml_sml::WorkbookBuilder;
     let mut wb = WorkbookBuilder::new();
     let sheet = wb.add_sheet("Sheet1");
-    sheet.set_cell_at(0, 0, ooxml_sml::WriteCellValue::Number(-273.15f64));
+    sheet.set_cell_at(1, 1, ooxml_sml::WriteCellValue::Number(-273.15f64));
     let mut buf = std::io::Cursor::new(Vec::new());
     wb.write(&mut buf)
         .expect("failed to build fixture fixture_sml_cell_negative");
@@ -113,7 +113,7 @@ pub fn fixture_fixture_sml_cell_zero() -> crate::Fixture {
     use ooxml_sml::WorkbookBuilder;
     let mut wb = WorkbookBuilder::new();
     let sheet = wb.add_sheet("Sheet1");
-    sheet.set_cell_at(0, 0, ooxml_sml::WriteCellValue::Number(0f64));
+    sheet.set_cell_at(1, 1, ooxml_sml::WriteCellValue::Number(0f64));
     let mut buf = std::io::Cursor::new(Vec::new());
     wb.write(&mut buf)
         .expect("failed to build fixture fixture_sml_cell_zero");
@@ -147,7 +147,7 @@ pub fn fixture_fixture_sml_cell_large_number() -> crate::Fixture {
     use ooxml_sml::WorkbookBuilder;
     let mut wb = WorkbookBuilder::new();
     let sheet = wb.add_sheet("Sheet1");
-    sheet.set_cell_at(0, 0, ooxml_sml::WriteCellValue::Number(1000000000f64));
+    sheet.set_cell_at(1, 1, ooxml_sml::WriteCellValue::Number(1000000000f64));
     let mut buf = std::io::Cursor::new(Vec::new());
     wb.write(&mut buf)
         .expect("failed to build fixture fixture_sml_cell_large_number");
@@ -181,7 +181,7 @@ pub fn fixture_fixture_sml_cell_small_float() -> crate::Fixture {
     use ooxml_sml::WorkbookBuilder;
     let mut wb = WorkbookBuilder::new();
     let sheet = wb.add_sheet("Sheet1");
-    sheet.set_cell_at(0, 0, ooxml_sml::WriteCellValue::Number(0.000001f64));
+    sheet.set_cell_at(1, 1, ooxml_sml::WriteCellValue::Number(0.000001f64));
     let mut buf = std::io::Cursor::new(Vec::new());
     wb.write(&mut buf)
         .expect("failed to build fixture fixture_sml_cell_small_float");
@@ -216,8 +216,8 @@ pub fn fixture_fixture_sml_cell_string() -> crate::Fixture {
     let mut wb = WorkbookBuilder::new();
     let sheet = wb.add_sheet("Sheet1");
     sheet.set_cell_at(
-        0,
-        0,
+        1,
+        1,
         ooxml_sml::WriteCellValue::String("Hello World".to_string()),
     );
     let mut buf = std::io::Cursor::new(Vec::new());
@@ -253,7 +253,7 @@ pub fn fixture_fixture_sml_cell_string_empty() -> crate::Fixture {
     use ooxml_sml::WorkbookBuilder;
     let mut wb = WorkbookBuilder::new();
     let sheet = wb.add_sheet("Sheet1");
-    sheet.set_cell_at(0, 0, ooxml_sml::WriteCellValue::String("".to_string()));
+    sheet.set_cell_at(1, 1, ooxml_sml::WriteCellValue::String("".to_string()));
     let mut buf = std::io::Cursor::new(Vec::new());
     wb.write(&mut buf)
         .expect("failed to build fixture fixture_sml_cell_string_empty");
@@ -287,7 +287,7 @@ pub fn fixture_fixture_sml_cell_boolean_true() -> crate::Fixture {
     use ooxml_sml::WorkbookBuilder;
     let mut wb = WorkbookBuilder::new();
     let sheet = wb.add_sheet("Sheet1");
-    sheet.set_cell_at(0, 0, ooxml_sml::WriteCellValue::Boolean(true));
+    sheet.set_cell_at(1, 1, ooxml_sml::WriteCellValue::Boolean(true));
     let mut buf = std::io::Cursor::new(Vec::new());
     wb.write(&mut buf)
         .expect("failed to build fixture fixture_sml_cell_boolean_true");
@@ -308,7 +308,7 @@ pub fn fixture_fixture_sml_cell_boolean_true() -> crate::Fixture {
                 sheet: 0,
                 row: 0,
                 col: 0,
-                expected: "true".into(),
+                expected: "TRUE".into(),
                 tolerance: 0f64,
             },
         ],
@@ -321,7 +321,7 @@ pub fn fixture_fixture_sml_cell_boolean_false() -> crate::Fixture {
     use ooxml_sml::WorkbookBuilder;
     let mut wb = WorkbookBuilder::new();
     let sheet = wb.add_sheet("Sheet1");
-    sheet.set_cell_at(0, 0, ooxml_sml::WriteCellValue::Boolean(false));
+    sheet.set_cell_at(1, 1, ooxml_sml::WriteCellValue::Boolean(false));
     let mut buf = std::io::Cursor::new(Vec::new());
     wb.write(&mut buf)
         .expect("failed to build fixture fixture_sml_cell_boolean_false");
@@ -342,7 +342,7 @@ pub fn fixture_fixture_sml_cell_boolean_false() -> crate::Fixture {
                 sheet: 0,
                 row: 0,
                 col: 0,
-                expected: "false".into(),
+                expected: "FALSE".into(),
                 tolerance: 0f64,
             },
         ],

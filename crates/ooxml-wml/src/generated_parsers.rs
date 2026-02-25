@@ -46,6 +46,12 @@ fn read_text_content<R: BufRead>(reader: &mut Reader<R>) -> Result<String, Parse
         match reader.read_event_into(&mut buf)? {
             Event::Text(e) => text.push_str(&e.decode().unwrap_or_default()),
             Event::CData(e) => text.push_str(&e.decode().unwrap_or_default()),
+            Event::GeneralRef(e) => {
+                let name = e.decode().unwrap_or_default();
+                if let Some(s) = quick_xml::escape::resolve_xml_entity(&name) {
+                    text.push_str(s);
+                }
+            }
             Event::End(_) => break,
             Event::Eof => break,
             _ => {}
@@ -14053,7 +14059,14 @@ impl FromXml for Text {
                         }
                     }
                     Event::Text(e) => {
-                        f_text = Some(e.decode().unwrap_or_default().into_owned());
+                        let s = e.decode().unwrap_or_default();
+                        f_text.get_or_insert_with(String::new).push_str(&s);
+                    }
+                    Event::GeneralRef(e) => {
+                        let name = e.decode().unwrap_or_default();
+                        if let Some(s) = quick_xml::escape::resolve_xml_entity(&name) {
+                            f_text.get_or_insert_with(String::new).push_str(s);
+                        }
                     }
                     Event::End(_) => break,
                     Event::Eof => break,
