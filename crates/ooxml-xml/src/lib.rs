@@ -10,7 +10,7 @@ use std::io::{BufRead, Write};
 mod raw_xml;
 pub mod serde_helpers;
 
-pub use raw_xml::{PositionedAttr, PositionedNode, RawXmlElement, RawXmlNode};
+pub use raw_xml::{PositionedAttr, PositionedNode, RawXmlElement, RawXmlNode, RawXmlStreamReader};
 pub use serde_helpers::{ooxml_bool, ooxml_bool_required};
 
 /// Error type for XML operations.
