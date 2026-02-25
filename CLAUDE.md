@@ -104,10 +104,21 @@ Scope is optional but recommended (e.g., `wml`, `corpus`, `packaging`).
 
 ## Testing Strategy
 
-- Unit tests for individual elements
-- Roundtrip tests: open → save → compare
-- Fixture tests with real .docx files in `tests/fixtures/`
-- Use `insta` for snapshot testing XML output
+**Goal: every feature exercised by a fixture, every fixture validated by a roundtrip test.**
+
+Layers (in order of scope):
+1. **XML unit tests** — individual element parse/serialize, no full document. SML has these in `crates/ooxml-sml/tests/fixtures/xml/`. WML and PML need the same.
+2. **Fixture roundtrip tests** — `ooxml-fixtures` generates 178 CC0 `.docx`/`.xlsx`/`.pptx` files with typed JSON manifests. Each reader crate should have a test that reads every fixture and asserts all manifest assertions pass.
+3. **Structural edge cases** — nested tables, mixed content, unusual-but-valid constructions. These live in the fixture crate alongside the standard fixtures.
+4. **Malformed/adversarial tests** — truncated ZIP, missing parts, broken XML, unknown namespaces. These live in each crate's `tests/` as `Result::is_err()` assertions. Do NOT put these in the fixture crate (they're not CC0-distributable examples).
+5. **Corpus tests** — parse large real-world corpora and assert >95% success rate. Marked `#[ignore]` since the corpus is not vendored.
+
+**NapierOne corpus:** Available locally at `corpora/napierone/` but cannot be vendored due to licensing. Corpus tests are `#[ignore]`'d and require the corpus to be present. SML and PML have corpus tests; WML needs one.
+
+**Fixture coverage checklist** — these categories must each have at least one fixture:
+- WML: text formatting, paragraphs, lists, tables, headers/footers, images, hyperlinks, comments, footnotes, endnotes, track changes, field codes (TOC), forms, math (all OMML operators), bookmarks, text boxes, nested tables
+- SML: cell values/types, formulas, number formats, font/fill/border styling, layout (freeze/autofilter), merges, hyperlinks, data validation, conditional formatting, multiple sheets, comments, protection
+- PML: shapes (all types), connectors, groups, text formatting, tables, images, hyperlinks, animations, transitions, notes, master/layout, charts
 
 ## References
 
