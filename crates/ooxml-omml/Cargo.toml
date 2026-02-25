@@ -7,5 +7,6 @@ repository.workspace = true
 description = "Office Math Markup Language (OMML) support for the ooxml library"
 
 [dependencies]
+ooxml-xml.workspace = true
 quick-xml.workspace = true
 thiserror.workspace = true

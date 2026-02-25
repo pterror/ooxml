@@ -962,9 +962,7 @@ impl MathExt for types::Body {
 /// [`collect_math_text`] to gather text leaves.
 #[cfg(all(feature = "extra-children", feature = "wml-math"))]
 fn parse_math_zone_from_element(elem: &ooxml_xml::RawXmlElement) -> ooxml_omml::MathZone {
-    let stream_reader = ooxml_xml::RawXmlStreamReader::new(elem);
-    let mut reader = Reader::from_reader(stream_reader);
-    ooxml_omml::parse_math_zone_from_reader(&mut reader).unwrap_or_default()
+    elem.parse_as::<ooxml_omml::MathZone>().unwrap_or_default()
 }
 
 #[cfg(feature = "extra-children")]

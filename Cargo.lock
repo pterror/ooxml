@@ -762,6 +762,7 @@ dependencies = [
 name = "ooxml-omml"
 version = "0.1.0"
 dependencies = [
+ "ooxml-xml",
  "quick-xml",
  "thiserror",
 ]

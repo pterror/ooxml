@@ -36,6 +36,22 @@ impl MathZone {
     }
 }
 
+impl ooxml_xml::FromXml for MathZone {
+    fn from_xml<R: BufRead>(
+        reader: &mut Reader<R>,
+        _start_tag: &quick_xml::events::BytesStart,
+        is_empty: bool,
+    ) -> std::result::Result<Self, ooxml_xml::ParseError> {
+        if is_empty {
+            return Ok(Self::default());
+        }
+        parse_math_zone_from_reader(reader).map_err(|e| match e {
+            Error::Xml(xml_err) => ooxml_xml::ParseError::Xml(xml_err),
+            Error::Invalid(msg) => ooxml_xml::ParseError::InvalidValue(msg),
+        })
+    }
+}
+
 /// A math element - one of the possible OMML constructs.
 #[derive(Debug, Clone)]
 pub enum MathElement {
