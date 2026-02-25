@@ -1,0 +1,345 @@
+//! Tests for PML generated FromXml parsers.
+//!
+//! These tests verify that the generated event-based parsers can correctly
+//! parse PML XML snippets using real-world XML structures.
+//!
+//! PML uses DML types for text content (TextBody, TextParagraph, TextRun),
+//! which are tested separately in ooxml-dml's test suite.
+
+use ooxml_pml::parsers::{FromXml, ParseError};
+use ooxml_pml::types::*;
+use quick_xml::Reader;
+use quick_xml::events::Event;
+use std::io::Cursor;
+
+/// Helper to parse an XML string using the FromXml trait.
+fn parse_from_xml<T: FromXml>(xml: &str) -> Result<T, ParseError> {
+    let mut reader = Reader::from_reader(Cursor::new(xml.as_bytes()));
+    let mut buf = Vec::new();
+    loop {
+        match reader.read_event_into(&mut buf)? {
+            Event::Start(e) => return T::from_xml(&mut reader, &e, false),
+            Event::Empty(e) => return T::from_xml(&mut reader, &e, true),
+            Event::Eof => break,
+            _ => {}
+        }
+        buf.clear();
+    }
+    Err(ParseError::UnexpectedElement(
+        "no element found".to_string(),
+    ))
+}
+
+// ---------------------------------------------------------------------------
+// CTSlideSize (p:sldSz)
+// ---------------------------------------------------------------------------
+
+#[test]
+fn test_parse_slide_size_standard() {
+    // Standard 4:3 presentation (10 in × 7.5 in in EMU)
+    let xml = r#"<sldSz cx="9144000" cy="6858000"/>"#;
+    let sz: CTSlideSize = parse_from_xml(xml).expect("should parse CTSlideSize");
+    assert_eq!(sz.cx, 9144000);
+    assert_eq!(sz.cy, 6858000);
+    assert!(sz.r#type.is_none());
+}
+
+#[test]
+fn test_parse_slide_size_widescreen() {
+    // Widescreen 16:9 (13.33 in × 7.5 in in EMU)
+    let xml = r#"<sldSz cx="12192000" cy="6858000" type="custom"/>"#;
+    let sz: CTSlideSize = parse_from_xml(xml).expect("should parse widescreen CTSlideSize");
+    assert_eq!(sz.cx, 12192000);
+    assert_eq!(sz.cy, 6858000);
+    assert!(sz.r#type.is_some());
+}
+
+#[test]
+fn test_parse_slide_size_with_namespace() {
+    let xml = r#"<p:sldSz xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" cx="9144000" cy="5143500"/>"#;
+    let sz: CTSlideSize = parse_from_xml(xml).expect("should parse namespaced sldSz");
+    assert_eq!(sz.cx, 9144000);
+    assert_eq!(sz.cy, 5143500);
+}
+
+// ---------------------------------------------------------------------------
+// Shape (p:sp)
+// ---------------------------------------------------------------------------
+
+/// Build the minimal nvSpPr XML for a shape.
+fn minimal_nv_sp_pr(id: u32, name: &str) -> String {
+    format!(r#"<nvSpPr><cNvPr id="{id}" name="{name}"/><cNvSpPr/><nvPr/></nvSpPr>"#)
+}
+
+/// Build the minimal spPr XML for a shape (no geometry).
+fn minimal_sp_pr() -> &'static str {
+    "<spPr/>"
+}
+
+#[test]
+fn test_parse_shape_minimal() {
+    let xml = format!(
+        r#"<sp>{nv}{sp}</sp>"#,
+        nv = minimal_nv_sp_pr(2, "Shape1"),
+        sp = minimal_sp_pr()
+    );
+    let shape: Shape = parse_from_xml(&xml).expect("should parse minimal Shape");
+    assert!(shape.text_body.is_none());
+    assert_eq!(shape.non_visual_properties.c_nv_pr.id, 2);
+    assert_eq!(shape.non_visual_properties.c_nv_pr.name, "Shape1");
+}
+
+#[test]
+fn test_parse_shape_with_text_body() {
+    let xml = format!(
+        r#"<sp>{nv}{sp}<txBody><bodyPr/><p><r><t>Hello</t></r></p></txBody></sp>"#,
+        nv = minimal_nv_sp_pr(3, "Content"),
+        sp = minimal_sp_pr()
+    );
+    let shape: Shape = parse_from_xml(&xml).expect("should parse Shape with text body");
+    let body = shape.text_body.as_ref().expect("should have text body");
+    assert_eq!(body.p.len(), 1);
+    match &body.p[0].text_run[0] {
+        ooxml_dml::types::EGTextRun::R(run) => assert_eq!(run.t, "Hello"),
+        other => panic!("expected R variant, got {:?}", other),
+    }
+}
+
+#[test]
+fn test_parse_shape_text_body_multiple_paragraphs() {
+    let xml = format!(
+        r#"<sp>{nv}{sp}<txBody><bodyPr/><p><r><t>Para 1</t></r></p><p><r><t>Para 2</t></r></p></txBody></sp>"#,
+        nv = minimal_nv_sp_pr(4, "TextBox"),
+        sp = minimal_sp_pr()
+    );
+    let shape: Shape = parse_from_xml(&xml).expect("should parse Shape with two paragraphs");
+    let body = shape.text_body.as_ref().expect("should have text body");
+    assert_eq!(body.p.len(), 2);
+}
+
+#[test]
+fn test_parse_shape_with_geometry() {
+    let xml = format!(
+        r#"<sp>{nv}<spPr><prstGeom prst="rect"/></spPr></sp>"#,
+        nv = minimal_nv_sp_pr(5, "Rect")
+    );
+    let shape: Shape = parse_from_xml(&xml).expect("should parse Shape with geometry");
+    let sp_pr = &shape.shape_properties;
+    assert!(sp_pr.geometry.is_some());
+    match sp_pr.geometry.as_deref().unwrap() {
+        ooxml_dml::types::EGGeometry::PrstGeom(pg) => {
+            assert_eq!(pg.preset.to_string(), "rect");
+        }
+        other => panic!("expected PrstGeom, got {:?}", other),
+    }
+}
+
+#[test]
+fn test_parse_shape_with_full_namespace() {
+    // Match the actual XML structure generated by the PML writer.
+    let xml = r#"<p:sp
+        xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"
+        xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+        <p:nvSpPr>
+            <p:cNvPr id="2" name="Content"/>
+            <p:cNvSpPr txBox="1"/>
+            <p:nvPr/>
+        </p:nvSpPr>
+        <p:spPr>
+            <a:xfrm>
+                <a:off x="457200" y="274638"/>
+                <a:ext cx="8229600" cy="4525963"/>
+            </a:xfrm>
+            <a:prstGeom prst="rect"/>
+        </p:spPr>
+        <p:txBody>
+            <a:bodyPr/>
+            <a:p>
+                <a:r><a:rPr lang="en-US" sz="2400"/><a:t>Hello World</a:t></a:r>
+            </a:p>
+        </p:txBody>
+    </p:sp>"#;
+    let shape: Shape = parse_from_xml(xml).expect("should parse full-namespace Shape");
+    let body = shape.text_body.as_ref().expect("should have text body");
+    assert_eq!(body.p.len(), 1);
+    match &body.p[0].text_run[0] {
+        ooxml_dml::types::EGTextRun::R(run) => {
+            assert_eq!(run.t, "Hello World");
+            let rpr = run.r_pr.as_ref().expect("should have rPr");
+            assert_eq!(rpr.sz, Some(2400));
+        }
+        other => panic!("expected R, got {:?}", other),
+    }
+}
+
+// ---------------------------------------------------------------------------
+// GroupShape / CommonSlideData (p:spTree / p:cSld)
+// ---------------------------------------------------------------------------
+
+fn minimal_group_shape_xml() -> &'static str {
+    r#"<spTree>
+        <nvGrpSpPr>
+            <cNvPr id="1" name=""/>
+            <cNvGrpSpPr/>
+            <nvPr/>
+        </nvGrpSpPr>
+        <grpSpPr>
+            <a:xfrm xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+                <a:off x="0" y="0"/>
+                <a:ext cx="0" cy="0"/>
+                <a:chOff x="0" y="0"/>
+                <a:chExt cx="0" cy="0"/>
+            </a:xfrm>
+        </grpSpPr>
+    </spTree>"#
+}
+
+#[test]
+fn test_parse_group_shape_empty() {
+    let xml = minimal_group_shape_xml();
+    let gs: GroupShape = parse_from_xml(xml).expect("should parse empty GroupShape");
+    assert!(gs.shape.is_empty());
+    assert!(gs.group_shape.is_empty());
+    assert!(gs.picture.is_empty());
+    assert_eq!(gs.non_visual_group_properties.c_nv_pr.id, 1);
+}
+
+#[test]
+fn test_parse_group_shape_with_shape() {
+    let nv = minimal_nv_sp_pr(2, "Shape");
+    let sp_xml = format!(
+        r#"<sp>{nv}{sp_pr}<txBody><bodyPr/><p/></txBody></sp>"#,
+        nv = nv,
+        sp_pr = minimal_sp_pr()
+    );
+    let xml = format!(
+        r#"<spTree>
+            <nvGrpSpPr>
+                <cNvPr id="1" name=""/>
+                <cNvGrpSpPr/>
+                <nvPr/>
+            </nvGrpSpPr>
+            <grpSpPr/>
+            {sp}
+        </spTree>"#,
+        sp = sp_xml
+    );
+    let gs: GroupShape = parse_from_xml(&xml).expect("should parse GroupShape with one shape");
+    assert_eq!(gs.shape.len(), 1);
+}
+
+#[test]
+fn test_parse_common_slide_data() {
+    let xml = format!(r#"<cSld>{}</cSld>"#, minimal_group_shape_xml());
+    let csd: CommonSlideData = parse_from_xml(&xml).expect("should parse CommonSlideData");
+    assert!(csd.name.is_none());
+    assert!(csd.shape_tree.shape.is_empty());
+}
+
+#[test]
+fn test_parse_common_slide_data_with_name() {
+    let xml = format!(
+        r#"<cSld name="My Slide">{}</cSld>"#,
+        minimal_group_shape_xml()
+    );
+    let csd: CommonSlideData = parse_from_xml(&xml).expect("should parse named CommonSlideData");
+    assert_eq!(csd.name.as_deref(), Some("My Slide"));
+}
+
+// ---------------------------------------------------------------------------
+// Slide (p:sld)
+// ---------------------------------------------------------------------------
+
+fn minimal_slide_xml() -> String {
+    format!(
+        r#"<sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+            <cSld>{}</cSld>
+        </sld>"#,
+        minimal_group_shape_xml()
+    )
+}
+
+#[test]
+fn test_parse_slide_minimal() {
+    let xml = minimal_slide_xml();
+    let slide: Slide = parse_from_xml(&xml).expect("should parse minimal Slide");
+    assert!(slide.show.is_none());
+    assert!(slide.transition.is_none());
+    assert!(slide.timing.is_none());
+    assert!(slide.common_slide_data.shape_tree.shape.is_empty());
+}
+
+#[test]
+fn test_parse_slide_with_show_false() {
+    let xml = format!(
+        r#"<sld show="0" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+            <cSld>{}</cSld>
+        </sld>"#,
+        minimal_group_shape_xml()
+    );
+    let slide: Slide = parse_from_xml(&xml).expect("should parse Slide with show=false");
+    assert_eq!(slide.show, Some(false));
+}
+
+#[test]
+fn test_parse_slide_with_full_namespace() {
+    // This mirrors the actual XML emitted by the PML writer.
+    let xml = r#"<p:sld
+        xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+        xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+        xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+        <p:cSld>
+            <p:spTree>
+                <p:nvGrpSpPr>
+                    <p:cNvPr id="1" name=""/>
+                    <p:cNvGrpSpPr/>
+                    <p:nvPr/>
+                </p:nvGrpSpPr>
+                <p:grpSpPr>
+                    <a:xfrm>
+                        <a:off x="0" y="0"/>
+                        <a:ext cx="0" cy="0"/>
+                        <a:chOff x="0" y="0"/>
+                        <a:chExt cx="0" cy="0"/>
+                    </a:xfrm>
+                </p:grpSpPr>
+                <p:sp>
+                    <p:nvSpPr>
+                        <p:cNvPr id="2" name="Content"/>
+                        <p:cNvSpPr txBox="1"/>
+                        <p:nvPr/>
+                    </p:nvSpPr>
+                    <p:spPr>
+                        <a:xfrm>
+                            <a:off x="457200" y="274638"/>
+                            <a:ext cx="8229600" cy="4525963"/>
+                        </a:xfrm>
+                        <a:prstGeom prst="rect"/>
+                    </p:spPr>
+                    <p:txBody>
+                        <a:bodyPr/>
+                        <a:p>
+                            <a:r>
+                                <a:rPr lang="en-US" sz="2400"/>
+                                <a:t>Hello World</a:t>
+                            </a:r>
+                        </a:p>
+                    </p:txBody>
+                </p:sp>
+            </p:spTree>
+        </p:cSld>
+        <p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>
+    </p:sld>"#;
+    let slide: Slide = parse_from_xml(xml).expect("should parse full-namespace Slide");
+    let shapes = &slide.common_slide_data.shape_tree.shape;
+    assert_eq!(shapes.len(), 1);
+    let body = shapes[0]
+        .text_body
+        .as_ref()
+        .expect("shape should have text body");
+    assert_eq!(body.p.len(), 1);
+    match &body.p[0].text_run[0] {
+        ooxml_dml::types::EGTextRun::R(run) => assert_eq!(run.t, "Hello World"),
+        other => panic!("expected R, got {:?}", other),
+    }
+}
