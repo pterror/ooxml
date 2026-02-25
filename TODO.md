@@ -163,13 +163,53 @@ Users upgrading to the new API need to:
 - [x] **Replace handwritten DML types** - PML migrated from `ooxml_dml::text` to generated types with ext traits.
 - [x] **Delete handwritten DML code** - Removed `text.rs` (367 lines). All DML types now generated from ECMA-376 schemas.
 
-## Robustness
+## Testing & Robustness
 
-- [ ] Edge case handling from corpus analysis
-- [ ] More comprehensive tests against real-world documents
+**Goal: every feature exercised by a fixture, every fixture validated by a roundtrip test.**
+
+### Fixture roundtrip validation
+- [ ] **WML roundtrip test suite** — read all 69 `fixtures/wml/*.docx` files, assert manifest assertions pass
+- [ ] **SML roundtrip test suite** — read all 60 `fixtures/sml/*.xlsx` files, assert manifest assertions pass
+- [ ] **PML roundtrip test suite** — read all 49 `fixtures/pml/*.pptx` files, assert manifest assertions pass
+
+### XML-level unit test fixtures
+- [ ] **WML XML fixtures** — `crates/ooxml-wml/tests/fixtures/xml/` with per-element XML snippets + test runner (mirroring SML's 22-file setup)
+- [ ] **PML XML fixtures** — `crates/ooxml-pml/tests/fixtures/xml/` with per-element XML snippets + test runner
+
+### Math (OMML) coverage
+- [ ] Subscript / superscript (x², xₙ)
+- [ ] Radical / square root (√x, ⁿ√x)
+- [ ] Nary operators: integral, summation, product (∫, Σ, Π) with bounds
+- [ ] Delimiters: parentheses, brackets, absolute value |x|
+- [ ] Accents: hat, bar, tilde (x̂, x̄, x̃)
+- [ ] Matrices (2x2, 3x3)
+- [ ] Aligned equations (multi-line)
+- [ ] Limit operators
+
+### Structural edge cases (valid but unusual documents)
+- [ ] WML: table nested inside a table cell
+- [ ] WML: paragraph in table cell with hyperlink + image + run (mixed content)
+- [ ] WML: list item containing a table
+- [ ] SML: merged cells spanning 3+ rows and columns
+- [ ] SML: cell formula referencing another sheet
+- [ ] PML: nested group shapes
+- [ ] PML: table inside a group shape
+
+### Malformed/adversarial input
+- [ ] Truncated ZIP file → `Error::Invalid`
+- [ ] Valid ZIP, missing `[Content_Types].xml` → `Error::Invalid`
+- [ ] Missing `word/document.xml` in a DOCX → `Error::Invalid`
+- [ ] Broken relationship XML (malformed XML) → `Error::Invalid`
+- [ ] Unknown content type → graceful degradation (not panic)
+- [ ] UTF-8 BOM at start of XML stream → handled
+- [ ] Attribute value outside valid enum range → `Error::Invalid`
+- [ ] Element with unknown namespace → preserved in `extra_children`, not dropped
+
+### Corpus tests (require local `corpora/napierone/`, not vendored due to licensing)
+- [x] SML corpus test — `crates/ooxml-sml/tests/corpus.rs` (`#[ignore]`)
+- [x] PML corpus test — `crates/ooxml-pml/tests/corpus.rs` (`#[ignore]`)
+- [ ] WML corpus test — `crates/ooxml-wml/tests/corpus.rs` (`#[ignore]`)
 - [ ] Fuzz testing for malformed input
-- [ ] Synthetic fixtures from corpus insights - analyze failures, create minimal repro cases
-- [ ] Auto-generated fixtures from ECMA-376 XSD schemas - ensure all element types are tested
 
 ## Other Formats
 
