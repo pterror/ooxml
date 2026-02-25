@@ -121,8 +121,12 @@ pub use crate::custom::wml::fixture_wml_list_bullet_nested_2;
 pub use crate::custom::wml::fixture_wml_list_bullet_single;
 pub use crate::custom::wml::fixture_wml_list_custom_numbering;
 pub use crate::custom::wml::fixture_wml_list_decimal_single;
+pub use crate::custom::wml::fixture_wml_math_display;
 pub use crate::custom::wml::fixture_wml_math_fraction;
 pub use crate::custom::wml::fixture_wml_math_plain;
+pub use crate::custom::wml::fixture_wml_math_radical;
+pub use crate::custom::wml::fixture_wml_math_subscript;
+pub use crate::custom::wml::fixture_wml_math_superscript;
 pub use crate::custom::wml::fixture_wml_paragraph_align_center;
 pub use crate::custom::wml::fixture_wml_paragraph_align_justify;
 pub use crate::custom::wml::fixture_wml_paragraph_align_left;
@@ -238,6 +242,10 @@ pub fn all_fixtures() -> Vec<crate::Fixture> {
         fixture_wml_form_dropdown(),
         fixture_wml_math_plain(),
         fixture_wml_math_fraction(),
+        fixture_wml_math_superscript(),
+        fixture_wml_math_subscript(),
+        fixture_wml_math_radical(),
+        fixture_wml_math_display(),
         fixture_wml_bookmark_basic(),
         fixture_wml_settings_tab_stop(),
         fixture_wml_settings_even_odd_headers(),

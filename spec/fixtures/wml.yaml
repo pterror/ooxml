@@ -509,6 +509,34 @@ fixtures:
     template: custom
     custom_fn: fixture_wml_math_fraction
 
+  - id: fixture_wml_math_superscript
+    format: wml
+    path: wml/math/math-superscript.docx
+    description: "Paragraph with a superscript math expression (x^2)"
+    template: custom
+    custom_fn: fixture_wml_math_superscript
+
+  - id: fixture_wml_math_subscript
+    format: wml
+    path: wml/math/math-subscript.docx
+    description: "Paragraph with a subscript math expression (x_1)"
+    template: custom
+    custom_fn: fixture_wml_math_subscript
+
+  - id: fixture_wml_math_radical
+    format: wml
+    path: wml/math/math-radical.docx
+    description: "Paragraph with a square root math expression"
+    template: custom
+    custom_fn: fixture_wml_math_radical
+
+  - id: fixture_wml_math_display
+    format: wml
+    path: wml/math/math-display.docx
+    description: "Paragraph with a display-mode (block) fraction"
+    template: custom
+    custom_fn: fixture_wml_math_display
+
   # ---------------------------------------------------------------------------
   # wml/bookmark/
   # ---------------------------------------------------------------------------

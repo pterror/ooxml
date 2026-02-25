@@ -1408,6 +1408,62 @@ pub fn fixture_wml_math_fraction() -> crate::Fixture {
     }
 }
 
+pub fn fixture_wml_math_superscript() -> crate::Fixture {
+    let mut builder = DocumentBuilder::new();
+    {
+        let para = builder.body_mut().add_paragraph();
+        para.add_math(ooxml_wml::convenience::OMathBuilder::superscript("x", "2"));
+    }
+    crate::Fixture {
+        path: "wml/math/math-superscript.docx",
+        description: "Paragraph with a superscript math expression (x^2)",
+        bytes: write_builder(builder),
+        assertions: vec![crate::Assertion::ParagraphCount { expected: 1 }],
+    }
+}
+
+pub fn fixture_wml_math_subscript() -> crate::Fixture {
+    let mut builder = DocumentBuilder::new();
+    {
+        let para = builder.body_mut().add_paragraph();
+        para.add_math(ooxml_wml::convenience::OMathBuilder::subscript("x", "1"));
+    }
+    crate::Fixture {
+        path: "wml/math/math-subscript.docx",
+        description: "Paragraph with a subscript math expression (x_1)",
+        bytes: write_builder(builder),
+        assertions: vec![crate::Assertion::ParagraphCount { expected: 1 }],
+    }
+}
+
+pub fn fixture_wml_math_radical() -> crate::Fixture {
+    let mut builder = DocumentBuilder::new();
+    {
+        let para = builder.body_mut().add_paragraph();
+        para.add_math(ooxml_wml::convenience::OMathBuilder::radical("2"));
+    }
+    crate::Fixture {
+        path: "wml/math/math-radical.docx",
+        description: "Paragraph with a square root math expression",
+        bytes: write_builder(builder),
+        assertions: vec![crate::Assertion::ParagraphCount { expected: 1 }],
+    }
+}
+
+pub fn fixture_wml_math_display() -> crate::Fixture {
+    let mut builder = DocumentBuilder::new();
+    {
+        let para = builder.body_mut().add_paragraph();
+        para.add_math(ooxml_wml::convenience::OMathBuilder::fraction("a", "b").as_display());
+    }
+    crate::Fixture {
+        path: "wml/math/math-display.docx",
+        description: "Paragraph with a display-mode (block) fraction",
+        bytes: write_builder(builder),
+        assertions: vec![crate::Assertion::ParagraphCount { expected: 1 }],
+    }
+}
+
 // =============================================================================
 // wml/bookmark/
 // =============================================================================
