@@ -62,4 +62,5 @@ pub use writer::{
 pub use types::ns;
 
 // Re-export MathZone from ooxml-omml for convenience.
+#[cfg(feature = "wml-math")]
 pub use ooxml_omml::MathZone;

@@ -897,10 +897,11 @@ pub struct MathExpression {
     /// `true` for display (block) math (`<m:oMathPara>`), `false` for inline (`<m:oMath>`).
     pub is_display: bool,
     /// The parsed OMML math zone containing the structured math content.
+    #[cfg(feature = "wml-math")]
     pub zone: ooxml_omml::MathZone,
 }
 
-#[cfg(feature = "extra-children")]
+#[cfg(all(feature = "extra-children", feature = "wml-math"))]
 impl MathExpression {
     /// Extract plain text representation of the math content.
     pub fn text(&self) -> String {
@@ -959,7 +960,7 @@ impl MathExt for types::Body {
 /// The function does **not** recurse into `<m:oMath>` children once the root
 /// is identified — instead it hands the entire subtree to
 /// [`collect_math_text`] to gather text leaves.
-#[cfg(feature = "extra-children")]
+#[cfg(all(feature = "extra-children", feature = "wml-math"))]
 fn parse_math_zone_from_element(elem: &ooxml_xml::RawXmlElement) -> ooxml_omml::MathZone {
     let stream_reader = ooxml_xml::RawXmlStreamReader::new(elem);
     let mut reader = Reader::from_reader(stream_reader);
@@ -971,28 +972,31 @@ fn collect_math_from_raw(elem: &ooxml_xml::RawXmlElement, out: &mut Vec<MathExpr
     let local = math_local_name(&elem.name);
     match local {
         "oMathPara" => {
-            // Display math: find the inner oMath child and parse it.
-            let zone = elem
-                .children
-                .iter()
-                .filter_map(|c| match c {
-                    ooxml_xml::RawXmlNode::Element(e) if math_local_name(&e.name) == "oMath" => {
-                        Some(parse_math_zone_from_element(e))
-                    }
-                    _ => None,
-                })
-                .next()
-                .unwrap_or_default();
             out.push(MathExpression {
                 is_display: true,
-                zone,
+                #[cfg(feature = "wml-math")]
+                zone: {
+                    // Display math: find the inner oMath child and parse it.
+                    elem.children
+                        .iter()
+                        .filter_map(|c| match c {
+                            ooxml_xml::RawXmlNode::Element(e)
+                                if math_local_name(&e.name) == "oMath" =>
+                            {
+                                Some(parse_math_zone_from_element(e))
+                            }
+                            _ => None,
+                        })
+                        .next()
+                        .unwrap_or_default()
+                },
             });
         }
         "oMath" => {
-            let zone = parse_math_zone_from_element(elem);
             out.push(MathExpression {
                 is_display: false,
-                zone,
+                #[cfg(feature = "wml-math")]
+                zone: parse_math_zone_from_element(elem),
             });
         }
         _ => {
@@ -4480,6 +4484,7 @@ mod tests {
         let exprs = para.math_expressions();
         assert_eq!(exprs.len(), 1);
         assert!(!exprs[0].is_display);
+        #[cfg(feature = "wml-math")]
         assert_eq!(exprs[0].text(), "x+y");
     }
 
@@ -4491,6 +4496,7 @@ mod tests {
         let exprs = para.math_expressions();
         assert_eq!(exprs.len(), 1);
         assert!(exprs[0].is_display);
+        #[cfg(feature = "wml-math")]
         assert_eq!(exprs[0].text(), "E=mc²");
     }
 

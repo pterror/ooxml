@@ -20,6 +20,7 @@ full = [
     "wml-track-changes",
     "wml-settings",
     "wml-charts",
+    "wml-math",
     "extra-attrs",
     "extra-children",
 ]
@@ -33,6 +34,7 @@ wml-comments = []
 wml-fields = []
 wml-track-changes = []
 wml-settings = []
+wml-math = ["dep:ooxml-omml"]
 wml-charts = ["dep:ooxml-dml", "ooxml-dml/dml-charts"]
 extra-attrs = []
 extra-children = []
@@ -40,7 +42,7 @@ extra-children = []
 [dependencies]
 ooxml-opc.workspace = true
 ooxml-xml.workspace = true
-ooxml-omml.workspace = true
+ooxml-omml = { workspace = true, optional = true }
 ooxml-dml = { workspace = true, optional = true }
 quick-xml.workspace = true
 thiserror.workspace = true
