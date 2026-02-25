@@ -749,6 +749,7 @@ dependencies = [
 name = "ooxml-fixtures"
 version = "0.1.0"
 dependencies = [
+ "ooxml-dml",
  "ooxml-pml",
  "ooxml-sml",
  "ooxml-wml",

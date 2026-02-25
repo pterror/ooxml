@@ -13,7 +13,7 @@
     },
     {
       "col": 0,
-      "expected": "false",
+      "expected": "FALSE",
       "row": 0,
       "sheet": 0,
       "tolerance": 0.0,

@@ -273,6 +273,12 @@ fn gen_sml_cell_value(fn_name: &str, entry: &FixtureEntry) -> String {
         "boolean" => format!("ooxml_sml::WriteCellValue::Boolean({value})",),
         _ => format!("ooxml_sml::WriteCellValue::String({value:?}.to_string())",),
     };
+    // The reader returns "TRUE"/"FALSE" for booleans; match that for assertions.
+    let expected_display = if cell_type == "boolean" {
+        value.to_uppercase()
+    } else {
+        value.to_string()
+    };
 
     format!(
         r#"/// Fixture: {id}
@@ -281,7 +287,7 @@ pub fn {fn_name}() -> crate::Fixture {{
     use ooxml_sml::WorkbookBuilder;
     let mut wb = WorkbookBuilder::new();
     let sheet = wb.add_sheet("Sheet1");
-    sheet.set_cell_at(0, 0, {cell_value_expr});
+    sheet.set_cell_at(1, 1, {cell_value_expr});
     let mut buf = std::io::Cursor::new(Vec::new());
     wb.write(&mut buf).expect("failed to build fixture {id}");
     let bytes = buf.into_inner();
@@ -292,7 +298,7 @@ pub fn {fn_name}() -> crate::Fixture {{
         assertions: vec![
             crate::Assertion::SheetCount {{ expected: 1 }},
             crate::Assertion::CellType {{ sheet: 0, row: 0, col: 0, expected: {cell_type:?}.into() }},
-            crate::Assertion::CellValue {{ sheet: 0, row: 0, col: 0, expected: {value:?}.into(), tolerance: {tolerance}f64 }},
+            crate::Assertion::CellValue {{ sheet: 0, row: 0, col: 0, expected: {expected_display:?}.into(), tolerance: {tolerance}f64 }},
         ],
     }}
 }}
