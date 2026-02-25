@@ -573,3 +573,55 @@ fixtures:
     description: "Paragraph containing a Drawing text box"
     template: custom
     custom_fn: fixture_wml_textbox_basic
+
+  # ---------------------------------------------------------------------------
+  # wml/edge-case/ — structural edge cases
+  # ---------------------------------------------------------------------------
+  - id: fixture_wml_edge_empty_document
+    format: wml
+    path: wml/edge-case/empty-document.docx
+    description: "Document with no paragraphs or content"
+    template: custom
+    custom_fn: fixture_wml_edge_empty_document
+
+  - id: fixture_wml_edge_empty_paragraph
+    format: wml
+    path: wml/edge-case/empty-paragraph.docx
+    description: "Document with a single empty paragraph (no runs)"
+    template: custom
+    custom_fn: fixture_wml_edge_empty_paragraph
+
+  - id: fixture_wml_edge_many_paragraphs
+    format: wml
+    path: wml/edge-case/many-paragraphs.docx
+    description: "Document with 100 paragraphs"
+    template: custom
+    custom_fn: fixture_wml_edge_many_paragraphs
+
+  - id: fixture_wml_edge_mixed_formatting_paragraph
+    format: wml
+    path: wml/edge-case/mixed-formatting.docx
+    description: "Single paragraph with normal, bold, italic, and bold+italic runs"
+    template: custom
+    custom_fn: fixture_wml_edge_mixed_formatting_paragraph
+
+  - id: fixture_wml_edge_page_break
+    format: wml
+    path: wml/edge-case/page-break.docx
+    description: "Document with a page break between two paragraphs"
+    template: custom
+    custom_fn: fixture_wml_edge_page_break
+
+  - id: fixture_wml_edge_table_then_paragraph
+    format: wml
+    path: wml/edge-case/table-then-paragraph.docx
+    description: "Document with a table followed by a paragraph"
+    template: custom
+    custom_fn: fixture_wml_edge_table_then_paragraph
+
+  - id: fixture_wml_edge_multiple_tables
+    format: wml
+    path: wml/edge-case/multiple-tables.docx
+    description: "Document with three consecutive tables"
+    template: custom
+    custom_fn: fixture_wml_edge_multiple_tables

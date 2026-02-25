@@ -1151,6 +1151,131 @@ pub fn fixture_pml_chart_embedded() -> crate::Fixture {
 // pml/background/
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// pml/edge-case/ — structural edge cases
+// ---------------------------------------------------------------------------
+
+pub fn fixture_pml_edge_empty_slide() -> crate::Fixture {
+    let mut pres = PresentationBuilder::new();
+    pres.add_slide(); // no shapes added
+    crate::Fixture {
+        path: "pml/edge-case/empty-slide.pptx",
+        description: "Presentation with one slide that has no shapes",
+        bytes: write_pres(pres),
+        assertions: vec![
+            crate::Assertion::SlideCount { expected: 1 },
+            crate::Assertion::ShapeCount {
+                slide: 0,
+                expected: 0,
+            },
+        ],
+    }
+}
+
+pub fn fixture_pml_edge_many_shapes() -> crate::Fixture {
+    let mut pres = PresentationBuilder::new();
+    let slide = pres.add_slide();
+    for i in 0..20 {
+        slide.add_text_at(
+            format!("Shape {i}"),
+            100000 + i * 50000,
+            100000 + i * 30000,
+            2000000,
+            500000,
+        );
+    }
+    crate::Fixture {
+        path: "pml/edge-case/many-shapes.pptx",
+        description: "Single slide with 20 text shapes",
+        bytes: write_pres(pres),
+        assertions: vec![
+            crate::Assertion::SlideCount { expected: 1 },
+            crate::Assertion::ShapeCount {
+                slide: 0,
+                expected: 20,
+            },
+            crate::Assertion::ShapeText {
+                slide: 0,
+                shape: 0,
+                expected: "Shape 0".into(),
+            },
+            crate::Assertion::ShapeText {
+                slide: 0,
+                shape: 19,
+                expected: "Shape 19".into(),
+            },
+        ],
+    }
+}
+
+pub fn fixture_pml_edge_many_slides() -> crate::Fixture {
+    let mut pres = PresentationBuilder::new();
+    for i in 0..25 {
+        pres.add_slide().add_text(format!("Slide {i}"));
+    }
+    crate::Fixture {
+        path: "pml/edge-case/many-slides.pptx",
+        description: "Presentation with 25 slides",
+        bytes: write_pres(pres),
+        assertions: vec![
+            crate::Assertion::SlideCount { expected: 25 },
+            crate::Assertion::ShapeText {
+                slide: 0,
+                shape: 0,
+                expected: "Slide 0".into(),
+            },
+            crate::Assertion::ShapeText {
+                slide: 24,
+                shape: 0,
+                expected: "Slide 24".into(),
+            },
+        ],
+    }
+}
+
+pub fn fixture_pml_edge_slide_mixed_content() -> crate::Fixture {
+    let mut pres = PresentationBuilder::new();
+    let slide = pres.add_slide();
+    slide.add_text_at("Title", 457200, 274638, 8229600, 1143000);
+    slide.add_text_with_runs(
+        vec![
+            TextRun::text("Normal "),
+            TextRun::text("Bold ").set_bold(true),
+            TextRun::text("Italic").set_italic(true),
+        ],
+        457200,
+        1500000,
+        8229600,
+        3000000,
+    );
+    crate::Fixture {
+        path: "pml/edge-case/mixed-content.pptx",
+        description: "Slide with title shape and mixed-formatting text shape",
+        bytes: write_pres(pres),
+        assertions: vec![
+            crate::Assertion::SlideCount { expected: 1 },
+            crate::Assertion::ShapeCount {
+                slide: 0,
+                expected: 2,
+            },
+            crate::Assertion::ShapeText {
+                slide: 0,
+                shape: 0,
+                expected: "Title".into(),
+            },
+            crate::Assertion::ShapeText {
+                slide: 0,
+                shape: 1,
+                expected: "Normal Bold Italic".into(),
+            },
+        ],
+    }
+}
+
+// ---------------------------------------------------------------------------
+// pml/background/
+// ---------------------------------------------------------------------------
+
 pub fn fixture_pml_background_color() -> crate::Fixture {
     let mut pres = PresentationBuilder::new();
     let slide = pres.add_slide();

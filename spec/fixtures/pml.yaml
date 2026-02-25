@@ -379,3 +379,34 @@ fixtures:
     description: "Slide with solid background color 1F497D"
     template: custom
     custom_fn: fixture_pml_background_color
+
+  # ---------------------------------------------------------------------------
+  # pml/edge-case/ — structural edge cases
+  # ---------------------------------------------------------------------------
+  - id: fixture_pml_edge_empty_slide
+    format: pml
+    path: pml/edge-case/empty-slide.pptx
+    description: "Presentation with one slide that has no shapes"
+    template: custom
+    custom_fn: fixture_pml_edge_empty_slide
+
+  - id: fixture_pml_edge_many_shapes
+    format: pml
+    path: pml/edge-case/many-shapes.pptx
+    description: "Single slide with 20 text shapes"
+    template: custom
+    custom_fn: fixture_pml_edge_many_shapes
+
+  - id: fixture_pml_edge_many_slides
+    format: pml
+    path: pml/edge-case/many-slides.pptx
+    description: "Presentation with 25 slides"
+    template: custom
+    custom_fn: fixture_pml_edge_many_slides
+
+  - id: fixture_pml_edge_slide_mixed_content
+    format: pml
+    path: pml/edge-case/mixed-content.pptx
+    description: "Slide with title shape and mixed-formatting text shape"
+    template: custom
+    custom_fn: fixture_pml_edge_slide_mixed_content

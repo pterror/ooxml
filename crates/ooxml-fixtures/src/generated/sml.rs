@@ -358,6 +358,11 @@ pub use crate::custom::sml::fixture_sml_cell_string_xml_special;
 pub use crate::custom::sml::fixture_sml_chart_bar;
 pub use crate::custom::sml::fixture_sml_comment_plain;
 pub use crate::custom::sml::fixture_sml_comment_rich;
+pub use crate::custom::sml::fixture_sml_edge_empty_sheet;
+pub use crate::custom::sml::fixture_sml_edge_many_sheets;
+pub use crate::custom::sml::fixture_sml_edge_merge_and_data;
+pub use crate::custom::sml::fixture_sml_edge_mixed_types_column;
+pub use crate::custom::sml::fixture_sml_edge_sparse_cells;
 pub use crate::custom::sml::fixture_sml_filtering_auto_filter;
 pub use crate::custom::sml::fixture_sml_filtering_sort_state;
 pub use crate::custom::sml::fixture_sml_format_border_all;
@@ -462,5 +467,10 @@ pub fn all_fixtures() -> Vec<crate::Fixture> {
         fixture_sml_protection_workbook(),
         fixture_sml_pivot_basic(),
         fixture_sml_chart_bar(),
+        fixture_sml_edge_empty_sheet(),
+        fixture_sml_edge_sparse_cells(),
+        fixture_sml_edge_many_sheets(),
+        fixture_sml_edge_mixed_types_column(),
+        fixture_sml_edge_merge_and_data(),
     ]
 }

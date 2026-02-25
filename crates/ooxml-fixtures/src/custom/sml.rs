@@ -1119,6 +1119,144 @@ const BAR_CHART_XML: &[u8] = br#"<?xml version="1.0" encoding="UTF-8" standalone
   </c:barChart></c:plotArea></c:chart>
 </c:chartSpace>"#;
 
+// ---------------------------------------------------------------------------
+// sml/edge-case — structural edge cases
+// ---------------------------------------------------------------------------
+
+pub fn fixture_sml_edge_empty_sheet() -> crate::Fixture {
+    let mut wb = WorkbookBuilder::new();
+    wb.add_sheet("Empty");
+    crate::Fixture {
+        path: "sml/edge-case/empty-sheet.xlsx",
+        description: "Workbook with a single empty sheet (no cells)",
+        bytes: write_wb(wb),
+        assertions: vec![
+            crate::Assertion::SheetCount { expected: 1 },
+            crate::Assertion::SheetName {
+                sheet: 0,
+                expected: "Empty".into(),
+            },
+        ],
+    }
+}
+
+pub fn fixture_sml_edge_sparse_cells() -> crate::Fixture {
+    let mut wb = WorkbookBuilder::new();
+    let sheet = wb.add_sheet("Sparse");
+    sheet.set_cell_at(1, 1, WriteCellValue::String("A1".into()));
+    sheet.set_cell_at(1000, 100, WriteCellValue::String("CV1000".into()));
+    crate::Fixture {
+        path: "sml/edge-case/sparse-cells.xlsx",
+        description: "Sheet with cells at A1 and CV1000 (large gap)",
+        bytes: write_wb(wb),
+        assertions: vec![crate::Assertion::CellValue {
+            sheet: 0,
+            row: 0,
+            col: 0,
+            expected: "A1".into(),
+            tolerance: 0.0,
+        }],
+    }
+}
+
+pub fn fixture_sml_edge_many_sheets() -> crate::Fixture {
+    let mut wb = WorkbookBuilder::new();
+    for i in 0..20 {
+        let sheet = wb.add_sheet(format!("Sheet{i}"));
+        sheet.set_cell_at(1, 1, WriteCellValue::String(format!("data {i}")));
+    }
+    crate::Fixture {
+        path: "sml/edge-case/many-sheets.xlsx",
+        description: "Workbook with 20 sheets",
+        bytes: write_wb(wb),
+        assertions: vec![
+            crate::Assertion::SheetCount { expected: 20 },
+            crate::Assertion::SheetName {
+                sheet: 0,
+                expected: "Sheet0".into(),
+            },
+            crate::Assertion::SheetName {
+                sheet: 19,
+                expected: "Sheet19".into(),
+            },
+        ],
+    }
+}
+
+pub fn fixture_sml_edge_mixed_types_column() -> crate::Fixture {
+    let mut wb = WorkbookBuilder::new();
+    let sheet = wb.add_sheet("Mixed");
+    sheet.set_cell_at(1, 1, WriteCellValue::String("text".into()));
+    sheet.set_cell_at(2, 1, WriteCellValue::Number(42.0));
+    sheet.set_cell_at(3, 1, WriteCellValue::Boolean(true));
+    sheet.set_cell_at(4, 1, WriteCellValue::String("".into()));
+    crate::Fixture {
+        path: "sml/edge-case/mixed-types-column.xlsx",
+        description: "Single column with string, number, boolean, and empty string",
+        bytes: write_wb(wb),
+        assertions: vec![
+            crate::Assertion::CellType {
+                sheet: 0,
+                row: 0,
+                col: 0,
+                expected: "string".into(),
+            },
+            crate::Assertion::CellType {
+                sheet: 0,
+                row: 1,
+                col: 0,
+                expected: "number".into(),
+            },
+            crate::Assertion::CellType {
+                sheet: 0,
+                row: 2,
+                col: 0,
+                expected: "boolean".into(),
+            },
+        ],
+    }
+}
+
+pub fn fixture_sml_edge_merge_and_data() -> crate::Fixture {
+    let mut wb = WorkbookBuilder::new();
+    let sheet = wb.add_sheet("Sheet1");
+    sheet.set_cell_at(1, 1, WriteCellValue::String("merged".into()));
+    sheet.merge_cells("A1:B2");
+    sheet.set_cell_at(1, 3, WriteCellValue::Number(100.0));
+    sheet.set_cell_at(3, 1, WriteCellValue::String("below merge".into()));
+    crate::Fixture {
+        path: "sml/edge-case/merge-and-data.xlsx",
+        description: "Sheet with merged region A1:B2 and data adjacent and below",
+        bytes: write_wb(wb),
+        assertions: vec![
+            crate::Assertion::MergedRegion {
+                sheet: 0,
+                row: 0,
+                col: 0,
+                expected: true,
+            },
+            crate::Assertion::CellValue {
+                sheet: 0,
+                row: 0,
+                col: 2,
+                expected: "100".into(),
+                tolerance: 0.0,
+            },
+            crate::Assertion::CellValue {
+                sheet: 0,
+                row: 2,
+                col: 0,
+                expected: "below merge".into(),
+                tolerance: 0.0,
+            },
+        ],
+    }
+}
+
+// ---------------------------------------------------------------------------
+// sml/chart — charts
+// ---------------------------------------------------------------------------
+
 pub fn fixture_sml_chart_bar() -> crate::Fixture {
     let mut wb = WorkbookBuilder::new();
     let sheet = wb.add_sheet("Sheet1");

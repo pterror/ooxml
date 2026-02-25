@@ -500,3 +500,41 @@ fixtures:
     description: "Minimal embedded bar chart"
     template: custom
     custom_fn: fixture_sml_chart_bar
+
+  # ---------------------------------------------------------------------------
+  # sml/edge-case — structural edge cases
+  # ---------------------------------------------------------------------------
+  - id: fixture_sml_edge_empty_sheet
+    format: sml
+    path: sml/edge-case/empty-sheet.xlsx
+    description: "Workbook with a single empty sheet (no cells)"
+    template: custom
+    custom_fn: fixture_sml_edge_empty_sheet
+
+  - id: fixture_sml_edge_sparse_cells
+    format: sml
+    path: sml/edge-case/sparse-cells.xlsx
+    description: "Sheet with cells at A1 and CV1000 (large gap)"
+    template: custom
+    custom_fn: fixture_sml_edge_sparse_cells
+
+  - id: fixture_sml_edge_many_sheets
+    format: sml
+    path: sml/edge-case/many-sheets.xlsx
+    description: "Workbook with 20 sheets"
+    template: custom
+    custom_fn: fixture_sml_edge_many_sheets
+
+  - id: fixture_sml_edge_mixed_types_column
+    format: sml
+    path: sml/edge-case/mixed-types-column.xlsx
+    description: "Single column with string, number, boolean, and empty string"
+    template: custom
+    custom_fn: fixture_sml_edge_mixed_types_column
+
+  - id: fixture_sml_edge_merge_and_data
+    format: sml
+    path: sml/edge-case/merge-and-data.xlsx
+    description: "Sheet with merged region A1:B2 and data adjacent and below"
+    template: custom
+    custom_fn: fixture_sml_edge_merge_and_data

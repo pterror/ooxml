@@ -106,6 +106,13 @@ pub fn fixture_fixture_wml_text_strikethrough() -> crate::Fixture {
 
 pub use crate::custom::wml::fixture_wml_bookmark_basic;
 pub use crate::custom::wml::fixture_wml_comment_basic;
+pub use crate::custom::wml::fixture_wml_edge_empty_document;
+pub use crate::custom::wml::fixture_wml_edge_empty_paragraph;
+pub use crate::custom::wml::fixture_wml_edge_many_paragraphs;
+pub use crate::custom::wml::fixture_wml_edge_mixed_formatting_paragraph;
+pub use crate::custom::wml::fixture_wml_edge_multiple_tables;
+pub use crate::custom::wml::fixture_wml_edge_page_break;
+pub use crate::custom::wml::fixture_wml_edge_table_then_paragraph;
 pub use crate::custom::wml::fixture_wml_endnote_basic;
 pub use crate::custom::wml::fixture_wml_field_toc_basic;
 pub use crate::custom::wml::fixture_wml_footer_default;
@@ -250,5 +257,12 @@ pub fn all_fixtures() -> Vec<crate::Fixture> {
         fixture_wml_settings_tab_stop(),
         fixture_wml_settings_even_odd_headers(),
         fixture_wml_textbox_basic(),
+        fixture_wml_edge_empty_document(),
+        fixture_wml_edge_empty_paragraph(),
+        fixture_wml_edge_many_paragraphs(),
+        fixture_wml_edge_mixed_formatting_paragraph(),
+        fixture_wml_edge_page_break(),
+        fixture_wml_edge_table_then_paragraph(),
+        fixture_wml_edge_multiple_tables(),
     ]
 }

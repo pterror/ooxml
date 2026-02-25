@@ -1547,6 +1547,223 @@ pub fn fixture_wml_settings_even_odd_headers() -> crate::Fixture {
 // wml/text-box/
 // =============================================================================
 
+// =============================================================================
+// wml/edge-case/ — structural edge cases
+// =============================================================================
+
+pub fn fixture_wml_edge_empty_document() -> crate::Fixture {
+    let builder = DocumentBuilder::new();
+    crate::Fixture {
+        path: "wml/edge-case/empty-document.docx",
+        description: "Document with no paragraphs or content",
+        bytes: write_builder(builder),
+        assertions: vec![crate::Assertion::ParagraphCount { expected: 0 }],
+    }
+}
+
+pub fn fixture_wml_edge_empty_paragraph() -> crate::Fixture {
+    let mut builder = DocumentBuilder::new();
+    builder.body_mut().add_paragraph();
+    crate::Fixture {
+        path: "wml/edge-case/empty-paragraph.docx",
+        description: "Document with a single empty paragraph (no runs)",
+        bytes: write_builder(builder),
+        assertions: vec![
+            crate::Assertion::ParagraphCount { expected: 1 },
+            crate::Assertion::ParagraphText {
+                para: 0,
+                expected: "".into(),
+            },
+        ],
+    }
+}
+
+pub fn fixture_wml_edge_many_paragraphs() -> crate::Fixture {
+    let mut builder = DocumentBuilder::new();
+    for i in 0..100 {
+        let para = builder.body_mut().add_paragraph();
+        para.add_run().set_text(format!("Paragraph {i}"));
+    }
+    crate::Fixture {
+        path: "wml/edge-case/many-paragraphs.docx",
+        description: "Document with 100 paragraphs",
+        bytes: write_builder(builder),
+        assertions: vec![
+            crate::Assertion::ParagraphCount { expected: 100 },
+            crate::Assertion::ParagraphText {
+                para: 0,
+                expected: "Paragraph 0".into(),
+            },
+            crate::Assertion::ParagraphText {
+                para: 99,
+                expected: "Paragraph 99".into(),
+            },
+        ],
+    }
+}
+
+pub fn fixture_wml_edge_mixed_formatting_paragraph() -> crate::Fixture {
+    let mut builder = DocumentBuilder::new();
+    {
+        let para = builder.body_mut().add_paragraph();
+        para.add_run().set_text("normal ");
+        let bold_run = para.add_run();
+        bold_run.set_text("bold ");
+        bold_run.set_bold(true);
+        let italic_run = para.add_run();
+        italic_run.set_text("italic ");
+        italic_run.set_italic(true);
+        let both_run = para.add_run();
+        both_run.set_text("both");
+        both_run.set_bold(true);
+        both_run.set_italic(true);
+    }
+    crate::Fixture {
+        path: "wml/edge-case/mixed-formatting.docx",
+        description: "Single paragraph with normal, bold, italic, and bold+italic runs",
+        bytes: write_builder(builder),
+        assertions: vec![
+            crate::Assertion::ParagraphCount { expected: 1 },
+            crate::Assertion::RunText {
+                para: 0,
+                run: 0,
+                expected: "normal ".into(),
+            },
+            crate::Assertion::RunBold {
+                para: 0,
+                run: 0,
+                expected: false,
+            },
+            crate::Assertion::RunText {
+                para: 0,
+                run: 1,
+                expected: "bold ".into(),
+            },
+            crate::Assertion::RunBold {
+                para: 0,
+                run: 1,
+                expected: true,
+            },
+            crate::Assertion::RunText {
+                para: 0,
+                run: 2,
+                expected: "italic ".into(),
+            },
+            crate::Assertion::RunItalic {
+                para: 0,
+                run: 2,
+                expected: true,
+            },
+            crate::Assertion::RunText {
+                para: 0,
+                run: 3,
+                expected: "both".into(),
+            },
+            crate::Assertion::RunBold {
+                para: 0,
+                run: 3,
+                expected: true,
+            },
+            crate::Assertion::RunItalic {
+                para: 0,
+                run: 3,
+                expected: true,
+            },
+        ],
+    }
+}
+
+pub fn fixture_wml_edge_page_break() -> crate::Fixture {
+    let mut builder = DocumentBuilder::new();
+    {
+        let para = builder.body_mut().add_paragraph();
+        para.add_run().set_text("Before break");
+    }
+    {
+        let para = builder.body_mut().add_paragraph();
+        para.add_page_break();
+    }
+    {
+        let para = builder.body_mut().add_paragraph();
+        para.add_run().set_text("After break");
+    }
+    crate::Fixture {
+        path: "wml/edge-case/page-break.docx",
+        description: "Document with a page break between two paragraphs",
+        bytes: write_builder(builder),
+        assertions: vec![crate::Assertion::ParagraphText {
+            para: 0,
+            expected: "Before break".into(),
+        }],
+    }
+}
+
+pub fn fixture_wml_edge_table_then_paragraph() -> crate::Fixture {
+    let mut builder = DocumentBuilder::new();
+    {
+        let table = builder.body_mut().add_table();
+        let row = table.add_row();
+        let cell = row.add_cell();
+        cell.add_paragraph().add_run().set_text("cell");
+    }
+    {
+        let para = builder.body_mut().add_paragraph();
+        para.add_run().set_text("after table");
+    }
+    crate::Fixture {
+        path: "wml/edge-case/table-then-paragraph.docx",
+        description: "Document with a table followed by a paragraph",
+        bytes: write_builder(builder),
+        assertions: vec![crate::Assertion::TableCellText {
+            table: 0,
+            row: 0,
+            col: 0,
+            expected: "cell".into(),
+        }],
+    }
+}
+
+pub fn fixture_wml_edge_multiple_tables() -> crate::Fixture {
+    let mut builder = DocumentBuilder::new();
+    for i in 0..3 {
+        let table = builder.body_mut().add_table();
+        let row = table.add_row();
+        let cell = row.add_cell();
+        cell.add_paragraph()
+            .add_run()
+            .set_text(format!("table {i}"));
+    }
+    crate::Fixture {
+        path: "wml/edge-case/multiple-tables.docx",
+        description: "Document with three consecutive tables",
+        bytes: write_builder(builder),
+        assertions: vec![
+            crate::Assertion::TableCellText {
+                table: 0,
+                row: 0,
+                col: 0,
+                expected: "table 0".into(),
+            },
+            crate::Assertion::TableCellText {
+                table: 1,
+                row: 0,
+                col: 0,
+                expected: "table 1".into(),
+            },
+            crate::Assertion::TableCellText {
+                table: 2,
+                row: 0,
+                col: 0,
+                expected: "table 2".into(),
+            },
+        ],
+    }
+}
+
+// =============================================================================
+// wml/text-box/
+// =============================================================================
+
 pub fn fixture_wml_textbox_basic() -> crate::Fixture {
     let mut builder = DocumentBuilder::new();
     {

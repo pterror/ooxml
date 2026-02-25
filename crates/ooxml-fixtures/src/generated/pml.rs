@@ -46,6 +46,10 @@ pub use crate::custom::pml::fixture_pml_animation_fade_in;
 pub use crate::custom::pml::fixture_pml_animation_fly_in_left;
 pub use crate::custom::pml::fixture_pml_background_color;
 pub use crate::custom::pml::fixture_pml_chart_embedded;
+pub use crate::custom::pml::fixture_pml_edge_empty_slide;
+pub use crate::custom::pml::fixture_pml_edge_many_shapes;
+pub use crate::custom::pml::fixture_pml_edge_many_slides;
+pub use crate::custom::pml::fixture_pml_edge_slide_mixed_content;
 pub use crate::custom::pml::fixture_pml_hyperlink_external;
 pub use crate::custom::pml::fixture_pml_hyperlink_internal;
 pub use crate::custom::pml::fixture_pml_image_inline;
@@ -137,5 +141,9 @@ pub fn all_fixtures() -> Vec<crate::Fixture> {
         fixture_pml_master_layout_title_content(),
         fixture_pml_chart_embedded(),
         fixture_pml_background_color(),
+        fixture_pml_edge_empty_slide(),
+        fixture_pml_edge_many_shapes(),
+        fixture_pml_edge_many_slides(),
+        fixture_pml_edge_slide_mixed_content(),
     ]
 }
