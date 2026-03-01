@@ -61,6 +61,23 @@ After editing multiple files, run the full check once — not after each edit. F
 
 **Always commit when work is complete.** After finishing a task and verifying it passes `cargo clippy` and `cargo test`, create a commit before moving on. Don't leave working changes uncommitted.
 
+## Session Handoff
+
+Use plan mode as a handoff mechanism when:
+- A task is fully complete (committed, pushed, docs updated)
+- The session has drifted from its original purpose
+- Context has accumulated enough that a fresh start would help
+
+Before entering plan mode:
+- Update TODO.md with any remaining work
+- Update memory files with anything worth preserving across sessions
+
+Then enter plan mode and write a plan file that either:
+- Proposes the next task if it's clear: "next up: X — see TODO.md"
+- Flags that direction is needed: "task complete / session drifted — see TODO.md"
+
+ExitPlanMode hands control back to the user to approve, redirect, or stop.
+
 ## Commit Convention
 
 Use conventional commits: `type(scope): message`
