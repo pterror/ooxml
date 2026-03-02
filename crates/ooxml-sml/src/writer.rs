@@ -274,12 +274,18 @@ impl FontStyle {
 }
 
 /// Underline style for fonts.
+///
+/// Corresponds to `ST_UnderlineValues` in ECMA-376 Part 1, §18.18.90.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum UnderlineStyle {
+    /// Single underline (default).
     #[default]
     Single,
+    /// Double underline.
     Double,
+    /// Single accounting underline (extends across the cell width).
     SingleAccounting,
+    /// Double accounting underline.
     DoubleAccounting,
 }
 
@@ -340,27 +346,48 @@ impl FillStyle {
 }
 
 /// Fill pattern types.
+///
+/// Corresponds to `ST_PatternType` in ECMA-376 Part 1, §18.18.55.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum FillPattern {
+    /// No fill (transparent).
     #[default]
     None,
+    /// Solid fill using the foreground color.
     Solid,
+    /// Medium gray pattern.
     MediumGray,
+    /// Dark gray pattern.
     DarkGray,
+    /// Light gray pattern.
     LightGray,
+    /// Dark horizontal stripes.
     DarkHorizontal,
+    /// Dark vertical stripes.
     DarkVertical,
+    /// Dark diagonal stripes (down-right).
     DarkDown,
+    /// Dark diagonal stripes (up-right).
     DarkUp,
+    /// Dark grid pattern.
     DarkGrid,
+    /// Dark trellis pattern.
     DarkTrellis,
+    /// Light horizontal stripes.
     LightHorizontal,
+    /// Light vertical stripes.
     LightVertical,
+    /// Light diagonal stripes (down-right).
     LightDown,
+    /// Light diagonal stripes (up-right).
     LightUp,
+    /// Light grid pattern.
     LightGrid,
+    /// Light trellis pattern.
     LightTrellis,
+    /// 12.5% gray dots.
     Gray125,
+    /// 6.25% gray dots.
     Gray0625,
 }
 
@@ -464,22 +491,38 @@ pub struct BorderSideStyle {
 }
 
 /// Border line styles.
+///
+/// Corresponds to `ST_BorderStyle` in ECMA-376 Part 1, §18.18.3.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum BorderLineStyle {
+    /// No border.
     #[default]
     None,
+    /// Thin single line.
     Thin,
+    /// Medium single line.
     Medium,
+    /// Dashed line.
     Dashed,
+    /// Dotted line.
     Dotted,
+    /// Thick single line.
     Thick,
+    /// Double line.
     Double,
+    /// Hairline (thinnest possible).
     Hair,
+    /// Medium dashed line.
     MediumDashed,
+    /// Alternating dash-dot line.
     DashDot,
+    /// Medium alternating dash-dot line.
     MediumDashDot,
+    /// Alternating dash-dot-dot line.
     DashDotDot,
+    /// Medium alternating dash-dot-dot line.
     MediumDashDotDot,
+    /// Slanted dash-dot line.
     SlantDashDot,
 }
 
@@ -504,17 +547,27 @@ impl BorderLineStyle {
     }
 }
 
-/// Horizontal alignment.
+/// Horizontal text alignment within a cell.
+///
+/// Corresponds to `ST_HorizontalAlignment` in ECMA-376 Part 1, §18.18.40.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum HorizontalAlignment {
+    /// Excel's default: numeric values align right, text aligns left.
     #[default]
     General,
+    /// Align left.
     Left,
+    /// Center horizontally.
     Center,
+    /// Align right.
     Right,
+    /// Repeat the cell content to fill the column width.
     Fill,
+    /// Justify text across the full cell width.
     Justify,
+    /// Center across multiple selected columns.
     CenterContinuous,
+    /// Distributed alignment (similar to justify but for East-Asian text).
     Distributed,
 }
 
@@ -533,14 +586,21 @@ impl HorizontalAlignment {
     }
 }
 
-/// Vertical alignment.
+/// Vertical text alignment within a cell.
+///
+/// Corresponds to `ST_VerticalAlignment` in ECMA-376 Part 1, §18.18.88.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum VerticalAlignment {
+    /// Align text to the top of the cell.
     Top,
+    /// Center text vertically.
     Center,
+    /// Align text to the bottom of the cell (Excel default).
     #[default]
     Bottom,
+    /// Justify text vertically (distributes lines evenly).
     Justify,
+    /// Distributed alignment for East-Asian text.
     Distributed,
 }
 
@@ -1322,7 +1382,13 @@ pub enum IgnoredErrorType {
     CalculatedColumn,
 }
 
-/// A sheet being built.
+/// Builder for a single worksheet within a [`WorkbookBuilder`].
+///
+/// Obtained via [`WorkbookBuilder::add_sheet`] or [`WorkbookBuilder::sheet_mut`].
+/// Set cell values with [`set_cell`](Self::set_cell), apply formatting with
+/// [`set_cell_styled`](Self::set_cell_styled), and configure layout features
+/// (freeze panes, column widths, auto-filter, etc.) before calling
+/// [`WorkbookBuilder::write`] or [`WorkbookBuilder::save`].
 #[derive(Debug)]
 pub struct SheetBuilder {
     name: String,
@@ -2355,7 +2421,7 @@ impl SheetBuilder {
         self
     }
 
-    /// Get the sheet name.
+    /// Get the sheet name as supplied to [`WorkbookBuilder::add_sheet`].
     pub fn name(&self) -> &str {
         &self.name
     }
@@ -2384,6 +2450,27 @@ struct NamedCellStyle {
     format_id: u32,
 }
 
+/// Builder for creating Excel workbooks (XLSX files).
+///
+/// Accumulates sheets, styles, shared strings, and defined names during
+/// construction.  Call [`save`](Self::save) or [`write`](Self::write) to
+/// serialize everything into an XLSX package.
+///
+/// Style indices (fonts, fills, borders, number formats) are resolved across
+/// all sheets at write time, so any number of distinct `CellStyle` values may
+/// be mixed freely before calling `write`.
+///
+/// # Example
+///
+/// ```no_run
+/// use ooxml_sml::WorkbookBuilder;
+///
+/// let mut wb = WorkbookBuilder::new();
+/// let sheet = wb.add_sheet("Sheet1");
+/// sheet.set_cell("A1", "Hello");
+/// sheet.set_cell("B1", 42.0_f64);
+/// wb.save("output.xlsx").unwrap();
+/// ```
 #[derive(Debug)]
 pub struct WorkbookBuilder {
     sheets: Vec<SheetBuilder>,

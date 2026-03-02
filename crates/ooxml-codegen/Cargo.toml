@@ -4,6 +4,9 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 description = "Code generator for OOXML types from RELAX NG schemas"
+readme.workspace = true
+keywords = ["ooxml", "codegen", "rnc", "schema", "office"]
+categories = ["development-tools", "parser-implementations"]
 
 [dependencies]
 thiserror.workspace = true

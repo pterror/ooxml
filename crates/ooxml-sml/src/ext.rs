@@ -201,7 +201,8 @@ impl CellExt for Cell {
     }
 }
 
-/// Extension methods for `Cell` that require resolution context.
+/// Extension methods for `Cell` that require a [`ResolveContext`] to dereference
+/// shared strings and interpret cell types.
 pub trait CellResolveExt {
     /// Resolve the cell value to a typed `CellValue`.
     fn resolved_value(&self, ctx: &ResolveContext) -> CellValue;
@@ -276,7 +277,7 @@ impl CellResolveExt for Cell {
 // Row Extension Traits
 // =============================================================================
 
-/// Pure extension methods for `Row` (no context needed).
+/// Pure extension methods for `Row` that do not require external context.
 pub trait RowExt {
     /// Get the 1-based row number.
     fn row_number(&self) -> Option<u32>;
@@ -491,7 +492,7 @@ impl WorksheetExt for Worksheet {
     }
 }
 
-/// Extension methods for `SheetData`.
+/// Extension methods for `SheetData`, providing row lookup and iteration.
 pub trait SheetDataExt {
     /// Get a row by 1-based row number.
     fn row(&self, row_num: u32) -> Option<&Row>;
@@ -554,7 +555,7 @@ pub struct ResolvedSheet {
     pivot_tables: Vec<crate::types::CTPivotTableDefinition>,
 }
 
-/// A comment on a cell.
+/// A comment (note) attached to a cell, as returned by [`ResolvedSheet::comments`].
 #[derive(Debug, Clone)]
 pub struct Comment {
     /// Cell reference (e.g., "A1")
@@ -565,7 +566,7 @@ pub struct Comment {
     pub text: String,
 }
 
-/// A chart embedded in the worksheet.
+/// A chart embedded in the worksheet, as returned by [`ResolvedSheet::charts`].
 #[derive(Debug, Clone)]
 pub struct Chart {
     /// Chart title (if available)
@@ -574,20 +575,32 @@ pub struct Chart {
     pub chart_type: ChartType,
 }
 
-/// Chart type enumeration.
+/// The type of an embedded chart as exposed by [`ResolvedSheet`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ChartType {
+    /// Bar chart (horizontal bars).
     Bar,
+    /// Column chart (vertical bars).
     Column,
+    /// Line chart.
     Line,
+    /// Pie chart.
     Pie,
+    /// Area chart.
     Area,
+    /// Scatter (XY) chart.
     Scatter,
+    /// Doughnut chart.
     Doughnut,
+    /// Radar (spider) chart.
     Radar,
+    /// Surface chart.
     Surface,
+    /// Bubble chart.
     Bubble,
+    /// Stock (OHLC) chart.
     Stock,
+    /// Unrecognized chart type.
     Unknown,
 }
 

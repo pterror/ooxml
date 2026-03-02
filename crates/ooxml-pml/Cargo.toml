@@ -5,6 +5,9 @@ edition.workspace = true
 license.workspace = true
 repository.workspace = true
 description = "PresentationML (PPTX) support for the ooxml library"
+readme.workspace = true
+keywords = ["pptx", "ooxml", "powerpoint", "presentation", "office"]
+categories = ["encoding", "parser-implementations", "file-formats"]
 
 [features]
 default = ["full"]

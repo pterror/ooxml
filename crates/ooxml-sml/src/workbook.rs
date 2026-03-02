@@ -483,6 +483,8 @@ fn parse_chart_ext(xml: &[u8]) -> Result<ExtChart> {
 
 /// Type of conditional formatting rule.
 ///
+/// Used when writing conditional formatting via [`ConditionalFormat`].
+///
 /// ECMA-376 Part 1, Section 18.18.12 (ST_CfType).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ConditionalRuleType {
@@ -575,7 +577,10 @@ impl ConditionalRuleType {
     }
 }
 
-/// A chart embedded in a worksheet.
+/// A chart embedded in a worksheet (workbook-module representation).
+///
+/// Returned by [`Workbook::resolved_sheet`] as part of [`ResolvedSheet`];
+/// see also [`ext::Chart`](crate::ext::Chart) which is the simpler public type.
 #[derive(Debug, Clone)]
 pub struct Chart {
     title: Option<String>,
@@ -600,7 +605,9 @@ impl Chart {
     }
 }
 
-/// The type of chart.
+/// The type of chart as reported by the workbook reader.
+///
+/// Covers all chart types defined in ECMA-376 Part 1, §21.2.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum ChartType {
     Area,
@@ -622,7 +629,7 @@ pub enum ChartType {
     Unknown,
 }
 
-/// A data series within a chart.
+/// A data series within a chart, as parsed by the workbook reader.
 #[derive(Debug, Clone)]
 pub struct ChartSeries {
     index: u32,
@@ -813,7 +820,7 @@ impl DataValidationErrorStyle {
     }
 }
 
-/// The scope of a defined name.
+/// The scope of a defined name: either workbook-global or limited to one sheet.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DefinedNameScope {
     /// Global workbook scope.

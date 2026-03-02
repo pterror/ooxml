@@ -205,23 +205,39 @@ pub struct MathRunProperties {
     pub normal: bool,
 }
 
-/// Math script types.
+/// Math script types (`m:scr`).
+///
+/// Controls the mathematical alphabet used for a run's characters.
+/// Defined in ECMA-376 §22.1.2.87 (ST_Script).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum MathScript {
+    /// Serif (roman) alphabet — the default mathematical alphabet.
     Roman,
+    /// Script (calligraphic) alphabet, e.g. ℒ, ℱ.
     Script,
+    /// Fraktur (Gothic) alphabet, e.g. ℌ, ℨ.
     Fraktur,
+    /// Double-struck (blackboard bold) alphabet, e.g. ℝ, ℤ.
     DoubleStruck,
+    /// Sans-serif alphabet.
     SansSerif,
+    /// Monospace (typewriter) alphabet.
     Monospace,
 }
 
-/// Math text styles.
+/// Math text styles (`m:sty`).
+///
+/// Controls whether characters in a run are rendered plain, bold, italic, or bold-italic.
+/// Defined in ECMA-376 §22.1.2.90 (ST_Style).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum MathStyle {
+    /// Plain (upright, not bold) — value `"p"`.
     Plain,
+    /// Bold — value `"b"`.
     Bold,
+    /// Italic — value `"i"`.
     Italic,
+    /// Bold italic — value `"bi"`.
     BoldItalic,
 }
 
@@ -366,10 +382,14 @@ pub struct Bar {
     pub position: Option<VerticalPosition>,
 }
 
-/// Vertical position for bars and limits.
+/// Vertical position for bars and group characters (`m:pos`).
+///
+/// Determines whether a bar or grouping character appears above or below the base expression.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum VerticalPosition {
+    /// Position above the base expression — value `"top"`.
     Top,
+    /// Position below the base expression — value `"bot"`.
     Bottom,
 }
 

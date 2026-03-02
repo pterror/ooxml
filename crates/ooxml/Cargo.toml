@@ -5,6 +5,9 @@ edition.workspace = true
 license.workspace = true
 repository.workspace = true
 description = "Core OOXML library: OPC packaging, relationships, and shared types"
+readme.workspace = true
+keywords = ["ooxml", "opc", "docx", "xlsx", "pptx"]
+categories = ["encoding", "parser-implementations", "file-formats"]
 
 [dependencies]
 zip.workspace = true

@@ -5,6 +5,9 @@ edition.workspace = true
 license.workspace = true
 repository.workspace = true
 description = "DrawingML support for the ooxml library (shared by Word, Excel, PowerPoint)"
+readme.workspace = true
+keywords = ["ooxml", "drawingml", "office", "docx", "xlsx"]
+categories = ["encoding", "parser-implementations", "file-formats"]
 
 [features]
 default = ["full"]

@@ -5,6 +5,7 @@ edition.workspace = true
 license.workspace = true
 repository.workspace = true
 description = "CC0 test fixture generation for the ooxml library"
+publish = false
 
 [[bin]]
 name = "generate-fixtures"

@@ -18,17 +18,18 @@ version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/pterror/ooxml"
+readme = "README.md"
 
 [workspace.dependencies]
 # Internal crates
-ooxml-opc = { path = "crates/ooxml" }
-ooxml-xml = { path = "crates/ooxml-xml" }
-ooxml-dml = { path = "crates/ooxml-dml" }
-ooxml-wml = { path = "crates/ooxml-wml" }
-ooxml-sml = { path = "crates/ooxml-sml" }
-ooxml-pml = { path = "crates/ooxml-pml" }
-ooxml-omml = { path = "crates/ooxml-omml" }
-ooxml-codegen = { path = "crates/ooxml-codegen" }
+ooxml-opc = { path = "crates/ooxml", version = "0.1.0" }
+ooxml-xml = { path = "crates/ooxml-xml", version = "0.1.0" }
+ooxml-dml = { path = "crates/ooxml-dml", version = "0.1.0" }
+ooxml-wml = { path = "crates/ooxml-wml", version = "0.1.0" }
+ooxml-sml = { path = "crates/ooxml-sml", version = "0.1.0" }
+ooxml-pml = { path = "crates/ooxml-pml", version = "0.1.0" }
+ooxml-omml = { path = "crates/ooxml-omml", version = "0.1.0" }
+ooxml-codegen = { path = "crates/ooxml-codegen", version = "0.1.0" }
 ooxml-corpus = { path = "crates/ooxml-corpus" }
 
 # External dependencies

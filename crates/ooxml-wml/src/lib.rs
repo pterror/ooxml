@@ -30,18 +30,31 @@ pub mod error;
 pub mod ext;
 pub mod writer;
 
-// Generated types from ECMA-376 schema.
-// Access via `ooxml_wml::types::*` for generated structs/enums.
-// This file is pre-generated and committed to avoid requiring spec downloads.
-// To regenerate: cargo build -p ooxml-wml (with specs in /spec/)
+/// Generated types from the ECMA-376 WordprocessingML schema.
+///
+/// These types map 1:1 to XML elements and attributes defined in ECMA-376 Part 1 §17.
+/// They are produced by `ooxml-codegen` from the RELAX NG schemas and committed to avoid
+/// requiring the schema files at build time. Use the extension traits in [`ext`] for
+/// ergonomic access rather than working with these types directly.
+///
+/// Re-exported as [`types`].
 #[allow(dead_code)]
 pub mod generated;
+/// Type aliases for the generated ECMA-376 types. See [`generated`] for details.
 pub use generated as types;
 
+/// Generated [`FromXml`](ooxml_xml::FromXml) parsers for all generated types.
+///
+/// Re-exported as [`parsers`].
 pub mod generated_parsers;
+/// Parsers for the generated ECMA-376 types. See [`generated_parsers`] for details.
 pub use generated_parsers as parsers;
 
+/// Generated [`ToXml`](ooxml_xml::ToXml) serializers for all generated types.
+///
+/// Re-exported as [`serializers`].
 pub mod generated_serializers;
+/// Serializers for the generated ECMA-376 types. See [`generated_serializers`] for details.
 pub use generated_serializers as serializers;
 
 // Metadata types from document.rs (OPC, not WML — not generated).

@@ -5,6 +5,7 @@ edition.workspace = true
 license.workspace = true
 repository.workspace = true
 description = "Corpus analysis tools for OOXML documents"
+publish = false
 
 [lib]
 name = "ooxml_corpus"

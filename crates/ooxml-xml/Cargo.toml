@@ -5,6 +5,9 @@ edition.workspace = true
 license.workspace = true
 repository.workspace = true
 description = "Shared XML utilities for the ooxml library"
+readme.workspace = true
+keywords = ["ooxml", "xml", "office", "parsing"]
+categories = ["encoding", "parser-implementations"]
 
 [dependencies]
 quick-xml.workspace = true

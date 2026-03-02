@@ -38,17 +38,30 @@ pub mod error;
 pub mod workbook;
 pub mod writer;
 
-// Generated types from ECMA-376 schema.
-// Access via `ooxml_sml::types::*` for generated structs/enums.
-// This file is pre-generated and committed to avoid requiring spec downloads.
-// To regenerate: OOXML_REGENERATE=1 cargo build -p ooxml-sml (with specs in /spec/)
+/// Generated types from the ECMA-376 SpreadsheetML schema.
+///
+/// These types map 1:1 to XML elements and attributes defined in ECMA-376 Part 1 §18.
+/// They are produced by `ooxml-codegen` from the RELAX NG schemas and committed to avoid
+/// requiring the schema files at build time. Use the extension traits in [`ext`] for
+/// ergonomic access rather than working with these types directly.
+///
+/// Re-exported as [`types`].
 pub mod generated;
+/// Type aliases for the generated ECMA-376 types. See [`generated`] for details.
 pub use generated as types;
 
+/// Generated [`FromXml`](ooxml_xml::FromXml) parsers for all generated types.
+///
+/// Re-exported as [`parsers`].
 pub mod generated_parsers;
+/// Parsers for the generated ECMA-376 types. See [`generated_parsers`] for details.
 pub use generated_parsers as parsers;
 
+/// Generated [`ToXml`](ooxml_xml::ToXml) serializers for all generated types.
+///
+/// Re-exported as [`serializers`].
 pub mod generated_serializers;
+/// Serializers for the generated ECMA-376 types. See [`generated_serializers`] for details.
 pub use generated_serializers as serializers;
 
 // Lazy/streaming API for memory-efficient parsing

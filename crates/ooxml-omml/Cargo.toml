@@ -5,6 +5,9 @@ edition.workspace = true
 license.workspace = true
 repository.workspace = true
 description = "Office Math Markup Language (OMML) support for the ooxml library"
+readme.workspace = true
+keywords = ["ooxml", "omml", "math", "office", "docx"]
+categories = ["encoding", "parser-implementations"]
 
 [dependencies]
 ooxml-xml.workspace = true

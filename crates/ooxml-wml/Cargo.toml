@@ -5,6 +5,9 @@ edition.workspace = true
 license.workspace = true
 repository.workspace = true
 description = "WordprocessingML (DOCX) support for the ooxml library"
+readme.workspace = true
+keywords = ["docx", "ooxml", "word", "office", "document"]
+categories = ["encoding", "parser-implementations", "file-formats"]
 
 [features]
 default = ["full"]
