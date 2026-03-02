@@ -7,7 +7,7 @@ repository.workspace = true
 description = "SpreadsheetML (XLSX) support for the ooxml library"
 readme.workspace = true
 keywords = ["xlsx", "ooxml", "excel", "spreadsheet", "office"]
-categories = ["encoding", "parser-implementations", "file-formats"]
+categories = ["encoding", "parser-implementations"]
 
 [features]
 default = ["full"]
