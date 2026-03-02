@@ -68,6 +68,12 @@ fn parse_half_points(s: &str) -> Option<u32> {
     s.parse::<u32>().ok()
 }
 
+/// Parse a twips measurement string (signed or unsigned).
+#[cfg(feature = "wml-styling")]
+fn parse_twips(s: &str) -> Option<i64> {
+    s.parse::<i64>().ok()
+}
+
 // =============================================================================
 // DocumentExt
 // =============================================================================
@@ -402,6 +408,56 @@ pub trait ParagraphExt {
     /// Get paragraph properties.
     #[cfg(feature = "wml-styling")]
     fn properties(&self) -> Option<&types::ParagraphProperties>;
+
+    /// Get paragraph alignment (justification). ECMA-376 §17.3.1.13.
+    #[cfg(feature = "wml-styling")]
+    fn alignment(&self) -> Option<types::STJc>;
+
+    /// Get left indent in twips. ECMA-376 §17.3.1.12.
+    ///
+    /// Prefers `w:start` (OOXML) and falls back to `w:left` (compatibility).
+    #[cfg(feature = "wml-styling")]
+    fn indent_left(&self) -> Option<i64>;
+
+    /// Get right indent in twips.
+    ///
+    /// Prefers `w:end` (OOXML) and falls back to `w:right` (compatibility).
+    #[cfg(feature = "wml-styling")]
+    fn indent_right(&self) -> Option<i64>;
+
+    /// Get first-line additional indent in twips (positive = first line further right).
+    ///
+    /// Mutually exclusive with [`indent_hanging`].
+    #[cfg(feature = "wml-styling")]
+    fn indent_first_line(&self) -> Option<i64>;
+
+    /// Get hanging indent in twips (positive = first line is that many twips to the *left* of the rest).
+    ///
+    /// Mutually exclusive with [`indent_first_line`].
+    #[cfg(feature = "wml-styling")]
+    fn indent_hanging(&self) -> Option<i64>;
+
+    /// Get space before paragraph in twips. ECMA-376 §17.3.1.33.
+    #[cfg(feature = "wml-styling")]
+    fn space_before(&self) -> Option<i64>;
+
+    /// Get space after paragraph in twips.
+    #[cfg(feature = "wml-styling")]
+    fn space_after(&self) -> Option<i64>;
+
+    /// Get line spacing value in twips (240 = single, 360 = 1.5×, 480 = double for `auto` rule).
+    #[cfg(feature = "wml-styling")]
+    fn line_spacing(&self) -> Option<i64>;
+
+    /// Get the line spacing rule, if set.
+    #[cfg(feature = "wml-styling")]
+    fn line_spacing_rule(&self) -> Option<types::STLineSpacingRule>;
+
+    /// Get numbering (list) properties as `(num_id, ilvl)`. ECMA-376 §17.9.
+    ///
+    /// Returns `None` if this paragraph is not part of a list.
+    #[cfg(feature = "wml-numbering")]
+    fn numbering(&self) -> Option<(i64, i64)>;
 }
 
 impl ParagraphExt for types::Paragraph {
@@ -430,6 +486,76 @@ impl ParagraphExt for types::Paragraph {
     #[cfg(feature = "wml-styling")]
     fn properties(&self) -> Option<&types::ParagraphProperties> {
         self.p_pr.as_deref()
+    }
+
+    #[cfg(feature = "wml-styling")]
+    fn alignment(&self) -> Option<types::STJc> {
+        self.p_pr
+            .as_deref()?
+            .justification
+            .as_deref()
+            .map(|j| j.value)
+    }
+
+    #[cfg(feature = "wml-styling")]
+    fn indent_left(&self) -> Option<i64> {
+        let ind = self.p_pr.as_deref()?.indentation.as_deref()?;
+        ind.start
+            .as_deref()
+            .or(ind.left.as_deref())
+            .and_then(parse_twips)
+    }
+
+    #[cfg(feature = "wml-styling")]
+    fn indent_right(&self) -> Option<i64> {
+        let ind = self.p_pr.as_deref()?.indentation.as_deref()?;
+        ind.end
+            .as_deref()
+            .or(ind.right.as_deref())
+            .and_then(parse_twips)
+    }
+
+    #[cfg(feature = "wml-styling")]
+    fn indent_first_line(&self) -> Option<i64> {
+        let ind = self.p_pr.as_deref()?.indentation.as_deref()?;
+        ind.first_line.as_deref().and_then(parse_twips)
+    }
+
+    #[cfg(feature = "wml-styling")]
+    fn indent_hanging(&self) -> Option<i64> {
+        let ind = self.p_pr.as_deref()?.indentation.as_deref()?;
+        ind.hanging.as_deref().and_then(parse_twips)
+    }
+
+    #[cfg(feature = "wml-styling")]
+    fn space_before(&self) -> Option<i64> {
+        let spacing = self.p_pr.as_deref()?.spacing.as_deref()?;
+        spacing.before.as_deref().and_then(parse_twips)
+    }
+
+    #[cfg(feature = "wml-styling")]
+    fn space_after(&self) -> Option<i64> {
+        let spacing = self.p_pr.as_deref()?.spacing.as_deref()?;
+        spacing.after.as_deref().and_then(parse_twips)
+    }
+
+    #[cfg(feature = "wml-styling")]
+    fn line_spacing(&self) -> Option<i64> {
+        let spacing = self.p_pr.as_deref()?.spacing.as_deref()?;
+        spacing.line.as_deref().and_then(parse_twips)
+    }
+
+    #[cfg(feature = "wml-styling")]
+    fn line_spacing_rule(&self) -> Option<types::STLineSpacingRule> {
+        self.p_pr.as_deref()?.spacing.as_deref()?.line_rule
+    }
+
+    #[cfg(feature = "wml-numbering")]
+    fn numbering(&self) -> Option<(i64, i64)> {
+        let num_pr = self.p_pr.as_deref()?.num_pr.as_deref()?;
+        let num_id = num_pr.num_id.as_deref()?.value;
+        let ilvl = num_pr.ilvl.as_deref()?.value;
+        Some((num_id, ilvl))
     }
 }
 
