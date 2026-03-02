@@ -1210,6 +1210,42 @@ pub trait RunPropertiesExt {
 
     /// Check if right-to-left text.
     fn is_rtl(&self) -> bool;
+
+    /// Check if outline text effect is enabled. ECMA-376 §17.3.2.23.
+    fn is_outline(&self) -> bool;
+
+    /// Check if shadow text effect is enabled. ECMA-376 §17.3.2.31.
+    fn is_shadow(&self) -> bool;
+
+    /// Check if emboss text effect is enabled. ECMA-376 §17.3.2.13.
+    fn is_emboss(&self) -> bool;
+
+    /// Check if imprint (engrave) text effect is enabled. ECMA-376 §17.3.2.18.
+    fn is_imprint(&self) -> bool;
+
+    /// Check if spell/grammar check is suppressed for this run. ECMA-376 §17.3.2.22.
+    fn is_no_proof(&self) -> bool;
+
+    /// Check if content snaps to document grid. ECMA-376 §17.3.2.34.
+    fn is_snap_to_grid(&self) -> bool;
+
+    /// Check if text is hidden when rendered for the web view. ECMA-376 §17.3.2.44.
+    fn is_web_hidden(&self) -> bool;
+
+    /// Get character spacing adjustment in twips (positive = expand, negative = condense). ECMA-376 §17.3.2.35.
+    fn character_spacing(&self) -> Option<i64>;
+
+    /// Get text scale as a percentage (100 = normal width). ECMA-376 §17.3.2.43.
+    fn text_scale_percent(&self) -> Option<u32>;
+
+    /// Get kerning threshold in half-points. ECMA-376 §17.3.2.19.
+    fn kerning(&self) -> Option<u32>;
+
+    /// Get baseline shift in half-points (positive = raise, negative = lower). ECMA-376 §17.3.2.28.
+    fn baseline_shift(&self) -> Option<i64>;
+
+    /// Get language tag for this run. ECMA-376 §17.3.2.20.
+    fn language(&self) -> Option<&types::LanguageElement>;
 }
 
 #[cfg(feature = "wml-styling")]
@@ -1298,6 +1334,58 @@ impl RunPropertiesExt for types::RunProperties {
 
     fn is_rtl(&self) -> bool {
         is_on(&self.rtl)
+    }
+
+    fn is_outline(&self) -> bool {
+        is_on(&self.outline)
+    }
+
+    fn is_shadow(&self) -> bool {
+        is_on(&self.shadow)
+    }
+
+    fn is_emboss(&self) -> bool {
+        is_on(&self.emboss)
+    }
+
+    fn is_imprint(&self) -> bool {
+        is_on(&self.imprint)
+    }
+
+    fn is_no_proof(&self) -> bool {
+        is_on(&self.no_proof)
+    }
+
+    fn is_snap_to_grid(&self) -> bool {
+        is_on(&self.snap_to_grid)
+    }
+
+    fn is_web_hidden(&self) -> bool {
+        is_on(&self.web_hidden)
+    }
+
+    fn character_spacing(&self) -> Option<i64> {
+        self.spacing
+            .as_ref()
+            .and_then(|s| s.value.parse::<i64>().ok())
+    }
+
+    fn text_scale_percent(&self) -> Option<u32> {
+        self.width.as_ref()?.value.as_deref()?.parse::<u32>().ok()
+    }
+
+    fn kerning(&self) -> Option<u32> {
+        self.kern.as_ref().and_then(|k| parse_half_points(&k.value))
+    }
+
+    fn baseline_shift(&self) -> Option<i64> {
+        self.position
+            .as_ref()
+            .and_then(|p| p.value.parse::<i64>().ok())
+    }
+
+    fn language(&self) -> Option<&types::LanguageElement> {
+        self.lang.as_deref()
     }
 }
 
@@ -1677,6 +1765,30 @@ pub trait RunResolveExt {
 
     /// Resolve text color hex through direct → style chain → defaults.
     fn resolved_color_hex(&self, ctx: &StyleContext) -> Option<String>;
+
+    /// Resolve underline through direct → style chain → defaults.
+    fn resolved_is_underline(&self, ctx: &StyleContext) -> bool;
+
+    /// Resolve single strikethrough through direct → style chain → defaults.
+    fn resolved_is_strikethrough(&self, ctx: &StyleContext) -> bool;
+
+    /// Resolve double strikethrough through direct → style chain → defaults.
+    fn resolved_is_double_strikethrough(&self, ctx: &StyleContext) -> bool;
+
+    /// Resolve all-caps through direct → style chain → defaults.
+    fn resolved_is_all_caps(&self, ctx: &StyleContext) -> bool;
+
+    /// Resolve small-caps through direct → style chain → defaults.
+    fn resolved_is_small_caps(&self, ctx: &StyleContext) -> bool;
+
+    /// Resolve hidden (`<w:vanish>`) through direct → style chain → defaults.
+    fn resolved_is_hidden(&self, ctx: &StyleContext) -> bool;
+
+    /// Resolve highlight color through direct → style chain → defaults.
+    fn resolved_highlight_color(&self, ctx: &StyleContext) -> Option<types::STHighlightColor>;
+
+    /// Resolve vertical alignment through direct → style chain → defaults.
+    fn resolved_vertical_alignment(&self, ctx: &StyleContext) -> Option<types::STVerticalAlignRun>;
 }
 
 #[cfg(feature = "wml-styling")]
@@ -1706,6 +1818,47 @@ impl RunResolveExt for types::Run {
     fn resolved_color_hex(&self, ctx: &StyleContext) -> Option<String> {
         resolve_option(&self.r_pr, ctx, |rpr| {
             rpr.color.as_ref().map(|c| c.value.clone())
+        })
+    }
+
+    fn resolved_is_underline(&self, ctx: &StyleContext) -> bool {
+        resolve_option(&self.r_pr, ctx, |rpr| {
+            rpr.underline
+                .as_ref()
+                .map(|u| !matches!(u.value, Some(types::STUnderline::None)))
+        })
+        .unwrap_or(false)
+    }
+
+    fn resolved_is_strikethrough(&self, ctx: &StyleContext) -> bool {
+        resolve_toggle(&self.r_pr, ctx, |rpr| &rpr.strikethrough)
+    }
+
+    fn resolved_is_double_strikethrough(&self, ctx: &StyleContext) -> bool {
+        resolve_toggle(&self.r_pr, ctx, |rpr| &rpr.dstrike)
+    }
+
+    fn resolved_is_all_caps(&self, ctx: &StyleContext) -> bool {
+        resolve_toggle(&self.r_pr, ctx, |rpr| &rpr.caps)
+    }
+
+    fn resolved_is_small_caps(&self, ctx: &StyleContext) -> bool {
+        resolve_toggle(&self.r_pr, ctx, |rpr| &rpr.small_caps)
+    }
+
+    fn resolved_is_hidden(&self, ctx: &StyleContext) -> bool {
+        resolve_toggle(&self.r_pr, ctx, |rpr| &rpr.vanish)
+    }
+
+    fn resolved_highlight_color(&self, ctx: &StyleContext) -> Option<types::STHighlightColor> {
+        resolve_option(&self.r_pr, ctx, |rpr| {
+            rpr.highlight.as_ref().map(|h| h.value)
+        })
+    }
+
+    fn resolved_vertical_alignment(&self, ctx: &StyleContext) -> Option<types::STVerticalAlignRun> {
+        resolve_option(&self.r_pr, ctx, |rpr| {
+            rpr.vert_align.as_ref().map(|va| va.value)
         })
     }
 }
@@ -2024,6 +2177,46 @@ impl ResolvedDocument {
     pub fn color_hex(&self, run: &types::Run) -> Option<String> {
         run.resolved_color_hex(&self.context)
     }
+
+    /// Check if a run is underlined (resolved through style chain).
+    pub fn is_underline(&self, run: &types::Run) -> bool {
+        run.resolved_is_underline(&self.context)
+    }
+
+    /// Check if a run is struck through (resolved through style chain).
+    pub fn is_strikethrough(&self, run: &types::Run) -> bool {
+        run.resolved_is_strikethrough(&self.context)
+    }
+
+    /// Check if a run is double struck through (resolved through style chain).
+    pub fn is_double_strikethrough(&self, run: &types::Run) -> bool {
+        run.resolved_is_double_strikethrough(&self.context)
+    }
+
+    /// Check if a run is all-caps (resolved through style chain).
+    pub fn is_all_caps(&self, run: &types::Run) -> bool {
+        run.resolved_is_all_caps(&self.context)
+    }
+
+    /// Check if a run is small-caps (resolved through style chain).
+    pub fn is_small_caps(&self, run: &types::Run) -> bool {
+        run.resolved_is_small_caps(&self.context)
+    }
+
+    /// Check if a run is hidden (resolved through style chain).
+    pub fn is_hidden(&self, run: &types::Run) -> bool {
+        run.resolved_is_hidden(&self.context)
+    }
+
+    /// Get resolved highlight color.
+    pub fn highlight_color(&self, run: &types::Run) -> Option<types::STHighlightColor> {
+        run.resolved_highlight_color(&self.context)
+    }
+
+    /// Get resolved vertical alignment.
+    pub fn vertical_alignment(&self, run: &types::Run) -> Option<types::STVerticalAlignRun> {
+        run.resolved_vertical_alignment(&self.context)
+    }
 }
 
 // =============================================================================
@@ -2221,6 +2414,9 @@ pub trait BodyRevisionExt {
 
     /// Full document text with all insertions accepted and deletions removed.
     fn accepted_text(&self) -> String;
+
+    /// Full document text with all insertions rejected and deletions restored.
+    fn rejected_text(&self) -> String;
 }
 
 /// Collect paragraphs from `BlockContent` items recursively (handles SDTs, custom XML, etc.).
@@ -2270,6 +2466,15 @@ impl BodyRevisionExt for types::Body {
         paras
             .iter()
             .map(|p| p.accepted_text())
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
+
+    fn rejected_text(&self) -> String {
+        let paras = paragraphs_from_block_content(&self.block_content);
+        paras
+            .iter()
+            .map(|p| p.rejected_text())
             .collect::<Vec<_>>()
             .join("\n")
     }
