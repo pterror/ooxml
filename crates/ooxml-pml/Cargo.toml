@@ -20,6 +20,7 @@ full = [
     "pml-external",
     "pml-extensions",
     "pml-charts",
+    "dml-fills",
     "extra-attrs",
     "extra-children",
     "dml-tables",
@@ -28,6 +29,7 @@ full = [
 pml-transitions = []     # Slide transitions
 pml-charts = ["ooxml-dml/dml-charts", "ooxml-dml/dml-diagrams"]  # Chart and SmartArt reading
 dml-tables = ["ooxml-dml/dml-tables"]  # DML table support
+dml-fills = ["ooxml-dml/dml-fills"]   # DML fill properties (blip crop rect, etc.)
 pml-animations = []      # Slide timing/animations
 pml-notes = []           # Speaker notes
 pml-comments = []        # Slide comments

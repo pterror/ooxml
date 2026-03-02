@@ -391,6 +391,21 @@ pub trait WorksheetExt {
     /// Check if the worksheet has freeze panes.
     #[cfg(feature = "sml-structure")]
     fn has_freeze_panes(&self) -> bool;
+
+    /// Get the height of a row in points (if specified).
+    ///
+    /// `row_num` is 1-based. Returns `None` if the row does not exist or has no
+    /// explicit height set. ECMA-376 Part 1, §18.3.1.73 (`@ht` attribute).
+    #[cfg(feature = "sml-styling")]
+    fn get_row_height(&self, row_num: u32) -> Option<f64>;
+
+    /// Get the width of a column in characters (if specified).
+    ///
+    /// `col_idx` is 1-based (A=1, B=2, …). Returns `None` if no column definition
+    /// covers this index or if the column has no explicit width.
+    /// ECMA-376 Part 1, §18.3.1.13 (`@width` attribute).
+    #[cfg(feature = "sml-styling")]
+    fn get_column_width(&self, col_idx: u32) -> Option<f64>;
 }
 
 impl WorksheetExt for Worksheet {
@@ -455,6 +470,24 @@ impl WorksheetExt for Worksheet {
         self.sheet_views
             .as_ref()
             .is_some_and(|views| views.sheet_view.iter().any(|sv| sv.pane.is_some()))
+    }
+
+    #[cfg(feature = "sml-styling")]
+    fn get_row_height(&self, row_num: u32) -> Option<f64> {
+        self.sheet_data
+            .row
+            .iter()
+            .find(|r| r.reference == Some(row_num))
+            .and_then(|r| r.height)
+    }
+
+    #[cfg(feature = "sml-styling")]
+    fn get_column_width(&self, col_idx: u32) -> Option<f64> {
+        self.cols
+            .iter()
+            .flat_map(|cols| &cols.col)
+            .find(|c| c.start_column <= col_idx && col_idx <= c.end_column)
+            .and_then(|c| c.width)
     }
 }
 
@@ -1024,6 +1057,407 @@ impl ConditionalRuleExt for crate::types::ConditionalRule {
     }
 }
 
+// =============================================================================
+// Font / Fill / Border / Format Extension Traits
+// =============================================================================
+
+/// Extension methods for `types::Font` (ECMA-376 §18.8.22, CT_Font).
+///
+/// Provides convenient access to font properties such as bold, italic, name,
+/// and size. All accessors are gated on the `sml-styling` feature because the
+/// underlying fields are only present when that feature is enabled.
+#[cfg(feature = "sml-styling")]
+pub trait FontExt {
+    /// Check if bold is set.
+    fn is_bold(&self) -> bool;
+    /// Check if italic is set.
+    fn is_italic(&self) -> bool;
+    /// Check if strikethrough is set.
+    fn is_strikethrough(&self) -> bool;
+    /// Check if outline is set.
+    fn is_outline(&self) -> bool;
+    /// Check if shadow is set.
+    fn is_shadow(&self) -> bool;
+    /// Check if condense is set.
+    fn is_condense(&self) -> bool;
+    /// Check if extend is set.
+    fn is_extend(&self) -> bool;
+    /// Get the typeface name (e.g. `"Calibri"`).
+    fn font_name(&self) -> Option<&str>;
+    /// Get the font size in points (e.g. `11.0`).
+    fn font_size(&self) -> Option<f64>;
+    /// Get the font colour.
+    fn font_color(&self) -> Option<&crate::types::Color>;
+    /// Get the vertical alignment (baseline / superscript / subscript).
+    fn vertical_align(&self) -> Option<crate::types::VerticalAlignRun>;
+    /// Get the font scheme (none / major / minor).
+    fn font_scheme(&self) -> Option<crate::types::FontScheme>;
+}
+
+#[cfg(feature = "sml-styling")]
+impl FontExt for crate::types::Font {
+    fn is_bold(&self) -> bool {
+        self.b.as_ref().is_some_and(|v| v.value.unwrap_or(false))
+    }
+
+    fn is_italic(&self) -> bool {
+        self.i.as_ref().is_some_and(|v| v.value.unwrap_or(false))
+    }
+
+    fn is_strikethrough(&self) -> bool {
+        self.strike
+            .as_ref()
+            .is_some_and(|v| v.value.unwrap_or(false))
+    }
+
+    fn is_outline(&self) -> bool {
+        self.outline
+            .as_ref()
+            .is_some_and(|v| v.value.unwrap_or(false))
+    }
+
+    fn is_shadow(&self) -> bool {
+        self.shadow
+            .as_ref()
+            .is_some_and(|v| v.value.unwrap_or(false))
+    }
+
+    fn is_condense(&self) -> bool {
+        self.condense
+            .as_ref()
+            .is_some_and(|v| v.value.unwrap_or(false))
+    }
+
+    fn is_extend(&self) -> bool {
+        self.extend
+            .as_ref()
+            .is_some_and(|v| v.value.unwrap_or(false))
+    }
+
+    fn font_name(&self) -> Option<&str> {
+        self.name.as_deref().map(|n| n.value.as_str())
+    }
+
+    fn font_size(&self) -> Option<f64> {
+        self.sz.as_deref().map(|s| s.value)
+    }
+
+    fn font_color(&self) -> Option<&crate::types::Color> {
+        self.color.as_deref()
+    }
+
+    fn vertical_align(&self) -> Option<crate::types::VerticalAlignRun> {
+        self.vert_align.as_deref().map(|v| v.value)
+    }
+
+    fn font_scheme(&self) -> Option<crate::types::FontScheme> {
+        self.scheme.as_deref().map(|s| s.value)
+    }
+}
+
+/// Extension methods for `types::Fill` (ECMA-376 §18.8.20, CT_Fill).
+///
+/// Provides access to the fill sub-type (pattern or gradient).
+/// Gated on the `sml-styling` feature.
+#[cfg(feature = "sml-styling")]
+pub trait FillExt {
+    /// Get the pattern fill definition, if this fill uses a pattern.
+    fn pattern_fill(&self) -> Option<&crate::types::PatternFill>;
+    /// Get the gradient fill definition, if this fill uses a gradient.
+    fn gradient_fill(&self) -> Option<&crate::types::GradientFill>;
+    /// Check if this fill has any fill type set (pattern or gradient).
+    fn has_fill(&self) -> bool;
+}
+
+#[cfg(feature = "sml-styling")]
+impl FillExt for crate::types::Fill {
+    fn pattern_fill(&self) -> Option<&crate::types::PatternFill> {
+        self.pattern_fill.as_deref()
+    }
+
+    fn gradient_fill(&self) -> Option<&crate::types::GradientFill> {
+        self.gradient_fill.as_deref()
+    }
+
+    fn has_fill(&self) -> bool {
+        self.pattern_fill.is_some() || self.gradient_fill.is_some()
+    }
+}
+
+/// Extension methods for `types::PatternFill` (ECMA-376 §18.8.32, CT_PatternFill).
+///
+/// Provides access to the pattern type and foreground/background colours.
+pub trait PatternFillExt {
+    /// Get the pattern type (solid, dark-grid, etc.).
+    fn pattern_type(&self) -> Option<crate::types::PatternType>;
+    /// Get the foreground colour of the pattern.
+    fn foreground_color(&self) -> Option<&crate::types::Color>;
+    /// Get the background colour of the pattern.
+    fn background_color(&self) -> Option<&crate::types::Color>;
+}
+
+impl PatternFillExt for crate::types::PatternFill {
+    fn pattern_type(&self) -> Option<crate::types::PatternType> {
+        self.pattern_type
+    }
+
+    fn foreground_color(&self) -> Option<&crate::types::Color> {
+        self.fg_color.as_deref()
+    }
+
+    fn background_color(&self) -> Option<&crate::types::Color> {
+        self.bg_color.as_deref()
+    }
+}
+
+/// Extension methods for `types::Border` (ECMA-376 §18.8.4, CT_Border).
+///
+/// Provides access to individual border sides and diagonal flags.
+/// Gated on the `sml-styling` feature.
+#[cfg(feature = "sml-styling")]
+pub trait BorderExt {
+    /// Get the left border properties.
+    fn left_border(&self) -> Option<&crate::types::BorderProperties>;
+    /// Get the right border properties.
+    fn right_border(&self) -> Option<&crate::types::BorderProperties>;
+    /// Get the top border properties.
+    fn top_border(&self) -> Option<&crate::types::BorderProperties>;
+    /// Get the bottom border properties.
+    fn bottom_border(&self) -> Option<&crate::types::BorderProperties>;
+    /// Get the diagonal border properties.
+    fn diagonal_border(&self) -> Option<&crate::types::BorderProperties>;
+    /// Check if the diagonal-up line is shown.
+    fn is_diagonal_up(&self) -> bool;
+    /// Check if the diagonal-down line is shown.
+    fn is_diagonal_down(&self) -> bool;
+    /// Check if the outline border is applied.
+    fn is_outline_applied(&self) -> bool;
+}
+
+#[cfg(feature = "sml-styling")]
+impl BorderExt for crate::types::Border {
+    fn left_border(&self) -> Option<&crate::types::BorderProperties> {
+        self.left.as_deref()
+    }
+
+    fn right_border(&self) -> Option<&crate::types::BorderProperties> {
+        self.right.as_deref()
+    }
+
+    fn top_border(&self) -> Option<&crate::types::BorderProperties> {
+        self.top.as_deref()
+    }
+
+    fn bottom_border(&self) -> Option<&crate::types::BorderProperties> {
+        self.bottom.as_deref()
+    }
+
+    fn diagonal_border(&self) -> Option<&crate::types::BorderProperties> {
+        self.diagonal.as_deref()
+    }
+
+    fn is_diagonal_up(&self) -> bool {
+        self.diagonal_up.unwrap_or(false)
+    }
+
+    fn is_diagonal_down(&self) -> bool {
+        self.diagonal_down.unwrap_or(false)
+    }
+
+    fn is_outline_applied(&self) -> bool {
+        self.outline.unwrap_or(false)
+    }
+}
+
+/// Extension methods for `types::BorderProperties` (ECMA-376 §18.8.3, CT_BorderPr).
+///
+/// Provides access to border line style and colour.
+pub trait BorderPropertiesExt {
+    /// Get the border line style.
+    fn border_style(&self) -> Option<crate::types::BorderStyle>;
+    /// Get the border colour.
+    fn border_color(&self) -> Option<&crate::types::Color>;
+    /// Check if a border style is set.
+    fn has_style(&self) -> bool;
+}
+
+impl BorderPropertiesExt for crate::types::BorderProperties {
+    fn border_style(&self) -> Option<crate::types::BorderStyle> {
+        self.style
+    }
+
+    fn border_color(&self) -> Option<&crate::types::Color> {
+        self.color.as_deref()
+    }
+
+    fn has_style(&self) -> bool {
+        self.style.is_some()
+    }
+}
+
+/// Extension methods for `types::CellAlignment` (ECMA-376 §18.8.1, CT_CellAlignment).
+///
+/// Provides access to horizontal/vertical alignment, text rotation, and wrapping.
+/// Gated on the `sml-styling` feature.
+#[cfg(feature = "sml-styling")]
+pub trait CellAlignmentExt {
+    /// Get the horizontal alignment.
+    fn horizontal_alignment(&self) -> Option<crate::types::HorizontalAlignment>;
+    /// Get the vertical alignment.
+    fn vertical_alignment(&self) -> Option<crate::types::VerticalAlignment>;
+    /// Get the text rotation in degrees (0–180 or 255 for vertical text).
+    fn text_rotation(&self) -> Option<u32>;
+    /// Check if text wrapping is enabled.
+    fn is_wrap_text(&self) -> bool;
+    /// Check if shrink-to-fit is enabled.
+    fn is_shrink_to_fit(&self) -> bool;
+    /// Get the indent level.
+    fn indent(&self) -> Option<u32>;
+}
+
+#[cfg(feature = "sml-styling")]
+impl CellAlignmentExt for crate::types::CellAlignment {
+    fn horizontal_alignment(&self) -> Option<crate::types::HorizontalAlignment> {
+        self.horizontal
+    }
+
+    fn vertical_alignment(&self) -> Option<crate::types::VerticalAlignment> {
+        self.vertical
+    }
+
+    fn text_rotation(&self) -> Option<u32> {
+        self.text_rotation.as_deref().and_then(|r| r.parse().ok())
+    }
+
+    fn is_wrap_text(&self) -> bool {
+        self.wrap_text.unwrap_or(false)
+    }
+
+    fn is_shrink_to_fit(&self) -> bool {
+        self.shrink_to_fit.unwrap_or(false)
+    }
+
+    fn indent(&self) -> Option<u32> {
+        self.indent
+    }
+}
+
+/// Extension methods for `types::CellProtection` (ECMA-376 §18.8.13, CT_CellProtection).
+///
+/// Provides access to cell locking and formula-hiding flags.
+/// Gated on the `sml-protection` feature.
+#[cfg(feature = "sml-protection")]
+pub trait CellProtectionExt {
+    /// Check if the cell is locked (default: `true` per OOXML spec).
+    fn is_locked(&self) -> bool;
+    /// Check if the formula is hidden from the formula bar.
+    fn is_formula_hidden(&self) -> bool;
+}
+
+#[cfg(feature = "sml-protection")]
+impl CellProtectionExt for crate::types::CellProtection {
+    fn is_locked(&self) -> bool {
+        // Per ECMA-376, the default value is `true` — cells are locked unless
+        // explicitly set to `false`.
+        self.locked.unwrap_or(true)
+    }
+
+    fn is_formula_hidden(&self) -> bool {
+        self.hidden.unwrap_or(false)
+    }
+}
+
+/// Extension methods for `types::Format` (ECMA-376 §18.8.45, CT_Xf).
+///
+/// The `xf` element is used in both `cellXfs` (cell formats) and
+/// `cellStyleXfs` (named style formats). It carries index references into
+/// the font, fill, border, and numFmt tables, plus optional alignment and
+/// protection overrides.
+pub trait FormatExt {
+    /// Get the number format ID (index into `numFmts`).
+    #[cfg(feature = "sml-styling")]
+    fn number_format_id(&self) -> u32;
+    /// Get the font ID (index into `fonts`).
+    #[cfg(feature = "sml-styling")]
+    fn font_id(&self) -> u32;
+    /// Get the fill ID (index into `fills`).
+    #[cfg(feature = "sml-styling")]
+    fn fill_id(&self) -> u32;
+    /// Get the border ID (index into `borders`).
+    #[cfg(feature = "sml-styling")]
+    fn border_id(&self) -> u32;
+    /// Check if alignment properties are applied from this format.
+    #[cfg(feature = "sml-styling")]
+    fn apply_alignment(&self) -> bool;
+    /// Check if font properties are applied from this format.
+    #[cfg(feature = "sml-styling")]
+    fn apply_font(&self) -> bool;
+    /// Check if fill properties are applied from this format.
+    #[cfg(feature = "sml-styling")]
+    fn apply_fill(&self) -> bool;
+    /// Check if border properties are applied from this format.
+    #[cfg(feature = "sml-styling")]
+    fn apply_border(&self) -> bool;
+    /// Get the cell alignment override (if any).
+    #[cfg(feature = "sml-styling")]
+    fn alignment(&self) -> Option<&crate::types::CellAlignment>;
+    /// Get the cell protection override (if any).
+    #[cfg(feature = "sml-protection")]
+    fn protection(&self) -> Option<&crate::types::CellProtection>;
+}
+
+impl FormatExt for crate::types::Format {
+    #[cfg(feature = "sml-styling")]
+    fn number_format_id(&self) -> u32 {
+        self.number_format_id.unwrap_or(0)
+    }
+
+    #[cfg(feature = "sml-styling")]
+    fn font_id(&self) -> u32 {
+        self.font_id.unwrap_or(0)
+    }
+
+    #[cfg(feature = "sml-styling")]
+    fn fill_id(&self) -> u32 {
+        self.fill_id.unwrap_or(0)
+    }
+
+    #[cfg(feature = "sml-styling")]
+    fn border_id(&self) -> u32 {
+        self.border_id.unwrap_or(0)
+    }
+
+    #[cfg(feature = "sml-styling")]
+    fn apply_alignment(&self) -> bool {
+        self.apply_alignment.unwrap_or(false)
+    }
+
+    #[cfg(feature = "sml-styling")]
+    fn apply_font(&self) -> bool {
+        self.apply_font.unwrap_or(false)
+    }
+
+    #[cfg(feature = "sml-styling")]
+    fn apply_fill(&self) -> bool {
+        self.apply_fill.unwrap_or(false)
+    }
+
+    #[cfg(feature = "sml-styling")]
+    fn apply_border(&self) -> bool {
+        self.apply_border.unwrap_or(false)
+    }
+
+    #[cfg(feature = "sml-styling")]
+    fn alignment(&self) -> Option<&crate::types::CellAlignment> {
+        self.alignment.as_deref()
+    }
+
+    #[cfg(feature = "sml-protection")]
+    fn protection(&self) -> Option<&crate::types::CellProtection> {
+        self.protection.as_deref()
+    }
+}
+
 /// Extension for `types::Worksheet` to access conditional formatting.
 ///
 /// Gated on the `sml-styling` feature.
@@ -1355,5 +1789,169 @@ mod tests {
         </pivotTableDefinition>"#;
         let pt: crate::types::CTPivotTableDefinition = bootstrap(xml).expect("parse failed");
         assert_eq!(pt.location_reference(), "A1:D10");
+    }
+
+    // -------------------------------------------------------------------------
+    // FontExt tests
+    // -------------------------------------------------------------------------
+
+    #[cfg(feature = "sml-styling")]
+    #[test]
+    fn test_font_ext_bold_italic() {
+        use crate::workbook::bootstrap;
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+        <font xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+            <b val="1"/>
+            <i val="0"/>
+            <name val="Calibri"/>
+            <sz val="11"/>
+        </font>"#;
+        let font: crate::types::Font = bootstrap(xml).expect("parse failed");
+        assert!(font.is_bold());
+        assert!(!font.is_italic());
+        assert_eq!(font.font_name(), Some("Calibri"));
+        assert_eq!(font.font_size(), Some(11.0));
+    }
+
+    #[cfg(feature = "sml-styling")]
+    #[test]
+    fn test_font_ext_defaults() {
+        use crate::workbook::bootstrap;
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+        <font xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"/>
+        "#;
+        let font: crate::types::Font = bootstrap(xml).expect("parse failed");
+        assert!(!font.is_bold());
+        assert!(!font.is_italic());
+        assert!(!font.is_strikethrough());
+        assert!(font.font_name().is_none());
+        assert!(font.font_size().is_none());
+        assert!(font.font_color().is_none());
+        assert!(font.vertical_align().is_none());
+        assert!(font.font_scheme().is_none());
+    }
+
+    // -------------------------------------------------------------------------
+    // FillExt / PatternFillExt tests
+    // -------------------------------------------------------------------------
+
+    #[cfg(feature = "sml-styling")]
+    #[test]
+    fn test_fill_ext_pattern() {
+        use crate::workbook::bootstrap;
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+        <fill xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+            <patternFill patternType="solid"/>
+        </fill>"#;
+        let fill: crate::types::Fill = bootstrap(xml).expect("parse failed");
+        assert!(fill.has_fill());
+        assert!(fill.pattern_fill().is_some());
+        assert!(fill.gradient_fill().is_none());
+    }
+
+    #[cfg(feature = "sml-styling")]
+    #[test]
+    fn test_fill_ext_no_fill() {
+        use crate::workbook::bootstrap;
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+        <fill xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+            <patternFill patternType="none"/>
+        </fill>"#;
+        let fill: crate::types::Fill = bootstrap(xml).expect("parse failed");
+        assert!(fill.has_fill()); // has a pattern fill element, even if "none"
+        let pf = fill.pattern_fill().unwrap();
+        use crate::ext::PatternFillExt;
+        use crate::types::PatternType;
+        assert_eq!(pf.pattern_type(), Some(PatternType::None));
+    }
+
+    // -------------------------------------------------------------------------
+    // BorderExt tests
+    // -------------------------------------------------------------------------
+
+    #[cfg(feature = "sml-styling")]
+    #[test]
+    fn test_border_ext_diagonal_flags() {
+        use crate::workbook::bootstrap;
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+        <border diagonalUp="1" diagonalDown="0"
+                xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+        </border>"#;
+        let border: crate::types::Border = bootstrap(xml).expect("parse failed");
+        assert!(border.is_diagonal_up());
+        assert!(!border.is_diagonal_down());
+        assert!(border.left_border().is_none());
+        assert!(border.diagonal_border().is_none());
+    }
+
+    // -------------------------------------------------------------------------
+    // CellAlignmentExt tests
+    // -------------------------------------------------------------------------
+
+    #[cfg(feature = "sml-styling")]
+    #[test]
+    fn test_cell_alignment_ext() {
+        use crate::workbook::bootstrap;
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+        <alignment horizontal="center" vertical="bottom" wrapText="1" indent="2"
+                   xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"/>
+        "#;
+        let align: crate::types::CellAlignment = bootstrap(xml).expect("parse failed");
+        use crate::types::{HorizontalAlignment, VerticalAlignment};
+        assert_eq!(
+            align.horizontal_alignment(),
+            Some(HorizontalAlignment::Center)
+        );
+        assert_eq!(align.vertical_alignment(), Some(VerticalAlignment::Bottom));
+        assert!(align.is_wrap_text());
+        assert!(!align.is_shrink_to_fit());
+        assert_eq!(align.indent(), Some(2));
+    }
+
+    // -------------------------------------------------------------------------
+    // FormatExt tests
+    // -------------------------------------------------------------------------
+
+    #[cfg(feature = "sml-styling")]
+    #[test]
+    fn test_format_ext_ids() {
+        use crate::workbook::bootstrap;
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+        <xf numFmtId="4" fontId="1" fillId="2" borderId="3" applyFont="1" applyFill="0"
+            xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"/>
+        "#;
+        let fmt: crate::types::Format = bootstrap(xml).expect("parse failed");
+        use crate::ext::FormatExt;
+        assert_eq!(fmt.number_format_id(), 4);
+        assert_eq!(fmt.font_id(), 1);
+        assert_eq!(fmt.fill_id(), 2);
+        assert_eq!(fmt.border_id(), 3);
+        assert!(fmt.apply_font());
+        assert!(!fmt.apply_fill());
+        assert!(fmt.alignment().is_none());
+    }
+
+    // -------------------------------------------------------------------------
+    // WorksheetExt row/column dimension tests
+    // -------------------------------------------------------------------------
+
+    #[cfg(feature = "sml-styling")]
+    #[test]
+    fn test_worksheet_get_row_height() {
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+        <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+            <sheetData>
+                <row r="1" ht="20" customHeight="1">
+                    <c r="A1"><v>1</v></c>
+                </row>
+                <row r="2">
+                    <c r="A2"><v>2</v></c>
+                </row>
+            </sheetData>
+        </worksheet>"#;
+        let ws = parse_worksheet(xml).expect("parse failed");
+        assert_eq!(ws.get_row_height(1), Some(20.0));
+        assert_eq!(ws.get_row_height(2), None); // no explicit height
+        assert_eq!(ws.get_row_height(99), None); // row doesn't exist
     }
 }

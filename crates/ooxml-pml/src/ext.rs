@@ -26,6 +26,27 @@ pub trait ShapeExt {
 
     /// Check if the shape has text content.
     fn has_text(&self) -> bool;
+
+    /// Get the drawing element ID (`cNvPr@id`).
+    fn shape_id(&self) -> u32;
+
+    /// Check if this shape is a placeholder (has a `ph` element).
+    fn is_placeholder(&self) -> bool;
+
+    /// Get the placeholder type (title, body, etc.) if this is a placeholder.
+    fn placeholder_type(&self) -> Option<&STPlaceholderType>;
+
+    /// Get the placeholder index if this is a placeholder.
+    fn placeholder_index(&self) -> Option<u32>;
+
+    /// Get the position offset in EMU as (x, y).
+    fn offset_emu(&self) -> Option<(i64, i64)>;
+
+    /// Get the extent (width, height) in EMU.
+    fn extent_emu(&self) -> Option<(i64, i64)>;
+
+    /// Get the rotation angle in degrees.
+    fn rotation_angle_deg(&self) -> Option<f64>;
 }
 
 impl ShapeExt for Shape {
@@ -64,6 +85,45 @@ impl ShapeExt for Shape {
             .as_ref()
             .is_some_and(|tb| !tb.paragraphs().is_empty())
     }
+
+    fn shape_id(&self) -> u32 {
+        self.non_visual_properties.c_nv_pr.id
+    }
+
+    fn is_placeholder(&self) -> bool {
+        self.non_visual_properties.nv_pr.ph.is_some()
+    }
+
+    fn placeholder_type(&self) -> Option<&STPlaceholderType> {
+        self.non_visual_properties
+            .nv_pr
+            .ph
+            .as_deref()
+            .and_then(|p| p.r#type.as_ref())
+    }
+
+    fn placeholder_index(&self) -> Option<u32> {
+        self.non_visual_properties
+            .nv_pr
+            .ph
+            .as_deref()
+            .and_then(|p| p.idx)
+    }
+
+    fn offset_emu(&self) -> Option<(i64, i64)> {
+        use ooxml_dml::ext::ShapePropertiesExt;
+        self.shape_properties.offset_emu()
+    }
+
+    fn extent_emu(&self) -> Option<(i64, i64)> {
+        use ooxml_dml::ext::ShapePropertiesExt;
+        self.shape_properties.extent_emu()
+    }
+
+    fn rotation_angle_deg(&self) -> Option<f64> {
+        use ooxml_dml::ext::ShapePropertiesExt;
+        self.shape_properties.rotation_angle_deg()
+    }
 }
 
 /// Extension trait for Picture (p:pic element).
@@ -76,6 +136,19 @@ pub trait PictureExt {
 
     /// Get the relationship ID for the embedded image (from blipFill/blip@r:embed).
     fn embed_rel_id(&self) -> Option<&str>;
+
+    /// Get the position offset in EMU as (x, y).
+    fn offset_emu(&self) -> Option<(i64, i64)>;
+
+    /// Get the extent (width, height) in EMU.
+    fn extent_emu(&self) -> Option<(i64, i64)>;
+
+    /// Get the crop rectangle, if any.
+    ///
+    /// Specifies what portion of the image is displayed.
+    /// Requires the `dml-fills` feature.
+    #[cfg(feature = "dml-fills")]
+    fn crop_rect(&self) -> Option<&ooxml_dml::types::CTRelativeRect>;
 }
 
 impl PictureExt for Picture {
@@ -92,6 +165,21 @@ impl PictureExt for Picture {
             .blip
             .as_ref()
             .and_then(|b| b.embed.as_deref())
+    }
+
+    fn offset_emu(&self) -> Option<(i64, i64)> {
+        use ooxml_dml::ext::ShapePropertiesExt;
+        self.shape_properties.offset_emu()
+    }
+
+    fn extent_emu(&self) -> Option<(i64, i64)> {
+        use ooxml_dml::ext::ShapePropertiesExt;
+        self.shape_properties.extent_emu()
+    }
+
+    #[cfg(feature = "dml-fills")]
+    fn crop_rect(&self) -> Option<&ooxml_dml::types::CTRelativeRect> {
+        self.blip_fill.src_rect.as_deref()
     }
 }
 
@@ -164,6 +252,12 @@ pub trait GroupShapeExt {
 
     /// Get all text from shapes in this group (recursively).
     fn text(&self) -> String;
+
+    /// Collect all shapes recursively (including from nested group shapes).
+    fn all_shapes_recursive(&self) -> Vec<&Shape>;
+
+    /// Collect all text from all shapes recursively, joined by newlines.
+    fn all_text_recursive(&self) -> String;
 }
 
 impl GroupShapeExt for GroupShape {
@@ -214,6 +308,23 @@ impl GroupShapeExt for GroupShape {
         }
 
         texts.join("\n")
+    }
+
+    fn all_shapes_recursive(&self) -> Vec<&Shape> {
+        let mut shapes: Vec<&Shape> = self.shape.iter().collect();
+        for group in &self.group_shape {
+            shapes.extend(group.all_shapes_recursive());
+        }
+        shapes
+    }
+
+    fn all_text_recursive(&self) -> String {
+        self.all_shapes_recursive()
+            .iter()
+            .filter_map(|s| s.text())
+            .filter(|t| !t.is_empty())
+            .collect::<Vec<_>>()
+            .join("\n")
     }
 }
 
@@ -270,6 +381,15 @@ pub trait SlideExt {
     /// Get the slide transition (if any).
     #[cfg(feature = "pml-transitions")]
     fn transition(&self) -> Option<&SlideTransition>;
+
+    /// Get the slide background, if one is explicitly set.
+    ///
+    /// Requires the `pml-styling` feature.
+    #[cfg(feature = "pml-styling")]
+    fn background(&self) -> Option<&CTBackground>;
+
+    /// Check if the slide is hidden (show=false).
+    fn is_hidden(&self) -> bool;
 }
 
 impl SlideExt for Slide {
@@ -296,6 +416,15 @@ impl SlideExt for Slide {
     #[cfg(feature = "pml-transitions")]
     fn transition(&self) -> Option<&SlideTransition> {
         self.transition.as_deref()
+    }
+
+    #[cfg(feature = "pml-styling")]
+    fn background(&self) -> Option<&CTBackground> {
+        self.common_slide_data.bg.as_deref()
+    }
+
+    fn is_hidden(&self) -> bool {
+        !self.show.unwrap_or(true)
     }
 }
 

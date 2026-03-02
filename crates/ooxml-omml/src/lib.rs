@@ -32,6 +32,7 @@
 //! - And more...
 
 pub mod error;
+pub mod ext;
 pub mod math;
 
 pub use error::{Error, Result};

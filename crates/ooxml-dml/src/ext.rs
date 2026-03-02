@@ -2,6 +2,7 @@
 //!
 //! Provides convenience methods for working with generated DML types.
 
+use crate::types::CTShapeProperties;
 #[cfg(feature = "dml-text")]
 use crate::types::*;
 
@@ -104,6 +105,18 @@ pub trait TextRunExt {
 
     /// Get the hyperlink relationship ID.
     fn hyperlink_rel_id(&self) -> Option<&str>;
+
+    /// Check if all-caps formatting is set for this run.
+    fn is_all_caps(&self) -> bool;
+
+    /// Check if small-caps formatting is set for this run.
+    fn is_small_caps(&self) -> bool;
+
+    /// Get the BCP 47 language tag for this run (e.g. `"en-US"`).
+    fn language(&self) -> Option<&str>;
+
+    /// Get the baseline shift as a signed percentage (positive = superscript).
+    fn baseline_shift_pct(&self) -> Option<i32>;
 }
 
 #[cfg(feature = "dml-text")]
@@ -150,6 +163,31 @@ impl TextRunExt for TextRun {
             .as_ref()
             .and_then(|p| p.hlink_click.as_ref())
             .and_then(|h| h.id.as_deref())
+    }
+
+    fn is_all_caps(&self) -> bool {
+        self.r_pr
+            .as_ref()
+            .and_then(|p| p.cap.as_ref())
+            .is_some_and(|c| *c == STTextCapsType::All)
+    }
+
+    fn is_small_caps(&self) -> bool {
+        self.r_pr
+            .as_ref()
+            .and_then(|p| p.cap.as_ref())
+            .is_some_and(|c| *c == STTextCapsType::Small)
+    }
+
+    fn language(&self) -> Option<&str> {
+        self.r_pr.as_ref().and_then(|p| p.lang.as_deref())
+    }
+
+    fn baseline_shift_pct(&self) -> Option<i32> {
+        self.r_pr
+            .as_ref()
+            .and_then(|p| p.baseline.as_deref())
+            .and_then(|s| s.parse().ok())
     }
 }
 
@@ -628,6 +666,235 @@ impl DataModelExt for crate::types::DataModel {
 
     fn text(&self) -> Vec<String> {
         Vec::new()
+    }
+}
+
+// =============================================================================
+// TextCharacterProperties / TextParagraphProperties / ShapeProperties traits
+// =============================================================================
+
+/// Extension methods for [`TextCharacterProperties`] (ECMA-376 §21.1.2.3.9, CT_TextCharacterProperties).
+///
+/// Provides typed access to per-run formatting properties like language, font
+/// size, caps, underline, strikethrough, and spacing.
+/// All accessors are gated on `dml-text`.
+#[cfg(feature = "dml-text")]
+pub trait TextCharacterPropertiesExt {
+    /// Get the BCP 47 language tag for this run (e.g. `"en-US"`).
+    fn language(&self) -> Option<&str>;
+    /// Get the font size in points (sz / 100.0).
+    fn font_size_pt(&self) -> Option<f64>;
+    /// Check if bold is set.
+    fn is_bold(&self) -> bool;
+    /// Check if italic is set.
+    fn is_italic(&self) -> bool;
+    /// Check if all-caps is set.
+    fn is_all_caps(&self) -> bool;
+    /// Check if small-caps is set.
+    fn is_small_caps(&self) -> bool;
+    /// Get the underline style.
+    fn underline_style(&self) -> Option<STTextUnderlineType>;
+    /// Get the strikethrough style.
+    fn strike_type(&self) -> Option<STTextStrikeType>;
+    /// Get the kerning pair gap in points (kern / 100.0).
+    fn kerning_pt(&self) -> Option<f64>;
+    /// Get the baseline shift as a signed percentage (positive = superscript).
+    fn baseline_shift_pct(&self) -> Option<i32>;
+    /// Get the character spacing in points (spc / 100.0 when it is a point value).
+    fn character_spacing_pt(&self) -> Option<f64>;
+}
+
+#[cfg(feature = "dml-text")]
+impl TextCharacterPropertiesExt for TextCharacterProperties {
+    fn language(&self) -> Option<&str> {
+        self.lang.as_deref()
+    }
+
+    fn font_size_pt(&self) -> Option<f64> {
+        self.sz.map(|s| s as f64 / 100.0)
+    }
+
+    fn is_bold(&self) -> bool {
+        self.b.unwrap_or(false)
+    }
+
+    fn is_italic(&self) -> bool {
+        self.i.unwrap_or(false)
+    }
+
+    fn is_all_caps(&self) -> bool {
+        self.cap.as_ref().is_some_and(|c| *c == STTextCapsType::All)
+    }
+
+    fn is_small_caps(&self) -> bool {
+        self.cap
+            .as_ref()
+            .is_some_and(|c| *c == STTextCapsType::Small)
+    }
+
+    fn underline_style(&self) -> Option<STTextUnderlineType> {
+        self.u
+    }
+
+    fn strike_type(&self) -> Option<STTextStrikeType> {
+        self.strike
+    }
+
+    fn kerning_pt(&self) -> Option<f64> {
+        self.kern.map(|k| k as f64 / 100.0)
+    }
+
+    fn baseline_shift_pct(&self) -> Option<i32> {
+        self.baseline.as_deref().and_then(|s| s.parse().ok())
+    }
+
+    fn character_spacing_pt(&self) -> Option<f64> {
+        // STTextPoint is a String — parse as number (hundredths of a point)
+        self.spc
+            .as_deref()
+            .and_then(|s| s.parse::<f64>().ok().map(|v| v / 100.0))
+    }
+}
+
+/// Extension methods for [`TextParagraphProperties`] (ECMA-376 §21.1.2.2.7, CT_TextParagraphProperties).
+///
+/// Provides typed access to paragraph-level formatting properties such as
+/// margins, indentation, line spacing, and bullets.
+/// All accessors are gated on `dml-text`.
+#[cfg(feature = "dml-text")]
+pub trait TextParagraphPropertiesExt {
+    /// Get the left margin in EMU.
+    fn margin_left_emu(&self) -> Option<i32>;
+    /// Get the right margin in EMU.
+    fn margin_right_emu(&self) -> Option<i32>;
+    /// Get the first-line indent in EMU.
+    fn indent_emu(&self) -> Option<i32>;
+    /// Get the line spacing definition.
+    fn line_spacing(&self) -> Option<&CTTextSpacing>;
+    /// Get the space-before definition.
+    fn space_before(&self) -> Option<&CTTextSpacing>;
+    /// Get the space-after definition.
+    fn space_after(&self) -> Option<&CTTextSpacing>;
+    /// Get the paragraph level (0-based; 0 = body text).
+    fn paragraph_level(&self) -> i32;
+    /// Get the bullet character, if the bullet is a char bullet (`buChar`).
+    fn bullet_char(&self) -> Option<&str>;
+    /// Get the text alignment.
+    fn text_alignment(&self) -> Option<STTextAlignType>;
+}
+
+#[cfg(feature = "dml-text")]
+impl TextParagraphPropertiesExt for TextParagraphProperties {
+    fn margin_left_emu(&self) -> Option<i32> {
+        self.mar_l
+    }
+
+    fn margin_right_emu(&self) -> Option<i32> {
+        self.mar_r
+    }
+
+    fn indent_emu(&self) -> Option<i32> {
+        self.indent
+    }
+
+    fn line_spacing(&self) -> Option<&CTTextSpacing> {
+        self.ln_spc.as_deref()
+    }
+
+    fn space_before(&self) -> Option<&CTTextSpacing> {
+        self.spc_bef.as_deref()
+    }
+
+    fn space_after(&self) -> Option<&CTTextSpacing> {
+        self.spc_aft.as_deref()
+    }
+
+    fn paragraph_level(&self) -> i32 {
+        self.lvl.unwrap_or(0)
+    }
+
+    fn bullet_char(&self) -> Option<&str> {
+        self.text_bullet.as_ref().and_then(|b| {
+            if let EGTextBullet::BuChar(bc) = b.as_ref() {
+                Some(bc.char.as_str())
+            } else {
+                None
+            }
+        })
+    }
+
+    fn text_alignment(&self) -> Option<STTextAlignType> {
+        self.algn
+    }
+}
+
+/// Extension methods for [`CTShapeProperties`] (ECMA-376 §20.1.6.6, CT_ShapeProperties).
+///
+/// Provides convenient access to position, size, rotation, and line
+/// properties. All coordinate values are in EMU (914400 per inch).
+pub trait ShapePropertiesExt {
+    /// Get the position offset in EMU as (x, y).
+    ///
+    /// Returns `None` if no transform or offset is set.
+    fn offset_emu(&self) -> Option<(i64, i64)>;
+    /// Get the extent (width, height) in EMU.
+    ///
+    /// Returns `None` if no transform or extents are set.
+    fn extent_emu(&self) -> Option<(i64, i64)>;
+    /// Get the rotation angle in degrees (rot / 60000.0).
+    fn rotation_angle_deg(&self) -> Option<f64>;
+    /// Check if the shape is flipped horizontally.
+    fn is_flip_h(&self) -> bool;
+    /// Check if the shape is flipped vertically.
+    fn is_flip_v(&self) -> bool;
+    /// Check if the shape has an explicit line (stroke) defined.
+    fn has_line(&self) -> bool;
+}
+
+impl ShapePropertiesExt for CTShapeProperties {
+    fn offset_emu(&self) -> Option<(i64, i64)> {
+        let xfrm = self.transform.as_ref()?;
+        let off = xfrm.offset.as_ref()?;
+        let x = off.x.parse::<i64>().ok()?;
+        let y = off.y.parse::<i64>().ok()?;
+        Some((x, y))
+    }
+
+    fn extent_emu(&self) -> Option<(i64, i64)> {
+        let xfrm = self.transform.as_ref()?;
+        let ext = xfrm.extents.as_ref()?;
+        Some((ext.cx, ext.cy))
+    }
+
+    fn rotation_angle_deg(&self) -> Option<f64> {
+        self.transform
+            .as_ref()
+            .and_then(|xfrm| xfrm.rot)
+            .map(|rot| rot as f64 / 60000.0)
+    }
+
+    fn is_flip_h(&self) -> bool {
+        self.transform
+            .as_ref()
+            .and_then(|xfrm| xfrm.flip_h)
+            .unwrap_or(false)
+    }
+
+    fn is_flip_v(&self) -> bool {
+        self.transform
+            .as_ref()
+            .and_then(|xfrm| xfrm.flip_v)
+            .unwrap_or(false)
+    }
+
+    #[cfg(feature = "dml-lines")]
+    fn has_line(&self) -> bool {
+        self.line.is_some()
+    }
+
+    #[cfg(not(feature = "dml-lines"))]
+    fn has_line(&self) -> bool {
+        false
     }
 }
 
@@ -1145,6 +1412,161 @@ mod tests {
 
         assert_eq!(texts.len(), 1);
         assert_eq!(texts[0], "SmartArt Node");
+    }
+
+    // -------------------------------------------------------------------------
+    // TextCharacterPropertiesExt tests
+    // -------------------------------------------------------------------------
+
+    #[cfg(feature = "dml-text")]
+    #[test]
+    fn test_text_char_props_language_and_size() {
+        let props = TextCharacterProperties {
+            lang: Some("en-US".to_string()),
+            sz: Some(2400), // 24pt
+            b: Some(true),
+            i: Some(false),
+            cap: Some(STTextCapsType::All),
+            ..Default::default()
+        };
+
+        use crate::ext::TextCharacterPropertiesExt;
+        assert_eq!(props.language(), Some("en-US"));
+        assert_eq!(props.font_size_pt(), Some(24.0));
+        assert!(props.is_bold());
+        assert!(!props.is_italic());
+        assert!(props.is_all_caps());
+        assert!(!props.is_small_caps());
+    }
+
+    #[cfg(feature = "dml-text")]
+    #[test]
+    fn test_text_char_props_defaults() {
+        let props = TextCharacterProperties::default();
+        use crate::ext::TextCharacterPropertiesExt;
+        assert!(props.language().is_none());
+        assert!(props.font_size_pt().is_none());
+        assert!(!props.is_bold());
+        assert!(!props.is_italic());
+        assert!(!props.is_all_caps());
+        assert!(!props.is_small_caps());
+        assert!(props.underline_style().is_none());
+        assert!(props.strike_type().is_none());
+        assert!(props.kerning_pt().is_none());
+        assert!(props.baseline_shift_pct().is_none());
+        assert!(props.character_spacing_pt().is_none());
+    }
+
+    #[cfg(feature = "dml-text")]
+    #[test]
+    fn test_text_run_caps_and_language() {
+        let run = TextRun {
+            r_pr: Some(Box::new(TextCharacterProperties {
+                cap: Some(STTextCapsType::Small),
+                lang: Some("fr-FR".to_string()),
+                ..Default::default()
+            })),
+            t: "test".to_string(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        };
+
+        assert!(!run.is_all_caps());
+        assert!(run.is_small_caps());
+        assert_eq!(run.language(), Some("fr-FR"));
+        assert!(run.baseline_shift_pct().is_none());
+    }
+
+    // -------------------------------------------------------------------------
+    // TextParagraphPropertiesExt tests
+    // -------------------------------------------------------------------------
+
+    #[cfg(feature = "dml-text")]
+    #[test]
+    fn test_text_paragraph_properties_ext() {
+        let props = TextParagraphProperties {
+            mar_l: Some(457200), // 0.5 inch
+            mar_r: Some(0),
+            lvl: Some(2),
+            algn: Some(STTextAlignType::Ctr),
+            text_bullet: Some(Box::new(EGTextBullet::BuChar(Box::new(CTTextCharBullet {
+                char: "•".to_string(),
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+            })))),
+            ..Default::default()
+        };
+
+        use crate::ext::TextParagraphPropertiesExt;
+        assert_eq!(props.margin_left_emu(), Some(457200));
+        assert_eq!(props.margin_right_emu(), Some(0));
+        assert_eq!(props.paragraph_level(), 2);
+        assert_eq!(props.text_alignment(), Some(STTextAlignType::Ctr));
+        assert_eq!(props.bullet_char(), Some("•"));
+        assert!(props.line_spacing().is_none());
+        assert!(props.space_before().is_none());
+    }
+
+    #[cfg(feature = "dml-text")]
+    #[test]
+    fn test_text_paragraph_properties_defaults() {
+        let props = TextParagraphProperties::default();
+        use crate::ext::TextParagraphPropertiesExt;
+        assert!(props.margin_left_emu().is_none());
+        assert!(props.margin_right_emu().is_none());
+        assert!(props.indent_emu().is_none());
+        assert_eq!(props.paragraph_level(), 0);
+        assert!(props.text_alignment().is_none());
+        assert!(props.bullet_char().is_none());
+    }
+
+    // -------------------------------------------------------------------------
+    // ShapePropertiesExt tests
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_shape_properties_no_transform() {
+        let sp = CTShapeProperties::default();
+        use crate::ext::ShapePropertiesExt;
+        assert!(sp.offset_emu().is_none());
+        assert!(sp.extent_emu().is_none());
+        assert!(sp.rotation_angle_deg().is_none());
+        assert!(!sp.is_flip_h());
+        assert!(!sp.is_flip_v());
+        assert!(!sp.has_line());
+    }
+
+    #[test]
+    fn test_shape_properties_with_transform() {
+        use crate::types::{Point2D, PositiveSize2D, Transform2D};
+        let sp = CTShapeProperties {
+            transform: Some(Box::new(Transform2D {
+                rot: Some(1800000), // 30 degrees
+                flip_h: Some(true),
+                flip_v: None,
+                offset: Some(Box::new(Point2D {
+                    x: "914400".to_string(), // 1 inch
+                    y: "457200".to_string(), // 0.5 inch
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                })),
+                extents: Some(Box::new(PositiveSize2D {
+                    cx: 2743200, // 3 inches
+                    cy: 1828800, // 2 inches
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                })),
+                ..Default::default()
+            })),
+            ..Default::default()
+        };
+
+        use crate::ext::ShapePropertiesExt;
+        assert_eq!(sp.offset_emu(), Some((914400, 457200)));
+        assert_eq!(sp.extent_emu(), Some((2743200, 1828800)));
+        assert!((sp.rotation_angle_deg().unwrap() - 30.0).abs() < 0.001);
+        assert!(sp.is_flip_h());
+        assert!(!sp.is_flip_v());
     }
 
     #[cfg(feature = "dml-charts")]
