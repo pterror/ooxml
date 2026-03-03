@@ -2147,9 +2147,13 @@ impl ToXml for CTTLBehaviorAttributeNameList {
                     .map_err(SerializeError::from)?;
             }
             {
-                let start = BytesStart::new("p:attrName");
+                let val_str = item.as_str();
+                let mut start = BytesStart::new("p:attrName");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(item.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("p:attrName")))?;
             }
             #[cfg(feature = "extra-children")]
@@ -4742,9 +4746,13 @@ impl ToXml for CTComment {
         {
             let val = &self.text;
             {
-                let start = BytesStart::new("p:text");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("p:text");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("p:text")))?;
             }
         }

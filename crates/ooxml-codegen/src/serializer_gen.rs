@@ -250,8 +250,9 @@ impl<'a> SerializerGenerator<'a> {
         let mut code = String::new();
         writeln!(code, "impl ToXml for {} {{", rust_name).unwrap();
 
-        // write_attrs
-        if has_attrs {
+        // write_attrs — emitted when there are typed attributes OR text content
+        // (text content may need xml:space="preserve" when it starts/ends with whitespace)
+        if has_attrs || has_text {
             writeln!(
                 code,
                 "    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {{"
@@ -284,6 +285,27 @@ impl<'a> SerializerGenerator<'a> {
                     self.write_attr_push(&mut code, &attr_name, strategy, "val", "            ");
                     writeln!(code, "        }}").unwrap();
                 }
+            }
+
+            // xml:space="preserve" — emit when text content has leading/trailing whitespace
+            // so that XML parsers do not strip significant whitespace (ECMA-376 §18.4.8)
+            for field in &text_fields {
+                let feature = self.get_field_feature(&rust_name, &field.xml_name);
+                if let Some(ref feat) = feature {
+                    writeln!(code, "        #[cfg(feature = \"{}\")]", feat).unwrap();
+                }
+                writeln!(
+                    code,
+                    "        if let Some(ref text) = self.{} && (text.starts_with(' ') || text.ends_with(' ')) {{",
+                    field.name
+                )
+                .unwrap();
+                writeln!(
+                    code,
+                    "            start.push_attribute((\"xml:space\", \"preserve\"));"
+                )
+                .unwrap();
+                writeln!(code, "        }}").unwrap();
             }
 
             // extra_attrs
@@ -750,12 +772,27 @@ impl<'a> SerializerGenerator<'a> {
             }
             WriteStrategy::AsString => {
                 writeln!(code, "{}{{", indent).unwrap();
+                writeln!(code, "{}    let val_str = {}.as_str();", indent, val_expr).unwrap();
                 writeln!(
                     code,
-                    "{}    let start = BytesStart::new(\"{}\");",
+                    "{}    let mut start = BytesStart::new(\"{}\");",
                     indent, tag
                 )
                 .unwrap();
+                // xml:space="preserve" when text has leading/trailing whitespace (ECMA-376 §18.4.8)
+                writeln!(
+                    code,
+                    "{}    if val_str.starts_with(' ') || val_str.ends_with(' ') {{",
+                    indent
+                )
+                .unwrap();
+                writeln!(
+                    code,
+                    "{}        start.push_attribute((\"xml:space\", \"preserve\"));",
+                    indent
+                )
+                .unwrap();
+                writeln!(code, "{}    }}", indent).unwrap();
                 writeln!(
                     code,
                     "{}    writer.write_event(Event::Start(start))?;",
@@ -764,8 +801,8 @@ impl<'a> SerializerGenerator<'a> {
                 .unwrap();
                 writeln!(
                     code,
-                    "{}    writer.write_event(Event::Text(BytesText::new({}.as_str())))?;",
-                    indent, val_expr
+                    "{}    writer.write_event(Event::Text(BytesText::new(val_str)))?;",
+                    indent
                 )
                 .unwrap();
                 writeln!(

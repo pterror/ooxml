@@ -9337,6 +9337,17 @@ impl ToXml for CTPermStart {
 }
 
 impl ToXml for Text {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
+        let mut start = start;
+        if let Some(ref text) = self.text
+            && (text.starts_with(' ') || text.ends_with(' '))
+        {
+            start.push_attribute(("xml:space", "preserve"));
+        }
+        start
+    }
+
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         if let Some(ref text) = self.text {
             writer.write_event(Event::Text(BytesText::new(text)))?;

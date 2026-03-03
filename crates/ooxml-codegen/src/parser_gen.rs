@@ -212,6 +212,22 @@ impl<'a> ParserGenerator<'a> {
             "            Event::CData(e) => text.push_str(&e.decode().unwrap_or_default()),"
         )
         .unwrap();
+        // Entity references (&amp; &lt; etc.) arrive as GeneralRef events when
+        // expand_empty_elements is false or the reader is in non-expanding mode.
+        writeln!(self.output, "            Event::GeneralRef(e) => {{").unwrap();
+        writeln!(
+            self.output,
+            "                let name = e.decode().unwrap_or_default();"
+        )
+        .unwrap();
+        writeln!(
+            self.output,
+            "                if let Some(s) = quick_xml::escape::resolve_xml_entity(&name) {{"
+        )
+        .unwrap();
+        writeln!(self.output, "                    text.push_str(s);").unwrap();
+        writeln!(self.output, "                }}").unwrap();
+        writeln!(self.output, "            }},").unwrap();
         writeln!(self.output, "            Event::End(_) => break,").unwrap();
         writeln!(self.output, "            Event::Eof => break,").unwrap();
         writeln!(self.output, "            _ => {{}}").unwrap();
@@ -1061,19 +1077,48 @@ impl<'a> ParserGenerator<'a> {
             writeln!(code, "                        }}").unwrap();
             writeln!(code, "                    }}").unwrap();
 
-            // Handle text content if any text fields
+            // Handle text content if any text fields.
+            // Text may arrive split across multiple Text events (e.g. when entity
+            // references like &amp; are interleaved), so we accumulate with push_str.
+            // GeneralRef events carry entity references that quick-xml does not
+            // expand inline (e.g. &amp; → "amp"); resolve them the same way.
             if !text_fields.is_empty() {
                 writeln!(code, "                    Event::Text(e) => {{").unwrap();
+                writeln!(
+                    code,
+                    "                        let s = e.decode().unwrap_or_default();"
+                )
+                .unwrap();
                 for field in &text_fields {
                     let base_name = field.name.strip_prefix("r#").unwrap_or(&field.name);
                     let base_name = base_name.trim_start_matches('_');
                     let var_name = format!("f_{}", base_name);
                     writeln!(
                         code,
-                        "                        {} = Some(e.decode().unwrap_or_default().into_owned());",
+                        "                        {}.get_or_insert_with(String::new).push_str(&s);",
+                        var_name
+                    )
+                    .unwrap();
+                }
+                writeln!(code, "                    }}").unwrap();
+                writeln!(code, "                    Event::GeneralRef(e) => {{").unwrap();
+                writeln!(
+                    code,
+                    "                        let name = e.decode().unwrap_or_default();"
+                )
+                .unwrap();
+                writeln!(code, "                        if let Some(s) = quick_xml::escape::resolve_xml_entity(&name) {{").unwrap();
+                for field in &text_fields {
+                    let base_name = field.name.strip_prefix("r#").unwrap_or(&field.name);
+                    let base_name = base_name.trim_start_matches('_');
+                    let var_name = format!("f_{}", base_name);
+                    writeln!(
+                        code,
+                        "                            {}.get_or_insert_with(String::new).push_str(s);",
                         var_name
                     ).unwrap();
                 }
+                writeln!(code, "                        }}").unwrap();
                 writeln!(code, "                    }}").unwrap();
             }
 

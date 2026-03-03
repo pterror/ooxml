@@ -11373,9 +11373,13 @@ impl ToXml for CTHeaders {
                     .map_err(SerializeError::from)?;
             }
             {
-                let start = BytesStart::new("a:header");
+                let val_str = item.as_str();
+                let mut start = BytesStart::new("a:header");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(item.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:header")))?;
             }
             #[cfg(feature = "extra-children")]
@@ -11809,9 +11813,13 @@ impl ToXml for CTTableProperties {
         #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.table_style_id {
             {
-                let start = BytesStart::new("a:tableStyleId");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:tableStyleId");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:tableStyleId")))?;
             }
         }
@@ -15021,9 +15029,13 @@ impl ToXml for CTTextField {
         }
         if let Some(ref val) = self.t {
             {
-                let start = BytesStart::new("a:t");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:t");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:t")))?;
             }
         }
@@ -15107,9 +15119,13 @@ impl ToXml for TextRun {
         {
             let val = &self.t;
             {
-                let start = BytesStart::new("a:t");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:t");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:t")))?;
             }
         }
@@ -15310,9 +15326,13 @@ impl ToXml for NumericValue {
         {
             let val = &self.v;
             {
-                let start = BytesStart::new("a:v");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:v");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:v")))?;
             }
         }
@@ -15356,9 +15376,13 @@ impl ToXml for NumericData {
         #[cfg(feature = "dml-charts")]
         if let Some(ref val) = self.format_code {
             {
-                let start = BytesStart::new("a:formatCode");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:formatCode");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:formatCode")))?;
             }
         }
@@ -15468,9 +15492,13 @@ impl ToXml for NumericReference {
         {
             let val = &self.f;
             {
-                let start = BytesStart::new("a:f");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:f");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:f")))?;
             }
         }
@@ -15639,9 +15667,13 @@ impl ToXml for StringValue {
         {
             let val = &self.v;
             {
-                let start = BytesStart::new("a:v");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:v");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:v")))?;
             }
         }
@@ -15771,9 +15803,13 @@ impl ToXml for StringReference {
         {
             let val = &self.f;
             {
-                let start = BytesStart::new("a:f");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:f");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:f")))?;
             }
         }
@@ -16073,9 +16109,13 @@ impl ToXml for MultiLevelStrRef {
         {
             let val = &self.f;
             {
-                let start = BytesStart::new("a:f");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:f");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:f")))?;
             }
         }
@@ -16305,9 +16345,13 @@ impl ToXml for SeriesText {
         #[cfg(feature = "dml-charts")]
         if let Some(ref val) = self.v {
             {
-                let start = BytesStart::new("a:v");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:v");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:v")))?;
             }
         }
@@ -17889,9 +17933,13 @@ impl ToXml for EGDLblShared {
         }
         if let Some(ref val) = self.separator {
             {
-                let start = BytesStart::new("a:separator");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:separator");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:separator")))?;
             }
         }
@@ -18157,9 +18205,13 @@ impl ToXml for DchrtGroupDLbl {
         }
         if let Some(ref val) = self.separator {
             {
-                let start = BytesStart::new("a:separator");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:separator");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:separator")))?;
             }
         }
@@ -18479,9 +18531,13 @@ impl ToXml for DataLabel {
         #[cfg(feature = "dml-charts")]
         if let Some(ref val) = self.separator {
             {
-                let start = BytesStart::new("a:separator");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:separator");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:separator")))?;
             }
         }
@@ -18761,9 +18817,13 @@ impl ToXml for DchrtGroupDLbls {
         }
         if let Some(ref val) = self.separator {
             {
-                let start = BytesStart::new("a:separator");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:separator");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:separator")))?;
             }
         }
@@ -19080,9 +19140,13 @@ impl ToXml for DataLabels {
         #[cfg(feature = "dml-charts")]
         if let Some(ref val) = self.separator {
             {
-                let start = BytesStart::new("a:separator");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:separator");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:separator")))?;
             }
         }
@@ -19798,9 +19862,13 @@ impl ToXml for Trendline {
         #[cfg(feature = "dml-charts")]
         if let Some(ref val) = self.name {
             {
-                let start = BytesStart::new("a:name");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:name");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:name")))?;
             }
         }
@@ -30676,9 +30744,13 @@ impl ToXml for PivotSource {
         {
             let val = &self.name;
             {
-                let start = BytesStart::new("a:name");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:name");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:name")))?;
             }
         }
@@ -30912,9 +30984,13 @@ impl ToXml for ChartHeaderFooter {
         #[cfg(feature = "dml-charts")]
         if let Some(ref val) = self.odd_header {
             {
-                let start = BytesStart::new("a:oddHeader");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:oddHeader");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:oddHeader")))?;
             }
         }
@@ -30934,9 +31010,13 @@ impl ToXml for ChartHeaderFooter {
         #[cfg(feature = "dml-charts")]
         if let Some(ref val) = self.odd_footer {
             {
-                let start = BytesStart::new("a:oddFooter");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:oddFooter");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:oddFooter")))?;
             }
         }
@@ -30956,9 +31036,13 @@ impl ToXml for ChartHeaderFooter {
         #[cfg(feature = "dml-charts")]
         if let Some(ref val) = self.even_header {
             {
-                let start = BytesStart::new("a:evenHeader");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:evenHeader");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:evenHeader")))?;
             }
         }
@@ -30978,9 +31062,13 @@ impl ToXml for ChartHeaderFooter {
         #[cfg(feature = "dml-charts")]
         if let Some(ref val) = self.even_footer {
             {
-                let start = BytesStart::new("a:evenFooter");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:evenFooter");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:evenFooter")))?;
             }
         }
@@ -31000,9 +31088,13 @@ impl ToXml for ChartHeaderFooter {
         #[cfg(feature = "dml-charts")]
         if let Some(ref val) = self.first_header {
             {
-                let start = BytesStart::new("a:firstHeader");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:firstHeader");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:firstHeader")))?;
             }
         }
@@ -31022,9 +31114,13 @@ impl ToXml for ChartHeaderFooter {
         #[cfg(feature = "dml-charts")]
         if let Some(ref val) = self.first_footer {
             {
-                let start = BytesStart::new("a:firstFooter");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("a:firstFooter");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("a:firstFooter")))?;
             }
         }

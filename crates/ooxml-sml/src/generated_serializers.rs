@@ -1157,9 +1157,13 @@ impl ToXml for Authors {
                     .map_err(SerializeError::from)?;
             }
             {
-                let start = BytesStart::new("author");
+                let val_str = item.as_str();
+                let mut start = BytesStart::new("author");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(item.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("author")))?;
             }
             #[cfg(feature = "extra-children")]
@@ -10485,9 +10489,13 @@ impl ToXml for PhoneticRun {
         {
             let val = &self.cell_type;
             {
-                let start = BytesStart::new("t");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("t");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("t")))?;
             }
         }
@@ -10541,9 +10549,13 @@ impl ToXml for RichTextElement {
         {
             let val = &self.cell_type;
             {
-                let start = BytesStart::new("t");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("t");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("t")))?;
             }
         }
@@ -10890,9 +10902,13 @@ impl ToXml for RichString {
         }
         if let Some(ref val) = self.cell_type {
             {
-                let start = BytesStart::new("t");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("t");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("t")))?;
             }
         }
@@ -12227,9 +12243,13 @@ impl ToXml for RevisionDefinedName {
         }
         if let Some(ref val) = self.formula {
             {
-                let start = BytesStart::new("formula");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("formula");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("formula")))?;
             }
         }
@@ -12248,9 +12268,13 @@ impl ToXml for RevisionDefinedName {
         }
         if let Some(ref val) = self.old_formula {
             {
-                let start = BytesStart::new("oldFormula");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("oldFormula");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("oldFormula")))?;
             }
         }
@@ -14421,9 +14445,13 @@ impl ToXml for Cell {
         }
         if let Some(ref val) = self.value {
             {
-                let start = BytesStart::new("v");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("v");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("v")))?;
             }
         }
@@ -16368,9 +16396,13 @@ impl ToXml for DataValidation {
         #[cfg(feature = "sml-validation")]
         if let Some(ref val) = self.formula1 {
             {
-                let start = BytesStart::new("formula1");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("formula1");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("formula1")))?;
             }
         }
@@ -16390,9 +16422,13 @@ impl ToXml for DataValidation {
         #[cfg(feature = "sml-validation")]
         if let Some(ref val) = self.formula2 {
             {
-                let start = BytesStart::new("formula2");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("formula2");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("formula2")))?;
             }
         }
@@ -16608,9 +16644,13 @@ impl ToXml for ConditionalRule {
                     .map_err(SerializeError::from)?;
             }
             {
-                let start = BytesStart::new("formula");
+                let val_str = item.as_str();
+                let mut start = BytesStart::new("formula");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(item.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("formula")))?;
             }
             #[cfg(feature = "extra-children")]
@@ -16853,6 +16893,11 @@ impl ToXml for CellFormula {
         #[cfg(feature = "sml-formulas-advanced")]
         if let Some(ref val) = self.bx {
             start.push_attribute(("bx", if *val { "1" } else { "0" }));
+        }
+        if let Some(ref text) = self.text
+            && (text.starts_with(' ') || text.ends_with(' '))
+        {
+            start.push_attribute(("xml:space", "preserve"));
         }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
@@ -17444,9 +17489,13 @@ impl ToXml for HeaderFooter {
         #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.odd_header {
             {
-                let start = BytesStart::new("oddHeader");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("oddHeader");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("oddHeader")))?;
             }
         }
@@ -17466,9 +17515,13 @@ impl ToXml for HeaderFooter {
         #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.odd_footer {
             {
-                let start = BytesStart::new("oddFooter");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("oddFooter");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("oddFooter")))?;
             }
         }
@@ -17488,9 +17541,13 @@ impl ToXml for HeaderFooter {
         #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.even_header {
             {
-                let start = BytesStart::new("evenHeader");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("evenHeader");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("evenHeader")))?;
             }
         }
@@ -17510,9 +17567,13 @@ impl ToXml for HeaderFooter {
         #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.even_footer {
             {
-                let start = BytesStart::new("evenFooter");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("evenFooter");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("evenFooter")))?;
             }
         }
@@ -17532,9 +17593,13 @@ impl ToXml for HeaderFooter {
         #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.first_header {
             {
-                let start = BytesStart::new("firstHeader");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("firstHeader");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("firstHeader")))?;
             }
         }
@@ -17554,9 +17619,13 @@ impl ToXml for HeaderFooter {
         #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.first_footer {
             {
-                let start = BytesStart::new("firstFooter");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("firstFooter");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("firstFooter")))?;
             }
         }
@@ -24055,9 +24124,13 @@ impl ToXml for ExternalCell {
         }
         if let Some(ref val) = self.value {
             {
-                let start = BytesStart::new("v");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("v");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("v")))?;
             }
         }
@@ -24344,9 +24417,13 @@ impl ToXml for CTDdeValue {
         {
             let val = &self.value;
             {
-                let start = BytesStart::new("val");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("val");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("val")))?;
             }
         }
@@ -25014,6 +25091,11 @@ impl ToXml for TableFormula {
         if let Some(ref val) = self.array {
             start.push_attribute(("array", if *val { "1" } else { "0" }));
         }
+        if let Some(ref text) = self.text
+            && (text.starts_with(' ') || text.ends_with(' '))
+        {
+            start.push_attribute(("xml:space", "preserve"));
+        }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
             start.push_attribute((key.as_str(), value.as_str()));
@@ -25320,9 +25402,13 @@ impl ToXml for CTVolTopic {
         {
             let val = &self.value;
             {
-                let start = BytesStart::new("v");
+                let val_str = val.as_str();
+                let mut start = BytesStart::new("v");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("v")))?;
             }
         }
@@ -25341,9 +25427,13 @@ impl ToXml for CTVolTopic {
                     .map_err(SerializeError::from)?;
             }
             {
-                let start = BytesStart::new("stp");
+                let val_str = item.as_str();
+                let mut start = BytesStart::new("stp");
+                if val_str.starts_with(' ') || val_str.ends_with(' ') {
+                    start.push_attribute(("xml:space", "preserve"));
+                }
                 writer.write_event(Event::Start(start))?;
-                writer.write_event(Event::Text(BytesText::new(item.as_str())))?;
+                writer.write_event(Event::Text(BytesText::new(val_str)))?;
                 writer.write_event(Event::End(BytesEnd::new("stp")))?;
             }
             #[cfg(feature = "extra-children")]
@@ -26641,6 +26731,11 @@ impl ToXml for DefinedName {
         #[cfg(feature = "sml-formulas-advanced")]
         if let Some(ref val) = self.workbook_parameter {
             start.push_attribute(("workbookParameter", if *val { "1" } else { "0" }));
+        }
+        if let Some(ref text) = self.text
+            && (text.starts_with(' ') || text.ends_with(' '))
+        {
+            start.push_attribute(("xml:space", "preserve"));
         }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
