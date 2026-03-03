@@ -61,6 +61,17 @@ After editing multiple files, run the full check once — not after each edit. F
 
 **Always commit when work is complete.** After finishing a task and verifying it passes `cargo clippy` and `cargo test`, create a commit before moving on. Don't leave working changes uncommitted.
 
+## Context Management
+
+**Use subagents to protect the main context window.** For broad exploration or mechanical multi-file work, delegate to an Explore or general-purpose subagent rather than running searches inline. The subagent returns a distilled summary; raw tool output stays out of the main context.
+
+Rules of thumb:
+- Research tasks (investigating a question, surveying patterns) → subagent; don't pollute main context with exploratory noise
+- Searching >5 files or running >3 rounds of grep/read → use a subagent
+- Codebase-wide analysis (architecture, patterns, cross-file survey) → always subagent
+- Mechanical work across many files (applying the same change everywhere) → parallel subagents
+- Single targeted lookup (one file, one symbol) → inline is fine
+
 ## Session Handoff
 
 Use plan mode as a handoff mechanism when:
@@ -68,15 +79,11 @@ Use plan mode as a handoff mechanism when:
 - The session has drifted from its original purpose
 - Context has accumulated enough that a fresh start would help
 
-Before entering plan mode:
-- Update TODO.md with any remaining work
-- Update memory files with anything worth preserving across sessions
+**For handoffs:** enter plan mode, write a short plan pointing at TODO.md, and ExitPlanMode. **Do NOT investigate first** — the session is context-heavy and about to be discarded. The fresh session investigates after approval.
 
-Then enter plan mode and write a plan file that either:
-- Proposes the next task if it's clear: "next up: X — see TODO.md"
-- Flags that direction is needed: "task complete / session drifted — see TODO.md"
+**For mid-session planning** on a different topic: investigating inside plan mode is fine — context isn't being thrown away.
 
-ExitPlanMode hands control back to the user to approve, redirect, or stop.
+Before the handoff plan, update TODO.md and memory files with anything worth preserving.
 
 ## Commit Convention
 
@@ -155,6 +162,17 @@ The rescribe team is waiting on this to implement `rescribe-read-docx` and `resc
 - **Preserve unknown data** - Never silently drop XML elements or attributes we don't understand
 - **Verify roundtrips** - Changes to serialization must pass roundtrip tests
 
+**Conversation is not memory.** Anything said in chat evaporates at session end. If it implies future behavior change, write it to CLAUDE.md or a memory file immediately — or it will not happen.
+
+**Warning — these phrases mean something needs to be written down right now:**
+- "I won't do X again" / "I'll remember to..." / "I've learned that..."
+- "Next time I'll..." / "From now on I'll..."
+- Any acknowledgement of a recurring error without a corresponding CLAUDE.md or memory edit
+
+**When the user corrects you:** Ask what rule would have prevented this, and write it before proceeding. **"The rule exists, I just didn't follow it" is never the diagnosis** — a rule that doesn't prevent the failure it describes is incomplete; fix the rule, not your behavior.
+
+**Something unexpected is a signal, not noise.** Surprising output, anomalous numbers, files containing what they shouldn't — stop and ask why before continuing. Don't accept anomalies and move on.
+
 ## Generated Files — IMPORTANT
 
 Generated files (`generated.rs`, `generated_parsers.rs`, `generated_serializers.rs`) are **committed to the repo** so that users can build without the ECMA-376 RNC schemas in `/spec/`.
@@ -191,6 +209,7 @@ Do not:
 - Panic on malformed input - return `Error::Invalid` instead
 - Add format-specific code to `ooxml` core - that belongs in `ooxml-wml`, etc.
 - Commit without running `cargo clippy` and `cargo test`
+- Use interactive git commands (`git add -p`, `git add -i`, `git rebase -i`) — these block on stdin and hang in non-interactive shells; stage files by name instead
 - Use path dependencies in Cargo.toml - causes clippy to stash changes across repos
 - Use `--no-verify` - fix the issue or fix the hook
 - Assume tools are missing - check if `nix develop` is available for the right environment
