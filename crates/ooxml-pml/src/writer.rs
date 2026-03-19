@@ -3810,6 +3810,37 @@ mod tests {
         assert_eq!(table.cell(2, 1).unwrap().text(), "200");
     }
 
+    #[cfg(feature = "dml-tables")]
+    #[test]
+    fn test_table_xml_special_characters() {
+        use ooxml_dml::TableCellExt;
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+
+        let table = TableBuilder::new()
+            .add_row(["A & B", "<tag>", "x > y"])
+            .add_row(["she said \"hi\"", "it's fine", "1 < 2 & 3 > 0"]);
+
+        slide.add_table(table, 914400, 1828800, 7315200, 1828800);
+
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        buffer.set_position(0);
+        let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
+        let read_slide = presentation.slide(0).unwrap();
+        let table = read_slide.table(0).unwrap();
+
+        assert_eq!(table.cell(0, 0).unwrap().text(), "A & B");
+        assert_eq!(table.cell(0, 1).unwrap().text(), "<tag>");
+        assert_eq!(table.cell(0, 2).unwrap().text(), "x > y");
+        assert_eq!(table.cell(1, 0).unwrap().text(), "she said \"hi\"");
+        assert_eq!(table.cell(1, 1).unwrap().text(), "it's fine");
+        assert_eq!(table.cell(1, 2).unwrap().text(), "1 < 2 & 3 > 0");
+    }
+
     #[test]
     fn test_roundtrip_with_hyperlink() {
         use std::io::Cursor;

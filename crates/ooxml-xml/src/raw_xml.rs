@@ -131,7 +131,25 @@ impl RawXmlElement {
                 Ok(Event::Text(e)) => {
                     let text = e.decode().unwrap_or_default();
                     if !text.is_empty() {
-                        element.children.push(RawXmlNode::Text(text.to_string()));
+                        // Merge with preceding text node (e.g. after a GeneralRef)
+                        if let Some(RawXmlNode::Text(last)) = element.children.last_mut() {
+                            last.push_str(&text);
+                        } else {
+                            element.children.push(RawXmlNode::Text(text.to_string()));
+                        }
+                    }
+                }
+                Ok(Event::GeneralRef(e)) => {
+                    let entity_name = e.decode().unwrap_or_default();
+                    if let Some(resolved) = quick_xml::escape::resolve_xml_entity(&entity_name) {
+                        // Append to last text node if possible, otherwise create new one
+                        if let Some(RawXmlNode::Text(last)) = element.children.last_mut() {
+                            last.push_str(resolved);
+                        } else {
+                            element
+                                .children
+                                .push(RawXmlNode::Text(resolved.to_string()));
+                        }
                     }
                 }
                 Ok(Event::CData(e)) => {
@@ -527,5 +545,37 @@ mod tests {
             output,
             r#"<test attr="val&quot;ue">a &lt; b &amp; c &gt; d</test>"#
         );
+    }
+
+    #[test]
+    fn test_from_reader_preserves_xml_entities() {
+        // Verify that XML entity references (&amp;, &lt;, etc.) survive
+        // the parse→store→re-serialize roundtrip through RawXmlElement.
+        let xml = r#"<root><t>A &amp; B &lt; C &gt; D &quot;E&quot; &apos;F&apos;</t></root>"#;
+        let mut reader = Reader::from_str(xml);
+        let mut buf = Vec::new();
+
+        if let Ok(Event::Start(e)) = reader.read_event_into(&mut buf) {
+            let elem = RawXmlElement::from_reader(&mut reader, &e).unwrap();
+
+            // The text node should contain the decoded characters
+            let child = &elem.children[0];
+            if let RawXmlNode::Element(t_elem) = child {
+                if let Some(RawXmlNode::Text(text)) = t_elem.children.first() {
+                    assert_eq!(text, "A & B < C > D \"E\" 'F'");
+                } else {
+                    panic!("Expected text child in <t> element");
+                }
+            } else {
+                panic!("Expected element child");
+            }
+
+            // Re-serialize via streaming reader and verify entities are escaped
+            use std::io::Read;
+            let mut stream_reader = RawXmlStreamReader::new(&elem);
+            let mut output = String::new();
+            stream_reader.read_to_string(&mut output).unwrap();
+            assert!(output.contains("A &amp; B &lt; C &gt; D"));
+        }
     }
 }
