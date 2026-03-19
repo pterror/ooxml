@@ -756,7 +756,7 @@ checksum = "d6790f58c7ff633d8771f42965289203411a5e5c68388703c06e14f24770b41e"
 
 [[package]]
 name = "ooxml-codegen"
-version = "0.1.1-alpha.1"
+version = "0.1.1-alpha.2"
 dependencies = [
  "insta",
  "serde",
@@ -766,7 +766,7 @@ dependencies = [
 
 [[package]]
 name = "ooxml-corpus"
-version = "0.1.1-alpha.1"
+version = "0.1.1-alpha.2"
 dependencies = [
  "clap",
  "ooxml-opc",
@@ -782,7 +782,7 @@ dependencies = [
 
 [[package]]
 name = "ooxml-dml"
-version = "0.1.1-alpha.1"
+version = "0.1.1-alpha.2"
 dependencies = [
  "base64",
  "ooxml-codegen",
@@ -794,7 +794,7 @@ dependencies = [
 
 [[package]]
 name = "ooxml-fixtures"
-version = "0.1.1-alpha.1"
+version = "0.1.1-alpha.2"
 dependencies = [
  "ooxml-dml",
  "ooxml-pml",
@@ -807,7 +807,7 @@ dependencies = [
 
 [[package]]
 name = "ooxml-omml"
-version = "0.1.1-alpha.1"
+version = "0.1.1-alpha.2"
 dependencies = [
  "ooxml-xml",
  "quick-xml",
@@ -816,7 +816,7 @@ dependencies = [
 
 [[package]]
 name = "ooxml-opc"
-version = "0.1.1-alpha.1"
+version = "0.1.1-alpha.2"
 dependencies = [
  "quick-xml",
  "thiserror",
@@ -825,7 +825,7 @@ dependencies = [
 
 [[package]]
 name = "ooxml-pml"
-version = "0.1.1-alpha.1"
+version = "0.1.1-alpha.2"
 dependencies = [
  "base64",
  "ooxml-codegen",
@@ -840,7 +840,7 @@ dependencies = [
 
 [[package]]
 name = "ooxml-sml"
-version = "0.1.1-alpha.1"
+version = "0.1.1-alpha.2"
 dependencies = [
  "base64",
  "criterion",
@@ -856,7 +856,7 @@ dependencies = [
 
 [[package]]
 name = "ooxml-wml"
-version = "0.1.1-alpha.1"
+version = "0.1.1-alpha.2"
 dependencies = [
  "base64",
  "ooxml-codegen",
@@ -872,7 +872,7 @@ dependencies = [
 
 [[package]]
 name = "ooxml-xml"
-version = "0.1.1-alpha.1"
+version = "0.1.1-alpha.2"
 dependencies = [
  "quick-xml",
  "serde",
