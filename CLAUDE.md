@@ -41,6 +41,32 @@ v0.1 goal: Basic Word document support
 5. Tables (basic)
 6. Images (embedded)
 
+## Context Is The Only Scarce Resource
+
+Every byte that enters the main session stays in the main session for its entire lifetime. File contents, command output, search results — once read, it lingers in cache and shapes every downstream token. There is no "just looking."
+
+**All exploration runs in subagents.** Investigations, audits, deep dives, surveys, "let me check," "let me find" — if the purpose of a tool sequence is to find out something you don't yet know, it runs in a subagent. Renaming the activity does not change what it is. The subagent returns a distilled summary; the raw output stays in the subagent.
+
+The main session holds only the durable artifacts you are producing: the edit, the commit, the doc update.
+
+## Durability
+
+Subagent reports, mid-session realizations, "I'll remember this" — none of these outlast the session. Anything worth keeping goes into CLAUDE.md, code, docs, or a commit. If it isn't written down, it is gone.
+
+**Commit completed work immediately.** After tests pass, commit. After each phase of a multi-phase plan, commit. Uncommitted work is lost work.
+
+## Authenticity
+
+When asked to analyze X, read X. Do not synthesize from conversation memory, prior summaries, or what the file probably says. Claims must correspond to evidence produced this session.
+
+**Something unexpected is a signal.** Surprising output, anomalous numbers, a file containing what it shouldn't — stop and find out why. Do not accept the anomaly and proceed.
+
+## Discipline
+
+Corrections from the user are conversation, not material for new rules. A single correction does not warrant a CLAUDE.md edit. Rules are added when a failure mode is observed repeatedly and the rule names the failure it prevents.
+
+Do not announce actions ("I will now…"). Act.
+
 ## Workflow
 
 **Batch cargo commands** to minimize round-trips:
@@ -51,39 +77,11 @@ After editing multiple files, run the full check once — not after each edit. F
 
 **When making the same change across multiple crates**, edit all files first, then build once.
 
-**Minimize file churn.** When editing a file, read it once, plan all changes, and apply them in one pass. Avoid read-edit-build-fail-read-fix cycles by thinking through the complete change before starting.
-
 **Use `normalize view` for structural exploration:**
 ```bash
 ~/git/rhizone/normalize/target/debug/normalize view <file>    # outline with line numbers
 ~/git/rhizone/normalize/target/debug/normalize view <dir>     # directory structure
 ```
-
-**Always commit when work is complete.** After finishing a task and verifying it passes `cargo clippy` and `cargo test`, create a commit before moving on. Don't leave working changes uncommitted.
-
-## Context Management
-
-**All exploration runs in subagents. No exceptions.** Any tool call whose purpose is "find out what's here" — grep, find, broad reads, surveys, audits — belongs in a subagent. Raw exploratory output in the main context is active context poisoning: it lingers in cache, shapes downstream reasoning, can't be unsent. The subagent returns a distilled summary; the noise stays in the subagent.
-
-Inline tool use in the main context is reserved for:
-- Reading a known file at a known path
-- Edits/writes you're committing to
-- A single targeted lookup whose result you'll act on immediately
-
-If you find yourself running a second grep to refine the first, you should have spawned a subagent.
-
-## Session Handoff
-
-Use plan mode as a handoff mechanism when:
-- A task is fully complete (committed, pushed, docs updated)
-- The session has drifted from its original purpose
-- Context has accumulated enough that a fresh start would help
-
-**For handoffs:** enter plan mode, write a short plan pointing at TODO.md, and ExitPlanMode. **Do NOT investigate first** — the session is context-heavy and about to be discarded. The fresh session investigates after approval.
-
-**For mid-session planning** on a different topic: investigating inside plan mode is fine — context isn't being thrown away.
-
-Before the handoff plan, update TODO.md and memory files with anything worth preserving.
 
 ## Commit Convention
 
@@ -155,23 +153,12 @@ Layers (in order of scope):
 This library will be used by `rescribe` (document conversion library) for DOCX support.
 The rescribe team is waiting on this to implement `rescribe-read-docx` and `rescribe-write-docx`.
 
-## Core Rules
+## Code Rules
 
 - **Reference the spec** - When implementing OOXML elements, cite the relevant ECMA-376 section
 - **Test as you go** - Every new struct/parser needs a unit test
 - **Preserve unknown data** - Never silently drop XML elements or attributes we don't understand
 - **Verify roundtrips** - Changes to serialization must pass roundtrip tests
-
-**Conversation is not memory.** Anything said in chat evaporates at session end. If it implies future behavior change, write it to CLAUDE.md or a memory file immediately — or it will not happen.
-
-**Warning — these phrases mean something needs to be written down right now:**
-- "I won't do X again" / "I'll remember to..." / "I've learned that..."
-- "Next time I'll..." / "From now on I'll..."
-- Any acknowledgement of a recurring error without a corresponding CLAUDE.md or memory edit
-
-**When the user corrects you:** Ask what rule would have prevented this, and write it before proceeding. **"The rule exists, I just didn't follow it" is never the diagnosis** — a rule that doesn't prevent the failure it describes is incomplete; fix the rule, not your behavior.
-
-**Something unexpected is a signal, not noise.** Surprising output, anomalous numbers, files containing what they shouldn't — stop and ask why before continuing. Don't accept anomalies and move on.
 
 ## Generated Files — IMPORTANT
 
@@ -228,7 +215,7 @@ This reports:
 
 **Goal**: Once all types/fields are mapped, enable `warn_unmapped: true` in `CodegenConfig` to fail builds on new unmapped items. This ensures config files stay in sync with schema changes.
 
-## Negative Constraints
+## Hard Constraints
 
 Do not:
 - Parse entire documents eagerly - use lazy loading for large files
