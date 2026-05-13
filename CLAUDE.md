@@ -187,6 +187,33 @@ OOXML_REGENERATE=1 OOXML_GENERATE_PARSERS=1 OOXML_GENERATE_SERIALIZERS=1 \
 
 After regenerating, commit all changed `generated*.rs` files in the same commit (or immediately after) the codegen change.
 
+## Codegen Conventions
+
+**Feature YAML (`spec/ooxml-features.yaml`):**
+- Type keys use codegen-output names (PascalCase), NOT spec names with underscores: `CTPPrBase:` not `CT_PPrBase:`
+- Types with name mappings in `ooxml-names.yaml` use the mapped name (`Paragraph`, `Compatibility`)
+- `"*": [feature]` wildcard gates all fields of a type under one feature
+- When adding a new feature gate, build with `--no-default-features` to catch handwritten code that references gated fields
+
+**Name mapping rules (all ~1100 types mapped; `warn_unmapped: true` enforced):**
+- ST_ enums keep clean names; CT_ element wrappers conflicting with an ST_ alias get an `Element` suffix (e.g. `OnOffElement`, `HpsMeasureElement`)
+- `ST_String: XmlString` to avoid a `pub type String = String` cycle
+
+**Cross-crate feature flags:** when a crate method requires a feature from a dependency crate, re-export it (e.g. PML's Cargo.toml: `dml-fills = ["ooxml-dml/dml-fills"]`). DML default features are always available to dependents; PML's `pml-*` flags are PML-only.
+
+**Build.rs analysis output:** `OOXML_ANALYZE=1` writes through `eprintln!` in build.rs — only visible with `cargo build -vv` or after touching build.rs to force a rerun.
+
+## Module Layout (SML)
+
+`workbook.rs` imports from `ext.rs`. Extension traits on generated types that need workbook-level context (e.g. `StylesheetExt`, `DefinedNameExt`) live in `workbook.rs`, not `ext.rs`, to avoid a circular dep.
+
+## Generated Type Gotchas
+
+- `STCoordinate` is a `String` (not `i64`) — `.parse::<i64>()` for numeric access. DML/PML offsets: `transform.offset.{x,y}.parse::<i64>()`. Extents (`STPositiveCoordinate`) are `i64` directly. Rotation (`STAngle`) is `i32`; degrees = `rot as f64 / 60000.0`.
+- SML `BooleanProperty` access: `.field.as_ref().is_some_and(|v| v.value.unwrap_or(false))`
+- Moving a field out of a `Box<T>`: bind first (`let inner = *boxed; inner.field`) — can't partially move from a live box.
+- `types::DefinedName.text` holds the formula/reference (`.reference` is a `Vec<RichTextElement>`).
+
 ## Static Analysis for Config Files
 
 The codegen includes static analysis to detect unmapped types and fields in `ooxml-names.yaml` and `ooxml-features.yaml`. Run during regeneration:
