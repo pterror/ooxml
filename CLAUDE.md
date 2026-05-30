@@ -201,53 +201,20 @@ Do not:
 
 <!-- BEGIN ECOSYSTEM RULES -->
 
-## Delegation
+## Ecosystem Design Principles
 
-The main session is an orchestrator. Allowed actions: `Agent`/`Task*`/`AskUserQuestion`/plan-mode/`ScheduleWakeup`, and Bash limited to `git commit`, `git push`, `git status`, `git log --oneline`. Everything else delegates to a subagent. The hook is evidence of a prompting failure, not a behavioral guide. If a tool call hits the hook AT ALL, the prompt failed to prevent it. Delegate before the decision point, not after.
+Cross-cutting principles distilled from the ecosystem's own decisions (synthesized in `docs/decisions/throughlines.md`). Apply them when building new repos and recording decisions. (Already-encoded principles — independent-tools / no-path-deps, the delegation model, CLAUDE.md-as-control-surface — live in their own sections and are not repeated here.)
 
-### Triggers
-
-Before calling Read, Grep, Glob, or any Bash beyond the four git commands — stop. Dispatch an Agent instead.
-
-Before editing any file — stop. Dispatch an Agent. This includes plan files in `~/.claude/plans/`: in plan mode, dispatch a subagent to write to the plan file; do not Write it yourself. The plan file's content must not enter main context.
-
-When you need git context beyond status/log-oneline (a diff, a blame, a show) — dispatch an Agent.
-
-When a tool call is denied by the hook — do not retry, do not narrate. Dispatch the equivalent Agent and continue.
-
-When a code-modifying subagent returns — `git status`, then `git commit` before any user-facing reply.
-
-Before dispatching an Agent that modifies code — scan your prompt for "do not commit" or "based on your findings". Delete them.
-
-Before dispatching: if your prompt says "if you find", "based on your findings", or "as appropriate" — stop. Investigate first; dispatch with the decision made.
-
-When you can't verify something — do not speculate or guess at file locations, names, or contents. Dispatch a Read subagent or ask. Confabulation is failure.
-
-### Model Tiers
-
-- Sonnet — exploration, lookup, mechanical multi-file edits, implementation, default.
-- Opus — architectural judgment, design, subagents that themselves spawn subagents.
-
-Always set `subagent_type` and `model` explicitly.
-
-### Prompt Rules
-
-- Never tell a subagent "do not commit." Code-modifying subagents commit their own work.
-- Don't ask for a diff summary. After a code-modifying subagent, `git status` in main and dispatch a review Agent if you need to see the diff.
-- Don't re-explain CLAUDE.md. Subagents inherit it.
-- Cite locations by content ("the block that does X"), not line numbers — files shift between reads.
-- Name files explicitly; don't outsource the grep.
-- Match agent type to deliverable: `Explore` for lookup/search, `general-purpose` for reports and file-modifying work.
-- On unsatisfying output, change something before retrying. Same prompt + same tier = same result.
-- Dispatch independent subagents in parallel (multiple Agent blocks in one message).
-- Pair `isolation: worktree` with `run_in_background: true`.
-- Code-modifying subagents must verify their own changes before returning (re-read the diff, run tests, etc.). The orchestrator does not get a second pass with git diff — that's hook-blocked.
+- **Prefer data over code at every seam.** Serializable AST / struct / JSON over closures, embedded DSLs, or source text — so artifacts cache, replay, transport, and diff.
+- **Library-first; projection-from-one-definition.** The typed library is the source of truth; CLI / HTTP / MCP / WebSocket / JSON surfaces are generated projections, never hand-rolled per surface.
+- **Capability security.** Hosts grant pre-opened handles; code only attenuates what it is given; nothing forges authority; allow-list over deny-list.
+- **The LLM is an oracle at the leaves, never the control loop.** Determinism is a hard invariant: seeded RNG, event-log replay, build-time-only inference. Per-query LLM in the hot loop is a defect.
+- **Trust comes from verifiable evidence, not authority.** Verbatim snippets, pinned-commit permalinks, claim→node citation — never a bare reference.
+- **Retire, don't deprecate; collapse asymmetries to primitives.** Remove backward-compat aliases rather than carry them; reduce N special cases to their irreducible primitives.
+- **Validate against reality; tests are the spec.** Load-bearing substrates are validated against real corpora; fixtures and tests define correctness, not aspirational specs.
 
 ## Hard Constraints
 
-- No Edit/Write/NotebookEdit in main. Plan files in `~/.claude/plans/` are written by subagents, not by main.
-- No Read/Grep/Glob/NotebookRead in main. Delegate.
-- No Bash in main beyond `git commit`, `git push`, `git status`, `git log --oneline`.
 - No `--no-verify`. Fix the issue or fix the hook.
 - No path dependencies in `Cargo.toml` — they couple repos and break independent publishing.
 - No interactive git (no `git rebase -i`, no `git add -i`, no `--no-edit` on rebase).
