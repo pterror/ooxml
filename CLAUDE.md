@@ -221,8 +221,6 @@ Cross-cutting principles distilled from the ecosystem's own decisions (synthesiz
 - No interactive git (no `git rebase -i`, no `git add -i`, no `--no-edit` on rebase).
 - No suggesting project names. LLMs are bad at this; refine the conceptual space only.
 - No tracking cross-project issues in conversation — they go in TODO.md in the affected repo.
-- No ecosystem changes without checking all affected repos.
-- **Control surface stays self-contained and versioned.** Behavioral rules, hooks, and guidance live in-repo — versioned, diffable, propagatable. Never put them in the unversioned, machine-local `~/.claude/CLAUDE.md`; reach never justifies a non-self-contained home.
 - No assuming a tool is missing without checking `nix develop`.
 - Commit completed work in the same turn it finishes. Uncommitted work is lost work.
 
