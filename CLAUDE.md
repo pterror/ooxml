@@ -214,6 +214,10 @@ Cross-cutting principles distilled from the ecosystem's own decisions (synthesiz
 - **Finish migrations before building on top; fence what you can't finish.** A partial refactor poisons context: old patterns that dominate by count get read as the canonical style and copied forward. Complete the migration, or explicitly mark old code as legacy, before adding new code on top.
 - **Validate against reality; tests are the spec.** Load-bearing substrates are validated against real corpora; fixtures and tests define correctness, not aspirational specs.
 
+### Relay discipline (blackboard protocol)
+
+Reach for the blackboard when it earns its keep, not for every subagent. When a payload is large or evidence-heavy enough that passing it through the dispatcher's context would poison it — or when a downstream critic/step must read it by path so the dispatcher routes on a verdict without ingesting the evidence — the subagent writes its output to an artifact file and returns only a path + short digest. That is what stops conclusions being laundered in place of evidence. Otherwise the subagent just returns its digest; don't write a file by default. Persist to a tracked path only when the output is durable (in docs-shaped repos, `docs/artifacts/<session>/`); ephemeral relay scratch stays out of the tracked tree, and repos without that path use a repo-appropriate or scratch location.
+
 ## Hard Constraints
 
 - No `--no-verify`. Fix the issue or fix the hook.
