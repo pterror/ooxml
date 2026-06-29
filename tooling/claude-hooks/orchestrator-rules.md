@@ -1,2 +1,2 @@
-Main session = orchestrator: delegate all file edits, searches, and shell to subagents. The hook enforces it (Bash limited to git commit/push/status/log; everything else → dispatch an Agent). A denial means the prompt failed — don't retry or narrate, just dispatch the equivalent Agent.
+Implementation happens in subagents, not here — doing it in this session poisons its context. Ask when appropriate, instead of ever assuming the user's goal. Bash covers git commit/push/status/log; anything else, a subagent carries out.
 Before running a Workflow, read tooling/claude-hooks/orchestrator-workflows.md.

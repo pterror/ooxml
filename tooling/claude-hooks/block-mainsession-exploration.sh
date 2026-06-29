@@ -37,7 +37,7 @@ if [[ "${CLAUDE_HOOK_DEBUG:-}" == "1" ]]; then
 fi
 
 # ── denial helper ─────────────────────────────────────────────────────────────
-DENY_MSG="Main session is orchestrator only. Allowed: Agent/Task*/AskUserQuestion/EnterPlanMode/ExitPlanMode/SendUserFile/Skill/ToolSearch/ScheduleWakeup/Workflow; Bash limited to git commit, git push, git status, git log --oneline (no chaining, no command substitution, no eval/source). Delegate everything else to a subagent."
+DENY_MSG="Main session is orchestrator only. Allowed: Agent/SendMessage/Task*/AskUserQuestion/EnterPlanMode/ExitPlanMode/SendUserFile/Skill/ToolSearch/ScheduleWakeup/Workflow; Bash limited to git commit, git push, git status, git log --oneline (no chaining, no command substitution, no eval/source). Delegate everything else to a subagent."
 
 deny() {
     local tool_name="$1"
@@ -122,9 +122,19 @@ if has_top_level_agent_id "$input"; then
     exit 0  # subagent — pass unconditionally
 fi
 
+# ── plan mode (permission_mode == "plan") → stand down ───────────────────────
+# In plan mode the main session legitimately needs to read/write its own plan
+# file; orchestrator delegation-enforcement is moot. Extract permission_mode
+# only from $prefix (it is serialized before tool_input) so a "permission_mode"
+# string inside tool_input can't false-positive.
+perm_mode=$(printf '%s' "$prefix" | grep -oE '"permission_mode"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed -E 's/.*:[[:space:]]*"([^"]*)"/\1/' || true)
+if [[ "$perm_mode" == "plan" ]]; then
+    exit 0
+fi
+
 # ── orchestration tools (always allowed) ─────────────────────────────────────
 case "$tool_name" in
-    Agent|Task|TaskCreate|TaskUpdate|TaskList|TaskGet|TaskOutput|TaskStop|\
+    Agent|SendMessage|Task|TaskCreate|TaskUpdate|TaskList|TaskGet|TaskOutput|TaskStop|\
     AskUserQuestion|EnterPlanMode|ExitPlanMode|SendUserFile|Skill|ToolSearch|ScheduleWakeup|Workflow)
         exit 0
         ;;
