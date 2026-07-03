@@ -229,6 +229,10 @@ of the tracked tree.
 - No suggesting project names. LLMs are bad at this; refine the conceptual space only.
 - No tracking cross-project issues in conversation — they go in TODO.md in the affected repo.
 - No assuming a tool is missing without checking `nix develop`.
+- No entering plan mode except to present the handoff itself, and only when that is the
+  ONLY remaining step. Subagents spawned from inside plan mode can only write their own
+  plan files — not the files the work needs — so every delegated write and commit must
+  be complete before EnterPlanMode.
 - Commit completed work in the same turn it finishes. Uncommitted work is lost work.
 
 ## Disposition
