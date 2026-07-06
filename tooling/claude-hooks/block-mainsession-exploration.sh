@@ -37,7 +37,7 @@ if [[ "${CLAUDE_HOOK_DEBUG:-}" == "1" ]]; then
 fi
 
 # ── denial helper ─────────────────────────────────────────────────────────────
-DENY_MSG="Main session is orchestrator only. Allowed: Agent/SendMessage/Task*/AskUserQuestion/EnterPlanMode/ExitPlanMode/SendUserFile/Skill/ToolSearch/ScheduleWakeup/Workflow; Bash limited to git commit, git push, git status, git log --oneline (no chaining, no command substitution, no eval/source). Delegate everything else to a subagent."
+DENY_MSG="Main session is orchestrator only. Allowed: Agent/SendMessage/Task*/AskUserQuestion/EnterPlanMode/ExitPlanMode/SendUserFile/Skill/ToolSearch/ScheduleWakeup; Bash limited to git commit, git push, git status, git log --oneline (no chaining, no command substitution, no eval/source). Delegate everything else to a subagent."
 
 deny() {
     local tool_name="$1"
@@ -132,10 +132,36 @@ if [[ "$perm_mode" == "plan" ]]; then
     exit 0
 fi
 
+# ── cost-tier enforcement: Agent / Workflow ──────────────────────────────────
+# Cheapest-adequate-model discipline: no silent default to a frontier tier.
+# COST_MSG text matches the marker checked for below ([frontier-approved]).
+COST_MSG="Name the tier: cheapest adequate model (haiku for mechanical/extraction, sonnet for scripted implementation). Frontier tiers require user-approved cost: add model plus [frontier-approved] in the prompt after the user approves a cost estimate."
+
+if [[ "$tool_name" == "Agent" ]]; then
+    model_val=$(printf '%s' "$rest" | awk -v field="model" -f "$dir/lib/extract-field.awk")
+
+    if [[ -z "$model_val" ]]; then
+        deny "$tool_name" "$COST_MSG"
+    fi
+
+    if [[ "$model_val" == "fable" || "$model_val" == "opus" ]]; then
+        if ! printf '%s' "$rest" | grep -qF '[frontier-approved]'; then
+            deny "$tool_name" "$COST_MSG"
+        fi
+    fi
+fi
+
+# Workflow tool is disabled unconditionally by owner directive: unpredictable
+# cost amplification (resume double-runs, echo stages) is not tier-gateable
+# the way a single Agent call is. Re-enable only by owner editing this hook.
+if [[ "$tool_name" == "Workflow" ]]; then
+    deny "$tool_name" "Workflow tool disabled by owner directive 2026-07-03 (unpredictable cost amplification: resume double-runs, echo stages). Use individual tiered Agent calls. Re-enable only by owner editing this hook."
+fi
+
 # ── orchestration tools (always allowed) ─────────────────────────────────────
 case "$tool_name" in
     Agent|SendMessage|Task|TaskCreate|TaskUpdate|TaskList|TaskGet|TaskOutput|TaskStop|\
-    AskUserQuestion|EnterPlanMode|ExitPlanMode|SendUserFile|Skill|ToolSearch|ScheduleWakeup|Workflow)
+    AskUserQuestion|EnterPlanMode|ExitPlanMode|SendUserFile|Skill|ToolSearch|ScheduleWakeup)
         exit 0
         ;;
 esac
