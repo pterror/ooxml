@@ -9,11 +9,15 @@
 #   STATIC : every `$dir/<path>` file a hook references relative to its own
 #            directory (lib/*.awk, sourced .sh helpers, cat'd .md) exists.
 #   DYNAMIC: run each hook against the benign fixture at
-#            lib/smoke/<hook-basename>.json — a payload its own allow/deny
+#            lib/smoke/<hook-basename>.payload — a payload its own allow/deny
 #            contract should ALLOW cleanly (read the hook to learn its
 #            contract before trusting a fixture). Fixtures ship as real files
 #            beside this script, not inline literals, so they travel with it
 #            through propagation and a receiver can inspect/extend them.
+#            Extension is .payload, not .json, deliberately: a receiver's own
+#            JSON-formatter pre-commit hook rewrites .json files on commit,
+#            which caused permanent false drift under converge-always — the
+#            content is still plain JSON text.
 #            A few extra inline payloads below exercise deny paths and the
 #            subagent bypass for additional regression coverage — a
 #            deliberate, well-formed deny there is success, not failure.
@@ -89,12 +93,12 @@ run_case() {
 }
 
 # ── file-fixture wrapper: the required "benign payload this hook should
-#    ALLOW" case, read from lib/smoke/<hook-basename>.json rather than an
+#    ALLOW" case, read from lib/smoke/<hook-basename>.payload rather than an
 #    inline literal ─────────────────────────────────────────────────────────
 run_fixture() {
     local hook="$1" name fixture
     name="$(basename "$hook" .sh)"
-    fixture="$FIXTURES_DIR/$name.json"
+    fixture="$FIXTURES_DIR/$name.payload"
     if [ ! -f "$fixture" ]; then
         note "FAIL fixture $hook: no smoke fixture at $fixture"
         fail=1
@@ -115,7 +119,7 @@ for h in $HOOKS; do
     static_check "$HOOKS_DIR/$h"
 done
 
-# Required per-hook smoke fixture (lib/smoke/<hook>.json): a benign payload
+# Required per-hook smoke fixture (lib/smoke/<hook>.payload): a benign payload
 # each hook's own contract should ALLOW cleanly.
 run_fixture inject-orchestrator-rules.sh
 run_fixture post-history.sh
