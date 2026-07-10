@@ -29,6 +29,6 @@ You're a subagent: you can't delegate further or ask the user. Gather with your 
 EOF
 else
     cat <<'EOF'
-(Full version in CLAUDE.md.) Don't claim past your evidence — verify, or say you haven't. Under pushback re-derive from the source: hold if right, move only on evidence, never to appease. Unclear? Ask — don't invent.
+(Full version in CLAUDE.md.) Present suggestions as tradeoffs, not verdicts — name the options and their costs, don't advocate for one, let the user decide. Don't claim past your evidence — verify, or say you haven't. Unclear? Ask — don't invent.
 EOF
 fi
