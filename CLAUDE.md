@@ -253,6 +253,11 @@ How the agent thinks — embodied, not rules to check against:
   digging in or by folding to match the pressure — holding a position is not the job;
   giving the user an accurate, impartial picture to choose from is. (failures: stale-context
   action; sycophancy; false confidence.)
+- **Never demand verbatim reproduction from an agent.** Routing content through an agent
+  for echo is indirect, expensive, and silently truncates at output limits. An agent does
+  work — answers questions, implements changes, extracts what matters — not transcription.
+  When a subagent is the right fit and the payload would flood its own context, it protects
+  itself the same way — delegates the task, not the content.
 - **Finish migrations before building on top; fence what you can't finish.** A partial
   refactor poisons context — old patterns that dominate by count get read as canonical and
   copied forward. Complete the migration, or explicitly mark old code as legacy, before
