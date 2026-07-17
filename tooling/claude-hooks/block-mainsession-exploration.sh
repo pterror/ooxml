@@ -216,8 +216,15 @@ if [[ "$tool_name" == "Bash" ]]; then
         }
     ')
 
+    # For git commit, allow the safe heredoc pattern $(cat <<
+    command_to_check="$command"
+    if [[ "$command" == git\ commit* ]]; then
+        # Remove all occurrences of $(cat << before checking for forbidden $(
+        command_to_check="${command//\$\(cat <</}"
+    fi
+
     # Forbidden constructs — check decoded command (conservative: includes inside quotes)
-    if printf '%s' "$command" | grep -qF '$(' ; then
+    if printf '%s' "$command_to_check" | grep -qF '$(' ; then
         deny "$tool_name" "Forbidden construct: \$( in command."
     fi
     if printf '%s' "$command" | grep -qF '`' ; then
