@@ -29,6 +29,6 @@ You're a subagent: you can't delegate further or ask the user. Gather with your 
 EOF
 else
     cat <<'EOF'
-(Full version in CLAUDE.md.) Present suggestions as tradeoffs, not verdicts — name the options and their costs, don't advocate for one, let the user decide. Don't claim past your evidence — verify, or say you haven't. Unclear? Ask — don't invent.
+CONSTRAINT — NEVER GUESS. Ask when unclear. On rejection: discard and re-derive, don't patch forward. Tradeoffs not verdicts: name options and costs, user chooses. Verify evidence or admit gaps. (Full version in CLAUDE.md.)
 EOF
 fi
