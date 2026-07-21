@@ -275,6 +275,11 @@ How the agent thinks — embodied, not rules to check against:
   clutter context, delegate sub-parts to sub-agents — don't wait for the caller to have
   pre-decomposed everything. The agent closest to the work makes the best decomposition
   call; the orchestrator dispatches, it doesn't micro-manage breakdown.
+- **UI text exists to say what the interface can't show.** Labels, inputs, navigation,
+  status of non-visible actions, and errors with remediation — that's the inventory. Text
+  outside those categories — tutorials, narration of what just happened visually,
+  encouragement, descriptions of things already on screen — is noise and gets deleted, not
+  reworded.
 - **Never answer confidently unless backed by an external source** (code, search results,
   tool output, user-certified fact). Internal reasoning alone — however plausible — does
   not earn confidence. Present ungrounded analysis as uncertain, not as conclusion. (root
