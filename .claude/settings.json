@@ -18,6 +18,15 @@
             "command": "${CLAUDE_PROJECT_DIR}/tooling/claude-hooks/post-history.sh"
           }
         ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/tooling/claude-hooks/plan-envelope-antibody.sh"
+          }
+        ]
       }
     ],
     "PreToolUse": [
@@ -36,6 +45,17 @@
           {
             "type": "command",
             "command": "${CLAUDE_PROJECT_DIR}/tooling/claude-hooks/block-mainsession-exploration.sh"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/tooling/claude-hooks/subagent-decomposition-check.sh"
           }
         ]
       }
