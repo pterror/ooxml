@@ -1,0 +1,1 @@
+{"session_id":"smoke-test","tool_name":"Agent","tool_input":{"description":"smoke test task","prompt":"do the thing","subagent_type":"general-purpose","model":"sonnet"}}

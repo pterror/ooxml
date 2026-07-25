@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
 set -e
 
-echo "Running cargo fmt..."
-cargo fmt --all
-git add -u
+# No rustfmt.toml in this repo: pass --edition explicitly (bare rustfmt defaults to 2015).
+STAGED_RS="$(git diff --cached --name-only --diff-filter=ACMR -- '*.rs')"
+if [ -n "$STAGED_RS" ]; then
+  echo "Formatting staged Rust files..."
+  echo "$STAGED_RS" | xargs -r rustfmt --edition 2024
+  echo "$STAGED_RS" | xargs -r git add --
+else
+  echo "No staged Rust files — skipping rustfmt."
+fi
 
 echo "Running cargo clippy..."
 cargo clippy --all-targets --all-features -- -D warnings
