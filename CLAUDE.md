@@ -41,6 +41,24 @@ v0.1 goal: Basic Word document support
 5. Tables (basic)
 6. Images (embedded)
 
+## Workflow
+
+**Batch cargo commands** to minimize round-trips:
+```bash
+cargo clippy --all-targets --all-features -- -D warnings && cargo test
+```
+After editing multiple files, run the full check once — not after each edit. Formatting is handled automatically by the pre-commit hook (`cargo fmt`).
+
+**When making the same change across multiple crates**, edit all files first, then build once.
+
+**Minimize file churn.** When editing a file, read it once, plan all changes, and apply them in one pass. Avoid read-edit-build-fail-read-fix cycles by thinking through the complete change before starting.
+
+**Use `normalize view` for structural exploration:**
+```bash
+~/git/rhizone/normalize/target/debug/normalize view <file>    # outline with line numbers
+~/git/rhizone/normalize/target/debug/normalize view <dir>     # directory structure
+```
+
 ## Commit Convention
 
 Use conventional commits: `type(scope): message`
