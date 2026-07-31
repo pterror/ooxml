@@ -108,7 +108,7 @@ run_fixture() {
 }
 
 # ── the propagated hook set (must match HOOK_FILES in propagate-harness.sh) ──
-HOOKS="inject-orchestrator-rules.sh block-blocking-bash.sh block-mainsession-exploration.sh post-history.sh"
+HOOKS="inject-orchestrator-rules.sh block-blocking-bash.sh block-mainsession-exploration.sh post-history.sh require-explicit-agent-type.sh"
 
 for h in $HOOKS; do
     if [ ! -f "$HOOKS_DIR/$h" ]; then
@@ -125,6 +125,7 @@ run_fixture inject-orchestrator-rules.sh
 run_fixture post-history.sh
 run_fixture block-blocking-bash.sh
 run_fixture block-mainsession-exploration.sh
+run_fixture require-explicit-agent-type.sh
 
 # Extra inline cases: bonus regression coverage beyond the required fixture,
 # exercising deny paths and the subagent bypass. A deliberate, well-formed
@@ -141,6 +142,10 @@ run_case block-mainsession-exploration.sh allow subagent-bypass \
     '{"tool_name":"Read","agent_id":"verify-smoke","tool_input":{"file_path":"/x"}}'
 run_case block-mainsession-exploration.sh deny read-mainsession \
     '{"tool_name":"Read","tool_input":{"file_path":"/x"}}'
+
+# require-explicit-agent-type: missing subagent_type must be denied.
+run_case require-explicit-agent-type.sh deny missing-subagent-type \
+    '{"tool_name":"Agent","tool_input":{"description":"d","prompt":"p"}}'
 
 if [ "$fail" -ne 0 ]; then
     note "hook verification FAILED in $HOOKS_DIR"
