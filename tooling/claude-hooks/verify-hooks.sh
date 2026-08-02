@@ -108,7 +108,7 @@ run_fixture() {
 }
 
 # ── the propagated hook set (must match HOOK_FILES in propagate-harness.sh) ──
-HOOKS="inject-orchestrator-rules.sh block-blocking-bash.sh block-mainsession-exploration.sh post-history.sh require-explicit-agent-type.sh"
+HOOKS="inject-orchestrator-rules.sh inject-style-rules.sh block-blocking-bash.sh block-mainsession-exploration.sh post-history.sh require-explicit-agent-type.sh"
 
 for h in $HOOKS; do
     if [ ! -f "$HOOKS_DIR/$h" ]; then
@@ -122,6 +122,7 @@ done
 # Required per-hook smoke fixture (lib/smoke/<hook>.payload): a benign payload
 # each hook's own contract should ALLOW cleanly.
 run_fixture inject-orchestrator-rules.sh
+run_fixture inject-style-rules.sh
 run_fixture post-history.sh
 run_fixture block-blocking-bash.sh
 run_fixture block-mainsession-exploration.sh
