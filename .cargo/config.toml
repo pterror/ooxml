@@ -1,21 +1,13 @@
-# Share one target/ dir across the main checkout and every git worktree
-# (including .claude/worktrees/* used by background agents), instead of each
-# worktree accumulating its own multi-GB target/. This relative path resolves
-# against the parent of *this* .cargo directory, i.e. the main checkout root
-# — so it's just the conventional $repo_root/target. Because
-# .claude/worktrees/* are nested inside the main checkout on disk, Cargo's
-# ancestor-directory config search finds this file (and thus this path, still
-# resolved relative to the main checkout) from any worktree too, even though
-# each worktree has its own (older) checked-out copy of .cargo/config.toml —
-# no propagation needed.
-# Cargo already mutexes concurrent builds against the same target dir via
-# target/.cargo-lock (shared lock for reads, exclusive for writes), so this
-# is safe: it just serializes builds across worktrees instead of
-# parallelizing them, in exchange for not multiplying multi-GB target/ dirs
-# per worktree. Override by setting the CARGO_TARGET_DIR env var, which
-# always takes precedence over this config file.
-[build]
-target-dir = "target"
+# NOTE: deliberately NOT setting [build] target-dir here. A relative
+# target-dir is resolved against the location of whichever config file
+# supplies it, and this file is git-tracked — so once any git worktree is
+# created from a commit that includes a `target-dir = "..."` line here, that
+# worktree's own (closer) copy of this file would win outright and resolve
+# the path against *its own* root, creating a fresh local target/ instead of
+# sharing one. That defeats the point for every future worktree. Run
+# scripts/setup-worktree-target.sh (or .ps1 on Windows) once per worktree to
+# inject an absolute target-dir locally instead — see that script for
+# details. Do not add a static target-dir line back here.
 # Reduce target/ directory bloat
 [profile.dev]
 debug = 1  # 0=none, 1=line tables, 2=full

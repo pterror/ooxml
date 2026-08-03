@@ -31,6 +31,10 @@ cargo clippy        # Lint
 cargo doc --open    # View docs
 ```
 
+After creating a new worktree, run `scripts/setup-worktree-target.sh` (mac/linux) or
+`scripts/setup-worktree-target.ps1` (windows) once to share the build cache across
+worktrees.
+
 ## Current Priority
 
 v0.1 goal: Basic Word document support
