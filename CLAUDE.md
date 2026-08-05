@@ -222,9 +222,12 @@ Do not:
   problem. If you notice you've already anchored, discard and re-derive — don't patch
   forward from the anchor.
 - Commit completed work in the same turn it finishes. Uncommitted work is lost work.
-- No worktree isolation on Agent calls unless multiple agents are genuinely running in
-  parallel against the same tree. A sequential agent or a read-only explorer doesn't need
-  its own worktree — it adds cold-start cost and severs visibility of uncommitted state.
+- No worktree isolation on Agent calls, full stop — no exception for parallel agents.
+  Isolation doesn't solve shared-file collisions, it only defers them to merge time. It
+  also forfeits any build/tool cache keyed on absolute source path — for a Rust project
+  specifically, cargo/rustc's incremental-compilation cache bakes in the checkout path, so
+  identical code built from two different worktrees can never share that cache: a
+  structural, unfixable cost, not an inconvenience.
 
 ## Disposition
 
